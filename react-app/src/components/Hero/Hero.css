@@ -1,0 +1,122 @@
+
+.hero {
+    width: 100%;
+    height: 50vw;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 0;
+    display: flex;
+    justify-content: center;
+    padding: 0px 5px;
+    background: radial-gradient(79.18% 59.18% at 50% 23.34%, #7697F0 0%, #FFFFFF 100%);
+}
+
+.hero-logo {
+    position: absolute;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-style: bold 700;
+    font-size: 200px;
+    margin-top: 28px;
+    background: radial-gradient(60% 459.11% at 50% 60%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+
+.hero-car {
+    position: absolute;
+    margin-top: 100px;
+}
+
+.hero-text {
+    position: absolute;
+    display: block;
+    left: 10px;
+    width: 350px;
+    margin-top: 120px;
+    margin-left: 60px;
+}
+
+.hero-text h1 {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.hero-text p {
+    font-size: 18px;
+    color: #5a5a5a;
+
+}
+
+.btn-go-now {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 0.75rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+    margin-top: 140px;
+    text-decoration: none;
+}
+
+.car-box {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    padding: 17px 15px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    text-align: center;
+    justify-content: center;
+    width: 150px;
+    height: 140px;
+    top: 230px;
+    right: 500px;
+}
+
+.car-box h2 {
+    font-size: 2rem;
+    color: #0b0b0b;
+}
+
+.people-box {
+    position: absolute;
+    display: block;
+    margin-top: 450px;
+    margin-right: 80px;
+    right: 10px;
+    width: 200px;
+    align-items: center;
+}
+
+.avatars {
+    display: flex;
+    padding-left: 10px;
+}
+
+.avatars img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-left: -10px;
+    border: 2px solid white;
+}
+
+.people-box h3 {
+    margin-top: 5px;
+    font-size: 1.5rem;
+    color: #0b0b0b;
+}
+
+.people-box p {
+    font-size: 1rem;
+    color: #555;
+}
