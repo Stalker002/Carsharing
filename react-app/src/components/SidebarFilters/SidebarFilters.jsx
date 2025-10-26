@@ -42,7 +42,7 @@ export default function SidebarFilters() {
           {carTypes.map(type => (
             <label key={type.name} className="filter-option">
               <input
-                type="radio"
+                type="checkbox"
                 name="type"
                 value={type.name}
                 checked={selectedType === type.name}
