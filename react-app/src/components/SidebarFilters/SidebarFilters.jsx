@@ -2,9 +2,17 @@ import "./SidebarFilters.css";
 import { useState } from 'react';
 
 export default function SidebarFilters() {
-  const [selectedType, setSelectedType] = useState('');
-  const [selectedCapacity, setSelectedCapacity] = useState('');
-  const [maxPrice, setMaxPrice] = useState(100);
+  const [selectedTypes, setSelectedTypes] = useState([]); // массив
+  const [selectedCapacities, setSelectedCapacities] = useState([]); // массив
+  const [maxPrice, setMaxPrice] = useState(1000);
+
+  const toggleSelection = (value, selectedList, setSelectedList) => {
+    if (selectedList.includes(value)) {
+      setSelectedList(selectedList.filter((item) => item !== value)); // удалить
+    } else {
+      setSelectedList([...selectedList, value]); // добавить
+    }
+  };
 
   const carTypes = [
     { name: "Стандарт", count: 10 },
@@ -23,9 +31,9 @@ export default function SidebarFilters() {
   ];
 
   const clearFilters = () => {
-    setSelectedType('');
-    setSelectedCapacity('');
-    setMaxPrice(100);
+    setSelectedType([]);
+    setSelectedCapacity([]);
+    // setMaxPrice(1000);
   };
   return (
     <div className="sidebar">
@@ -45,8 +53,8 @@ export default function SidebarFilters() {
                 type="checkbox"
                 name="type"
                 value={type.name}
-                checked={selectedType === type.name}
-                onChange={(e) => setSelectedType(e.target.value)}
+                checked={selectedTypes.includes(type.name)}
+                onChange={() => toggleSelection(type.name, selectedTypes, setSelectedTypes)}
               />
               <span className="filter-label">
                 {type.name} <span className="filter-count">({type.count})</span>
@@ -65,8 +73,8 @@ export default function SidebarFilters() {
                 type="checkbox"
                 name="capacity"
                 value={capacity.name.split(' ')[0]}
-                checked={selectedCapacity === capacity.name.split(' ')[0]}
-                onChange={(e) => setSelectedCapacity(e.target.value)}
+                checked={selectedCapacities.includes(capacity.name)}
+                onChange={() => toggleSelection(capacity.name, selectedCapacities, setSelectedCapacities)}
               />
               <span className="filter-label">
                 {capacity.name} <span className="filter-count">({capacity.count})</span>
@@ -76,7 +84,7 @@ export default function SidebarFilters() {
         </div>
       </div>
 
-      <div className="filter-group">
+      {/* <div className="filter-group">
         <h3>Цена</h3>
         <div className="price-filter">
           <div className="price-header">
@@ -85,17 +93,17 @@ export default function SidebarFilters() {
           <input
             type="range"
             min="0"
-            max="100"
+            max="1000"
             value={maxPrice}
             onChange={(e) => setMaxPrice(Number(e.target.value))}
             className="price-slider"
           />
           <div className="price-labels">
             <span>0 BYN</span>
-            <span>100 BYN</span>
+            <span>1000 BYN</span>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

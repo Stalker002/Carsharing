@@ -1,10 +1,9 @@
 .sidebar {
-  background: #f8f9fa;
+  background: #f8faff;
   padding: 25px;
   border-radius: 12px;
   position: sticky;
   top: 20px;
-  height: fit-content;
 }
 
 .sidebar-header {
@@ -59,7 +58,7 @@
 .filter-options {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
 }
 
 .filter-option {
@@ -86,7 +85,7 @@
 }
 
 .filter-label {
-  font-size: 14px;
+  font-size: 17px;
   color: #495057;
   font-weight: 500;
 }
@@ -113,34 +112,12 @@
   border-radius: 3px;
   background: #dee2e6;
   outline: none;
-  /* -webkit-appearance: none; */
-}
-
-.price-slider::-webkit-slider-thumb {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #007bff;
-  cursor: pointer;
-  border: 2px solid white;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-
-.price-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #007bff;
-  cursor: pointer;
-  border: 2px solid white;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
 .price-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 14px;
   color: #6c757d;
 }
 

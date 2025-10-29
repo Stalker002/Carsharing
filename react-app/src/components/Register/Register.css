@@ -1,0 +1,30 @@
+
+.link-btn {
+    background: none;
+    border: none;
+    color: #3563e9;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.reg-toggle-pass {
+    position: absolute;
+    right: 35px;
+    top: 57%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.reg-toggle-confpass {
+    position: absolute;
+    right: 35px;
+    top: 66.5%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+}
