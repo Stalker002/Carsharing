@@ -4,13 +4,14 @@ import Liked from "../../svg/Popular_Car/liked.svg"
 import Fuel from "../../svg/Popular_Car/fuel.svg"
 import Transmission from "../../svg/Popular_Car/transmission.svg"
 import People from "../../svg/Popular_Car/people.svg"
-import car1 from "../../svg/Popular_Car/prevyu_BMW_i8.jpg";
-import car2 from "../../svg/Popular_Car/prevyu_Voyah_Free.jpg";
-import car3 from "../../svg/Popular_Car/prevyu_BMW_X7.jpg";
-import car4 from "../../svg/Popular_Car/prevyu_Tesla_S.jpg";
+import car1 from "../../svg/Popular_Car/BMW_i8.png";
+import car2 from "../../svg/Popular_Car/Voyah_Free.png";
+import car3 from "../../svg/Popular_Car/BMW_X7.png";
+import car4 from "../../svg/Popular_Car/Tesla_S.png";
+import { useState } from "react";
 
 function PopularCar() {
-  const cars = [
+  const [cars, setCars] = useState([
     {
       id: 1,
       name: "BMW i8",
@@ -51,7 +52,7 @@ function PopularCar() {
       id: 4,
       name: "Tesla Model S Performance Ludicrous",
       type: "Электро",
-      fuel: null,
+      fuel: "80Л",
       transmission: "Автомат",
       capacity: "4 места",
       price: 80,
@@ -59,7 +60,16 @@ function PopularCar() {
       image: car4,
       favorite: false,
     },
-  ];
+  ]);
+
+  const toggleFavorite = (id) => {
+    setCars((prevCars) =>
+      prevCars.map((car) =>
+        car.id === id ? { ...car, favorite: !car.favorite } : car
+      )
+    );
+  };
+
   return (
     <section className="popular-cars">
       <div className="popular-header-main">
@@ -69,18 +79,19 @@ function PopularCar() {
 
       <div className="cars-grid">
         {cars.map((car) => (
-          
+
           <div key={car.id} className="car-card">
             <div className="car-header">
               <div>
                 <h3>{car.name}</h3>
                 <p>{car.type}</p>
               </div>
-              {car.favorite ? (
-                <img src={Liked} alt="liked" className="heart" />
-              ) : (
-                <img src={Like} alt="like" className="heart" />
-              )}
+              <img
+                src={car.favorite ? Liked : Like}
+                alt="like"
+                className={"heart"}
+                onClick={() => toggleFavorite(car.id)}
+              />
             </div>
 
             <div className="car-image">
@@ -89,8 +100,8 @@ function PopularCar() {
 
             <div className="car-info">
               {car.fuel && (
-                   <div className="car-icon"><img src={Fuel} /> {car.fuel} </div>
-                )}
+                <div className="car-icon"><img src={Fuel} /> {car.fuel} </div>
+              )}
               <div className="car-icon"><img src={Transmission} />{car.transmission}</div>
               <div className="car-icon"><img src={People} />{car.capacity}</div>
             </div>
@@ -100,7 +111,6 @@ function PopularCar() {
                 <h4>{car.price.toFixed(1)}BYN/<span>день</span></h4>
                 {car.oldPrice && (
                   <p className="old-price">{car.oldPrice.toFixed(1)}BYN</p>
-                  // .toFixed(2)
                 )}
               </div>
               <button className="rent-btn">Арендовать</button>

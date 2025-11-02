@@ -1,11 +1,10 @@
 import './Hero.css';
-import CarImg from "./../../img/200.png"
-import Avatar1 from './../../svg/Booking/avatar1.svg'
-import Avatar2 from './../../svg/Booking/avatar2.svg'
-import Avatar3 from './../../svg/Booking/avatar3.svg'
+import CarImg from "./../../svg/Hero/200.png"
+import Avatar1 from './../../svg/Hero/avatar1.jpg'
+import Avatar2 from './../../svg/Hero/avatar2.jpeg'
+import Avatar3 from './../../svg/Hero/avatar3.jpeg'
 
-import { Routes, Route, Link } from 'react-router-dom';
-
+import { Link } from 'react-router-dom';
 
 function Hero() {
     return (

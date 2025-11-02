@@ -3,9 +3,6 @@
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
-}
-
-.catalog-layout {
   display: grid;
   grid-template-columns: 300px 1fr;
   gap: 30px;
@@ -16,22 +13,4 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
-}
-
-@media (max-width: 1024px) {
-  .catalog-layout {
-    grid-template-columns: 280px 1fr;
-    gap: 20px;
-  }
-}
-
-@media (max-width: 768px) {
-  .catalog-layout {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-  
-  .car-catalog {
-    padding: 15px;
-  }
 }

@@ -6,13 +6,13 @@ import FactsInNumbers from './../components/FactsInNumbers/FactsInNumbers'
 
 function Home() {
   return (
-    <div>
+    <>
       <Hero />
       <Features />
       <Steps />
       <PopularCar />
       <FactsInNumbers />
-    </div>
+    </>
   )
 }
 

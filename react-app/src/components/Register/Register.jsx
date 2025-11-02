@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./Register.css";
-import InputMask from "react-input-mask";
+import { useMask, format } from '@react-input/mask';
 
 import Hide from "./../../svg/Login/eye_hide.svg"
 import Visible from "./../../svg/Login/visible_hide.svg"
@@ -14,35 +14,15 @@ export default function Register({ isOpen, onClose, onLoginClick }) {
     const [showPass, setShowPass] = useState(false);
     const [showConfirmPass, setShowConfirmPass] = useState(false);
 
-    const formatPhone = (value) => {
-        // Убираем всё кроме цифр
-        const digits = value.replace(/\D/g, "");
 
-        // Формируем по шаблону +375 (XX) XXX-XX-XX
-        let result = "+375 ";
-
-        if (digits.length > 3) result += "(";
-        if (digits.length >= 5) result += digits.slice(3, 5) + ") ";
-        else if (digits.length > 3) result += digits.slice(3);
-
-        if (digits.length >= 8) result += digits.slice(5, 8) + "-";
-        else if (digits.length > 5) result += digits.slice(5);
-
-        if (digits.length >= 10) result += digits.slice(8, 10) + "-";
-        else if (digits.length > 8) result += digits.slice(8);
-
-        if (digits.length >= 12) result += digits.slice(10, 12);
-        else if (digits.length > 10) result += digits.slice(10);
-
-        return result.trim();
+    const options = {
+        mask: '+375 (__) ___-__-__',
+        replacement: { _: /\d/ },
     };
+    const inputRef = useMask(options);
+    const defaultValue = format('0123456789', options);
 
-    const handleChange = (e) => {
-        const formatted = formatPhone(e.target.value);
-        setPhone(formatted);
-    };
-
-    if (!isOpen) return null; // не рендерим, если окно закрыто
+    if (!isOpen) return null;
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -70,24 +50,19 @@ export default function Register({ isOpen, onClose, onLoginClick }) {
                         />
                     </div>
                     <div className="login-input">
-                        <InputMask
-                            mask="+375 (99) 999-99-99"
+                        <input
+                            defaultValue={defaultValue}
+                            type="tel"
+                            placeholder="+375 (__) ___-__-__"
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                        >
-                            {(inputProps) => (
-                                <input
-                                    {...inputProps}
-                                    type="tel"
-                                    placeholder="+375 (__) ___-__-__"
-                                    className="phone-input"
-                                />
-                            )}
-                        </InputMask>
+                            ref={inputRef}
+                            onChange={e => setPhone(e.target.value)}
+
+                        />
                     </div>
                     <div className="pass-input">
                         <input
-                            type={showPass ? "text" : "password"} // 🔹 Меняем тип input
+                            type={showPass ? "text" : "password"}
                             placeholder="Пароль"
                             value={pass}
                             onChange={(e) => setPass(e.target.value)}
@@ -96,7 +71,7 @@ export default function Register({ isOpen, onClose, onLoginClick }) {
                         <button
                             type="button"
                             className="reg-toggle-pass"
-                            onClick={() => setShowPass(!showPass)} // 🔹 Меняем состояние
+                            onClick={() => setShowPass(!showPass)}
                         >
                             <img
                                 src={showPass ? Hide : Visible}
@@ -108,7 +83,7 @@ export default function Register({ isOpen, onClose, onLoginClick }) {
                     </div>
                     <div className="pass-input">
                         <input
-                            type={showConfirmPass ? "text" : "password"} // 🔹 Меняем тип input
+                            type={showConfirmPass ? "text" : "password"}
                             placeholder="Повторите пароль"
                             value={confirmPass}
                             onChange={(e) => setConfirmPass(e.target.value)}
@@ -117,7 +92,7 @@ export default function Register({ isOpen, onClose, onLoginClick }) {
                         <button
                             type="button"
                             className="reg-toggle-confpass"
-                            onClick={() => setShowConfirmPass(!showConfirmPass)} // 🔹 Меняем состояние
+                            onClick={() => setShowConfirmPass(!showConfirmPass)}
                         >
                             <img
                                 src={showConfirmPass ? Hide : Visible}
@@ -130,7 +105,7 @@ export default function Register({ isOpen, onClose, onLoginClick }) {
                     <button type="submit" className="submit-btn">
                         Зарегистрироваться
                     </button>
-                    <p className="agreement">
+                    <p className="agreement"> 
                         Уже есть аккаунт?
                         <br />
                         <button type="button" className="link-btn" onClick={onLoginClick}>

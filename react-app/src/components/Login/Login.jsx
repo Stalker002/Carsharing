@@ -1,14 +1,15 @@
-import { useState } from "react";
 import "./Login.css";
 import Hide from "./../../svg/Login/eye_hide.svg"
 import Visible from "./../../svg/Login/visible_hide.svg"
+
+import { useState } from "react";
 
 export default function Login({ isOpen, onClose, onRegisterClick }) {
     const [login, setLogin] = useState("");
     const [pass, setPass] = useState("");
     const [showPass, setShowPass] = useState(false);
 
-    if (!isOpen) return null; // не рендерим, если окно закрыто
+    if (!isOpen) return null;
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -29,7 +30,7 @@ export default function Login({ isOpen, onClose, onRegisterClick }) {
                     </div>
                     <div className="pass-input">
                         <input
-                            type= {showPass ? "text" : "password"} // 🔹 Меняем тип input
+                            type= {showPass ? "text" : "password"} 
                             placeholder="Пароль"
                             value={pass}
                             onChange={(e) => setPass(e.target.value)}
@@ -38,7 +39,7 @@ export default function Login({ isOpen, onClose, onRegisterClick }) {
                         <button
                             type="button"
                             className="toggle-pass"
-                            onClick={() => setShowPass(!showPass)} // 🔹 Меняем состояние
+                            onClick={() => setShowPass(!showPass)} 
                         >
                             <img
                                 src={showPass ? Hide : Visible}

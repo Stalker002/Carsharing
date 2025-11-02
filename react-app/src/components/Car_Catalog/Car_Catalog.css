@@ -5,6 +5,7 @@
   background: #f8f9fa;
   padding: 25px;
   border-radius: 12px;
+  width: 100%
 }
 
 .location-section {
@@ -69,6 +70,7 @@
   padding: 0px 20px 40px;
   overflow: hidden;
   border-radius: 12px;
+  width: 100%
 }
 
 .popular-header {

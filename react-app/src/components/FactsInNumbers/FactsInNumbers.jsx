@@ -8,12 +8,11 @@ const stats = [
     { icon: Cars, value: "540+", label: "Машин" },
     { icon: Customers, value: "20k+", label: "Клиетов" },
     { icon: Calendar, value: "25+", label: "Лет" },
-    // { icon: Miles, value: "20m+", label: "Километров" },
+    { icon: Miles, value: "20M+", label: "Километров" },
 ];
 
 function FactsInNumbers() {
     return (
-
         <section className="facts" >
             < h2 className="facts_title" > Факты в цифрах</h2>
             <div className="facts_grid">
