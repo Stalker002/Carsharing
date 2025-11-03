@@ -1,0 +1,229 @@
+.car-details {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  background: #f9fafb;
+  padding: 40px;
+  border-radius: 16px;
+  font-family: "Inter", sans-serif;
+}
+
+.car-top {
+  display: flex;
+  gap: 40px;
+}
+
+/* --- Галерея --- */
+.car-gallery {
+  flex: 1;
+}
+
+.car-banner {
+  background: #3563e9;
+  color: white;
+  border-radius: 16px;
+  padding: 25px;
+  text-align: left;
+  position: relative;
+}
+
+.car-banner h2 {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.car-banner p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 12px;
+}
+
+.car-banner img {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.car-thumbnails {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.car-thumbnails img {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.car-thumbnails img.active {
+  border-color: #3563e9;
+}
+
+/* --- Инфопанель --- */
+.car-info-panel {
+  flex: 1;
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.car-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.car-info-header h2 {
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+.rating {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.heart {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.car-description {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 12px 0 20px;
+}
+
+.car-specs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.car-specs span {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.car-specs strong {
+  color: #111827;
+  font-size: 14px;
+}
+
+.car-price {
+  margin-top: 25px;
+}
+
+.car-price h3 {
+  color: #111827;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.car-price span {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.old-price {
+  text-decoration: line-through;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.rent-btn {
+  background: #3563e9;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 10px;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.rent-btn:hover {
+  background: #2748c7;
+}
+
+/* --- Отзывы --- */
+.car-reviews {
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.car-reviews h3 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.badge {
+  background: #3563e9;
+  color: #fff;
+  font-size: 13px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  margin-left: 8px;
+}
+
+.review {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.review-content {
+  flex: 1;
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-header h4 {
+  font-weight: 600;
+}
+
+.review-date {
+  margin-left: auto;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.review-text {
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.review-rating {
+  color: #facc15;
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+.show-all {
+  background: none;
+  border: none;
+  color: #3563e9;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 10px;
+}
