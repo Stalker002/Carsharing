@@ -53,7 +53,7 @@ function PopularCar() {
       id: 4,
       name: "Tesla Model S Performance Ludicrous",
       type: "Электро",
-      fuel: "80Л",
+      fuel: null,
       transmission: "Автомат",
       capacity: "4 места",
       price: 80,
