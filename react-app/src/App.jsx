@@ -9,6 +9,7 @@ import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
+import Car_Details from './components/Car_Details/Car_Details';
 
 function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -34,6 +35,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/car-catalog' element={<Car_Rent />} />
+        <Route path="/car-catalog/:id" element={<Car_Details />} />
         <Route path='*' element={<NotFoundPage />} />
       </Routes>
     <Footer />

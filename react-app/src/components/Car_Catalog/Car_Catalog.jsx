@@ -124,81 +124,24 @@ function CarCatalog() {
             <p className="old-price">{car.oldPrice.toFixed(1)} BYN</p>
           )}
         </div>
-        <button className="rent-btn">Арендовать</button>
+        <Link to={`/car-catalog/${car.id}`}>
+          <button className="rent-btn">Арендовать</button>
+        </Link>
       </div>
     </div>
   );
 
   return (
-    <>
-      <div className="rental-form">
-        {[
-          {
-            label: "Место аренды",
-            value: pickup,
-            setValue: setPickup,
-            date: pickupDate,
-            setDate: setPickupDate,
-            time: pickupTime,
-            setTime: setPickupTime,
-          },
-          {
-            label: "Место возврата",
-            value: dropoff,
-            setValue: setDropoff,
-            date: dropoffDate,
-            setDate: setDropoffDate,
-            time: dropoffTime,
-            setTime: setDropoffTime,
-          },
-        ].map((loc, i) => (
-          <div key={i} className="location-section">
-            <h3>{loc.label}</h3>
-            <select
-              className="location-select"
-              value={loc.value}
-              onChange={(e) => loc.setValue(e.target.value)}
-            >
-              <option value="">Выберите город</option>
-              <option value="Минск">Минск</option>
-              <option value="Гродно">Гродно</option>
-              <option value="Брест">Брест</option>
-            </select>
-
-            <div className="datetime-group">
-              <div className="datetime-field">
-                <label>Дата</label>
-                <input
-                  type="date"
-                  value={loc.date}
-                  onChange={(e) => loc.setDate(e.target.value)}
-                />
-              </div>
-              <div className="datetime-field">
-                <label>Время</label>
-                <input
-                  type="time"
-                  value={loc.time}
-                  onChange={(e) => loc.setTime(e.target.value)}
-                />
-              </div>
-            </div>
+    <section className="catalog-page">
+      {sections.map(({ title, data }) => (
+        <div key={title}>
+          <div className="popular-header">
+            <h2>{title}</h2>
           </div>
-        ))}
-      </div>
-
-      <section className="catalog-page">
-        {sections.map(({ title, data }) => (
-          <div key={title}>
-            <div className="popular-header">
-              <h2>{title}</h2>
-            </div>
-            <div className="catalog-grid">{data.map(renderCard)}</div>
-          </div>
-        ))}
-      </section>
-    </>
+          <div className="catalog-grid">{data.map(renderCard)}</div>
+        </div>
+      ))}
+    </section>
   );
 }
-
 export default CarCatalog;

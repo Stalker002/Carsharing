@@ -9,6 +9,7 @@ import car2 from "../../svg/Popular_Car/Voyah_Free.png";
 import car3 from "../../svg/Popular_Car/BMW_X7.png";
 import car4 from "../../svg/Popular_Car/Tesla_S.png";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function PopularCar() {
   const [cars, setCars] = useState([
@@ -113,7 +114,9 @@ function PopularCar() {
                   <p className="old-price">{car.oldPrice.toFixed(1)}BYN</p>
                 )}
               </div>
-              <button className="rent-btn">Арендовать</button>
+              <Link to={`/car-catalog/${car.id}`}>
+                <button className="rent-btn">Арендовать</button>
+              </Link>
             </div>
           </div>
         ))}
