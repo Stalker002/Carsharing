@@ -1,5 +1,5 @@
 import "./Car_Catalog.css";
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import Like from "../../svg/Popular_Car/like.svg"
 import Liked from "../../svg/Popular_Car/liked.svg"
 import Fuel from "../../svg/Popular_Car/fuel.svg"
@@ -9,22 +9,15 @@ import car1 from "../../svg/Popular_Car/BMW_i8.png";
 import car2 from "../../svg/Popular_Car/Voyah_Free.png";
 import car3 from "../../svg/Popular_Car/BMW_X7.png";
 import car4 from "../../svg/Popular_Car/Tesla_S.png";
+import { Link } from "react-router-dom";
 
 function CarCatalog() {
-  const [pickup, setPickup] = useState("");
-    const [dropoff, setDropoff] = useState("");
-    const [pickupDate, setPickupDate] = useState("");
-    const [pickupTime, setPickupTime] = useState("");
-    const [dropoffDate, setDropoffDate] = useState("");
-    const [dropoffTime, setDropoffTime] = useState("");
 
-  const toggleFavorite = (id) => {
-    setCars((prev) =>
-      prev.map((car) =>
-        car.id === id ? { ...car, favorite: !car.favorite } : car
-      )
-    );
-  };
+  const toggleFavorite = useCallback((id) => {
+    setCars(prev => prev.map(car =>
+      car.id === id ? { ...car, favorite: !car.favorite } : car
+    ));
+  }, []);
 
   const [cars, setCars] = useState([
     {
