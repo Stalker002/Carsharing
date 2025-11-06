@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carsharing.Core", "Carshari
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carsharing.DataAccess", "Carsharing.DataAccess\Carsharing.DataAccess.csproj", "{06799092-3B5A-4FA0-8A1F-B7B48A7E6C41}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carsharing.Application", "Carsharing.Application\Carsharing.Application.csproj", "{EBD6782C-34F8-401B-B0F3-49F8CD0CB249}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{06799092-3B5A-4FA0-8A1F-B7B48A7E6C41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06799092-3B5A-4FA0-8A1F-B7B48A7E6C41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06799092-3B5A-4FA0-8A1F-B7B48A7E6C41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBD6782C-34F8-401B-B0F3-49F8CD0CB249}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBD6782C-34F8-401B-B0F3-49F8CD0CB249}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBD6782C-34F8-401B-B0F3-49F8CD0CB249}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBD6782C-34F8-401B-B0F3-49F8CD0CB249}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,6 +10,9 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
     {
         builder.HasKey(x => x.Id);
 
+        builder.Property(u => u.Id)
+            .IsRequired();
+
         builder.Property(u => u.RoleId)
             .IsRequired();
 

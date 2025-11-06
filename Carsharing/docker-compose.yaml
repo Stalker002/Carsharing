@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: Carsharing
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: qazwsxKMV
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ../Database/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d Carsharing"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  carsharing:
+    build:
+      context: .
+      dockerfile: Carsharing/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=Carsharing;Username=postgres;Password=qazwsxKMV
+    ports:
+      - "5078:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

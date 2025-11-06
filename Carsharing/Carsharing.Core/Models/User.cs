@@ -2,8 +2,9 @@
 
 public class User
 {
-    private const int MAX_LOGIN_LENGTH = 100;
-    private User(Guid id,int roleId, string login, string passwordHash)
+    private const int MaxLoginLength = 100;
+
+    private User(int id,int roleId, string login, string passwordHash)
     {
         Id = id;
         RoleId = roleId;
@@ -11,16 +12,19 @@ public class User
         PasswordHash = passwordHash;
     }
 
-    public Guid Id { get; }
-    public int RoleId { get; }
-    public string Login { get;}
-    public string PasswordHash { get; }
+    public int Id { get; }
 
-    public static (User User, string Eror) Create(Guid id, int roleId, string login, string passwordHash)
+    public int RoleId { get; }
+
+    public string Login { get;}
+
+    public string PasswordHash { get; }
+    
+    public static (User user, string error) Create(int id, int roleId, string login, string passwordHash)
     {
         var error = string.Empty;
 
-        if (string.IsNullOrEmpty(login) || login.Length > MAX_LOGIN_LENGTH)
+        if (string.IsNullOrEmpty(login) || login.Length > MaxLoginLength)
         {
             error = "Login non correct";
         }
