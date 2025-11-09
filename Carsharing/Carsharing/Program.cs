@@ -2,7 +2,6 @@ using Carsharing.Application.Services;
 using Carsharing.Core.Abstractions;
 using Carsharing.DataAccess;
 using Carsharing.DataAccess.Repositories;
-using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.EntityFrameworkCore;
 
 

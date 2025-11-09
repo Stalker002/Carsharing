@@ -1,7 +1,6 @@
 ﻿namespace Carsharing.Contracts;
 
-public record UsersResponce(
-    int Id,
+public record UsersRequest(
     int RoleId,
     string Login,
     string PasswordHash

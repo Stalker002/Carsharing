@@ -3,6 +3,8 @@
 public class User
 {
     private const int MaxLoginLength = 100;
+    private const int MaxPasswordLength = 256;
+    private const int MinPasswordLength = 6;
 
     private User(int id,int roleId, string login, string passwordHash)
     {
@@ -24,10 +26,22 @@ public class User
     {
         var error = string.Empty;
 
-        if (string.IsNullOrEmpty(login) || login.Length > MaxLoginLength)
+        if (roleId < 0)
+            error = "Role Id must be positive";
+
+        if (string.IsNullOrWhiteSpace(login))
+            error = "Login can't be empty";
+        if (login.Length > MaxLoginLength)
+            error = $"Login can't be longer than {MaxLoginLength} symbols";
+
+        if (string.IsNullOrWhiteSpace(passwordHash))
+            error = "Password can't be empty";
+        error = passwordHash.Length switch
         {
-            error = "Login non correct";
-        }
+            > MaxPasswordLength => $"Password can't be longer than {MaxPasswordLength} symbols",
+            < MinPasswordLength => $"Password can't be shoter than {MinPasswordLength} symbols",
+            _ => error
+        };
 
         var user = new User(id, roleId, login, passwordHash);
 

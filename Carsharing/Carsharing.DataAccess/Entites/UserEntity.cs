@@ -13,4 +13,6 @@ public class UserEntity
     [Column("user_password_hash")]
     public required string PasswordHash { get; set; }
 
+    public RoleEntity? Role { get; set; }
+
 }
