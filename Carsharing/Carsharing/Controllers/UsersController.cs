@@ -15,6 +15,24 @@ public class UsersController : ControllerBase
         _usersService = usersService;
     }
 
+    [HttpPost("login")]
+    public async Task<ActionResult<string>> Login([FromBody] LoginRequest loginRequest)
+    {
+        var token = await _usersService.Login(loginRequest.Login, loginRequest.Password);
+
+        Response.Cookies.Append("tasty", token);
+
+        return Ok(new { Message = "Logged in"});
+    }
+
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("tasty");
+
+        return Ok(new { Message = "Logged out" });
+    }
+
     [HttpGet]
     public async Task<ActionResult<List<UsersResponse>>> GetUsers()
     {

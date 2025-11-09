@@ -6,10 +6,29 @@ namespace Carsharing.Application.Services;
 public class UsersService : IUsersService
 {
     private readonly IUsersRepository _userRepository;
-
-    public UsersService(IUsersRepository userRepository)
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly IJwtProvider _jwtProvider;
+    public UsersService(IUsersRepository userRepository, IPasswordHasher passwordHasher, IJwtProvider jwtProvider)
     {
         _userRepository = userRepository;
+        _passwordHasher = passwordHasher;
+        _jwtProvider = jwtProvider;
+    }
+
+    public async Task<string> Login(string login, string password)
+    {
+        var user = await _userRepository.GetByLogin(login);
+
+        var result = _passwordHasher.Verify(password, user.PasswordHash);
+
+        if (!result)
+        {
+            throw new Exception("Failed to login");
+        }
+
+        var token = _jwtProvider.GenerateToken(user);
+
+        return token;
     }
 
     public async Task<List<User>> GetUsers()

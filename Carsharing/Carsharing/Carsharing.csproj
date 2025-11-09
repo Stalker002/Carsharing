@@ -21,15 +21,12 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.6" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.10" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Carsharing.Application\Carsharing.Application.csproj" />
     <ProjectReference Include="..\Carsharing.DataAccess\Carsharing.DataAccess.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="WebAPI\" />
   </ItemGroup>
 
 </Project>

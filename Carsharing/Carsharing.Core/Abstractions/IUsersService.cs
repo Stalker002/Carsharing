@@ -4,8 +4,9 @@ namespace Carsharing.Core.Abstractions;
 
 public interface IUsersService
 {
-    Task<int> CreateUser(User user);
-    Task<int> DeleteUser(int id);
+    Task<string> Login(string login, string password);
     Task<List<User>> GetUsers();
+    Task<int> CreateUser(User user);
     Task<int> UpdateUser(int id, int roleId, string login, string passwordHash);
+    Task<int> DeleteUser(int id);
 }

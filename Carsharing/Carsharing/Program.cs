@@ -1,7 +1,10 @@
+using Carsharing.Application.Extensions;
 using Carsharing.Application.Services;
 using Carsharing.Core.Abstractions;
 using Carsharing.DataAccess;
 using Carsharing.DataAccess.Repositories;
+using Carsharing.Extension;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -23,8 +26,14 @@ public class Program
             options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(CarsharingDbContext)));
         });
 
+        builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
+
         builder.Services.AddScoped<IUsersService, UsersService>();
         builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+        builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+        builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+
+        builder.Services.AddApiAuthentication(builder.Configuration);
 
         // controllers in future epta :)
 
@@ -36,9 +45,18 @@ public class Program
             app.UseSwaggerUI();
             app.MapOpenApi();
         }
+
+        app.UseCookiePolicy(new CookiePolicyOptions
+        {
+            MinimumSameSitePolicy = SameSiteMode.Strict,
+            HttpOnly = HttpOnlyPolicy.Always,
+            Secure = CookieSecurePolicy.Always
+        });
+
         app.UseHttpsRedirection();
 
-        // app.UseAuthorization();
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.MapControllers();
 

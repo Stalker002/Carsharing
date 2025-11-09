@@ -2,9 +2,9 @@
 
 public class User
 {
-    private const int MaxLoginLength = 100;
-    private const int MaxPasswordLength = 256;
-    private const int MinPasswordLength = 6;
+    public const int MaxLoginLength = 100;
+    public const int MaxPasswordLength = 256;
+    public const int MinPasswordLength = 6;
 
     private User(int id,int roleId, string login, string passwordHash)
     {
