@@ -9,9 +9,9 @@ public class Category
         Name = name;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public string Name { get; set; }
+    public string Name { get; }
 
     public static (Category category, string error) Create(int id, string name)
     {
