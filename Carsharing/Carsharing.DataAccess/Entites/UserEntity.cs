@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Carsharing.DataAccess.Entites;
+
 [Table("users")]
 public class UserEntity
 {
@@ -14,6 +15,4 @@ public class UserEntity
     public required string PasswordHash { get; set; }
 
     public ClientEntity? Client { get; set; }
-
-    public RoleEntity? Role { get; set; }
 }

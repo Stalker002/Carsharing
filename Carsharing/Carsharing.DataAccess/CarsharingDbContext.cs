@@ -11,6 +11,5 @@ public class CarsharingDbContext : DbContext
         
     }
 
-    public DbSet<RoleEntity> Roles { get; set; }
     public DbSet<UserEntity> Users { get; set; }
 }
