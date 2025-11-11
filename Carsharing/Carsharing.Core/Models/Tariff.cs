@@ -2,7 +2,7 @@
 
 public class Tariff
 {
-    private const int MaxNameLength = 100;
+    public const int MaxNameLength = 100;
     private Tariff(int id, string name, decimal pricePerMinute, decimal pricePerKm, 
         decimal pricePerDay)
     {

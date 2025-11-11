@@ -2,9 +2,9 @@
 
 public class Car
 {
-    private const int MaxLocationLength = 50;
-    private const int MinFuelLevelLength = 0;
-    private const int MaxFuelLevelLength = 200;
+    public const int MaxLocationLength = 50;
+    public const int MinFuelLevelLength = 0;
+    public const int MaxFuelLevelLength = 200;
     private Car(int id,  int statusId, int tariffId, int category, int specificationId, 
         string location, decimal fuelLevel)
     {
