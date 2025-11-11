@@ -10,4 +10,6 @@ public class CategoryEntity
 
     [Column("category_name")]
     public string Name { get; set; }
+
+    public ICollection<CarEntity> Cars { get; set; } = new List<CarEntity>();
 }

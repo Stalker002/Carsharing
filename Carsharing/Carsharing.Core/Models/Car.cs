@@ -17,19 +17,19 @@ public class Car
         FuelLevel = fuelLevel;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
           
-    public int StatusId { get; set; }
+    public int StatusId { get; }
            
-    public int TariffId { get; set; }
+    public int TariffId { get; }
           
-    public int CategoryId { get; set; }
+    public int CategoryId { get; }
           
-    public int SpecificationId { get; set; }
+    public int SpecificationId { get; }
 
-    public string Location { get; set; }
+    public string Location { get; }
 
-    public decimal FuelLevel { get; set; }
+    public decimal FuelLevel { get; }
 
     public static (Car car, string error) Create(int id,  int statusId, int tariffId,
         int categoryId, int specificationId, string location, decimal fuelLevel)

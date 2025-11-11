@@ -13,17 +13,17 @@ public class Booking
         EndTime = endTime;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public int StatusId { get; set; }
+    public int StatusId { get; }
 
-    public int CarId { get; set; }
+    public int CarId { get; }
 
-    public int ClientId { get; set; }
+    public int ClientId { get; }
 
-    public DateTime StartTime { get; set; }
+    public DateTime StartTime { get; }
 
-    public DateTime EndTime { get; set; }
+    public DateTime EndTime { get; }
 
     public static (Booking booking, string error) Create(int id, int statusId, int carId, int clientId,
         DateTime startTime, DateTime endTime)

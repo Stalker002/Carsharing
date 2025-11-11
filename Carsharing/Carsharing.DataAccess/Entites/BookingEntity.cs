@@ -17,4 +17,12 @@ public class BookingEntity
     public DateTime StartTime { get; set; }
     [Column("booking_end_time")]
     public DateTime EndTime { get; set; }
+
+    public TripEntity? Trip { get; set; }
+
+    public StatusEntity? Status { get; set; }
+    
+    public CarEntity? Car { get; set; }
+
+    public ClientEntity ? Client { get; set; }
 }

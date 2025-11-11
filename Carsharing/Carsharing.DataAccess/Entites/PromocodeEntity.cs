@@ -22,4 +22,8 @@ public class PromocodeEntity
 
     [Column("promocode_end_date")]
     public DateOnly EndDate { get; set; }
+
+    public ICollection<BillEntity> Bill { get; set; } = new List<BillEntity>();
+
+    public StatusEntity? Status { get; set; }
 }

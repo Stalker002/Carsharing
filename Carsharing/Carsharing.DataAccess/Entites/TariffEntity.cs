@@ -19,4 +19,6 @@ public class TariffEntity
 
     [Column("tariff_price_per_day")]
     public static decimal PricePerDay { get; set; }
+
+    public ICollection<CarEntity> Cars { get; set; } = new List<CarEntity>();
 }

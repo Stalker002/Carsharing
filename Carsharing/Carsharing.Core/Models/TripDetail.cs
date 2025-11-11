@@ -15,19 +15,19 @@ public class TripDetail
         Refueled = refueled;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public int TripId { get; set; }
+    public int TripId { get; }
 
-    public string StartLocation { get; set; }
+    public string StartLocation { get; }
 
-    public string EndLocation { get; set; }
+    public string EndLocation { get; }
 
-    public bool InsuranceActive { get; set; } = false;
+    public bool InsuranceActive { get; } = false;
 
-    public decimal FuelUsed { get; set; }
+    public decimal FuelUsed { get; }
 
-    public decimal Refueled { get; set; }
+    public decimal Refueled { get; }
 
     public static (TripDetail tripDetail, string error) Create(int id, int tripId, string startLocation,
         string endLocation, bool insuranceActive, decimal fuelUsed, decimal refueled)

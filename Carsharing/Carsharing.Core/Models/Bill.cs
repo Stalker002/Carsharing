@@ -14,13 +14,13 @@ public class Bill
         RemainingAmount = remainingAmount;
     }
 
-    public int Id { get; set; }
-    public int TripId { get; set; }
-    public int PromocodeId { get; set; }
-    public int StatusId { get; set; }
-    public DateTime IssueDate { get; set; }
-    public decimal Amount { get; set; }
-    public decimal RemainingAmount { get; set; }
+    public int Id { get; }
+    public int TripId { get; }
+    public int PromocodeId { get; }
+    public int StatusId { get; }    
+    public DateTime IssueDate { get; }
+    public decimal Amount { get; }
+    public decimal RemainingAmount { get; }
 
     public static (Bill bill, string error) Create(int id, int tripId, int promocodeId, int statusId,
         DateTime issueDate, decimal amount, decimal remainingAmount)

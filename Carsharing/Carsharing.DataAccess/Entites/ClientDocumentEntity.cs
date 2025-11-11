@@ -3,7 +3,7 @@
 namespace Carsharing.DataAccess.Entites;
 
 [Table("client_documents")]
-public class ClientDocument
+public class ClientDocumentEntity
 {
     [Column("document_id")]
     public int Id { get; set; }
@@ -25,4 +25,6 @@ public class ClientDocument
 
     [Column("document_file_path")]
     public string FilePath { get; set; }
+
+    public UserEntity User { get; set; }
 }

@@ -17,19 +17,19 @@ public class ClientDocument
         FilePath = filePath;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public int ClientId { get; set; }
+    public int ClientId { get; }
 
-    public string Type { get; set; } = string.Empty;
+    public string Type { get; } = string.Empty;
 
-    public string Number { get; set; } = string.Empty;
+    public string Number { get; } = string.Empty;
 
-    public DateOnly IssueDate { get; set; }
+    public DateOnly IssueDate { get; }
 
-    public DateOnly ExpiryDate { get; set; }
+    public DateOnly ExpiryDate { get; }
 
-    public string FilePath { get; set; } = string.Empty;
+    public string FilePath { get; } = string.Empty;
 
     public static (ClientDocument clientDocument, string error) Create(int id, int clientId, string type, string number,
         DateOnly issueDate, DateOnly expiryDate, string filePath)

@@ -11,15 +11,15 @@ public class Payment
         Date = date;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public int BillId { get; set; }
+    public int BillId { get; }
 
-    public decimal Sum { get; set; }
+    public decimal Sum { get; }
 
-    public string Method { get; set; }
+    public string Method { get; }
 
-    public DateTime Date { get; set; }
+    public DateTime Date { get; }
 
     public static (Payment payment, string error) Create(int id, int billId, decimal sum, string method, DateTime date)
     {

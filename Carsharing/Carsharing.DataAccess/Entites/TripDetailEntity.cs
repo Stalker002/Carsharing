@@ -25,4 +25,6 @@ public class TripDetailEntity
 
     [Column("trip_detail_refueled")]
     public decimal Refueled { get; set; }
+
+    public TripEntity? Trip { get; set; }
 }

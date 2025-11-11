@@ -12,17 +12,17 @@ public class Review
         Date = date;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public int ClientId { get; set; }
+    public int ClientId { get; }
 
-    public int CarId { get; set; }
+    public int CarId { get; }
 
-    public short Rating { get; set; }
+    public short Rating { get; }
 
-    public string Comment { get; set; }
+    public string Comment { get; }
 
-    public DateTime Date { get; set; }
+    public DateTime Date { get; }
 
     public static (Review review, string error) Create(int id, int clientId, int carId, short rating, string comment,
         DateTime date)

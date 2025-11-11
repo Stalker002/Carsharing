@@ -31,4 +31,8 @@ public class InsuranceEntity
 
     [Column("insurance_cost")]
     public decimal Cost { get; set; }
+
+    public CarEntity? Car { get; set; }
+
+    public StatusEntity? Status { get; set; }
 }

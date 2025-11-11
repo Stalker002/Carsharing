@@ -19,4 +19,6 @@ public class PaymentEntity
 
     [Column("payment_date")]
     public DateTime Date { get; set; }
+
+    public BillEntity? Bill { get; set; }
 }

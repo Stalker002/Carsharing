@@ -13,17 +13,17 @@ public class Promocode
         EndDate = endDate;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public int StatusId { get; set; }
+    public int StatusId { get; }
 
-    public string Code { get; set; }
+    public string Code { get; }
 
-    public decimal Discount { get; set; }
+    public decimal Discount { get; }
 
-    public DateOnly StartDate { get; set; }
+    public DateOnly StartDate { get; }
 
-    public DateOnly EndDate { get; set; }
+    public DateOnly EndDate { get; }
 
     public static (Promocode promocode, string error) Create(int id, int statusId, string code, decimal discount,
         DateOnly startDate, DateOnly endDate)

@@ -22,4 +22,6 @@ public class MaintenanceEntity
 
     [Column("maintenance_date")]
     public DateOnly Date { get; set; }
+
+    public CarEntity? Car { get; set; }
 }

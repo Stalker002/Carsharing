@@ -24,27 +24,27 @@ public class SpecificationCar
         FuelPerKm = fuelPerKm;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public string FuelType { get; set; }
+    public string FuelType { get; }
 
-    public string Brand { get; set; }
+    public string Brand { get; }
 
-    public string Model { get; set; }
+    public string Model { get; }
 
-    public string Transmission { get; set; }
+    public string Transmission { get; }
 
-    public int Year { get; set; }
+    public int Year { get; }
 
-    public string VinNumber { get; set; }
+    public string VinNumber { get; }
 
-    public string StateNumber { get; set; }
+    public string StateNumber { get; }
 
-    public int Mileage { get; set; }
+    public int Mileage { get; }
 
-    public decimal MaxFuel { get; set; }
+    public decimal MaxFuel { get; }
 
-    public decimal FuelPerKm { get; set; }
+    public decimal FuelPerKm { get; }
 
     public static (SpecificationCar specificationCar, string error) Create(int id, string fuelType, string brand,
         string model, string transmission, int year, string vinNumber, string stateNumber, int mileage,

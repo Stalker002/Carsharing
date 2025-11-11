@@ -15,21 +15,21 @@ public class Trip
         Distance = distance;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public int BookingId { get; set; }
+    public int BookingId { get; }
 
-    public int StatusId { get; set; }
+    public int StatusId { get; }
 
-    public string TariffType { get; set; }
+    public string TariffType { get; }
 
-    public DateTime StartTime { get; set; }
+    public DateTime StartTime { get; }
 
-    public DateTime EndTime { get; set; }
+    public DateTime EndTime { get; }
 
-    public decimal Duration { get; set; }
+    public decimal Duration { get; }
 
-    public decimal Distance { get; set; }
+    public decimal Distance { get; }
 
     public static (Trip trip, string error) Create(int id, int bookingId, int statusId, string tariffType,
         DateTime startTime, DateTime endTime, decimal duration, decimal distance)

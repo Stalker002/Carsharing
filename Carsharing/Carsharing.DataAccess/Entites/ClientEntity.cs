@@ -20,4 +20,10 @@ public class ClientEntity
 
     public UserEntity? User { get; set; }
 
+    public ICollection<ClientDocumentEntity> Documents { get; set; } = new List<ClientDocumentEntity>();
+
+    public ICollection<ReviewEntity> Reviews { get; set; } = new List<ReviewEntity>();
+
+    public ICollection<BookingEntity> Bookings { get; set; } = new List<BookingEntity>();
+
 }

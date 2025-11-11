@@ -19,17 +19,17 @@ public class Client
         Email = email;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public int UserId { get; set; }
+    public int UserId { get; }
 
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; } = string.Empty;
 
-    public string Surname { get; set; } = string.Empty;
+    public string Surname { get; } = string.Empty;
 
-    public string PhoneNumber { get; set; } = string.Empty;
+    public string PhoneNumber { get; } = string.Empty;
 
-    public string Email { get; set; } = string.Empty;
+    public string Email { get; } = string.Empty;
 
     public static (Client client, string error) Create(int id, int userId, string name, string surname,
         string phoneNumber, string email)

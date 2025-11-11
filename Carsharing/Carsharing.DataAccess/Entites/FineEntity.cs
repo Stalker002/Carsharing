@@ -22,4 +22,8 @@ public class FineEntity
 
     [Column("fine_date")]
     public DateOnly Date { get; set; }
+
+    public TripEntity? Trip { get; set; }
+
+    public StatusEntity? Status { get; set; }
 }

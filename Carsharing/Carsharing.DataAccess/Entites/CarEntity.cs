@@ -25,4 +25,20 @@ public class CarEntity
 
     [Column("car_fuel_level")]
     public decimal FuelLevel { get; set; }
+
+    public ICollection<ReviewEntity> Reviews { get; set; } = new List<ReviewEntity>();
+
+    public ICollection<MaintenanceEntity> Maintenance { get; set; } = new List<MaintenanceEntity>();
+
+    public ICollection<BookingEntity> Booking { get; set; } = new List<BookingEntity>();
+
+    public ICollection<InsuranceEntity> Insurance { get; set; } = new List<InsuranceEntity>();
+
+    public StatusEntity? Status { get; set; }
+
+    public TariffEntity? Tariff { get; set; }
+
+    public CategoryEntity? Category { get; set; }
+
+    public SpecificationCarEntity? SpecificationCar { get; set; }
 }

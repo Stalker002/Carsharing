@@ -12,17 +12,17 @@ public class Maintenance
         Date = date;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public int CarId { get; set; }
+    public int CarId { get; }
 
-    public string WorkType { get; set; }
+    public string WorkType { get; }
 
-    public string Description { get; set; } = string.Empty;
+    public string Description { get; } = string.Empty;
 
-    public decimal Cost { get; set; }
+    public decimal Cost { get; }
 
-    public DateOnly Date { get; set; }
+    public DateOnly Date { get; }
 
     public static (Maintenance maintenance, string error) Create(int id, int carId, string workType, string description,
         decimal cost, DateOnly date)

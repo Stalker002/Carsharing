@@ -18,23 +18,23 @@ public class Insurance
         Cost = cost;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public int CarId { get; set; }
+    public int CarId { get; }
 
-    public int StatusId { get; set; }
+    public int StatusId { get; }
 
-    public string Type { get; set; }
+    public string Type { get; }
 
-    public string Company { get; set; }
+    public string Company { get; }
 
-    public string PolicyNumber { get; set; }
+    public string PolicyNumber { get; }
 
-    public DateOnly StartDate { get; set; }
+    public DateOnly StartDate { get; }
 
-    public DateOnly EndDate { get; set; }
+    public DateOnly EndDate { get; }
 
-    public decimal Cost { get; set; }
+    public decimal Cost { get; }
 
     public static (Insurance insurance, string error) Create(int id, int carId, int statusId, string type,
         string company, string policyNumber, DateOnly startDate, DateOnly endDate, decimal cost)

@@ -37,4 +37,6 @@ public class SpecificationCarEntity
 
     [Column("specification_car_fuel_per_km")]
     public decimal FuelPerKm { get; set; }
+
+    public CarEntity? Car { get; set; }
 }

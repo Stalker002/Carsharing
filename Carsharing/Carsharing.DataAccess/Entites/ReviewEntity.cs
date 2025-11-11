@@ -22,4 +22,8 @@ public class ReviewEntity
 
     [Column("review_date")]
     public DateTime Date { get; set; }
+
+    public ClientEntity? Client { get; set; }
+
+    public CarEntity? Car { get; set; }
 }

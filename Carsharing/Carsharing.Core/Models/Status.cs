@@ -10,11 +10,11 @@ public class Status
         Description = description;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; } = string.Empty;
 
-    public string Description { get; set; } = string.Empty;
+    public string Description { get; } = string.Empty;
 
     public static (Status status, string error) Create(int id, string name, string description)
     {

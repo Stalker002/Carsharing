@@ -13,17 +13,17 @@ public class Fine
         Date = date;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public int TripId { get; set; }
+    public int TripId { get; }
 
-    public int StatusId { get; set; }
+    public int StatusId { get; }
 
-    public string Type { get; set; }
+    public string Type { get; }
 
-    public decimal Amount { get; set; }
+    public decimal Amount { get; }
 
-    public DateOnly Date { get; set; }
+    public DateOnly Date { get; }
 
     public static (Fine fine, string error) Create(int id, int tripId, int statusId, string type, decimal amount,
         DateOnly date)

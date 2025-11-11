@@ -25,4 +25,12 @@ public class BillEntity
 
     [Column("bill_remaining_amount")]
     public decimal RemainingAmount { get; set; }
+
+    public ICollection<PaymentEntity> PaymentEntities { get; set; } = new List<PaymentEntity>();
+    
+    public TripEntity? Trip { get; set; }
+
+    public PromocodeEntity? Promocode { get; set; }
+
+    public StatusEntity? Status { get; set; }
 }

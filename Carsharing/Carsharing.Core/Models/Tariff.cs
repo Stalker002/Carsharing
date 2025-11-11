@@ -13,15 +13,15 @@ public class Tariff
         PricePerDay = pricePerDay;
     }
 
-    public int Id { get; set; }
+    public int Id { get; }
 
-    public string Name { get; set; }
+    public string Name { get; }
 
-    public static decimal PricePerMinute { get; set; }
+    public decimal PricePerMinute { get; }
 
-    public static decimal PricePerKm { get; set; }
+    public decimal PricePerKm { get; }
 
-    public static decimal PricePerDay { get; set; }
+    public decimal PricePerDay { get; }
 
     public static (Tariff tariff, string error) Create(int id, string name, decimal pricePerMinute, decimal pricePerKm,
         decimal pricePerDay)
@@ -33,13 +33,13 @@ public class Tariff
         if (name.Length > MaxNameLength)
             error = $"Type can't be longer than {MaxNameLength} symbols";
 
-        if (PricePerMinute < 0)
+        if (pricePerMinute <= 0)
             error = "Price per minute must be positive";
 
-        if (PricePerKm < 0)
+        if (pricePerKm <= 0)
             error = "Price per km must be positive";
 
-        if (PricePerDay < 0)
+        if (pricePerDay <= 0)
             error = "Price per day must be positive";
 
         var tariff = new Tariff(id, name, pricePerMinute, pricePerKm, pricePerDay);
