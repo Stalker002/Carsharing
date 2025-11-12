@@ -16,5 +16,5 @@ public class ClientDocumentEntity
 
     public string FilePath { get; set; }
 
-    public UserEntity User { get; set; }
+    public ClientEntity? Client { get; set; }
 }

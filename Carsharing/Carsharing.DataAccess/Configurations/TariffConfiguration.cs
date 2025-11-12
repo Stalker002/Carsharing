@@ -16,6 +16,7 @@ public class TariffConfiguration : IEntityTypeConfiguration<TariffEntity>
         builder.Property(t => t.Name)
             .HasColumnName("tariff_id")
             .IsRequired()
+            .UseIdentityAlwaysColumn()
             .ValueGeneratedOnAdd();
 
         builder.Property(t => t.Name)
@@ -34,5 +35,10 @@ public class TariffConfiguration : IEntityTypeConfiguration<TariffEntity>
         builder.Property(t => t.PricePerDay)
             .HasColumnName("tariff_price_per_day")
             .IsRequired();
+
+        builder.HasMany(t => t.Cars)
+            .WithOne(c => c.Tariff);
+
+        //Чек на то что цена не ниже 0
     }
 }

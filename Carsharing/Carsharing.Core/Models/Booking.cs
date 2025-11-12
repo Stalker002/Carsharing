@@ -46,6 +46,9 @@ public class Booking
         if (endTime < DateTime.Now)
             error = "End booking time can not be in the past";
 
+        if (startTime > endTime)
+            error = "Start time can not exceed end time ";
+
         var booking = new Booking(id, statusId, carId, clientId, startTime, endTime);
         return (booking, error);
     }

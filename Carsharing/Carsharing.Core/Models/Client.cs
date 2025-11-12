@@ -4,10 +4,10 @@ namespace Carsharing.Core.Models;
 
 public class Client
 {
-    private const int MaxNameLength = 128;
-    private const int MaxSurnameLength = 128;
-    private const int MaxPhoneLength = 32;
-    private const int MaxEmailLength = 128;
+    public const int MaxNameLength = 128;
+    public const int MaxSurnameLength = 128;
+    public const int MaxPhoneLength = 32;
+    public const int MaxEmailLength = 128;
 
     private Client(int id, int userId, string name, string surname, string phoneNumber, string email)
     {

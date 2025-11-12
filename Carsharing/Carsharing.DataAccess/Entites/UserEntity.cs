@@ -12,5 +12,5 @@ public class UserEntity
 
     public ClientEntity? Client { get; set; }
 
-    public RoleEntity? Roles { get; set; }
+    public RoleEntity? Role { get; set; }
 }

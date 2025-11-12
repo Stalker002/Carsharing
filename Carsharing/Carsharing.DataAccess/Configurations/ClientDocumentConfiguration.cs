@@ -1,4 +1,5 @@
-﻿using Carsharing.DataAccess.Entites;
+﻿using Carsharing.Core.Models;
+using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,6 +15,7 @@ public class ClientDocumentConfiguration : IEntityTypeConfiguration<ClientDocume
 
         builder.Property(d => d.Id)
             .HasColumnName("document_id")
+            .UseIdentityAlwaysColumn()
             .ValueGeneratedOnAdd()
             .IsRequired();
 
@@ -23,10 +25,12 @@ public class ClientDocumentConfiguration : IEntityTypeConfiguration<ClientDocume
 
         builder.Property(d => d.Type)
             .HasColumnName("document_type")
+            .HasMaxLength(ClientDocument.MaxTypeLength)
             .IsRequired();
 
         builder.Property(d => d.Number)
             .HasColumnName("document_number")
+            .HasMaxLength(ClientDocument.MaxNumberLength)
             .IsRequired();
 
         builder.Property(d => d.IssueDate)
@@ -39,7 +43,12 @@ public class ClientDocumentConfiguration : IEntityTypeConfiguration<ClientDocume
 
         builder.Property(d => d.FilePath)
             .HasColumnName("document_file_path")
+            .HasMaxLength(ClientDocument.MaxFilePathLength)
             .IsRequired(false);
 
+        builder.HasOne(d => d.Client)
+            .WithMany(cl => cl.Documents)
+            .HasForeignKey(d => d.ClientId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

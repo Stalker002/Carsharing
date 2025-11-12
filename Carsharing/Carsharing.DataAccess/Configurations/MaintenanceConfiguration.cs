@@ -14,6 +14,7 @@ public class MaintenanceConfiguration : IEntityTypeConfiguration<MaintenanceEnti
 
         builder.Property(m => m.Id)
             .HasColumnName("maintenance_id")
+            .UseIdentityAlwaysColumn()
             .ValueGeneratedOnAdd()
             .IsRequired();
 
@@ -24,6 +25,7 @@ public class MaintenanceConfiguration : IEntityTypeConfiguration<MaintenanceEnti
         builder.Property(m => m.WorkType)
             .HasColumnName("maintenance_work_type")
             .IsRequired();
+        //Добавить enum
 
         builder.Property(m => m.Description)
             .HasColumnName("maintenance_description")
@@ -36,5 +38,12 @@ public class MaintenanceConfiguration : IEntityTypeConfiguration<MaintenanceEnti
         builder.Property(m => m.Date)
             .HasColumnName("maintenance_date")
             .IsRequired();
+
+        builder.HasOne(m => m.Car)
+            .WithMany(c => c.Maintenance)
+            .HasForeignKey(m => m.CarId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        //Добавить чек на положительную сумму
     }
 }

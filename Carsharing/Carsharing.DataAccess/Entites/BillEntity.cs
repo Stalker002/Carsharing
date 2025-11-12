@@ -16,7 +16,7 @@ public class BillEntity
 
     public decimal RemainingAmount { get; set; }
 
-    public ICollection<PaymentEntity> PaymentEntities { get; set; } = new List<PaymentEntity>();
+    public ICollection<PaymentEntity> Payments { get; set; } = new List<PaymentEntity>();
     
     public TripEntity? Trip { get; set; }
 

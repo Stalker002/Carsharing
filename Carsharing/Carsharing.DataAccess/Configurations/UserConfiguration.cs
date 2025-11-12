@@ -9,16 +9,18 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 {
     public void Configure(EntityTypeBuilder<UserEntity> builder)
     {
-        builder.ToTable("users")
+        builder.ToTable("users");
         
         builder.HasKey(x => x.Id);
 
         builder.Property(u => u.Id)
             .HasColumnName("user_id")
+            .UseIdentityAlwaysColumn()
             .ValueGeneratedOnAdd()
             .IsRequired();
 
         builder.Property(u => u.RoleId)
+            .HasDefaultValue(1)
             .HasColumnName("user_role_id")
             .IsRequired();
 
@@ -31,5 +33,13 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
             .HasColumnName("user_password_hash")
             .HasMaxLength(User.MaxPasswordLength)
             .IsRequired();
+
+        builder.HasOne(u => u.Role)
+            .WithMany(r => r.Users)
+            .HasForeignKey(u => u.RoleId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasIndex(u => u.Login)
+            .IsUnique();
     }
 }

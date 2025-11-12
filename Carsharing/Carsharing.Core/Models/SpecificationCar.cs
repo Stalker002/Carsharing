@@ -4,10 +4,11 @@ namespace Carsharing.Core.Models;
 
 public class SpecificationCar
 {
-    private const int MaxBrandLength = 50;
-    private const int MaxModelLength = 100;
-    private const int MaxVinNumberLength = 17;
-    private const int MaxStateNumberLength = 15;
+    public const int MaxBrandLength = 50;
+    public const int MaxModelLength = 100;
+    public const int MaxVinNumberLength = 17;
+    public const int MaxStateNumberLength = 15;
+
     private SpecificationCar(int id, string fuelType, string brand, string model, string transmission, int year,
         string vinNumber, string stateNumber, int mileage, decimal maxFuel, decimal fuelPerKm)
     {

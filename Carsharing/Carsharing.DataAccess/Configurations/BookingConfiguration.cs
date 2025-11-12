@@ -14,6 +14,7 @@ public class BookingConfiguration : IEntityTypeConfiguration<BookingEntity>
 
         builder.Property(b => b.Id)
             .HasColumnName("booking_id")
+            .UseIdentityAlwaysColumn()
             .IsRequired()
             .ValueGeneratedOnAdd();
 
@@ -31,11 +32,32 @@ public class BookingConfiguration : IEntityTypeConfiguration<BookingEntity>
 
         builder.Property(b => b.StartTime)
             .HasColumnName("booking_start_time")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .IsRequired(false)
             .ValueGeneratedOnAdd();
 
         builder.Property(b => b.EndTime)
             .HasColumnName("booking_end_time")
             .IsRequired(false);
+
+        builder.HasOne(b => b.Client)
+            .WithMany(cl => cl.Bookings)
+            .HasForeignKey(b => b.ClientId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(b => b.Car)
+            .WithMany(c => c.Booking)
+            .HasForeignKey(b => b.CarId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(b => b.Status)
+            .WithMany(st => st.Bookings)
+            .HasForeignKey(b => b.StatusId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(b => b.Trip)
+            .WithOne(tr => tr.Booking);
+
+        //Чек на время что не превышает конец
     }
 }

@@ -2,7 +2,7 @@
 
 public class Promocode
 {
-    private const int MaxCodeLength = 50;
+    public const int MaxCodeLength = 50;
     private Promocode(int id, int statusId, string code, decimal discount, DateOnly startDate, DateOnly endDate)
     {
         Id = id;
@@ -47,6 +47,9 @@ public class Promocode
 
         if (endDate < DateOnly.FromDateTime(DateTime.Now))
             error = "End promo code date can not be in the past";
+
+        if (startDate > endDate)
+            error = "Start date can not exceed end date ";
 
         var promocode = new Promocode(id, statusId, code, discount, startDate, endDate);
         return (promocode, error);

@@ -15,6 +15,7 @@ public class FineConfiguration : IEntityTypeConfiguration<FineEntity>
         builder.Property(f => f.Id)
             .HasColumnName("fine_id")
             .ValueGeneratedOnAdd()
+            .UseIdentityAlwaysColumn()
             .IsRequired();
 
         builder.Property(f => f.TripId)
@@ -33,5 +34,17 @@ public class FineConfiguration : IEntityTypeConfiguration<FineEntity>
             .HasColumnName("fine_date")
             .IsRequired()
             .HasDefaultValueSql("CURRENT_DATE");
+
+        builder.HasOne(f => f.Trip)
+            .WithMany(tr => tr.Fine)
+            .HasForeignKey(f => f.TripId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(f => f.Status)
+            .WithMany(s => s.Fines)
+            .HasForeignKey(f => f.StatusId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        //Чек на не <0 стоимость
     }
 }

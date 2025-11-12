@@ -2,7 +2,7 @@
 
 public class Status
 {
-    private const int MaxNameLength = 50;
+    public const int MaxNameLength = 50;
     private Status (int id, string name, string description)
     {
         Id = id;

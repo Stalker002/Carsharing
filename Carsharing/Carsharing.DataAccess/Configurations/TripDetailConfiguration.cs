@@ -14,6 +14,7 @@ public class TripDetailConfiguration : IEntityTypeConfiguration<TripDetailEntity
 
         builder.Property(d => d.Id)
             .HasColumnName("trip_detail_id")
+            .UseIdentityAlwaysColumn()
             .IsRequired()
             .ValueGeneratedOnAdd();
 
@@ -31,14 +32,27 @@ public class TripDetailConfiguration : IEntityTypeConfiguration<TripDetailEntity
 
         builder.Property(d => d.InsuranceActive)
             .HasColumnName("trip_detail_insurance_active")
+            .HasDefaultValue(false)
             .IsRequired(false);
 
         builder.Property(d => d.FuelUsed)
             .HasColumnName("trip_detail_fuel_used")
+            .HasDefaultValue(0)
             .IsRequired(false);
 
         builder.Property(d => d.Refueled)
             .HasColumnName("trip_detail_refueled")
+            .HasDefaultValue(0)
             .IsRequired(false);
+
+        builder.HasIndex(d => d.TripId)
+            .IsUnique();
+
+        builder.HasOne(d => d.Trip)
+            .WithOne(tr => tr.TripDetail)
+            .HasForeignKey<TripDetailEntity>(d => d.TripId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        //Чеки, что все числа >0
     }
 }

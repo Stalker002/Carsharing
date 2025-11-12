@@ -14,6 +14,7 @@ public class TripConfiguration : IEntityTypeConfiguration<TripEntity>
 
         builder.Property(tr => tr.Id)
             .HasColumnName("trip_id")
+            .UseIdentityAlwaysColumn()
             .IsRequired()
             .ValueGeneratedOnAdd();
 
@@ -31,6 +32,7 @@ public class TripConfiguration : IEntityTypeConfiguration<TripEntity>
 
         builder.Property(tr => tr.StartTime)
             .HasColumnName("trip_start_time")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .IsRequired();
 
         builder.Property(tr => tr.EndTime)
@@ -39,10 +41,37 @@ public class TripConfiguration : IEntityTypeConfiguration<TripEntity>
 
         builder.Property(tr => tr.Duration)
             .HasColumnName("trip_duration")
+            .HasDefaultValue(0)
             .IsRequired(false);
 
         builder.Property(tr => tr.Distance)
             .HasColumnName("trip_distance_km")
+            .HasDefaultValue(0)
             .IsRequired(false);
+
+        builder.HasIndex(tr => tr.BookingId)
+            .IsUnique();
+
+        builder.HasOne(tr => tr.TripDetail)
+            .WithOne(d => d.Trip);
+
+        builder.HasOne(tr => tr.Bill)
+            .WithOne(b => b.Trip);
+
+        builder.HasMany(tr => tr.Fine)
+            .WithOne(f => f.Trip);
+
+        builder.HasOne(tr => tr.Booking)
+            .WithOne(b => b.Trip)
+            .HasForeignKey<TripEntity>(tr => tr.BookingId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(tr => tr.Status)
+            .WithMany(s => s.Trip)
+            .HasForeignKey(tr => tr.StatusId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        //Чек на не негативные продолжительность и протяженность
+        //Чек на не startTime > endTime
     }
 }

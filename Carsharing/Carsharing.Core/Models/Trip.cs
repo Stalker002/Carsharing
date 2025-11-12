@@ -52,6 +52,9 @@ public class Trip
         if (endTime < DateTime.Now)
             error = "End trip date can not be in the past";
 
+        if (startTime > endTime)
+            error = "Start time can not exceed end time ";
+
         if (duration < 0)
             error = "Duration must be positive";
 

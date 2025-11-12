@@ -1,4 +1,5 @@
-﻿using Carsharing.DataAccess.Entites;
+﻿using Carsharing.Core.Models;
+using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,11 +15,16 @@ public class CategoryConfiguration : IEntityTypeConfiguration<CategoryEntity>
 
         builder.Property(c => c.Id)
             .ValueGeneratedOnAdd()
+            .UseIdentityAlwaysColumn()
             .HasColumnName("category_id")
             .IsRequired();
 
         builder.Property(c => c.Name)
             .HasColumnName("category_name")
+            .HasMaxLength(Category.MaxNameLength)
             .IsRequired();
+
+        builder.HasMany(c => c.Cars)
+            .WithOne(c => c.Category);
     }
 }

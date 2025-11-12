@@ -2,8 +2,8 @@
 
 public class Insurance
 {
-    private const int MaxCompanyLength = 100;
-    private const int MaxPolicyNumberLength = 100;
+    public const int MaxCompanyLength = 100;
+    public const int MaxPolicyNumberLength = 100;
     private Insurance(int id, int carId, int statusId, string type, string company, string policyNumber, 
         DateOnly startDate, DateOnly endDate, decimal cost)
     {
@@ -69,6 +69,9 @@ public class Insurance
 
         if (endDate < DateOnly.FromDateTime(DateTime.Now))
             error = "End insurance date can not be in the past";
+
+        if (startDate > endDate)
+            error = "Start time can not exceed end time ";
 
         if (cost < 0)
             error = "Cost must be positive";

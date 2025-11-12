@@ -2,9 +2,9 @@
 
 public class ClientDocument
 {
-    private const int MaxTypeLength = 50;
-    private const int MaxNumberLength = 50;
-    private const int MaxFilePathLength = 255;
+    public const int MaxTypeLength = 50;
+    public const int MaxNumberLength = 50;
+    public const int MaxFilePathLength = 255;
 
     private ClientDocument(int id, int clientId, string type, string number, DateOnly issueDate, DateOnly expiryDate, string filePath)
     {
@@ -54,6 +54,9 @@ public class ClientDocument
 
         if (expiryDate < DateOnly.FromDateTime(DateTime.Now))
             error = "The expiration date of the document cannot be in the past";
+
+        if (issueDate > expiryDate)
+            error = "Start time can not exceed end time ";
 
         if (string.IsNullOrWhiteSpace(filePath))
             error = "File path can't be empty";

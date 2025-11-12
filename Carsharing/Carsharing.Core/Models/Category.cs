@@ -2,7 +2,7 @@
 
 public class Category
 {
-    private const int MaxNameLength = 100;
+    public const int MaxNameLength = 100;
     private Category(int id, string name)
     {
         Id = id;
