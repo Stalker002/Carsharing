@@ -5,14 +5,14 @@ public class Car
     public const int MaxLocationLength = 50;
     public const int MinFuelLevelLength = 0;
     public const int MaxFuelLevelLength = 200;
-    private Car(int id,  int statusId, int tariffId, int category, int specificationId, 
+    private Car(int id,  int statusId, int tariffId, int categoryId, int specificationId, 
         string location, decimal fuelLevel)
     {
         Id = id;
         Location = location;
         StatusId = statusId;
         TariffId = tariffId;
-        CategoryId = category;
+        CategoryId = categoryId;
         SpecificationId = specificationId;
         FuelLevel = fuelLevel;
     }

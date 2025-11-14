@@ -21,6 +21,7 @@ public class UsersRepository : IUsersRepository
         var userEntity = await _context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Login == login) ?? throw new Exception();
+
         return User.Create(userEntity.Id, userEntity.RoleId, userEntity.Login, userEntity.PasswordHash).user;
     }
 
