@@ -2,8 +2,8 @@
 
 public class Bill
 {
-    private Bill(int id, int tripId, int promocodeId, int statusId, DateTime issueDate, decimal amount, 
-        decimal remainingAmount)
+    private Bill(int id, int tripId, int? promocodeId, int statusId, DateTime issueDate, decimal? amount, 
+        decimal? remainingAmount)
     {
         Id = id;
         TripId = tripId;
@@ -16,14 +16,14 @@ public class Bill
 
     public int Id { get; }
     public int TripId { get; }
-    public int PromocodeId { get; }
+    public int? PromocodeId { get; }
     public int StatusId { get; }    
     public DateTime IssueDate { get; }
-    public decimal Amount { get; }
-    public decimal RemainingAmount { get; }
+    public decimal? Amount { get; }
+    public decimal? RemainingAmount { get; }
 
-    public static (Bill bill, string error) Create(int id, int tripId, int promocodeId, int statusId,
-        DateTime issueDate, decimal amount, decimal remainingAmount)
+    public static (Bill bill, string error) Create(int id, int tripId, int? promocodeId, int statusId,
+        DateTime issueDate, decimal? amount, decimal? remainingAmount)
     {
         var error = string.Empty;
 

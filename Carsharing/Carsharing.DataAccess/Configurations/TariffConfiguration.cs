@@ -13,7 +13,7 @@ public class TariffConfiguration : IEntityTypeConfiguration<TariffEntity>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(t => t.Name)
+        builder.Property(t => t.Id)
             .HasColumnName("tariff_id")
             .IsRequired()
             .UseIdentityAlwaysColumn()

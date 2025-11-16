@@ -41,12 +41,12 @@ public class TripConfiguration : IEntityTypeConfiguration<TripEntity>
 
         builder.Property(tr => tr.Duration)
             .HasColumnName("trip_duration")
-            .HasDefaultValue(0)
+            .HasDefaultValue(0m)
             .IsRequired(false);
 
         builder.Property(tr => tr.Distance)
             .HasColumnName("trip_distance_km")
-            .HasDefaultValue(0)
+            .HasDefaultValue(0m)
             .IsRequired(false);
 
         builder.HasIndex(tr => tr.BookingId)

@@ -6,15 +6,15 @@ public class BillEntity
 
     public int TripId { get; set; }
 
-    public int PromocodeId { get; set; }
+    public int? PromocodeId { get; set; }
 
     public int StatusId { get; set; } = 1;
 
     public DateTime IssueDate { get; set; } = DateTime.UtcNow;
 
-    public decimal Amount { get; set; }
+    public decimal? Amount { get; set; }
 
-    public decimal RemainingAmount { get; set; }
+    public decimal? RemainingAmount { get; set; }
 
     public ICollection<PaymentEntity> Payments { get; set; } = new List<PaymentEntity>();
     

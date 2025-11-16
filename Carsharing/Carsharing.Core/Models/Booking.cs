@@ -3,7 +3,7 @@
 public class Booking
 {
     private Booking(int id, int statusId, int carId, int clientId, 
-        DateTime startTime, DateTime endTime)
+        DateTime? startTime, DateTime? endTime)
     {
         Id = id;
         StatusId = statusId;
@@ -21,12 +21,12 @@ public class Booking
 
     public int ClientId { get; }
 
-    public DateTime StartTime { get; }
+    public DateTime? StartTime { get; }
 
-    public DateTime EndTime { get; }
+    public DateTime? EndTime { get; }
 
     public static (Booking booking, string error) Create(int id, int statusId, int carId, int clientId,
-        DateTime startTime, DateTime endTime)
+        DateTime? startTime, DateTime? endTime)
     {
         var error = string.Empty;
 

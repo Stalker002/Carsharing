@@ -29,14 +29,46 @@ public class Program
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
         builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
+        builder.Services.AddScoped<IBillRepository, BillRepository>();
+        builder.Services.AddScoped<IBillsService, BillsService>();
+        builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+        builder.Services.AddScoped<IBookingsService, BookingsService>();
+        builder.Services.AddScoped<ICarRepository, CarRepository>();
+        builder.Services.AddScoped<ICarsService, CarsService>();
+        builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+        builder.Services.AddScoped<ICategoriesService, CategoriesService>();
+        builder.Services.AddScoped<IClientDocumentRepository, ClientDocumentRepository>();
+        builder.Services.AddScoped<IClientDocumentsService, ClientDocumentsService>();
+        builder.Services.AddScoped<IClientRepository, ClientRepository>();
+        builder.Services.AddScoped<IClientsService, ClientsService>();
+        builder.Services.AddScoped<IFineRepository, FineRepository>();
+        builder.Services.AddScoped<IFinesService, FinesService>();
+        builder.Services.AddScoped<IInsuranceRepository, InsuranceRepository>();
+        builder.Services.AddScoped<IInsurancesService, InsurancesService>();
+        builder.Services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
+        builder.Services.AddScoped<IMaintenancesService, MaintenancesService>();
+        builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+        builder.Services.AddScoped<IPaymentService, PaymentService>();
+        builder.Services.AddScoped<IPromocodeRepository, PromocodeRepository>();
+        builder.Services.AddScoped<IPromocodesService, PromocodesService>();
+        builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+        builder.Services.AddScoped<IReviewsService, ReviewsService>();
+        builder.Services.AddScoped<ISpecificationCarRepository, SpecificationCarRepository>();
+        builder.Services.AddScoped<ISpecificationsCarService, SpecificationsCarService>();
+        builder.Services.AddScoped<IStatusRepository, StatusRepository>();
+        builder.Services.AddScoped<IStatusesService, StatusesService>();
+        builder.Services.AddScoped<ITariffRepository, TariffRepository>();
+        builder.Services.AddScoped<ITariffsService, TariffsService>();
+        builder.Services.AddScoped<ITripDetailRepository, TripDetailRepository>();
+        builder.Services.AddScoped<ITripDetailsService, TripDetailsService>();
+        builder.Services.AddScoped<ITripRepository, TripRepository>();
+        builder.Services.AddScoped<ITripService, TripService>();
         builder.Services.AddScoped<IUsersService, UsersService>();
         builder.Services.AddScoped<IUsersRepository, UsersRepository>();
         builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 
         builder.Services.AddApiAuthentication(builder.Configuration);
-
-        // controllers in future epta :)
 
         var app = builder.Build();
 

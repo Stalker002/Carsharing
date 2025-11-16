@@ -33,16 +33,16 @@ public class TripDetailConfiguration : IEntityTypeConfiguration<TripDetailEntity
         builder.Property(d => d.InsuranceActive)
             .HasColumnName("trip_detail_insurance_active")
             .HasDefaultValue(false)
-            .IsRequired(false);
+            .IsRequired();
 
         builder.Property(d => d.FuelUsed)
             .HasColumnName("trip_detail_fuel_used")
-            .HasDefaultValue(0)
+            .HasDefaultValue(0m)
             .IsRequired(false);
 
         builder.Property(d => d.Refueled)
             .HasColumnName("trip_detail_refueled")
-            .HasDefaultValue(0)
+            .HasDefaultValue(0m)
             .IsRequired(false);
 
         builder.HasIndex(d => d.TripId)

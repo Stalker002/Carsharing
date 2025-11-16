@@ -3,7 +3,7 @@
 public class Trip
 {
     private Trip(int id, int bookingId, int statusId, string tariffType, DateTime startTime, 
-        DateTime endTime, decimal duration, decimal distance)
+        DateTime? endTime, decimal? duration, decimal? distance)
     {
         Id = id;
         BookingId = bookingId;
@@ -25,14 +25,14 @@ public class Trip
 
     public DateTime StartTime { get; }
 
-    public DateTime EndTime { get; }
+    public DateTime? EndTime { get; }
 
-    public decimal Duration { get; }
+    public decimal? Duration { get; }
 
-    public decimal Distance { get; }
+    public decimal? Distance { get; }
 
     public static (Trip trip, string error) Create(int id, int bookingId, int statusId, string tariffType,
-        DateTime startTime, DateTime endTime, decimal duration, decimal distance)
+        DateTime startTime, DateTime? endTime, decimal? duration, decimal? distance)
     {
         var error = string.Empty;
         var allowedTariffTypes = new[] { "per_minute", "per_km", "per_day" };

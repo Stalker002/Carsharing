@@ -9,7 +9,7 @@ public class InsuranceConfiguration : IEntityTypeConfiguration<InsuranceEntity>
 {
     public void Configure(EntityTypeBuilder<InsuranceEntity> builder)
     {
-        builder.ToTable("fines");
+        builder.ToTable("insurance");
 
         builder.HasKey(x => x.Id);
 

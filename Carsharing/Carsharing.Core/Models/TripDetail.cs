@@ -4,7 +4,7 @@ public class TripDetail
 {
     private const int MaxLocationLength = 50;
     private TripDetail(int id, int tripId, string startLocation, string endLocation, bool insuranceActive, 
-        decimal fuelUsed, decimal refueled)
+        decimal? fuelUsed, decimal? refueled)
     {
         Id = id;
         TripId = tripId;
@@ -25,12 +25,12 @@ public class TripDetail
 
     public bool InsuranceActive { get; } = false;
 
-    public decimal FuelUsed { get; }
+    public decimal? FuelUsed { get; }
 
-    public decimal Refueled { get; }
+    public decimal? Refueled { get; }
 
     public static (TripDetail tripDetail, string error) Create(int id, int tripId, string startLocation,
-        string endLocation, bool insuranceActive, decimal fuelUsed, decimal refueled)
+        string endLocation, bool insuranceActive, decimal? fuelUsed, decimal? refueled)
     {
         var error = string.Empty;
 

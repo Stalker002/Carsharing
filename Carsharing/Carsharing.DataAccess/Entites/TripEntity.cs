@@ -12,11 +12,11 @@ public class TripEntity
 
     public DateTime StartTime { get; set; }
 
-    public DateTime EndTime { get; set; }
+    public DateTime? EndTime { get; set; }
 
-    public decimal Duration { get; set; }
+    public decimal? Duration { get; set; }
 
-    public decimal Distance { get; set; }
+    public decimal? Distance { get; set; }
 
     public BillEntity? Bill { get; set; }
     

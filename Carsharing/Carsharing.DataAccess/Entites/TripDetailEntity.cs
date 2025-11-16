@@ -12,9 +12,9 @@ public class TripDetailEntity
 
     public bool InsuranceActive { get; set; } = false;
 
-    public decimal FuelUsed { get; set; }
+    public decimal? FuelUsed { get; set; }
 
-    public decimal Refueled { get; set; }
+    public decimal? Refueled { get; set; }
 
     public TripEntity? Trip { get; set; }
 }
