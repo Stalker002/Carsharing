@@ -1,10 +1,11 @@
-﻿using Carsharing.Core.Models;
+﻿using Carsharing.Core.Abstractions;
+using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.DataAccess.Repositories;
 
-public class CategoryRepository
+public class CategoryRepository : ICategoryRepository
 {
     private readonly CarsharingDbContext _context;
 

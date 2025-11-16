@@ -31,6 +31,11 @@ public class UsersService : IUsersService
         return token;
     }
 
+    public async Task<User> GetUserByLogin(string login)
+    {
+        return await _userRepository.GetByLogin(login);
+    }
+
     public async Task<List<User>> GetUsers()
     {
         return await _userRepository.GetUser();

@@ -1,14 +1,17 @@
 ﻿using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Carsharing.DataAccess;
 
 public class CarsharingDbContext : DbContext
 {
-    public CarsharingDbContext(DbContextOptions<CarsharingDbContext> options)
-    : base(options)
+    private readonly IConfiguration _configuration;
+
+    public CarsharingDbContext(IConfiguration configuration)
     {
-        
+        _configuration = configuration;
     }
 
     public DbSet<BillEntity> Bill { get; set; }
@@ -30,4 +33,9 @@ public class CarsharingDbContext : DbContext
     public DbSet<TripDetailEntity> TripDetail { get; set; }
     public DbSet<TripEntity> Trip { get; set; }
     public DbSet<UserEntity> Users { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseNpgsql(_configuration.GetConnectionString(nameof(CarsharingDbContext)));
+    }
 }

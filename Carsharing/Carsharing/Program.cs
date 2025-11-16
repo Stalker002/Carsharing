@@ -27,11 +27,12 @@ public class Program
         });
 
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
+        builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
         builder.Services.AddScoped<IUsersService, UsersService>();
         builder.Services.AddScoped<IUsersRepository, UsersRepository>();
         builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-        builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+
 
         builder.Services.AddApiAuthentication(builder.Configuration);
 

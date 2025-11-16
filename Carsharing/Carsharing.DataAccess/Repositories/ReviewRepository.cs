@@ -1,14 +1,15 @@
-﻿using Carsharing.Core.Models;
+﻿using Carsharing.Core.Abstractions;
+using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.DataAccess.Repositories;
 
-public class ReviewsRepository
+public class ReviewRepository : IReviewRepository
 {
     private readonly CarsharingDbContext _context;
 
-    public ReviewsRepository(CarsharingDbContext context)
+    public ReviewRepository(CarsharingDbContext context)
     {
         _context = context;
     }
