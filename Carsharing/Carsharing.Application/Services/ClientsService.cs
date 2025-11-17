@@ -22,9 +22,9 @@ public class ClientsService : IClientsService
         return await _clientRepository.Create(client);
     }
 
-    public async Task<int> UpdateClient(int id, string? name, string? surname, string? phoneNumber, string? email)
+    public async Task<int> UpdateClient(int id, int userId, string? name, string? surname, string? phoneNumber, string? email)
     {
-        return await _clientRepository.Update(id, name, surname, phoneNumber, email);
+        return await _clientRepository.Update(id, userId, name, surname, phoneNumber, email);
     }
 
     public async Task<int> DeleteClient(int id)
