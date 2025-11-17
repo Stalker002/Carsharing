@@ -3,6 +3,7 @@
 public class Promocode
 {
     public const int MaxCodeLength = 50;
+
     private Promocode(int id, int statusId, string code, decimal discount, DateOnly startDate, DateOnly endDate)
     {
         Id = id;

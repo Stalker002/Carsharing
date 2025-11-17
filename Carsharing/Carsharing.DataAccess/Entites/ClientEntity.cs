@@ -16,5 +16,4 @@ public class ClientEntity
     public ICollection<ReviewEntity> Reviews { get; set; } = new List<ReviewEntity>();
 
     public ICollection<BookingEntity> Bookings { get; set; } = new List<BookingEntity>();
-
 }

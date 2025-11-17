@@ -2,7 +2,7 @@
 
 public class Fine
 {
-    private Fine(int id, int tripId, int statusId, string type, decimal amount, 
+    private Fine(int id, int tripId, int statusId, string type, decimal amount,
         DateOnly date)
     {
         Id = id;
@@ -29,8 +29,11 @@ public class Fine
         DateOnly date)
     {
         var error = string.Empty;
-        var allowedTypes = new[] { "Превышение скорости", "Нарушение правил парковки", "Несчастный случай", 
-            "Позднее возвращение", "Курение в машине", "Другое" };
+        var allowedTypes = new[]
+        {
+            "Превышение скорости", "Нарушение правил парковки", "Несчастный случай",
+            "Позднее возвращение", "Курение в машине", "Другое"
+        };
 
         if (tripId < 0)
             error = "Trip Id must be positive";

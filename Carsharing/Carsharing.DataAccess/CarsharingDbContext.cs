@@ -1,7 +1,7 @@
 ﻿using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace Carsharing.DataAccess;
 
@@ -36,7 +36,15 @@ public class CarsharingDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(_configuration.GetConnectionString(nameof(CarsharingDbContext)));
+        optionsBuilder
+            .UseNpgsql(_configuration.GetConnectionString(nameof(CarsharingDbContext)))
+            .UseLoggerFactory(CreateLoggerFactory())
+            .EnableSensitiveDataLogging();
+    }
+
+    private static ILoggerFactory CreateLoggerFactory()
+    {
+        return LoggerFactory.Create(builder => { builder.AddConsole(); });
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

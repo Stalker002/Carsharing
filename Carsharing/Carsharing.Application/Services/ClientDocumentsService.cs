@@ -32,5 +32,4 @@ public class ClientDocumentsService : IClientDocumentsService
     {
         return await _clientDocumentRepository.Delete(id);
     }
-
 }

@@ -38,7 +38,7 @@ public class CategoryRepository : ICategoryRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new Exception($"Category create error: {error}");
 
-        var categoryEntity = new CategoryEntity()
+        var categoryEntity = new CategoryEntity
         {
             Id = category.Id,
             Name = category.Name

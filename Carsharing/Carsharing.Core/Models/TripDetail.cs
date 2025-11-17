@@ -3,7 +3,8 @@
 public class TripDetail
 {
     private const int MaxLocationLength = 50;
-    private TripDetail(int id, int tripId, string startLocation, string endLocation, bool insuranceActive, 
+
+    private TripDetail(int id, int tripId, string startLocation, string endLocation, bool insuranceActive,
         decimal? fuelUsed, decimal? refueled)
     {
         Id = id;
@@ -23,7 +24,7 @@ public class TripDetail
 
     public string EndLocation { get; }
 
-    public bool InsuranceActive { get; } = false;
+    public bool InsuranceActive { get; }
 
     public decimal? FuelUsed { get; }
 
@@ -55,6 +56,5 @@ public class TripDetail
 
         var tripDetail = new TripDetail(id, tripId, startLocation, endLocation, insuranceActive, fuelUsed, refueled);
         return (tripDetail, error);
-
     }
 }

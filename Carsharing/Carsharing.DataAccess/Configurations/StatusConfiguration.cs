@@ -48,6 +48,5 @@ public class StatusConfiguration : IEntityTypeConfiguration<StatusEntity>
 
         builder.HasMany(s => s.Promocodes)
             .WithOne(p => p.Status);
-
     }
 }

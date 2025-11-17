@@ -43,10 +43,10 @@ public class FineRepository : IFineRepository
             fine.Amount,
             fine.Date);
 
-        if(!string.IsNullOrWhiteSpace(error))
+        if (!string.IsNullOrWhiteSpace(error))
             throw new Exception($"Fine create exception: {error}");
 
-        var fineEntity = new FineEntity()
+        var fineEntity = new FineEntity
         {
             Id = fine.Id,
             TripId = fine.TripId,

@@ -5,8 +5,6 @@ using Carsharing.DataAccess;
 using Carsharing.DataAccess.Repositories;
 using Carsharing.Extension;
 using Microsoft.AspNetCore.CookiePolicy;
-using Microsoft.EntityFrameworkCore;
-
 
 namespace Carsharing;
 
@@ -21,10 +19,7 @@ public class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddOpenApi();
 
-        builder.Services.AddDbContext<CarsharingDbContext>(options =>
-        {
-            options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(CarsharingDbContext)));
-        });
+        builder.Services.AddDbContext<CarsharingDbContext>();
 
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
         builder.Services.AddScoped<IJwtProvider, JwtProvider>();
@@ -71,6 +66,12 @@ public class Program
         builder.Services.AddApiAuthentication(builder.Configuration);
 
         var app = builder.Build();
+
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<CarsharingDbContext>();
+            dbContext.Database.EnsureCreated();
+        }
 
         if (app.Environment.IsDevelopment())
         {

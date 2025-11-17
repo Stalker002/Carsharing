@@ -52,7 +52,7 @@ public class InsuranceRepository : IInsuranceRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new Exception($"Insurance create exception: {error}");
 
-        var insuranceEntity = new InsuranceEntity()
+        var insuranceEntity = new InsuranceEntity
         {
             Id = insurance.Id,
             CarId = insurance.CarId,
@@ -82,7 +82,7 @@ public class InsuranceRepository : IInsuranceRepository
 
         if (statusId.HasValue)
             insurance.StatusId = statusId.Value;
-        
+
         if (!string.IsNullOrWhiteSpace(type))
             insurance.Type = type;
 

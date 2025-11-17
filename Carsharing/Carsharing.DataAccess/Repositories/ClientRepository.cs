@@ -20,15 +20,15 @@ public class ClientRepository : IClientRepository
             .AsNoTracking()
             .ToListAsync();
 
-        var  clients = clientEntities
+        var clients = clientEntities
             .Select(c => Client.Create(
-                c.Id, 
-                c.UserId, 
-                c.Name, 
-                c.Surname, 
-                c.PhoneNumber, 
+                c.Id,
+                c.UserId,
+                c.Name,
+                c.Surname,
+                c.PhoneNumber,
                 c.Email
-                ).client)
+            ).client)
             .ToList();
 
         return clients;

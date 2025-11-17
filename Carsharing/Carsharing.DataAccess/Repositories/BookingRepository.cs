@@ -66,7 +66,7 @@ public class BookingRepository : IBookingRepository
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception booking: {error}");
 
-        var bookingEntities = new BookingEntity()
+        var bookingEntities = new BookingEntity
         {
             StatusId = booking.StatusId,
             CarId = booking.CarId,
@@ -93,7 +93,7 @@ public class BookingRepository : IBookingRepository
         if (carId.HasValue)
             booking.CarId = carId.Value;
 
-        if(clientId.HasValue)
+        if (clientId.HasValue)
             booking.ClientId = clientId.Value;
 
         if (startTime.HasValue)

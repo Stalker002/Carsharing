@@ -48,7 +48,7 @@ public class TripDetailRepository : ITripDetailRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new Exception($"Trip detail create exception: {error}");
 
-        var tripDetailEntity = new TripDetailEntity()
+        var tripDetailEntity = new TripDetailEntity
         {
             Id = tripDetail.Id,
             TripId = tripDetail.TripId,

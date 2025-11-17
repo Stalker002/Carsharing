@@ -48,7 +48,7 @@ public class CarRepository : ICarRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new ArgumentException($"Create exception car: {error}");
 
-        var carEntity = new CarEntity()
+        var carEntity = new CarEntity
         {
             Id = car.Id,
             StatusId = car.StatusId,

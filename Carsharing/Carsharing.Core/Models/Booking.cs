@@ -2,7 +2,7 @@
 
 public class Booking
 {
-    private Booking(int id, int statusId, int carId, int clientId, 
+    private Booking(int id, int statusId, int carId, int clientId,
         DateTime? startTime, DateTime? endTime)
     {
         Id = id;

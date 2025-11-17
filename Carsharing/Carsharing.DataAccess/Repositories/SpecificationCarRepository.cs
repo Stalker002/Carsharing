@@ -56,7 +56,7 @@ public class SpecificationCarRepository : ISpecificationCarRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new ArgumentException($"Specification car create error: {error}");
 
-        var specificationEntity = new SpecificationCarEntity()
+        var specificationEntity = new SpecificationCarEntity
         {
             Id = specificationCar.Id,
             FuelType = specificationCar.FuelType,

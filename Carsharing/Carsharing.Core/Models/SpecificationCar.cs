@@ -74,7 +74,7 @@ public class SpecificationCar
             error = "Transmission can't be empty";
         if (!allowedTransmissionType.Contains(transmission))
             error = $"Invalid transmission. Allowed: {string.Join(", ", allowedTransmissionType)}";
-        
+
         if (year < 1900)
             error = "We don't drive our clients around in old junk cars.";
         if (year > Convert.ToInt32(DateOnly.FromDateTime(DateTime.Now)) + 1)
@@ -91,7 +91,8 @@ public class SpecificationCar
             error = "State Number can't be empty";
         if (stateNumber.Length > MaxStateNumberLength)
             error = $"State number name can't be longer than {MaxStateNumberLength} symbols";
-        if (!Regex.IsMatch(stateNumber, @"^(\d{4}\s?[ABEIKMHOPCTX]{2}-[1-7]|[ABEIKMHOPCTX]{2}\s?\d{4}-[1-7]|(TA|TT|TY)\d{4}|E\d{3}[ABEIKMHOPCTX]{2}[1-7])$"))
+        if (!Regex.IsMatch(stateNumber,
+                @"^(\d{4}\s?[ABEIKMHOPCTX]{2}-[1-7]|[ABEIKMHOPCTX]{2}\s?\d{4}-[1-7]|(TA|TT|TY)\d{4}|E\d{3}[ABEIKMHOPCTX]{2}[1-7])$"))
             error = "State number in invalid format";
 
         if (mileage < 0)
@@ -102,7 +103,7 @@ public class SpecificationCar
 
         if (fuelPerKm < 0)
             error = "Fuel per km must be positive";
-        
+
         var specificationCar = new SpecificationCar(id, fuelType, brand, model, transmission, year, vinNumber,
             stateNumber, mileage, maxFuel, fuelPerKm);
 

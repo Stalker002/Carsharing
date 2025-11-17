@@ -28,14 +28,15 @@ public class Maintenance
         decimal cost, DateOnly date)
     {
         var error = string.Empty;
-        var allowedWorkTypes = new[] { "Замена масла", "Замена шин", "Обслуживание тормозов", "Осмотр", "Ремонт", "Чистка" };
-       
+        var allowedWorkTypes = new[]
+            { "Замена масла", "Замена шин", "Обслуживание тормозов", "Осмотр", "Ремонт", "Чистка" };
+
         if (carId < 0)
             error = "Car Id must be positive";
 
         if (!allowedWorkTypes.Contains(workType))
             error = $"Invalid work type. Allowed: {string.Join(", ", allowedWorkTypes)}";
-        
+
         if (cost < 0)
             error = "Cost must be positive";
 

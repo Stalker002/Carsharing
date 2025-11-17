@@ -4,5 +4,4 @@ public record UsersRequest(
     int RoleId,
     string Login,
     string PasswordHash
-    );
-
+);

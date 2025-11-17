@@ -50,7 +50,7 @@ public class TripRepository : ITripRepository
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception trip: {error}");
 
-        var tripEntity = new TripEntity()
+        var tripEntity = new TripEntity
         {
             Id = trip.Id,
             BookingId = trip.BookingId,

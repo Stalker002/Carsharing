@@ -1,7 +1,7 @@
-﻿using Carsharing.Application.Extensions;
+﻿using System.Text;
+using Carsharing.Application.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace Carsharing.Extension;
 

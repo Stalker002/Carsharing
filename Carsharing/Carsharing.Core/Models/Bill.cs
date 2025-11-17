@@ -2,7 +2,7 @@
 
 public class Bill
 {
-    private Bill(int id, int tripId, int? promocodeId, int statusId, DateTime issueDate, decimal? amount, 
+    private Bill(int id, int tripId, int? promocodeId, int statusId, DateTime issueDate, decimal? amount,
         decimal? remainingAmount)
     {
         Id = id;
@@ -17,7 +17,7 @@ public class Bill
     public int Id { get; }
     public int TripId { get; }
     public int? PromocodeId { get; }
-    public int StatusId { get; }    
+    public int StatusId { get; }
     public DateTime IssueDate { get; }
     public decimal? Amount { get; }
     public decimal? RemainingAmount { get; }

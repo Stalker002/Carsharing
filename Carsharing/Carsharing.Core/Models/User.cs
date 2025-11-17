@@ -6,7 +6,7 @@ public class User
     public const int MaxPasswordLength = 256;
     public const int MinPasswordLength = 6;
 
-    private User(int id,int roleId, string login, string passwordHash)
+    private User(int id, int roleId, string login, string passwordHash)
     {
         Id = id;
         RoleId = roleId;
@@ -18,10 +18,10 @@ public class User
 
     public int RoleId { get; }
 
-    public string Login { get;}
+    public string Login { get; }
 
     public string PasswordHash { get; }
-    
+
     public static (User user, string error) Create(int id, int roleId, string login, string passwordHash)
     {
         var error = string.Empty;

@@ -50,7 +50,7 @@ public class BillConfiguration : IEntityTypeConfiguration<BillEntity>
             .IsUnique();
 
         builder.HasMany(b => b.Payments)
-                    .WithOne(p => p.Bill);
+            .WithOne(p => p.Bill);
 
         builder.HasOne(b => b.Trip)
             .WithOne(tr => tr.Bill)

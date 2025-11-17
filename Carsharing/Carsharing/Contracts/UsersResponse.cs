@@ -5,5 +5,4 @@ public record UsersResponse(
     int RoleId,
     string Login,
     string PasswordHash
-    );
-
+);

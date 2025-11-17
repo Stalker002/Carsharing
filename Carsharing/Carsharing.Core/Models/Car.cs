@@ -5,7 +5,8 @@ public class Car
     public const int MaxLocationLength = 50;
     public const int MinFuelLevelLength = 0;
     public const int MaxFuelLevelLength = 200;
-    private Car(int id,  int statusId, int tariffId, int categoryId, int specificationId, 
+
+    private Car(int id, int statusId, int tariffId, int categoryId, int specificationId,
         string location, decimal fuelLevel)
     {
         Id = id;
@@ -18,20 +19,20 @@ public class Car
     }
 
     public int Id { get; }
-          
+
     public int StatusId { get; }
-           
+
     public int TariffId { get; }
-          
+
     public int CategoryId { get; }
-          
+
     public int SpecificationId { get; }
 
     public string Location { get; }
 
     public decimal FuelLevel { get; }
 
-    public static (Car car, string error) Create(int id,  int statusId, int tariffId,
+    public static (Car car, string error) Create(int id, int statusId, int tariffId,
         int categoryId, int specificationId, string location, decimal fuelLevel)
     {
         var error = string.Empty;

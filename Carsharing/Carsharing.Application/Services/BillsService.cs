@@ -26,7 +26,6 @@ public class BillsService : IBillsService
         decimal? amount, decimal? remainingAmount)
     {
         return await _billRepository.Update(id, tripId, promocodeId, statusId, issueDate, amount, remainingAmount);
-
     }
 
     public async Task<int> DeleteBill(int id)

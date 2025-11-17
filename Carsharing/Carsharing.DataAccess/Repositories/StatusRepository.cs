@@ -40,7 +40,7 @@ public class StatusRepository : IStatusRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new ArgumentException($"Status create error: {error}");
 
-        var statusEntity = new StatusEntity()
+        var statusEntity = new StatusEntity
         {
             Id = status.Id,
             Name = status.Name,

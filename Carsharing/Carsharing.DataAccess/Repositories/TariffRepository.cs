@@ -44,7 +44,7 @@ public class TariffRepository : ITariffRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new ArgumentException($"Tariff create exception error: {error}");
 
-        var tariffEntity = new TariffEntity()
+        var tariffEntity = new TariffEntity
         {
             Id = tariff.Id,
             Name = tariff.Name,
@@ -89,6 +89,5 @@ public class TariffRepository : ITariffRepository
             .ExecuteDeleteAsync();
 
         return id;
-
     }
 }

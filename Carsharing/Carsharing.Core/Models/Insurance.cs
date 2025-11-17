@@ -4,7 +4,8 @@ public class Insurance
 {
     public const int MaxCompanyLength = 100;
     public const int MaxPolicyNumberLength = 100;
-    private Insurance(int id, int carId, int statusId, string type, string company, string policyNumber, 
+
+    private Insurance(int id, int carId, int statusId, string type, string company, string policyNumber,
         DateOnly startDate, DateOnly endDate, decimal cost)
     {
         Id = id;
@@ -40,7 +41,7 @@ public class Insurance
         string company, string policyNumber, DateOnly startDate, DateOnly endDate, decimal cost)
     {
         var error = string.Empty;
-        var allowedTypes = new[] { "ОСАГО", "КАСКО"};
+        var allowedTypes = new[] { "ОСАГО", "КАСКО" };
 
         if (carId < 0)
             error = "Car Id must be positive";

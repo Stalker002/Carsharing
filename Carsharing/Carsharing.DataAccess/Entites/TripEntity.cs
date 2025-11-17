@@ -19,11 +19,11 @@ public class TripEntity
     public decimal? Distance { get; set; }
 
     public BillEntity? Bill { get; set; }
-    
+
     public TripDetailEntity? TripDetail { get; set; }
 
     public ICollection<FineEntity> Fine { get; set; } = new List<FineEntity>();
-    
+
     public BookingEntity? Booking { get; set; }
 
     public StatusEntity? Status { get; set; }

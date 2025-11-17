@@ -3,7 +3,8 @@
 public class Status
 {
     public const int MaxNameLength = 50;
-    private Status (int id, string name, string description)
+
+    private Status(int id, string name, string description)
     {
         Id = id;
         Name = name;
@@ -25,7 +26,7 @@ public class Status
         if (name.Length > MaxNameLength)
             error = $"Status name can't be longer than {MaxNameLength} symbols";
 
-        var status = new Status (id, name, description);
+        var status = new Status(id, name, description);
         return (status, error);
     }
 }

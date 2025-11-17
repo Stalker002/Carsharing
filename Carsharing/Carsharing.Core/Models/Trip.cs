@@ -2,7 +2,7 @@
 
 public class Trip
 {
-    private Trip(int id, int bookingId, int statusId, string tariffType, DateTime startTime, 
+    private Trip(int id, int bookingId, int statusId, string tariffType, DateTime startTime,
         DateTime? endTime, decimal? duration, decimal? distance)
     {
         Id = id;
@@ -64,5 +64,4 @@ public class Trip
         var trip = new Trip(id, bookingId, statusId, tariffType, startTime, endTime, duration, distance);
         return (trip, error);
     }
-
 }

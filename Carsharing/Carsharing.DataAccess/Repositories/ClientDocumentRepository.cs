@@ -22,11 +22,11 @@ public class ClientDocumentRepository : IClientDocumentRepository
 
         var documents = clientDocumentEntities
             .Select(c => ClientDocument.Create(
-                c.Id, 
-                c.ClientId, 
-                c.Type, 
-                c.Number, 
-                c.IssueDate, 
+                c.Id,
+                c.ClientId,
+                c.Type,
+                c.Number,
+                c.IssueDate,
                 c.ExpiryDate,
                 c.FilePath).clientDocument)
             .ToList();
@@ -69,7 +69,7 @@ public class ClientDocumentRepository : IClientDocumentRepository
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception document Client: {error}");
 
-        var clientDocumentEntities = new ClientDocumentEntity()
+        var clientDocumentEntities = new ClientDocumentEntity
         {
             ClientId = document.ClientId,
             Type = document.Type,

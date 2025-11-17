@@ -14,8 +14,8 @@ public class BookingEntity
     public TripEntity? Trip { get; set; }
 
     public StatusEntity? Status { get; set; }
-    
+
     public CarEntity? Car { get; set; }
 
-    public ClientEntity ? Client { get; set; }
+    public ClientEntity? Client { get; set; }
 }

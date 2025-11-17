@@ -48,7 +48,7 @@ public class BillRepository : IBillRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new Exception($"Bill create exception: {error}");
 
-        var billEntity = new BillEntity()
+        var billEntity = new BillEntity
         {
             Id = bill.Id,
             TripId = bill.TripId,

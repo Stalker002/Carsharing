@@ -3,7 +3,8 @@
 public class Tariff
 {
     public const int MaxNameLength = 100;
-    private Tariff(int id, string name, decimal pricePerMinute, decimal pricePerKm, 
+
+    private Tariff(int id, string name, decimal pricePerMinute, decimal pricePerKm,
         decimal pricePerDay)
     {
         Id = id;

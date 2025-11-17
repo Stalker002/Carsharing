@@ -46,7 +46,7 @@ public class PromocodeRepository : IPromocodeRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new Exception($"Promocode create exception: {error}");
 
-        var promocodeEntity = new PromocodeEntity()
+        var promocodeEntity = new PromocodeEntity
         {
             Id = promocode.Id,
             StatusId = promocode.StatusId,

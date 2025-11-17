@@ -46,7 +46,7 @@ public class MaintenanceRepository : IMaintenanceRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new ArgumentException($"Maintenance create error: {error}");
 
-        var maintenanceEntity = new MaintenanceEntity()
+        var maintenanceEntity = new MaintenanceEntity
         {
             Id = maintenance.Id,
             CarId = maintenance.CarId,

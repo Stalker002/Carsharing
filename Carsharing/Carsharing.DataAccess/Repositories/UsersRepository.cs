@@ -28,8 +28,8 @@ public class UsersRepository : IUsersRepository
     public async Task<List<User>> GetUser()
     {
         var userEntities = await _context.Users
-                               .AsNoTracking()
-                               .ToListAsync();
+            .AsNoTracking()
+            .ToListAsync();
 
         var users = userEntities
             .Select(u => User.Create(u.Id, u.RoleId, u.Login, u.PasswordHash).user)
@@ -52,10 +52,10 @@ public class UsersRepository : IUsersRepository
         var hashedPassword = _myPasswordHasher.Generate(user.PasswordHash);
 
         var userEntity = new UserEntity
-                             {
-                                 RoleId = user.RoleId,
-                                 Login = user.Login,
-                                 PasswordHash = hashedPassword
+        {
+            RoleId = user.RoleId,
+            Login = user.Login,
+            PasswordHash = hashedPassword
         };
 
         await _context.Users.AddAsync(userEntity);

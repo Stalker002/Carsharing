@@ -6,7 +6,8 @@ public class ClientDocument
     public const int MaxNumberLength = 50;
     public const int MaxFilePathLength = 255;
 
-    private ClientDocument(int id, int clientId, string type, string number, DateOnly issueDate, DateOnly expiryDate, string filePath)
+    private ClientDocument(int id, int clientId, string type, string number, DateOnly issueDate, DateOnly expiryDate,
+        string filePath)
     {
         Id = id;
         ClientId = clientId;
@@ -60,7 +61,7 @@ public class ClientDocument
 
         if (string.IsNullOrWhiteSpace(filePath))
             error = "File path can't be empty";
-        if (filePath.Length  > MaxFilePathLength)
+        if (filePath.Length > MaxFilePathLength)
             error = $"Type can't be longer than {MaxFilePathLength} symbols";
 
         var clientDocument = new ClientDocument(id, clientId, type, number, issueDate, expiryDate, filePath);

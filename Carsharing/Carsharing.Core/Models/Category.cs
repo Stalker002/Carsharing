@@ -3,6 +3,7 @@
 public class Category
 {
     public const int MaxNameLength = 100;
+
     private Category(int id, string name)
     {
         Id = id;

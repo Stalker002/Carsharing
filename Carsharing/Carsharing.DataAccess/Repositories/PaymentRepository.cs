@@ -44,7 +44,7 @@ public class PaymentRepository : IPaymentRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new Exception($"Payment create error: {error}");
 
-        var paymentEntity = new PaymentEntity()
+        var paymentEntity = new PaymentEntity
         {
             Id = payment.Id,
             BillId = payment.BillId,
