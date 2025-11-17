@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict nmTpulW8DSFegvKVTHP1dqyqDymLeFYIfFWxzlvTZC23Cne2MiV8UHHabQ9wGap
+\restrict lAE0UUYfBmecnXe4if1vfrxuvMwMZ16eQ0s0C5pwTUJMp8dIz8LyAOT1oXK4tZF
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
 
--- Started on 2025-11-09 15:36:38
+-- Started on 2025-11-16 19:11:13
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 930 (class 1247 OID 16817)
+-- TOC entry 921 (class 1247 OID 16817)
 -- Name: fine_type_enum; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -37,7 +37,7 @@ CREATE TYPE public.fine_type_enum AS ENUM (
 
 
 --
--- TOC entry 948 (class 1247 OID 17527)
+-- TOC entry 936 (class 1247 OID 17527)
 -- Name: fuel_type; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -51,7 +51,7 @@ CREATE TYPE public.fuel_type AS ENUM (
 
 
 --
--- TOC entry 945 (class 1247 OID 16993)
+-- TOC entry 933 (class 1247 OID 16993)
 -- Name: insurance_type_enum; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -62,7 +62,7 @@ CREATE TYPE public.insurance_type_enum AS ENUM (
 
 
 --
--- TOC entry 933 (class 1247 OID 16904)
+-- TOC entry 924 (class 1247 OID 16904)
 -- Name: maintenance_type_enum; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -77,7 +77,7 @@ CREATE TYPE public.maintenance_type_enum AS ENUM (
 
 
 --
--- TOC entry 966 (class 1247 OID 18241)
+-- TOC entry 951 (class 1247 OID 18241)
 -- Name: payment_method; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -90,7 +90,7 @@ CREATE TYPE public.payment_method AS ENUM (
 
 
 --
--- TOC entry 936 (class 1247 OID 16924)
+-- TOC entry 927 (class 1247 OID 16924)
 -- Name: role_name; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -101,7 +101,7 @@ CREATE TYPE public.role_name AS ENUM (
 
 
 --
--- TOC entry 954 (class 1247 OID 18017)
+-- TOC entry 942 (class 1247 OID 18017)
 -- Name: tariff_type; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -113,7 +113,7 @@ CREATE TYPE public.tariff_type AS ENUM (
 
 
 --
--- TOC entry 951 (class 1247 OID 17637)
+-- TOC entry 939 (class 1247 OID 17637)
 -- Name: transmission_type; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -510,7 +510,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 236 (class 1259 OID 16629)
+-- TOC entry 232 (class 1259 OID 16629)
 -- Name: bills; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -528,7 +528,7 @@ CREATE TABLE public.bills (
 
 
 --
--- TOC entry 235 (class 1259 OID 16628)
+-- TOC entry 231 (class 1259 OID 16628)
 -- Name: bills_bill_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -543,7 +543,7 @@ ALTER TABLE public.bills ALTER COLUMN bill_id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 234 (class 1259 OID 16559)
+-- TOC entry 230 (class 1259 OID 16559)
 -- Name: bookings; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -559,7 +559,7 @@ CREATE TABLE public.bookings (
 
 
 --
--- TOC entry 233 (class 1259 OID 16558)
+-- TOC entry 229 (class 1259 OID 16558)
 -- Name: bookings_booking_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -574,7 +574,7 @@ ALTER TABLE public.bookings ALTER COLUMN booking_id ADD GENERATED ALWAYS AS IDEN
 
 
 --
--- TOC entry 248 (class 1259 OID 18142)
+-- TOC entry 240 (class 1259 OID 18142)
 -- Name: cars; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -591,7 +591,7 @@ CREATE TABLE public.cars (
 
 
 --
--- TOC entry 247 (class 1259 OID 18141)
+-- TOC entry 239 (class 1259 OID 18141)
 -- Name: cars_car_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -632,23 +632,38 @@ ALTER TABLE public.categories ALTER COLUMN category_id ADD GENERATED ALWAYS AS I
 
 
 --
--- TOC entry 230 (class 1259 OID 16458)
+-- TOC entry 244 (class 1259 OID 18476)
 -- Name: client_documents; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.client_documents (
-    document_id integer CONSTRAINT user_documents_document_id_not_null NOT NULL,
-    document_client_id integer CONSTRAINT user_documents_document_user_id_not_null NOT NULL,
-    document_type character varying(50),
-    document_number character varying(50),
-    document_issue_date date,
-    document_expiry_date date,
+    document_id integer NOT NULL,
+    document_client_id integer NOT NULL,
+    document_type character varying(50) NOT NULL,
+    document_number character varying(50) NOT NULL,
+    document_issue_date date NOT NULL,
+    document_expiry_date date NOT NULL,
     document_file_path character varying(255)
 );
 
 
 --
--- TOC entry 243 (class 1259 OID 16935)
+-- TOC entry 243 (class 1259 OID 18475)
+-- Name: client_documents_document_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.client_documents ALTER COLUMN document_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.client_documents_document_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 235 (class 1259 OID 16935)
 -- Name: clients; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -664,7 +679,7 @@ CREATE TABLE public.clients (
 
 
 --
--- TOC entry 244 (class 1259 OID 16943)
+-- TOC entry 236 (class 1259 OID 16943)
 -- Name: clients_client_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -679,7 +694,7 @@ ALTER TABLE public.clients ALTER COLUMN client_id ADD GENERATED ALWAYS AS IDENTI
 
 
 --
--- TOC entry 238 (class 1259 OID 16661)
+-- TOC entry 246 (class 1259 OID 18493)
 -- Name: fines; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -687,15 +702,15 @@ CREATE TABLE public.fines (
     fine_id integer NOT NULL,
     fine_trip_id integer NOT NULL,
     fine_status_id integer NOT NULL,
-    fine_type public.fine_type_enum,
-    fine_amount numeric(10,2),
-    fine_date date,
+    fine_type public.fine_type_enum NOT NULL,
+    fine_amount numeric(10,2) NOT NULL,
+    fine_date date NOT NULL,
     CONSTRAINT chk_fine_amount_nonneg CHECK (((fine_amount IS NULL) OR (fine_amount >= (0)::numeric)))
 );
 
 
 --
--- TOC entry 237 (class 1259 OID 16660)
+-- TOC entry 245 (class 1259 OID 18492)
 -- Name: fines_fine_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -710,7 +725,7 @@ ALTER TABLE public.fines ALTER COLUMN fine_id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 250 (class 1259 OID 18197)
+-- TOC entry 248 (class 1259 OID 18516)
 -- Name: insurance; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -721,15 +736,15 @@ CREATE TABLE public.insurance (
     insurance_type public.insurance_type_enum NOT NULL,
     insurance_company character varying(100) NOT NULL,
     insurance_policy_number character varying(100) NOT NULL,
-    insurance_start_date date,
-    insurance_end_date date,
-    insurance_cost numeric(10,2),
+    insurance_start_date date NOT NULL,
+    insurance_end_date date NOT NULL,
+    insurance_cost numeric(10,2) NOT NULL,
     CONSTRAINT chk_insurance_dates CHECK (((insurance_start_date IS NULL) OR (insurance_end_date IS NULL) OR (insurance_start_date <= insurance_end_date)))
 );
 
 
 --
--- TOC entry 249 (class 1259 OID 18196)
+-- TOC entry 247 (class 1259 OID 18515)
 -- Name: insurance_insurance_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -744,7 +759,7 @@ ALTER TABLE public.insurance ALTER COLUMN insurance_id ADD GENERATED ALWAYS AS I
 
 
 --
--- TOC entry 240 (class 1259 OID 16680)
+-- TOC entry 234 (class 1259 OID 16680)
 -- Name: maintenance; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -760,7 +775,7 @@ CREATE TABLE public.maintenance (
 
 
 --
--- TOC entry 239 (class 1259 OID 16679)
+-- TOC entry 233 (class 1259 OID 16679)
 -- Name: maintenance_maintenance_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -775,21 +790,21 @@ ALTER TABLE public.maintenance ALTER COLUMN maintenance_id ADD GENERATED ALWAYS 
 
 
 --
--- TOC entry 252 (class 1259 OID 18250)
+-- TOC entry 250 (class 1259 OID 18544)
 -- Name: payments; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.payments (
     payment_id integer NOT NULL,
-    payment_bill_id integer,
+    payment_bill_id integer NOT NULL,
     payment_sum numeric NOT NULL,
     payment_method public.payment_method DEFAULT 'Картой'::public.payment_method,
-    payment_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+    payment_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 
 --
--- TOC entry 251 (class 1259 OID 18249)
+-- TOC entry 249 (class 1259 OID 18543)
 -- Name: payments_payment_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -804,23 +819,23 @@ ALTER TABLE public.payments ALTER COLUMN payment_id ADD GENERATED ALWAYS AS IDEN
 
 
 --
--- TOC entry 232 (class 1259 OID 16544)
+-- TOC entry 252 (class 1259 OID 18566)
 -- Name: promocodes; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.promocodes (
     promocode_id integer NOT NULL,
     promocode_status_id integer NOT NULL,
-    promocode_code character varying(50),
-    promocode_discount numeric(5,2),
-    promocode_start_date date,
-    promocode_end_date date,
+    promocode_code character varying(50) NOT NULL,
+    promocode_discount numeric(5,2) NOT NULL,
+    promocode_start_date date NOT NULL,
+    promocode_end_date date NOT NULL,
     CONSTRAINT chk_promocode_dates CHECK (((promocode_start_date IS NULL) OR (promocode_end_date IS NULL) OR (promocode_start_date <= promocode_end_date)))
 );
 
 
 --
--- TOC entry 231 (class 1259 OID 16543)
+-- TOC entry 251 (class 1259 OID 18565)
 -- Name: promocodes_promocode_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -835,14 +850,14 @@ ALTER TABLE public.promocodes ALTER COLUMN promocode_id ADD GENERATED ALWAYS AS 
 
 
 --
--- TOC entry 242 (class 1259 OID 16700)
+-- TOC entry 254 (class 1259 OID 18591)
 -- Name: reviews; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.reviews (
     review_id integer NOT NULL,
-    review_client_id integer,
-    review_car_id integer,
+    review_client_id integer NOT NULL,
+    review_car_id integer NOT NULL,
     review_rating smallint NOT NULL,
     review_comment text,
     review_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
@@ -851,7 +866,7 @@ CREATE TABLE public.reviews (
 
 
 --
--- TOC entry 241 (class 1259 OID 16699)
+-- TOC entry 253 (class 1259 OID 18590)
 -- Name: reviews_review_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -892,7 +907,7 @@ ALTER TABLE public.roles ALTER COLUMN role_id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 246 (class 1259 OID 18111)
+-- TOC entry 238 (class 1259 OID 18111)
 -- Name: specifications_car; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -916,7 +931,7 @@ CREATE TABLE public.specifications_car (
 
 
 --
--- TOC entry 245 (class 1259 OID 18110)
+-- TOC entry 237 (class 1259 OID 18110)
 -- Name: specifications_car_specification_car_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -988,13 +1003,13 @@ ALTER TABLE public.tariffs ALTER COLUMN tariff_id ADD GENERATED ALWAYS AS IDENTI
 
 
 --
--- TOC entry 256 (class 1259 OID 18443)
+-- TOC entry 256 (class 1259 OID 18634)
 -- Name: trip_details; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.trip_details (
     trip_detail_id integer NOT NULL,
-    trip_id integer,
+    trip_detail_trip_id integer NOT NULL,
     trip_detail_start_location character varying(50) NOT NULL,
     trip_detail_end_location character varying(50) NOT NULL,
     trip_detail_insurance_active boolean DEFAULT false,
@@ -1008,7 +1023,7 @@ CREATE TABLE public.trip_details (
 
 
 --
--- TOC entry 255 (class 1259 OID 18442)
+-- TOC entry 255 (class 1259 OID 18633)
 -- Name: trip_details_trip_detail_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1023,7 +1038,7 @@ ALTER TABLE public.trip_details ALTER COLUMN trip_detail_id ADD GENERATED ALWAYS
 
 
 --
--- TOC entry 254 (class 1259 OID 18363)
+-- TOC entry 242 (class 1259 OID 18363)
 -- Name: trips; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1043,27 +1058,12 @@ CREATE TABLE public.trips (
 
 
 --
--- TOC entry 253 (class 1259 OID 18362)
+-- TOC entry 241 (class 1259 OID 18362)
 -- Name: trips_trip_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 ALTER TABLE public.trips ALTER COLUMN trip_id ADD GENERATED ALWAYS AS IDENTITY (
     SEQUENCE NAME public.trips_trip_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
-
---
--- TOC entry 229 (class 1259 OID 16457)
--- Name: user_documents_document_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-ALTER TABLE public.client_documents ALTER COLUMN document_id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.user_documents_document_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1101,7 +1101,7 @@ ALTER TABLE public.users ALTER COLUMN user_id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 5045 (class 2606 OID 16967)
+-- TOC entry 5037 (class 2606 OID 16967)
 -- Name: clients clients_client_email_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1110,7 +1110,7 @@ ALTER TABLE ONLY public.clients
 
 
 --
--- TOC entry 5047 (class 2606 OID 16969)
+-- TOC entry 5039 (class 2606 OID 16969)
 -- Name: clients clients_client_phone_number_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1119,7 +1119,7 @@ ALTER TABLE ONLY public.clients
 
 
 --
--- TOC entry 5059 (class 2606 OID 18210)
+-- TOC entry 5063 (class 2606 OID 18532)
 -- Name: insurance insurance_insurance_policy_number_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1128,7 +1128,7 @@ ALTER TABLE ONLY public.insurance
 
 
 --
--- TOC entry 5035 (class 2606 OID 16567)
+-- TOC entry 5029 (class 2606 OID 16567)
 -- Name: bookings pk_bookings_booking_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1137,7 +1137,7 @@ ALTER TABLE ONLY public.bookings
 
 
 --
--- TOC entry 5057 (class 2606 OID 18155)
+-- TOC entry 5051 (class 2606 OID 18155)
 -- Name: cars pk_cars_car_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1155,7 +1155,7 @@ ALTER TABLE ONLY public.categories
 
 
 --
--- TOC entry 5049 (class 2606 OID 16945)
+-- TOC entry 5041 (class 2606 OID 16945)
 -- Name: clients pk_clients_client_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1164,7 +1164,7 @@ ALTER TABLE ONLY public.clients
 
 
 --
--- TOC entry 5039 (class 2606 OID 16668)
+-- TOC entry 5061 (class 2606 OID 18504)
 -- Name: fines pk_fines_fine_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1173,7 +1173,7 @@ ALTER TABLE ONLY public.fines
 
 
 --
--- TOC entry 5061 (class 2606 OID 18208)
+-- TOC entry 5065 (class 2606 OID 18530)
 -- Name: insurance pk_insurance_insurance_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1182,7 +1182,7 @@ ALTER TABLE ONLY public.insurance
 
 
 --
--- TOC entry 5037 (class 2606 OID 16638)
+-- TOC entry 5031 (class 2606 OID 16638)
 -- Name: bills pk_invoices_bill_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1191,7 +1191,7 @@ ALTER TABLE ONLY public.bills
 
 
 --
--- TOC entry 5041 (class 2606 OID 16688)
+-- TOC entry 5035 (class 2606 OID 16688)
 -- Name: maintenance pk_maintenance_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1200,7 +1200,7 @@ ALTER TABLE ONLY public.maintenance
 
 
 --
--- TOC entry 5063 (class 2606 OID 18260)
+-- TOC entry 5067 (class 2606 OID 18556)
 -- Name: payments pk_payments_payment_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1209,7 +1209,7 @@ ALTER TABLE ONLY public.payments
 
 
 --
--- TOC entry 5031 (class 2606 OID 16550)
+-- TOC entry 5069 (class 2606 OID 18577)
 -- Name: promocodes pk_promocodes_promocode_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1218,7 +1218,7 @@ ALTER TABLE ONLY public.promocodes
 
 
 --
--- TOC entry 5043 (class 2606 OID 16709)
+-- TOC entry 5073 (class 2606 OID 18603)
 -- Name: reviews pk_reviews_review_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1236,7 +1236,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- TOC entry 5051 (class 2606 OID 18131)
+-- TOC entry 5045 (class 2606 OID 18131)
 -- Name: specifications_car pk_specification_car_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1263,7 +1263,7 @@ ALTER TABLE ONLY public.tariffs
 
 
 --
--- TOC entry 5065 (class 2606 OID 18380)
+-- TOC entry 5055 (class 2606 OID 18380)
 -- Name: trips pk_trips_trip_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1272,7 +1272,7 @@ ALTER TABLE ONLY public.trips
 
 
 --
--- TOC entry 5029 (class 2606 OID 16464)
+-- TOC entry 5059 (class 2606 OID 18486)
 -- Name: client_documents pk_user_documents_document_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1290,7 +1290,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 5033 (class 2606 OID 16552)
+-- TOC entry 5071 (class 2606 OID 18579)
 -- Name: promocodes promocodes_promocode_code_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1299,7 +1299,7 @@ ALTER TABLE ONLY public.promocodes
 
 
 --
--- TOC entry 5067 (class 2606 OID 18457)
+-- TOC entry 5075 (class 2606 OID 18649)
 -- Name: trip_details trip_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1308,16 +1308,16 @@ ALTER TABLE ONLY public.trip_details
 
 
 --
--- TOC entry 5069 (class 2606 OID 18459)
+-- TOC entry 5077 (class 2606 OID 18651)
 -- Name: trip_details trip_details_trip_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.trip_details
-    ADD CONSTRAINT trip_details_trip_id_key UNIQUE (trip_id);
+    ADD CONSTRAINT trip_details_trip_id_key UNIQUE (trip_detail_trip_id);
 
 
 --
--- TOC entry 5053 (class 2606 OID 18133)
+-- TOC entry 5047 (class 2606 OID 18133)
 -- Name: specifications_car uk_specification_car_state_number; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1326,12 +1326,48 @@ ALTER TABLE ONLY public.specifications_car
 
 
 --
--- TOC entry 5055 (class 2606 OID 18135)
+-- TOC entry 5049 (class 2606 OID 18135)
 -- Name: specifications_car uk_specification_car_vin_number; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.specifications_car
     ADD CONSTRAINT uk_specification_car_vin_number UNIQUE (specification_car_vin_number);
+
+
+--
+-- TOC entry 5033 (class 2606 OID 18472)
+-- Name: bills uq_bill_trip; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.bills
+    ADD CONSTRAINT uq_bill_trip UNIQUE (bill_trip_id);
+
+
+--
+-- TOC entry 5053 (class 2606 OID 18474)
+-- Name: cars uq_car_specification; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cars
+    ADD CONSTRAINT uq_car_specification UNIQUE (car_specification_id);
+
+
+--
+-- TOC entry 5043 (class 2606 OID 18468)
+-- Name: clients uq_client_user; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.clients
+    ADD CONSTRAINT uq_client_user UNIQUE (client_user_id);
+
+
+--
+-- TOC entry 5057 (class 2606 OID 18470)
+-- Name: trips uq_trip_booking; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.trips
+    ADD CONSTRAINT uq_trip_booking UNIQUE (trip_booking_id);
 
 
 --
@@ -1344,7 +1380,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 5097 (class 2620 OID 18266)
+-- TOC entry 5107 (class 2620 OID 18562)
 -- Name: payments trg_apply_payment_to_bill; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -1352,7 +1388,7 @@ CREATE TRIGGER trg_apply_payment_to_bill AFTER INSERT ON public.payments FOR EAC
 
 
 --
--- TOC entry 5095 (class 2620 OID 17057)
+-- TOC entry 5103 (class 2620 OID 17057)
 -- Name: bills trg_calculate_bill_total; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -1360,7 +1396,7 @@ CREATE TRIGGER trg_calculate_bill_total BEFORE INSERT OR UPDATE ON public.bills 
 
 
 --
--- TOC entry 5099 (class 2620 OID 18391)
+-- TOC entry 5105 (class 2620 OID 18391)
 -- Name: trips trg_create_bill_after_trip; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -1368,7 +1404,7 @@ CREATE TRIGGER trg_create_bill_after_trip AFTER UPDATE OF trip_end_time ON publi
 
 
 --
--- TOC entry 5098 (class 2620 OID 18267)
+-- TOC entry 5108 (class 2620 OID 18563)
 -- Name: payments trg_prevent_overpayment; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -1376,7 +1412,7 @@ CREATE TRIGGER trg_prevent_overpayment BEFORE INSERT OR UPDATE ON public.payment
 
 
 --
--- TOC entry 5096 (class 2620 OID 17753)
+-- TOC entry 5104 (class 2620 OID 17753)
 -- Name: bills trg_set_initial_remaining_amount; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -1384,7 +1420,7 @@ CREATE TRIGGER trg_set_initial_remaining_amount BEFORE INSERT OR UPDATE ON publi
 
 
 --
--- TOC entry 5101 (class 2620 OID 18465)
+-- TOC entry 5109 (class 2620 OID 18657)
 -- Name: trip_details trg_set_trip_fuel_used; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -1392,7 +1428,7 @@ CREATE TRIGGER trg_set_trip_fuel_used BEFORE INSERT OR UPDATE ON public.trip_det
 
 
 --
--- TOC entry 5100 (class 2620 OID 18392)
+-- TOC entry 5106 (class 2620 OID 18392)
 -- Name: trips trg_trip_duration; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -1400,7 +1436,7 @@ CREATE TRIGGER trg_trip_duration BEFORE INSERT OR UPDATE ON public.trips FOR EAC
 
 
 --
--- TOC entry 5102 (class 2620 OID 18466)
+-- TOC entry 5110 (class 2620 OID 18658)
 -- Name: trip_details trg_update_car_fuel_after_trip; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -1408,7 +1444,7 @@ CREATE TRIGGER trg_update_car_fuel_after_trip AFTER INSERT OR UPDATE ON public.t
 
 
 --
--- TOC entry 5076 (class 2606 OID 18429)
+-- TOC entry 5082 (class 2606 OID 18429)
 -- Name: bills fk_bill_for_trip; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1417,7 +1453,7 @@ ALTER TABLE ONLY public.bills
 
 
 --
--- TOC entry 5077 (class 2606 OID 16649)
+-- TOC entry 5083 (class 2606 OID 18585)
 -- Name: bills fk_bill_has_promocode; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1426,7 +1462,7 @@ ALTER TABLE ONLY public.bills
 
 
 --
--- TOC entry 5078 (class 2606 OID 16654)
+-- TOC entry 5084 (class 2606 OID 16654)
 -- Name: bills fk_bill_status; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1435,7 +1471,7 @@ ALTER TABLE ONLY public.bills
 
 
 --
--- TOC entry 5073 (class 2606 OID 18181)
+-- TOC entry 5079 (class 2606 OID 18181)
 -- Name: bookings fk_booking_car; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1444,7 +1480,7 @@ ALTER TABLE ONLY public.bookings
 
 
 --
--- TOC entry 5074 (class 2606 OID 16985)
+-- TOC entry 5080 (class 2606 OID 16985)
 -- Name: bookings fk_booking_has_client; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1453,7 +1489,7 @@ ALTER TABLE ONLY public.bookings
 
 
 --
--- TOC entry 5075 (class 2606 OID 16568)
+-- TOC entry 5081 (class 2606 OID 16568)
 -- Name: bookings fk_booking_status; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1462,7 +1498,7 @@ ALTER TABLE ONLY public.bookings
 
 
 --
--- TOC entry 5085 (class 2606 OID 18156)
+-- TOC entry 5087 (class 2606 OID 18156)
 -- Name: cars fk_car_has_category; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1471,7 +1507,7 @@ ALTER TABLE ONLY public.cars
 
 
 --
--- TOC entry 5086 (class 2606 OID 18161)
+-- TOC entry 5088 (class 2606 OID 18161)
 -- Name: cars fk_car_has_tariff; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1480,7 +1516,7 @@ ALTER TABLE ONLY public.cars
 
 
 --
--- TOC entry 5087 (class 2606 OID 18166)
+-- TOC entry 5089 (class 2606 OID 18166)
 -- Name: cars fk_car_specification; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1489,7 +1525,7 @@ ALTER TABLE ONLY public.cars
 
 
 --
--- TOC entry 5088 (class 2606 OID 18171)
+-- TOC entry 5090 (class 2606 OID 18171)
 -- Name: cars fk_car_status; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1498,7 +1534,7 @@ ALTER TABLE ONLY public.cars
 
 
 --
--- TOC entry 5084 (class 2606 OID 16970)
+-- TOC entry 5086 (class 2606 OID 16970)
 -- Name: clients fk_client_has_user_account; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1507,7 +1543,7 @@ ALTER TABLE ONLY public.clients
 
 
 --
--- TOC entry 5071 (class 2606 OID 16975)
+-- TOC entry 5093 (class 2606 OID 18487)
 -- Name: client_documents fk_documents_client; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1516,7 +1552,7 @@ ALTER TABLE ONLY public.client_documents
 
 
 --
--- TOC entry 5079 (class 2606 OID 18434)
+-- TOC entry 5094 (class 2606 OID 18505)
 -- Name: fines fk_fine_for_trip; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1525,7 +1561,7 @@ ALTER TABLE ONLY public.fines
 
 
 --
--- TOC entry 5080 (class 2606 OID 16674)
+-- TOC entry 5095 (class 2606 OID 18510)
 -- Name: fines fk_fine_status; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1534,7 +1570,7 @@ ALTER TABLE ONLY public.fines
 
 
 --
--- TOC entry 5089 (class 2606 OID 18211)
+-- TOC entry 5096 (class 2606 OID 18533)
 -- Name: insurance fk_insurance_for_car; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1543,7 +1579,7 @@ ALTER TABLE ONLY public.insurance
 
 
 --
--- TOC entry 5090 (class 2606 OID 18216)
+-- TOC entry 5097 (class 2606 OID 18538)
 -- Name: insurance fk_insurance_status; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1552,7 +1588,7 @@ ALTER TABLE ONLY public.insurance
 
 
 --
--- TOC entry 5081 (class 2606 OID 18186)
+-- TOC entry 5085 (class 2606 OID 18186)
 -- Name: maintenance fk_maintenance_for_car; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1561,7 +1597,7 @@ ALTER TABLE ONLY public.maintenance
 
 
 --
--- TOC entry 5091 (class 2606 OID 18261)
+-- TOC entry 5098 (class 2606 OID 18557)
 -- Name: payments fk_payments_bill_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1570,7 +1606,7 @@ ALTER TABLE ONLY public.payments
 
 
 --
--- TOC entry 5072 (class 2606 OID 16553)
+-- TOC entry 5099 (class 2606 OID 18580)
 -- Name: promocodes fk_promocode_status; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1579,7 +1615,7 @@ ALTER TABLE ONLY public.promocodes
 
 
 --
--- TOC entry 5082 (class 2606 OID 18191)
+-- TOC entry 5100 (class 2606 OID 18604)
 -- Name: reviews fk_review_for_car; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1588,7 +1624,7 @@ ALTER TABLE ONLY public.reviews
 
 
 --
--- TOC entry 5083 (class 2606 OID 16980)
+-- TOC entry 5101 (class 2606 OID 18609)
 -- Name: reviews fk_review_has_client; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1597,7 +1633,7 @@ ALTER TABLE ONLY public.reviews
 
 
 --
--- TOC entry 5092 (class 2606 OID 18381)
+-- TOC entry 5091 (class 2606 OID 18381)
 -- Name: trips fk_trip_has_booking; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1606,7 +1642,7 @@ ALTER TABLE ONLY public.trips
 
 
 --
--- TOC entry 5093 (class 2606 OID 18386)
+-- TOC entry 5092 (class 2606 OID 18386)
 -- Name: trips fk_trip_status; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1615,7 +1651,7 @@ ALTER TABLE ONLY public.trips
 
 
 --
--- TOC entry 5070 (class 2606 OID 16452)
+-- TOC entry 5078 (class 2606 OID 16452)
 -- Name: users fk_user_has_role; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1624,19 +1660,19 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 5094 (class 2606 OID 18460)
+-- TOC entry 5102 (class 2606 OID 18652)
 -- Name: trip_details trip_details_trip_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.trip_details
-    ADD CONSTRAINT trip_details_trip_id_fkey FOREIGN KEY (trip_id) REFERENCES public.trips(trip_id) ON DELETE CASCADE;
+    ADD CONSTRAINT trip_details_trip_id_fkey FOREIGN KEY (trip_detail_trip_id) REFERENCES public.trips(trip_id) ON DELETE CASCADE;
 
 
--- Completed on 2025-11-09 15:36:50
+-- Completed on 2025-11-16 19:11:23
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict nmTpulW8DSFegvKVTHP1dqyqDymLeFYIfFWxzlvTZC23Cne2MiV8UHHabQ9wGap
+\unrestrict lAE0UUYfBmecnXe4if1vfrxuvMwMZ16eQ0s0C5pwTUJMp8dIz8LyAOT1oXK4tZF
 
