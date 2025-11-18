@@ -5,5 +5,5 @@ public record BookingsResponse(
     int StatusId,
     int CarId,
     int ClientId,
-    DateTime StartTime,
-    DateTime EndTime);
+    DateTime? StartTime,
+    DateTime? EndTime);
