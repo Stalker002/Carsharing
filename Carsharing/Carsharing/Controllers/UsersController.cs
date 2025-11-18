@@ -58,7 +58,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<int>> UpdateUsers(int id, [FromBody] UsersRequest request)
+    public async Task<ActionResult<int>> UpdateUser(int id, [FromBody] UsersRequest request)
     {
         var userId = await _usersService.UpdateUser(id, request.RoleId, request.Login, request.PasswordHash);
         return Ok(userId);
