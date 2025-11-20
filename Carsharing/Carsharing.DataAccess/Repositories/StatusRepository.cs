@@ -64,6 +64,14 @@ public class StatusRepository : IStatusRepository
         if (!string.IsNullOrWhiteSpace(description))
             status.Description = description;
 
+        var (_, error) = Status.Create(
+            status.Id,
+            status.Name,
+            status.Description);
+
+        if (!string.IsNullOrWhiteSpace(error))
+            throw new ArgumentException($"Status create error: {error}");
+
         await _context.SaveChangesAsync();
 
         return status.Id;

@@ -48,8 +48,8 @@ public class ClientConfiguration : IEntityTypeConfiguration<ClientEntity>
 
         builder.HasIndex(cl => cl.PhoneNumber)
             .IsUnique();
-
-        builder.HasIndex(cl => cl.UserId)
+        
+       builder.HasIndex(cl => cl.UserId)
             .IsUnique();
 
         builder.HasOne(cl => cl.User)

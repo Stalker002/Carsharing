@@ -89,6 +89,18 @@ public class TripDetailRepository : ITripDetailRepository
         if (refueled.HasValue)
             tripDetail.Refueled = refueled.Value;
 
+        var (_, error) = TripDetail.Create(
+            tripDetail.Id,
+            tripDetail.TripId,
+            tripDetail.StartLocation,
+            tripDetail.EndLocation,
+            tripDetail.InsuranceActive,
+            tripDetail.FuelUsed,
+            tripDetail.Refueled);
+
+        if (!string.IsNullOrWhiteSpace(error))
+            throw new Exception($"Trip detail create exception: {error}");
+
         await _context.SaveChangesAsync();
 
         return tripDetail.Id;

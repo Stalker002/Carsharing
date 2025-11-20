@@ -89,6 +89,18 @@ public class CarRepository : ICarRepository
         if (fuelLevel.HasValue)
             car.FuelLevel = fuelLevel.Value;
 
+        var (_, error) = Car.Create(
+            car.Id,
+            car.StatusId,
+            car.TariffId,
+            car.CategoryId,
+            car.SpecificationId,
+            car.Location,
+            car.FuelLevel);
+
+        if (!string.IsNullOrWhiteSpace(error))
+            throw new ArgumentException($"Create exception car: {error}");
+
         await _context.SaveChangesAsync();
 
         return car.Id;

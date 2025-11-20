@@ -77,6 +77,16 @@ public class TariffRepository : ITariffRepository
         if (pricePerDay.HasValue)
             tariff.PricePerDay = pricePerDay.Value;
 
+        var (_, error) = Tariff.Create(
+            tariff.Id,
+            tariff.Name,
+            tariff.PricePerMinute,
+            tariff.PricePerKm,
+            tariff.PricePerDay);
+
+        if (!string.IsNullOrWhiteSpace(error))
+            throw new ArgumentException($"Tariff create exception error: {error}");
+
         await _context.SaveChangesAsync();
 
         return tariff.Id;

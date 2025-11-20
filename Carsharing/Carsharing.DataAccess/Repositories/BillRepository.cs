@@ -89,7 +89,18 @@ public class BillRepository : IBillRepository
         if (remainingAmount.HasValue)
             bill.RemainingAmount = remainingAmount.Value;
 
-        await _context.SaveChangesAsync();
+        var (_, error) = Bill.Create(
+            bill.Id,
+            bill.TripId,
+            bill.PromocodeId,
+            bill.StatusId,
+            bill.IssueDate,
+            bill.Amount,
+            bill.RemainingAmount);
+
+        if (!string.IsNullOrWhiteSpace(error))
+
+            await _context.SaveChangesAsync();
 
         return bill.Id;
     }

@@ -58,6 +58,13 @@ public class CategoryRepository : ICategoryRepository
         if (!string.IsNullOrWhiteSpace(name))
             category.Name = name;
 
+        var (_, error) = Category.Create(
+            category.Id,
+            category.Name);
+
+        if (!string.IsNullOrWhiteSpace(error))
+            throw new Exception($"Category create error: {error}");
+
         await _context.SaveChangesAsync();
 
         return category.Id;

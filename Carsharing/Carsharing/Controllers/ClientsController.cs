@@ -9,9 +9,11 @@ namespace Carsharing.Controllers;
 public class ClientsController : ControllerBase
 {
     private readonly IClientsService _clientsService;
+    private readonly IUsersService _usersService;
 
-    public ClientsController(IClientsService clientsService)
+    public ClientsController(IClientsService clientsService, IUsersService usersService)
     {
+        _usersService = usersService;
         _clientsService = clientsService;
     }
 
@@ -25,21 +27,40 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<int>> CreateClient([FromBody] ClientsRequest request)
+    public async Task<ActionResult<int>> CreateClient([FromBody] ClientRegistrationRequest request)
     {
+        var (user, errorUser) = Core.Models.User.Create(
+            0,
+            request.RoleId,
+            request.Login,
+            request.PasswordHash);
+
+        if (!string.IsNullOrEmpty(errorUser)) return BadRequest(errorUser);
+
+        var userId = await _usersService.CreateUser(user);
+
         var (client, error) = Client.Create(
             0,
-            request.UserId,
+            userId,
             request.Name,
             request.Surname,
             request.PhoneNumber,
             request.Email);
 
-        if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            await _usersService.DeleteUser(userId);
+            return BadRequest(error);
+        }
 
         var clientId = await _clientsService.CreateClient(client);
 
-        return Ok(clientId);
+        return Ok(new
+        {
+            Message = "Registration successful",
+            UserId = userId,
+            ClientId = clientId
+        });
     }
 
     [HttpPut("{id:int}")]

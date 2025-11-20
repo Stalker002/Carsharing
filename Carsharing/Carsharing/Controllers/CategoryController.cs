@@ -35,7 +35,7 @@ public class CategoryController : ControllerBase
 
         if (!string.IsNullOrEmpty(error)) return BadRequest(error);
 
-        var categoryId = await _categoriesService.CreateUser(category);
+        var categoryId = await _categoriesService.CreateCategory(category);
 
         return Ok(categoryId);
     }

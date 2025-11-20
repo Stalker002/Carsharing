@@ -83,6 +83,17 @@ public class PromocodeRepository : IPromocodeRepository
         if (endDate.HasValue)
             promocode.EndDate = endDate.Value;
 
+        var (_, error) = Promocode.Create(
+            promocode.Id,
+            promocode.StatusId,
+            promocode.Code,
+            promocode.Discount,
+            promocode.StartDate,
+            promocode.EndDate);
+
+        if (!string.IsNullOrWhiteSpace(error))
+            throw new Exception($"Promocode create exception: {error}");
+
         await _context.SaveChangesAsync();
 
         return promocode.Id;

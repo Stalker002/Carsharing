@@ -102,6 +102,17 @@ public class BookingRepository : IBookingRepository
         if (endTime.HasValue)
             booking.EndTime = endTime.Value;
 
+        var (_, error) = Booking.Create(
+            0,
+            booking.StatusId,
+            booking.CarId,
+            booking.ClientId,
+            booking.StartTime,
+            booking.EndTime);
+
+        if (!string.IsNullOrEmpty(error))
+            throw new ArgumentException($"Create exception booking: {error}");
+
         await _context.SaveChangesAsync();
 
         return booking.Id;

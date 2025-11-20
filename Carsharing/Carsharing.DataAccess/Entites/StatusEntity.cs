@@ -6,7 +6,7 @@ public class StatusEntity
 
     public string Name { get; set; } = string.Empty;
 
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; } = null;
 
     public ICollection<InsuranceEntity> Insurances { get; set; } = new List<InsuranceEntity>();
 

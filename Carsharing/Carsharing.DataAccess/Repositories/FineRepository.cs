@@ -83,6 +83,17 @@ public class FineRepository : IFineRepository
         if (date.HasValue)
             fine.Date = date.Value;
 
+        var (_, error) = Fine.Create(
+            fine.Id,
+            fine.TripId,
+            fine.StatusId,
+            fine.Type,
+            fine.Amount,
+            fine.Date);
+
+        if (!string.IsNullOrWhiteSpace(error))
+            throw new Exception($"Fine create exception: {error}");
+
         await _context.SaveChangesAsync();
 
         return fine.Id;

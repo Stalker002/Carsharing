@@ -86,10 +86,11 @@ public class ClientRepository : IClientRepository
     public async Task<int> Update(int id, int? userId, string? name, string? surname,
         string? phoneNumber, string? email)
     {
+        
         var client = await _context.Client.FirstOrDefaultAsync(c => c.Id == id)
                      ?? throw new Exception("Client not found");
 
-        if(userId.HasValue)
+        if (userId.HasValue)
             client.UserId = userId.Value;
         
         if (!string.IsNullOrWhiteSpace(name))
@@ -103,6 +104,17 @@ public class ClientRepository : IClientRepository
 
         if (!string.IsNullOrWhiteSpace(email))
             client.Email = email;
+
+        var (_, error) = Client.Create(
+            0,
+            client.UserId,
+            client.Name,
+            client.Surname,
+            client.PhoneNumber,
+            client.Email);
+
+        if (!string.IsNullOrEmpty(error))
+            throw new ArgumentException($"Create exception Client: {error}");
 
         await _context.SaveChangesAsync();
 

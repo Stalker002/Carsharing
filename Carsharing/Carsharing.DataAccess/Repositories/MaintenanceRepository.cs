@@ -83,6 +83,17 @@ public class MaintenanceRepository : IMaintenanceRepository
         if (date.HasValue)
             maintenance.Date = date.Value;
 
+        var (_, error) = Maintenance.Create(
+            maintenance.Id,
+            maintenance.CarId,
+            maintenance.WorkType,
+            maintenance.Description,
+            maintenance.Cost,
+            maintenance.Date);
+
+        if (!string.IsNullOrWhiteSpace(error))
+            throw new ArgumentException($"Maintenance create error: {error}");
+
         await _context.SaveChangesAsync();
 
         return maintenance.Id;

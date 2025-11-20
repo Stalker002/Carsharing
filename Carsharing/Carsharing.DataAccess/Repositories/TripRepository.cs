@@ -95,6 +95,19 @@ public class TripRepository : ITripRepository
         if (distance.HasValue)
             trip.Distance = distance.Value;
 
+        var (_, error) = Trip.Create(
+            trip.Id,
+            trip.BookingId,
+            trip.StatusId,
+            trip.TariffType,
+            trip.StartTime,
+            trip.EndTime,
+            trip.Duration,
+            trip.Distance);
+
+        if (!string.IsNullOrEmpty(error))
+            throw new ArgumentException($"Create exception trip: {error}");
+
         await _context.SaveChangesAsync();
 
         return trip.Id;

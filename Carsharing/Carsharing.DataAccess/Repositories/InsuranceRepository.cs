@@ -101,6 +101,20 @@ public class InsuranceRepository : IInsuranceRepository
         if (cost.HasValue)
             insurance.Cost = cost.Value;
 
+        var (_, error) = Insurance.Create(
+            insurance.Id,
+            insurance.CarId,
+            insurance.StatusId,
+            insurance.Type,
+            insurance.Company,
+            insurance.PolicyNumber,
+            insurance.StartDate,
+            insurance.EndDate,
+            insurance.Cost);
+
+        if (!string.IsNullOrWhiteSpace(error))
+            throw new Exception($"Insurance create exception: {error}");
+
         await _context.SaveChangesAsync();
 
         return insurance.Id;

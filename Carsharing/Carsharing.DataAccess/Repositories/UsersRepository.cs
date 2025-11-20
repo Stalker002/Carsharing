@@ -64,17 +64,32 @@ public class UsersRepository : IUsersRepository
         return userEntity.Id;
     }
 
-    public async Task<int> UpdateUser(int id, int roleId, string login, string passwordHash)
+    public async Task<int> UpdateUser(int id, int? roleId, string? login, string? passwordHash)
     {
-        await _context.Users
-            .Where(u => u.Id == id)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(u => u.RoleId, u => roleId)
-                .SetProperty(u => u.Login, u => login)
-                .SetProperty(u => u.PasswordHash, u => passwordHash)
-            );
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id)
+                   ?? throw new Exception("User not found");
 
-        return id;
+        if (roleId.HasValue)
+            user.RoleId = roleId.Value;
+
+        if (!string.IsNullOrWhiteSpace(login))
+            user.Login = login;
+
+        if (!string.IsNullOrWhiteSpace(passwordHash))
+            user.PasswordHash = passwordHash;
+
+        var (_, error) = User.Create(
+            0,
+            user.RoleId,
+            user.Login,
+            user.PasswordHash);
+
+        if (!string.IsNullOrEmpty(error))
+            throw new ArgumentException($"Create exception User: {error}");
+
+        await _context.SaveChangesAsync();
+
+        return user.Id;
     }
 
     public async Task<int> DeleteUser(int id)

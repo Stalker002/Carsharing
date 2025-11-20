@@ -76,6 +76,16 @@ public class PaymentRepository : IPaymentRepository
         if (date.HasValue)
             payment.Date = date.Value;
 
+        var (_, error) = Payment.Create(
+            payment.Id,
+            payment.BillId,
+            payment.Sum,
+            payment.Method,
+            payment.Date);
+
+        if (!string.IsNullOrWhiteSpace(error))
+            throw new Exception($"Payment create error: {error}");
+
         await _context.SaveChangesAsync();
 
         return payment.Id;

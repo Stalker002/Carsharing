@@ -109,6 +109,18 @@ public class ClientDocumentRepository : IClientDocumentRepository
         if (!string.IsNullOrWhiteSpace(filePath))
             document.FilePath = filePath;
 
+        var (_, error) = ClientDocument.Create(
+            0,
+            document.ClientId,
+            document.Type,
+            document.Number,
+            document.IssueDate,
+            document.ExpiryDate,
+            document.FilePath);
+
+        if (!string.IsNullOrEmpty(error))
+            throw new ArgumentException($"Create exception document Client: {error}");
+
         await _context.SaveChangesAsync();
 
         return document.Id;

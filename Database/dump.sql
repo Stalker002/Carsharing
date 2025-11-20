@@ -1673,6 +1673,22 @@ ALTER TABLE ONLY public.trip_details
 --
 -- PostgreSQL database dump complete
 --
+INSERT INTO public.roles (role_name)
+SELECT 'Администратор'
+WHERE NOT EXISTS (SELECT 1 FROM public.roles WHERE role_name = 'Администратор');
+
+INSERT INTO public.roles (role_name)
+SELECT 'Клиент'
+WHERE NOT EXISTS (SELECT 1 FROM public.roles WHERE role_name = 'Клиент');
+
+INSERT INTO public.status (status_name) VALUES
+('Создано'),
+('Подтверждено'),
+('Завершено'),
+('Оплачен'),
+('Частично оплачен'),
+('Выставлен'),
+('В пути'),
+('Отменено');
 
 \unrestrict lAE0UUYfBmecnXe4if1vfrxuvMwMZ16eQ0s0C5pwTUJMp8dIz8LyAOT1oXK4tZF
-

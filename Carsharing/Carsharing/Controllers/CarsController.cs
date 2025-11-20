@@ -1,4 +1,5 @@
-﻿using Carsharing.Contracts;
+﻿using Carsharing.Application.Services;
+using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +11,13 @@ namespace Carsharing.Controllers;
 public class CarsController : ControllerBase
 {
     private readonly ICarsService _carsService;
+    private readonly ITariffsService _tariffsService;
+    private readonly ISpecificationsCarService _specificationsCar;
 
-    public CarsController(ICarsService carsService)
+    public CarsController(ICarsService carsService, ITariffsService tariffsService, ISpecificationsCarService specificationsCar)
     {
+        _specificationsCar = specificationsCar;
+        _tariffsService = tariffsService;
         _carsService = carsService;
     }
 
@@ -26,19 +31,55 @@ public class CarsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet]
+
+
     [HttpPost]
-    public async Task<ActionResult<int>> CreateCar([FromBody] CarsRequest request)
+    public async Task<ActionResult<int>> CreateCar([FromBody] CarsCreateRequest request)
     {
+        var (tariff, errorTariff) = Tariff.Create(
+            0,
+            request.Name,
+            request.PricePerMinute,
+            request.PricePerKm,
+            request.PricePerDay);
+
+        if (!string.IsNullOrWhiteSpace(errorTariff)) return BadRequest(errorTariff);
+
+        var tariffId = await _tariffsService.CreateTariff(tariff);
+
+        var (specification, errorSpecification) = SpecificationCar.Create(
+            0,
+            request.FuelType,
+            request.Brand,
+            request.Model,
+            request.Transmission,
+            request.Year,
+            request.VinNumber,
+            request.StateNumber,
+            request.Mileage,
+            request.MaxFuel,
+            request.FuelPerKm);
+
+        if (!string.IsNullOrWhiteSpace(errorSpecification)) return BadRequest(errorSpecification);
+
+        var specificationId = await _specificationsCar.CreateSpecification(specification);
+
         var (cars, error) = Car.Create(
             0,
             request.StatusId,
-            request.TariffId,
+            tariffId,
             request.CategoryId,
-            request.SpecificationId,
+            specificationId,
             request.Location,
             request.FuelLevel);
 
-        if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            await _specificationsCar.DeleteSpecification(specificationId);
+            await _tariffsService.DeleteTariff(tariffId);
+            return BadRequest(error);
+        }
 
         var carId = await _carsService.CreateCar(cars);
 

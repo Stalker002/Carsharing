@@ -99,6 +99,17 @@ public class ReviewRepository : IReviewRepository
         if (date.HasValue)
             review.Date = date.Value;
 
+        var (_, error) = Review.Create(
+            0,
+            review.ClientId,
+            review.CarId,
+            review.Rating,
+            review.Comment,
+            review.Date);
+
+        if (!string.IsNullOrEmpty(error))
+            throw new ArgumentException($"Create exception review: {error}");
+
         await _context.SaveChangesAsync();
 
         return review.Id;

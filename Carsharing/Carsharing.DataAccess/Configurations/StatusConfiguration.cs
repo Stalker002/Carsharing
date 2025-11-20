@@ -26,7 +26,7 @@ public class StatusConfiguration : IEntityTypeConfiguration<StatusEntity>
 
         builder.Property(st => st.Description)
             .HasColumnName("status_description")
-            .IsRequired();
+            .IsRequired(false);
 
         builder.HasMany(s => s.Trip)
             .WithOne(tr => tr.Status);

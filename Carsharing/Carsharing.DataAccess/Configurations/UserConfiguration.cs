@@ -39,6 +39,9 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
             .HasForeignKey(u => u.RoleId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        builder.HasOne(u => u.Client)
+            .WithOne(cl => cl.User);
+
         builder.HasIndex(u => u.Login)
             .IsUnique();
     }

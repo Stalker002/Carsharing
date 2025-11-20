@@ -113,6 +113,22 @@ public class SpecificationCarRepository : ISpecificationCarRepository
         if (fuelPerKm.HasValue)
             specification.FuelPerKm = fuelPerKm.Value;
 
+        var (_, error) = SpecificationCar.Create(
+            specification.Id,
+            specification.FuelType,
+            specification.Brand,
+            specification.Model,
+            specification.Transmission,
+            specification.Year,
+            specification.VinNumber,
+            specification.StateNumber,
+            specification.Mileage,
+            specification.MaxFuel,
+            specification.FuelPerKm);
+
+        if (!string.IsNullOrWhiteSpace(error))
+            throw new ArgumentException($"Specification car create error: {error}");
+
         await _context.SaveChangesAsync();
 
         return specification.Id;

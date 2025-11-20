@@ -39,7 +39,7 @@ public class UsersService : IUsersService
         return await _userRepository.CreateUser(user);
     }
 
-    public async Task<int> UpdateUser(int id, int roleId, string login, string passwordHash)
+    public async Task<int> UpdateUser(int id, int? roleId, string? login, string? passwordHash)
     {
         return await _userRepository.UpdateUser(id, roleId, login, passwordHash);
     }

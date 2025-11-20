@@ -1,9 +1,9 @@
 ﻿namespace Carsharing.Contracts;
 
 public record CarsRequest(
-    int StatusId, 
-    int TariffId, 
-    int CategoryId, 
+    int StatusId,
+    int TariffId,
+    int CategoryId,
     int SpecificationId,
-    string Location, 
+    string Location,
     decimal FuelLevel);
