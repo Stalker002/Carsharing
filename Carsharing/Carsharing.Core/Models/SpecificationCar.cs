@@ -75,17 +75,19 @@ public class SpecificationCar
         if (!allowedTransmissionType.Contains(transmission))
             error = $"Invalid transmission. Allowed: {string.Join(", ", allowedTransmissionType)}";
 
-        if (year < 1900)
-            error = "We don't drive our clients around in old junk cars.";
-        if (year > Convert.ToInt32(DateOnly.FromDateTime(DateTime.Now)) + 1)
-            error = "Cars don't fit into the future.";
+        error = year switch
+        {
+            < 1900 => "We don't drive our clients around in old junk cars.",
+            > 2025 => "Cars don't fit into the future.",
+            _ => error
+        };
 
         if (string.IsNullOrWhiteSpace(vinNumber))
             error = "Vin Number can't be empty";
         if (vinNumber.Length > MaxVinNumberLength)
             error = $"Vin number name can't be longer than {MaxVinNumberLength} symbols";
-        if (!Regex.IsMatch(vinNumber, @"^[A-HJ-NPR-Z0-9]{17}$"))
-            error = "VIN number in invalid format";
+        /*if (!Regex.IsMatch(vinNumber, @"^[A-HJ-NPR-Z0-9]{17}$"))
+            error = "VIN number in invalid */
 
         if (string.IsNullOrWhiteSpace(stateNumber))
             error = "State Number can't be empty";

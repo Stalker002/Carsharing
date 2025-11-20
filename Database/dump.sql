@@ -1691,4 +1691,26 @@ INSERT INTO public.status (status_name) VALUES
 ('В пути'),
 ('Отменено');
 
+ALTER TABLE public.fines 
+ALTER COLUMN fine_type TYPE VARCHAR(50);
+
+ALTER TABLE public.specifications_car 
+ALTER COLUMN specification_car_fuel_type TYPE VARCHAR(20),
+ALTER COLUMN specification_car_transmission TYPE VARCHAR(20);
+
+ALTER TABLE public.insurance 
+ALTER COLUMN insurance_type TYPE VARCHAR(20);
+
+ALTER TABLE public.maintenance 
+ALTER COLUMN maintenance_work_type TYPE VARCHAR(50);
+
+ALTER TABLE public.payments 
+ALTER COLUMN payment_method TYPE VARCHAR(20);
+
+ALTER TABLE public.roles 
+ALTER COLUMN role_name TYPE VARCHAR(20);
+
+ALTER TABLE public.trips 
+ALTER COLUMN trip_tariff_type TYPE VARCHAR(20);
+
 \unrestrict lAE0UUYfBmecnXe4if1vfrxuvMwMZ16eQ0s0C5pwTUJMp8dIz8LyAOT1oXK4tZF

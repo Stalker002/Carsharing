@@ -63,7 +63,7 @@ public class SpecificationCarConfiguration : IEntityTypeConfiguration<Specificat
             .IsRequired();
 
         builder.Property(sp => sp.FuelPerKm)
-            .HasColumnName("specification_car_fuel_per_km")
+            .HasColumnName("specification_fuel_per_km")
             .HasDefaultValue(0.08)
             .IsRequired();
 

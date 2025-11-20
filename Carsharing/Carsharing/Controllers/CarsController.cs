@@ -1,8 +1,10 @@
-﻿using Carsharing.Application.Services;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Application.Services;
 using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using ICarsService = Carsharing.Application.Services.ICarsService;
 
 namespace Carsharing.Controllers;
 
@@ -31,8 +33,13 @@ public class CarsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet]
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<List<CarWithInfoDto>>> GetCarWithInfo(int id)
+    {
+        var response = await _carsService.GetCarWithInfo(id);
 
+        return Ok(response);
+    }
 
     [HttpPost]
     public async Task<ActionResult<int>> CreateCar([FromBody] CarsCreateRequest request)

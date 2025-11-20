@@ -1,10 +1,12 @@
-﻿using Carsharing.Core.Models;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Core.Models;
 
-namespace Carsharing.Core.Abstractions;
+namespace Carsharing.Application.Services;
 
 public interface ICarsService
 {
     Task<List<Car>> GetCars();
+    Task<List<CarWithInfoDto>> GetCarWithInfo(int id);
     Task<int> GetCount();
     Task<int> CreateCar(Car car);
 
