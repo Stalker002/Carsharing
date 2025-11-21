@@ -31,6 +31,17 @@ public class TripsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<List<TripWithInfoDto>>> GetTripWithInfo(int id)
+    {
+        var tripWithInfo = await _tripService.GetTripWithInfo(id);
+        var response = tripWithInfo.Select(t => new TripWithInfoDto(t.Id, t.BookingId, t.StatusId, t.StartLocation,
+            t.EndLocation, t.InsuranceActive, t.FuelUsed, t.Refueled, t.TariffType, t.StartTime, t.EndTime, t.Duration,
+            t.Distance));
+
+        return Ok(response);
+    }
+
     [HttpPost]
     public async Task<ActionResult<int>> CreateTrip([FromBody] TripWithInfoDto request)
     {

@@ -36,7 +36,10 @@ public class CarsController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<List<CarWithInfoDto>>> GetCarWithInfo(int id)
     {
-        var response = await _carsService.GetCarWithInfo(id);
+        var carsWithInfo = await _carsService.GetCarWithInfo(id);
+        var response = carsWithInfo.Select(c => new CarWithInfoDto(c.Id, c.StatusName, c.PricePerMinute, c.PricePerKm,
+            c.PricePerDay, c.CategoryName, c.FuelType, c.Model, c.Transmission, c.Year, c.VinNumber, c.StateNumber,
+            c.Mileage, c.MaxFuel, c.FuelPerKm, c.Location, c.FuelLevel));
 
         return Ok(response);
     }
@@ -68,7 +71,11 @@ public class CarsController : ControllerBase
             request.MaxFuel,
             request.FuelPerKm);
 
-        if (!string.IsNullOrWhiteSpace(errorSpecification)) return BadRequest(errorSpecification);
+        if (!string.IsNullOrWhiteSpace(errorSpecification))
+        {
+            await _tariffsService.DeleteTariff(tariffId);
+            return BadRequest(errorSpecification);
+        }
 
         var specificationId = await _specificationsCar.CreateSpecification(specification);
 

@@ -35,7 +35,7 @@ public class TripRepository : ITripRepository
         return trips;
     }
 
-    public async Task<List<Trip>> GetByDetailId(int id)
+    public async Task<List<Trip>> GetById(int id)
     {
         var tripEntities = await _context.Trip
             .Where(tr => tr.Id == id)
