@@ -55,6 +55,11 @@ public class ClientDocumentRepository : IClientDocumentRepository
         return documents;
     }
 
+    public async Task<int> GetCount()
+    {
+        return await _context.ClientDocument.CountAsync();
+    }
+
     public async Task<int> Create(ClientDocument document)
     {
         var (_, error) = ClientDocument.Create(

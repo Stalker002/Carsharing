@@ -5,6 +5,9 @@ namespace Carsharing.Core.Abstractions;
 public interface IReviewRepository
 {
     Task<List<Review>> Get();
+
+    Task<int> GetCount();
+
     Task<List<Review>> GetByCarId(int carId);
     Task<int> Create(Review review);
 

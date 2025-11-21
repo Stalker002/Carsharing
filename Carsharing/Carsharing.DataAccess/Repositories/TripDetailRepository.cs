@@ -34,6 +34,26 @@ public class TripDetailRepository : ITripDetailRepository
         return details;
     }
 
+    public async Task<List<TripDetail>> GetTrip()
+    {
+        var detailEntities = await _context.TripDetail
+            .AsNoTracking()
+            .ToListAsync();
+
+        var details = detailEntities
+            .Select(d => TripDetail.Create(
+                d.Id,
+                d.TripId,
+                d.StartLocation,
+                d.EndLocation,
+                d.InsuranceActive,
+                d.FuelUsed,
+                d.Refueled).tripDetail)
+            .ToList();
+
+        return details;
+    }
+
     public async Task<int> Create(TripDetail tripDetail)
     {
         var (_, error) = TripDetail.Create(

@@ -1,4 +1,6 @@
-﻿using Carsharing.Contracts;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Application.Services;
+using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +12,11 @@ namespace Carsharing.Controllers;
 public class TripsController : ControllerBase
 {
     private readonly ITripService _tripService;
+    private readonly ITripDetailsService _tripDetailsService;
 
-    public TripsController(ITripService tripService)
+    public TripsController(ITripService tripService, ITripDetailsService tripDetailsService)
     {
+        _tripDetailsService = tripDetailsService;
         _tripService = tripService;
     }
 
@@ -28,7 +32,7 @@ public class TripsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<int>> CreateTrip([FromBody] TripRequest request)
+    public async Task<ActionResult<int>> CreateTrip([FromBody] TripWithInfoDto request)
     {
         var (trip, error) = Trip.Create(
             0,
@@ -43,6 +47,23 @@ public class TripsController : ControllerBase
         if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
 
         var tripId = await _tripService.CreateTrip(trip);
+
+        var (tripDetail, errorTripDetail) = TripDetail.Create(
+            0,
+            tripId,
+            request.StartLocation,
+            request.EndLocation,
+            request.InsuranceActive,
+            request.FuelUsed,
+            request.Refueled);
+
+        if (!string.IsNullOrWhiteSpace(errorTripDetail))
+        {
+            await _tripService.DeleteTrip(tripId);
+            return BadRequest(errorTripDetail);
+        }
+
+        var tripDetailId = await _tripDetailsService.CreateTripDetail(tripDetail);
 
         return Ok(tripId);
     }

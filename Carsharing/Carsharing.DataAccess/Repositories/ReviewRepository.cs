@@ -33,6 +33,11 @@ public class ReviewRepository : IReviewRepository
         return reviews;
     }
 
+    public async Task<int> GetCount()
+    {
+        return await _context.Review.CountAsync();
+    }
+
     public async Task<List<Review>> GetByCarId(int carId)
     {
         var reviewEntities = await _context.Review

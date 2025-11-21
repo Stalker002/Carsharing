@@ -1,4 +1,6 @@
 ﻿
+using Carsharing.Application.DTOs;
+using Carsharing.Application.Services;
 using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
@@ -18,11 +20,22 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenances()
+    public async Task<ActionResult<List<ReviewResponse>>> GetReviews()
     {
-        var maintenances = await _reviewsService.GetReviews();
+        var reviews = await _reviewsService.GetReviews();
         var response =
-            maintenances.Select(r => new ReviewResponse(r.Id, r.ClientId, r.CarId, r.Rating, r.Comment, r.Date));
+            reviews.Select(r => new ReviewResponse(r.Id, r.ClientId, r.CarId, r.Rating, r.Comment, r.Date));
+
+        return Ok(response);
+    }
+
+    [HttpGet("{carId:int}")]
+    public async Task<ActionResult<List<ReviewWithClientInfo>>> GetReviewsByCar(int carId)
+    {
+        var reviews = await _reviewsService.GetReviewsByCarId(carId);
+
+        var response =
+            reviews.Select(r => new ReviewWithClientInfo(r.Id, r.Name, r.Surname, r.Rating, r.Comment, r.Date));
 
         return Ok(response);
     }

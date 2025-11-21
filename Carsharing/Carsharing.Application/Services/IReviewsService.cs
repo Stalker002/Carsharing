@@ -1,10 +1,12 @@
-﻿using Carsharing.Core.Models;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Core.Models;
 
-namespace Carsharing.Core.Abstractions;
+namespace Carsharing.Application.Services;
 
 public interface IReviewsService
 {
     Task<List<Review>> GetReviews();
+    Task<List<ReviewWithClientInfo>> GetReviewsByCarId(int carId);
     Task<int> CreateReview(Review review);
 
     Task<int> UpdateReview(int id, int? clientId, int? carId, short? rating, string? comment,
