@@ -41,6 +41,14 @@ public class UsersController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<List<UsersResponse>>> GetUserById(int id)
+    {
+        var users = await _usersService.GetUserById(id);
+        var response = users.Select(u => new UsersResponse(u.Id, u.RoleId, u.Login, u.PasswordHash));
+        return Ok(response);
+    }
+
     [HttpPost]
     public async Task<ActionResult<int>> CreateUser([FromBody] UsersRequest request)
     {

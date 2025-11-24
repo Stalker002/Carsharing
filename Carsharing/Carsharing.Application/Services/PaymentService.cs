@@ -17,6 +17,16 @@ public class PaymentService : IPaymentService
         return await _paymentRepository.Get();
     }
 
+    public async Task<List<Payment>> GetPaymentById(int id)
+    {
+        return await _paymentRepository.GetById(id);
+    }
+
+    public async Task<List<Payment>> GetPaymentByBillId(int billId)
+    {
+        return await _paymentRepository.GetByBillId(billId);
+    }
+
     public async Task<int> CreatePayment(Payment payment)
     {
         return await _paymentRepository.Create(payment);

@@ -17,6 +17,21 @@ public class MaintenancesService : IMaintenancesService
         return await _maintenanceRepository.Get();
     }
 
+    public async Task<List<Maintenance>> GetMaintenanceById(int id)
+    {
+        return await _maintenanceRepository.GetById(id);
+    }
+
+    public async Task<List<Maintenance>> GetMaintenanceByCarId(int carId)
+    {
+        return await _maintenanceRepository.GetByCarId(carId);
+    }
+
+    public async Task<List<Maintenance>> GetByDateRange(DateOnly from, DateOnly to)
+    {
+        return await _maintenanceRepository.GetByDateRange(from, to);
+    }
+
     public async Task<int> CreateMaintenance(Maintenance maintenance)
     {
         return await _maintenanceRepository.Create(maintenance);

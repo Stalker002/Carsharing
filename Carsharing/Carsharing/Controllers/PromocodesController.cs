@@ -27,6 +27,39 @@ public class PromocodesController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodeById(int id)
+    {
+        var promocodes = await _promocodesService.GetPromocodeById(id);
+
+        var response = promocodes.Select(pr =>
+            new PromocodeResponse(pr.Id, pr.StatusId, pr.Code, pr.Discount, pr.StartDate, pr.EndDate));
+
+        return Ok(response);
+    }
+
+    [HttpGet("Active/")]
+    public async Task<ActionResult<List<PromocodeResponse>>> GetActivePromocodes()
+    {
+        var promocodes = await _promocodesService.GetActivePromocode();
+
+        var response = promocodes.Select(pr =>
+            new PromocodeResponse(pr.Id, pr.StatusId, pr.Code, pr.Discount, pr.StartDate, pr.EndDate));
+
+        return Ok(response);
+    }
+
+    [HttpGet("byCode/{code}")]
+    public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodeByCode(string code)
+    {
+        var promocodes = await _promocodesService.GetPromocodeByCode(code);
+
+        var response = promocodes.Select(pr =>
+            new PromocodeResponse(pr.Id, pr.StatusId, pr.Code, pr.Discount, pr.StartDate, pr.EndDate));
+
+        return Ok(response);
+    }
+
     [HttpPost]
     public async Task<ActionResult<int>> CreatePromocode([FromBody] PromocodeRequest request)
     {

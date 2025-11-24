@@ -8,6 +8,8 @@ public interface ICarRepository
     Task<int> Create(Car car);
 
     Task<List<Car>> GetById(int id);
+    Task<List<Car>> GetByCategoryId(List<int> categoryIds);
+    Task<List<Car>> GetByStatusId(int statusId);
 
     Task<int> GetCount();
 

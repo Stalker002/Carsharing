@@ -28,45 +28,59 @@ public class CarsService : ICarsService
         return await _carRepository.Get();
     }
 
-    public async Task<List<CarWithInfoDto>> GetCarWithInfo(int id)
-    {
-        var car = await _carRepository.GetById(id);
-        var tariff = await _tariffRepository.Get();
-        var status = await _statusRepository.Get();
-        var category = await _categoryRepository.Get();
-        var specification = await _specificationCarRepository.Get();
-
-        var response = (from c in car
-            join t in tariff on c.TariffId equals t.Id
-            join st in status on c.StatusId equals st.Id
-            join sp in specification on c.SpecificationId equals sp.Id
-            join cat in category on c.CategoryId equals cat.Id
-            select new CarWithInfoDto(
-                c.Id,
-                st.Name,
-                t.PricePerMinute,
-                t.PricePerKm,
-                t.PricePerDay,
-                cat.Name,
-                sp.FuelType,
-                $"{sp.Brand} {sp.Model}",
-                sp.Transmission,
-                sp.Year,
-                sp.VinNumber,
-                sp.StateNumber,
-                sp.Mileage,
-                sp.MaxFuel,
-                sp.FuelPerKm,
-                c.Location,
-                c.FuelLevel)).ToList();
-
-        return response;
-    }
-    //$"{c.Brand} {c.Model} ({c.StateNumber})",
-
     public async Task<int> GetCount()
     {
         return await _carRepository.GetCount();
+    }
+
+    public async Task<List<CarWithInfoDto>> GetCarWithInfo(int id)
+    {
+        var car = await _carRepository.GetById(id);
+        var tariffId = car.Select(ca => ca.TariffId).FirstOrDefault();
+        var statusId = car.Select(ca => ca.StatusId).FirstOrDefault();
+        var categoryId = car.Select(ca => ca.CategoryId).FirstOrDefault();
+        var specificationId = car.Select(c => c.SpecificationId).FirstOrDefault();
+
+        var tariff = await _tariffRepository.GetById(tariffId);
+
+        var status = await _statusRepository.GetById(statusId);
+
+        var category = await _categoryRepository.GetById(categoryId);
+
+        var specification = await _specificationCarRepository.GetById(specificationId);
+
+        var response = (from c in car
+                        join t in tariff on c.TariffId equals t.Id
+                        join st in status on c.StatusId equals st.Id
+                        join sp in specification on c.SpecificationId equals sp.Id
+                        join cat in category on c.CategoryId equals cat.Id
+                        select new CarWithInfoDto(
+                            c.Id,
+                            st.Name,
+                            t.PricePerMinute,
+                            t.PricePerKm,
+                            t.PricePerDay,
+                            cat.Name,
+                            sp.FuelType,
+                            $"{sp.Brand} {sp.Model}",
+                            sp.Transmission,
+                            sp.Year,
+                            sp.StateNumber,
+                            sp.MaxFuel,
+                            c.Location,
+                            c.FuelLevel)).ToList();
+
+        return response;
+    }
+
+    public async Task<List<Car>> GetCarsByCategoryIds(List<int> categoryIds)
+    {
+        return await _carRepository.GetByCategoryId(categoryIds);
+    }
+
+    public async Task<List<Car>> GetCarsByStatusId(int statusId)
+    {
+        return await _carRepository.GetByStatusId(statusId);
     }
 
     public async Task<int> CreateCar(Car car)

@@ -29,6 +29,22 @@ public class CategoryRepository : ICategoryRepository
         return categories;
     }
 
+    public async Task<List<Category>> GetById(int id)
+    {
+        var categoryEntities = await _context.Category
+            .Where(c => c.Id == id)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var categories = categoryEntities
+            .Select(c => Category.Create(
+                c.Id,
+                c.Name).category)
+            .ToList();
+
+        return categories;
+    }
+
     public async Task<int> Create(Category category)
     {
         var (_, error) = Category.Create(

@@ -1,4 +1,5 @@
-﻿using Carsharing.Core.Abstractions;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Services;
@@ -6,15 +7,101 @@ namespace Carsharing.Application.Services;
 public class BillsService : IBillsService
 {
     private readonly IBillRepository _billRepository;
+    private readonly IBookingRepository _bookingRepository;
+    private readonly ITripRepository _tripRepository;
+    private readonly IStatusRepository _statusRepository;
+    private readonly IClientRepository _clientRepository;
+    private readonly IPromocodeRepository _promocodeRepository;
 
-    public BillsService(IBillRepository billRepository)
+    public BillsService(IBillRepository billRepository, IBookingRepository bookingRepository,
+        ITripRepository tripRepository, IStatusRepository statusRepository, IClientRepository clientRepository, IPromocodeRepository promocodeRepository)
     {
+        _promocodeRepository = promocodeRepository;
+        _clientRepository = clientRepository;
+        _statusRepository = statusRepository;
+        _tripRepository = tripRepository;
+        _bookingRepository = bookingRepository;
         _billRepository = billRepository;
     }
 
     public async Task<List<Bill>> GetBills()
     {
         return await _billRepository.Get();
+    }
+
+    public async Task<List<Bill>> GetBillById(int id)
+    {
+        return await _billRepository.GetById(id);
+    }
+
+    public async Task<List<BillWithMinInfoDto>> GetBillWithMinInfoByUserId(int userId)
+    {
+        var client = await _clientRepository.GetClientByUserId(userId);
+        var clientId = client.Select(c => c.Id).FirstOrDefault();
+
+        var bookings = await _bookingRepository.GetByClientId(clientId);
+        var bookingId = bookings.Select(c => c.Id).ToList();
+
+        var trip = await _tripRepository.GetByBookingId(bookingId);
+        var tripId = trip.Select(tr => tr.Id).ToList();
+
+        var bills = await _billRepository.GetByTripId(tripId);
+
+        var statuses = await _statusRepository.Get();
+
+        var response = (from b in bills
+                        join tr in trip on b.TripId equals tr.Id
+                        join s in statuses on b.StatusId equals s.Id
+                        select new BillWithMinInfoDto(
+                            b.Id,
+                            s.Name,
+                            b.IssueDate,
+                            b.Amount,
+                            b.RemainingAmount,
+                            tr.TariffType
+                        )).ToList();
+
+        return response;
+    }
+
+    public async Task<List<BillWithInfoDto>> GetBillWithInfoById(int id)
+    {
+        var bills = await _billRepository.GetById(id);
+        var tripId = bills.Select(b => b.TripId).FirstOrDefault();
+
+        var trip = await _tripRepository.GetById(tripId);
+        var bookingId = trip.Select(tr => tr.BookingId).FirstOrDefault();
+
+        var bookings = await _bookingRepository.GetById(bookingId);
+
+        var promocodeId = bills
+                    .Where(b => b.PromocodeId.HasValue)
+                    .Select(b => b.PromocodeId).FirstOrDefault();
+        var promocode = await _promocodeRepository.GetById(promocodeId);
+
+        
+        var statuses = await _statusRepository.Get();
+
+        var response = (from b in bills
+                        join tr in trip on b.TripId equals tr.Id
+                        join bo in bookings on tr.BookingId equals bo.Id
+                        join s in statuses on b.StatusId equals s.Id
+                        join promo in promocode on b.PromocodeId equals promo.Id into promoJoin
+                        from promoLeft in promoJoin.DefaultIfEmpty()
+                        select new BillWithInfoDto(
+                            b.Id,
+                            s.Name,
+                            promoLeft?.Code,
+                            b.IssueDate,
+                            b.Amount,
+                            b.RemainingAmount,
+                            bo.CarId,
+                            tr.Duration,
+                            tr.Distance,
+                            tr.TariffType
+                            )).ToList();
+
+        return response;
     }
 
     public async Task<int> CreateBill(Bill bill)

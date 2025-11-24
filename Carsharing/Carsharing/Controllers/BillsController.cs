@@ -1,7 +1,7 @@
-﻿using Carsharing.Contracts;
+﻿using Carsharing.Application.Services;
+using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using Carsharing.Core.Models;
 
 namespace Carsharing.Controllers;
@@ -31,6 +31,44 @@ public class BillsController : ControllerBase
             b.RemainingAmount));
 
         return Ok(response);
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<List<BillsResponse>>> GetBillById(int id)
+    {
+        var bills = await _billsService.GetBillById(id);
+        var response = bills.Select(b => new BillsResponse(
+            b.Id,
+            b.TripId,
+            b.PromocodeId,
+            b.StatusId,
+            b.IssueDate,
+            b.Amount,
+            b.RemainingAmount));
+
+        return Ok(response);
+    }
+
+    [HttpGet("byUser/{userId:int}")]
+    public async Task<ActionResult<List<BillsResponse>>> GetBillWithMinInfoByUserId(int userId)
+    {
+        var result = await _billsService.GetBillWithMinInfoByUserId(userId);
+
+        if (result.Count == 0)
+            return NotFound("Для данного пользователя счета не найдены");
+
+        return Ok(result);
+    }
+
+    [HttpGet("info/{id:int}")]
+    public async Task<ActionResult<List<BillsResponse>>> GetBillWithInfoById(int id)
+    {
+        var bill = await _billsService.GetBillWithInfoById(id);
+
+        if (bill.Count == 0)
+            return NotFound("Счёт не найден");
+
+        return Ok(bill);
     }
 
     [HttpPost]

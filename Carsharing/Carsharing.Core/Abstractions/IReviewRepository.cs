@@ -9,6 +9,10 @@ public interface IReviewRepository
     Task<int> GetCount();
 
     Task<List<Review>> GetByCarId(int carId);
+
+    Task<List<Review>> GetById(int id);
+
+    Task<List<Review>> GetByClientId(int clientId);
     Task<int> Create(Review review);
 
     Task<int> Update(int id, int? clientId, int? carId, short? rating, string? comment,

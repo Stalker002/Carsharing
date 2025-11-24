@@ -5,7 +5,10 @@ namespace Carsharing.Core.Abstractions;
 public interface IPromocodeRepository
 {
     Task<List<Promocode>> Get();
-    Task<int> Create(Promocode promocode);
+    Task<List<Promocode>> GetById(int? id);
+    Task<List<Promocode>> GetActive();
+    Task<List<Promocode?>> GetByCode(string code);
+        Task<int> Create(Promocode promocode);
 
     Task<int> Update(int id, int? statusId, string? code, decimal? discount, DateOnly? startDate,
         DateOnly? endDate);

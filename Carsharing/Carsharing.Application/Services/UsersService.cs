@@ -34,6 +34,11 @@ public class UsersService : IUsersService
         return await _userRepository.GetUser();
     }
 
+    public async Task<List<User>> GetUserById(int id)
+    {
+        return await _userRepository.GetUserById(id);
+    }
+
     public async Task<int> CreateUser(User user)
     {
         return await _userRepository.CreateUser(user);

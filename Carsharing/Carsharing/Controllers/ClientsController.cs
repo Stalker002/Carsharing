@@ -26,6 +26,24 @@ public class ClientsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<List<ClientsResponse>>> GetClientById(int id)
+    {
+        var clients = await _clientsService.GetClientById(id);
+        var response = clients.Select(cl =>
+            new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email));
+        return Ok(response);
+    }
+
+    [HttpGet("Documents/{clientId:int}")]
+    public async Task<ActionResult<List<ClientsResponse>>> GetClientDocuments(int clientId)
+    {
+        var clients = await _clientsService.GetClientDocuments(clientId);
+        var response = clients.Select(d =>
+            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.Number, d.IssueDate, d.ExpiryDate, d.FilePath));
+        return Ok(response);
+    }
+
     [HttpPost]
     public async Task<ActionResult<int>> CreateClient([FromBody] ClientRegistrationRequest request)
     {

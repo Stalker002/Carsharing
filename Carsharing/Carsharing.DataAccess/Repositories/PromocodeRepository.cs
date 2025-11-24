@@ -33,6 +33,66 @@ public class PromocodeRepository : IPromocodeRepository
         return promocodes;
     }
 
+    public async Task<List<Promocode>> GetById(int? id)
+    {
+        var promocodeEntities = await _context.Promocode
+            .Where(pr => pr.Id == id)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var promocodes = promocodeEntities
+            .Select(pr => Promocode.Create(
+                pr.Id,
+                pr.StatusId,
+                pr.Code,
+                pr.Discount,
+                pr.StartDate,
+                pr.EndDate).promocode)
+            .ToList();
+
+        return promocodes;
+    }
+
+    public async Task<List<Promocode>> GetActive()
+    {
+        var promocodeEntities = await _context.Promocode
+            .Where(pr => pr.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow))
+            .AsNoTracking()
+            .ToListAsync();
+
+        var promocodes = promocodeEntities
+            .Select(pr => Promocode.Create(
+                pr.Id,
+                pr.StatusId,
+                pr.Code,
+                pr.Discount,
+                pr.StartDate,
+                pr.EndDate).promocode)
+            .ToList();
+
+        return promocodes;
+    }
+
+    public async Task<List<Promocode?>> GetByCode(string code)
+    {
+        var promocodeEntities = await _context.Promocode
+            .Where(pr => pr.Code == code)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var promocodes = promocodeEntities
+            .Select(pr => Promocode.Create(
+                pr.Id,
+                pr.StatusId,
+                pr.Code,
+                pr.Discount,
+                pr.StartDate,
+                pr.EndDate).promocode)
+            .ToList();
+
+        return promocodes;
+    }
+
     public async Task<int> Create(Promocode promocode)
     {
         var (_, error) = Promocode.Create(

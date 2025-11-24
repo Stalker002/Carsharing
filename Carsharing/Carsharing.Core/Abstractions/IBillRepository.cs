@@ -5,6 +5,9 @@ namespace Carsharing.Core.Abstractions;
 public interface IBillRepository
 {
     Task<List<Bill>> Get();
+    Task<List<Bill>> GetById(int id);
+    Task<List<Bill>> GetByTripId(int tripId);
+    Task<List<Bill>> GetByTripId(List<int> tripIds);
     Task<int> Create(Bill bill);
 
     Task<int> Update(int id, int? tripId, int? promocodeId, int? statusId, DateTime? issueDate,

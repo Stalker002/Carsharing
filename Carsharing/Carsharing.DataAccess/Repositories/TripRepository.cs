@@ -57,6 +57,28 @@ public class TripRepository : ITripRepository
         return trips;
     }
 
+    public async Task<List<Trip>> GetByBookingId(List<int> bookingIds)
+    {
+        var tripEntities = await _context.Trip
+            .Where(tr => bookingIds.Contains(tr.BookingId))
+            .AsNoTracking()
+            .ToListAsync();
+
+        var trips = tripEntities
+            .Select(t => Trip.Create(
+                t.Id,
+                t.BookingId,
+                t.StatusId,
+                t.TariffType,
+                t.StartTime,
+                t.EndTime,
+                t.Duration,
+                t.Distance).trip)
+            .ToList();
+
+        return trips;
+    }
+
     public async Task<int> Create(Trip trip)
     {
         var (_, error) = Trip.Create(

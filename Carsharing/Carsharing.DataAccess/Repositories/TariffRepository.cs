@@ -32,6 +32,25 @@ public class TariffRepository : ITariffRepository
         return tariffs;
     }
 
+    public async Task<List<Tariff>> GetById(int id)
+    {
+        var tariffEntities = await _context.Tariff
+            .Where(t => t.Id == id)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var tariffs = tariffEntities
+            .Select(t => Tariff.Create(
+                t.Id,
+                t.Name,
+                t.PricePerMinute,
+                t.PricePerKm,
+                t.PricePerDay).tariff)
+            .ToList();
+
+        return tariffs;
+    }
+
     public async Task<int> Create(Tariff tariff)
     {
         var (_, error) = Tariff.Create(

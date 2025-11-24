@@ -58,6 +58,46 @@ public class ReviewRepository : IReviewRepository
         return reviews;
     }
 
+    public async Task<List<Review>> GetById(int id)
+    {
+        var reviewEntities = await _context.Review
+            .Where(r => r.Id == id)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var reviews = reviewEntities
+            .Select(r => Review.Create(
+                r.Id,
+                r.ClientId,
+                r.CarId,
+                r.Rating,
+                r.Comment,
+                r.Date).review)
+            .ToList();
+
+        return reviews;
+    }
+
+    public async Task<List<Review>> GetByClientId(int clientId)
+    {
+        var reviewEntities = await _context.Review
+            .Where(r => r.ClientId == clientId)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var reviews = reviewEntities
+            .Select(r => Review.Create(
+                r.Id,
+                r.ClientId,
+                r.CarId,
+                r.Rating,
+                r.Comment,
+                r.Date).review)
+            .ToList();
+
+        return reviews;
+    }
+
     public async Task<int> Create(Review review)
     {
         var (_, error) = Review.Create(

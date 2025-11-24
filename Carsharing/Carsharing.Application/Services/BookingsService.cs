@@ -1,4 +1,5 @@
-﻿using Carsharing.Core.Abstractions;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Services;
@@ -6,9 +7,19 @@ namespace Carsharing.Application.Services;
 public class BookingsService : IBookingsService
 {
     private readonly IBookingRepository _bookingRepository;
+    private readonly IClientRepository _clientRepository;
+    private readonly ICarRepository _carRepository;
+    private readonly IStatusRepository _statusRepository;
+    private readonly ISpecificationCarRepository _specificationCarRepository;
 
-    public BookingsService(IBookingRepository bookingRepository)
+    public BookingsService(IBookingRepository bookingRepository, IClientRepository clientRepository,
+        ICarRepository carRepository, IStatusRepository statusRepository,
+        ISpecificationCarRepository specificationCarRepository)
     {
+        _specificationCarRepository = specificationCarRepository;
+        _statusRepository = statusRepository;
+        _carRepository = carRepository;
+        _clientRepository = clientRepository;
         _bookingRepository = bookingRepository;
     }
 
@@ -17,6 +28,55 @@ public class BookingsService : IBookingsService
     public async Task<List<Booking>> GetBookings()
     {
         return await _bookingRepository.Get();
+    }
+
+    public async Task<List<Booking>> GetBookingsById(int id)
+    {
+        return await _bookingRepository.GetById(id);
+    }
+
+    public async Task<List<Booking>> GetBookingsByClientId(int clientId)
+    {
+        return await _bookingRepository.GetByClientId(clientId);
+    }
+
+    public async Task<List<Booking>> GetBookingsByCarId(int carId)
+    {
+        return await _bookingRepository.GetByCarId(carId);
+    }
+
+    public async Task<List<BookingWithFullInfoDto>> GetBookingsWithInfo(int id)
+    {
+        var bookings = await _bookingRepository.GetById(id);
+        if (bookings.Count == 0) return [];
+        var clientId = bookings.Select(b => b.ClientId).FirstOrDefault();
+
+        var clients = await _clientRepository.GetById(clientId);
+        
+        var carId = bookings.Select(b => b.CarId).FirstOrDefault();
+        var cars = await _carRepository.GetById(carId);
+
+        var specificationId = cars.Select(c => c.SpecificationId).FirstOrDefault();
+        var specification = await _specificationCarRepository.GetById(specificationId);
+
+        var statuses = await _statusRepository.Get();
+
+        var response =
+            (from b in bookings
+             join c in cars on b.CarId equals c.Id
+             join s in statuses on b.StatusId equals s.Id
+             join cl in clients on b.ClientId equals cl.Id
+             join sp in specification on c.SpecificationId equals sp.Id
+             select new BookingWithFullInfoDto(
+                 b.Id,
+                 s.Name,
+                 $"{clients.First().Name} {clients.First().Surname}",
+                 $"{sp.Brand} {sp.Model} ({sp.StateNumber})",
+                 b.StartTime,
+                 b.EndTime
+             )).ToList();
+
+        return response;
     }
 
     public async Task<int> CreateBooking(Booking booking)

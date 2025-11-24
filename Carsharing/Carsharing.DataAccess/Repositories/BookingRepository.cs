@@ -33,10 +33,50 @@ public class BookingRepository : IBookingRepository
         return bookings;
     }
 
+    public async Task<List<Booking>> GetById(int id)
+    {
+        var bookingEntity = await _context.Booking
+            .Where(b => b.Id == id)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var bookings = bookingEntity
+            .Select(b => Booking.Create(
+                b.Id,
+                b.StatusId,
+                b.CarId,
+                b.ClientId,
+                b.StartTime,
+                b.EndTime).booking)
+            .ToList();
+
+        return bookings;
+    }
+
     public async Task<List<Booking>> GetByClientId(int clientId)
     {
         var bookingEntity = await _context.Booking
             .Where(b => b.ClientId == clientId)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var bookings = bookingEntity
+            .Select(b => Booking.Create(
+                b.Id,
+                b.StatusId,
+                b.CarId,
+                b.ClientId,
+                b.StartTime,
+                b.EndTime).booking)
+            .ToList();
+
+        return bookings;
+    }
+
+    public async Task<List<Booking>> GetByCarId(int carId)
+    {
+        var bookingEntity = await _context.Booking
+            .Where(b => b.CarId == carId)
             .AsNoTracking()
             .ToListAsync();
 

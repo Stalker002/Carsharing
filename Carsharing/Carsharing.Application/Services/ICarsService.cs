@@ -7,6 +7,8 @@ public interface ICarsService
 {
     Task<List<Car>> GetCars();
     Task<List<CarWithInfoDto>> GetCarWithInfo(int id);
+
+    Task<List<Car>> GetCarsByCategoryIds(List<int> categoryIds);
     Task<int> GetCount();
     Task<int> CreateCar(Car car);
 

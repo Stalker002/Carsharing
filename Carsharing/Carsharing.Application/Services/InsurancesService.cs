@@ -17,6 +17,21 @@ public class InsurancesService : IInsurancesService
         return await _insuranceRepository.Get();
     }
 
+    public async Task<List<Insurance>> GetInsuranceById(int id)
+    {
+        return await _insuranceRepository.GetById(id);
+    }
+
+    public async Task<List<Insurance>> GetInsuranceByCarId(int carId)
+    {
+        return await _insuranceRepository.GetByCarId(carId);
+    }
+
+    public async Task<List<Insurance>> GetActiveInsuranceByCarId(int carId)
+    {
+        return await _insuranceRepository.GetActiveByCarId(carId);
+    }
+
     public async Task<int> CreateInsurance(Insurance insurance)
     {
         return await _insuranceRepository.Create(insurance);

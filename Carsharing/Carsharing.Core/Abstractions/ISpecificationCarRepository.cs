@@ -5,6 +5,7 @@ namespace Carsharing.Core.Abstractions;
 public interface ISpecificationCarRepository
 {
     Task<List<SpecificationCar>> Get();
+    Task<List<SpecificationCar>> GetById(int id);
     Task<int> Create(SpecificationCar specificationCar);
 
     Task<int> Update(int id, string? fuelType, string? brand, string? model, string? transmission,

@@ -1,7 +1,6 @@
 ﻿using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -21,6 +20,24 @@ public class PaymentsController : ControllerBase
     public async Task<ActionResult<List<PaymentResponse>>> GetPayments()
     {
         var payments = await _paymentService.GetPayments();
+        var response = payments.Select(p => new PaymentResponse(p.Id, p.BillId, p.Sum, p.Method, p.Date));
+
+        return Ok(response);
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<List<PaymentResponse>>> GetPaymentById(int id)
+    {
+        var payments = await _paymentService.GetPaymentById(id);
+        var response = payments.Select(p => new PaymentResponse(p.Id, p.BillId, p.Sum, p.Method, p.Date));
+
+        return Ok(response);
+    }
+
+    [HttpGet("byBill/{billId:int}")]
+    public async Task<ActionResult<List<PaymentResponse>>> GetPaymentByBillId(int billId)
+    {
+        var payments = await _paymentService.GetPaymentByBillId(billId);
         var response = payments.Select(p => new PaymentResponse(p.Id, p.BillId, p.Sum, p.Method, p.Date));
 
         return Ok(response);

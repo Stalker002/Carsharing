@@ -5,6 +5,7 @@ namespace Carsharing.Core.Abstractions;
 public interface IStatusRepository
 {
     Task<List<Status>> Get();
+    Task<List<Status>> GetById(int id);
     Task<int> Create(Status status);
     Task<int> Update(int id, string? name, string? description);
     Task<int> Delete(int id);

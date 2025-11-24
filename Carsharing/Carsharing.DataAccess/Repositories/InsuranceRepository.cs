@@ -36,6 +36,75 @@ public class InsuranceRepository : IInsuranceRepository
         return insurances;
     }
 
+    public async Task<List<Insurance>> GetById(int id)
+    {
+        var insuranceEntities = await _context.Insurance
+            .Where(i => i.Id == id)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var insurances = insuranceEntities
+            .Select(i => Insurance.Create(
+                i.Id,
+                i.CarId,
+                i.StatusId,
+                i.Type,
+                i.Company,
+                i.PolicyNumber,
+                i.StartDate,
+                i.EndDate,
+                i.Cost).insurance)
+            .ToList();
+
+        return insurances;
+    }
+
+    public async Task<List<Insurance>> GetByCarId(int carId)
+    {
+        var insuranceEntities = await _context.Insurance
+            .Where(i => i.CarId == carId)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var insurances = insuranceEntities
+            .Select(i => Insurance.Create(
+                i.Id,
+                i.CarId,
+                i.StatusId,
+                i.Type,
+                i.Company,
+                i.PolicyNumber,
+                i.StartDate,
+                i.EndDate,
+                i.Cost).insurance)
+            .ToList();
+
+        return insurances;
+    }
+
+    public async Task<List<Insurance>> GetActiveByCarId(int carId)
+    {
+        var insuranceEntities = await _context.Insurance
+            .Where(i => i.CarId == carId && i.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow))
+            .AsNoTracking()
+            .ToListAsync();
+
+        var insurances = insuranceEntities
+            .Select(i => Insurance.Create(
+                i.Id,
+                i.CarId,
+                i.StatusId,
+                i.Type,
+                i.Company,
+                i.PolicyNumber,
+                i.StartDate,
+                i.EndDate,
+                i.Cost).insurance)
+            .ToList();
+
+        return insurances;
+    }
+
     public async Task<int> Create(Insurance insurance)
     {
         var (_, error) = Insurance.Create(

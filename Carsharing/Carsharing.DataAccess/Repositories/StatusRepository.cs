@@ -30,6 +30,23 @@ public class StatusRepository : IStatusRepository
         return statuses;
     }
 
+    public async Task<List<Status>> GetById(int id)
+    {
+        var statusEntity = await _context.Status
+            .Where(st => st.Id == id)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var statuses = statusEntity
+            .Select(s => Status.Create(
+                s.Id,
+                s.Name,
+                s.Description).status)
+            .ToList();
+
+        return statuses;
+    }
+
     public async Task<int> Create(Status status)
     {
         var (_, error) = Status.Create(

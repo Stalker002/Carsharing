@@ -33,6 +33,66 @@ public class MaintenanceRepository : IMaintenanceRepository
         return maintenances;
     }
 
+    public async Task<List<Maintenance>> GetById(int id)
+    {
+        var maintenanceEntity = await _context.Maintenance
+            .Where(m => m.Id == id)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var maintenances = maintenanceEntity
+            .Select(m => Maintenance.Create(
+                m.Id,
+                m.CarId,
+                m.WorkType,
+                m.Description,
+                m.Cost,
+                m.Date).maintenance)
+            .ToList();
+
+        return maintenances;
+    }
+
+    public async Task<List<Maintenance>> GetByCarId(int carId)
+    {
+        var maintenanceEntity = await _context.Maintenance
+            .Where(m => m.CarId == carId)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var maintenances = maintenanceEntity
+            .Select(m => Maintenance.Create(
+                m.Id,
+                m.CarId,
+                m.WorkType,
+                m.Description,
+                m.Cost,
+                m.Date).maintenance)
+            .ToList();
+
+        return maintenances;
+    }
+
+    public async Task<List<Maintenance>> GetByDateRange(DateOnly from, DateOnly to)
+    {
+        var maintenanceEntity = await _context.Maintenance
+            .Where(m => m.Date >= from && m.Date <= to)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var maintenances = maintenanceEntity
+            .Select(m => Maintenance.Create(
+                m.Id,
+                m.CarId,
+                m.WorkType,
+                m.Description,
+                m.Cost,
+                m.Date).maintenance)
+            .ToList();
+
+        return maintenances;
+    }
+
     public async Task<int> Create(Maintenance maintenance)
     {
         var (_, error) = Maintenance.Create(

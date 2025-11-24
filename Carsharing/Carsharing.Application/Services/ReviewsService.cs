@@ -20,10 +20,17 @@ public class ReviewsService : IReviewsService
         return await _reviewRepository.Get();
     }
 
+    public async Task<List<Review>> GetReviewById(int id)
+    {
+        return await _reviewRepository.GetById(id);
+    }
+
     public async Task<List<ReviewWithClientInfo>> GetReviewsByCarId(int carId)
     {
         var review = await _reviewRepository.GetByCarId(carId);
-        var client = await _clientRepository.Get();
+        var clientId = review.Select(r => r.ClientId).FirstOrDefault();
+
+        var client = await _clientRepository.GetById(clientId);
 
         var response = (from r in review
             join c in client on r.ClientId equals c.Id

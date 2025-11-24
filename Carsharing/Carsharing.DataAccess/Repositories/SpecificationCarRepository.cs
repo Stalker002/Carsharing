@@ -1,4 +1,5 @@
-﻿using Carsharing.Core.Abstractions;
+﻿using System.Runtime.Intrinsics.Arm;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,31 @@ public class SpecificationCarRepository : ISpecificationCarRepository
     public async Task<List<SpecificationCar>> Get()
     {
         var specificationEntity = await _context.SpecificationCar
+            .AsNoTracking()
+            .ToListAsync();
+
+        var specifications = specificationEntity
+            .Select(sp => SpecificationCar.Create(
+                sp.Id,
+                sp.FuelType,
+                sp.Brand,
+                sp.Model,
+                sp.Transmission,
+                sp.Year,
+                sp.VinNumber,
+                sp.StateNumber,
+                sp.Mileage,
+                sp.MaxFuel,
+                sp.FuelPerKm).specificationCar)
+            .ToList();
+
+        return specifications;
+    }
+
+    public async Task<List<SpecificationCar>> GetById(int id)
+    {
+        var specificationEntity = await _context.SpecificationCar
+            .Where(sp => sp.Id == id)
             .AsNoTracking()
             .ToListAsync();
 

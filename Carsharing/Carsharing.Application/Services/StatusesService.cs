@@ -16,4 +16,9 @@ public class StatusesService : IStatusesService
     {
         return await _statusRepository.Get();
     }
+
+    public async Task<List<Status>> GetStatusById(int id)
+    {
+        return await _statusRepository.GetById(id);
+    }
 }

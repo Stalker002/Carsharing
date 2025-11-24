@@ -17,6 +17,21 @@ public class FinesService : IFinesService
         return await _fineRepository.Get();
     }
 
+    public async Task<List<Fine>> GetFineById(int id)
+    {
+        return await _fineRepository.GetById(id);
+    }
+
+    public async Task<List<Fine>> GetFinesByTripId(int tripId)
+    {
+        return await _fineRepository.GetByTripId(tripId);
+    }
+
+    public async Task<List<Fine>> GetFinesByStatusId(int statusId)
+    {
+        return await _fineRepository.GetByTripId(statusId);
+    }
+
     public async Task<int> CreateFine(Fine fine)
     {
         return await _fineRepository.Create(fine);

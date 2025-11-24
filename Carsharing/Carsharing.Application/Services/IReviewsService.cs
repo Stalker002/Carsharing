@@ -7,6 +7,8 @@ public interface IReviewsService
 {
     Task<List<Review>> GetReviews();
     Task<List<ReviewWithClientInfo>> GetReviewsByCarId(int carId);
+
+    Task<List<Review>> GetReviewById(int id);
     Task<int> CreateReview(Review review);
 
     Task<int> UpdateReview(int id, int? clientId, int? carId, short? rating, string? comment,

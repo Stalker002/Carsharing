@@ -34,6 +34,69 @@ public class BillRepository : IBillRepository
         return bills;
     }
 
+    public async Task<List<Bill>> GetById(int id)
+    {
+        var billEntities = await _context.Bill
+            .Where(b => b.Id == id)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var bills = billEntities
+            .Select(b => Bill.Create(
+                b.Id,
+                b.TripId,
+                b.PromocodeId,
+                b.StatusId,
+                b.IssueDate,
+                b.Amount,
+                b.RemainingAmount).bill)
+            .ToList();
+
+        return bills;
+    }
+
+    public async Task<List<Bill>> GetByTripId(int tripId)
+    {
+        var billEntities = await _context.Bill
+            .Where(b => b.TripId == tripId)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var bills = billEntities
+            .Select(b => Bill.Create(
+                b.Id,
+                b.TripId,
+                b.PromocodeId,
+                b.StatusId,
+                b.IssueDate,
+                b.Amount,
+                b.RemainingAmount).bill)
+            .ToList();
+
+        return bills;
+    }
+
+    public async Task<List<Bill>> GetByTripId(List<int> tripIds)
+    {
+        var billEntities = await _context.Bill
+            .Where(b => tripIds.Contains(b.Id))
+            .AsNoTracking()
+            .ToListAsync();
+
+        var bills = billEntities
+            .Select(b => Bill.Create(
+                b.Id,
+                b.TripId,
+                b.PromocodeId,
+                b.StatusId,
+                b.IssueDate,
+                b.Amount,
+                b.RemainingAmount).bill)
+            .ToList();
+
+        return bills;
+    }
+
     public async Task<int> Create(Bill bill)
     {
         var (_, error) = Bill.Create(

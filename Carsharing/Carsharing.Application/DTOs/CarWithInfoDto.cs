@@ -11,10 +11,7 @@ public record CarWithInfoDto(
     string Model,
     string Transmission,
     int Year,
-    string VinNumber,
     string StateNumber,
-    int Mileage,
     decimal MaxFuel,
-    decimal FuelPerKm,
     string Location,
     decimal FuelLevel);

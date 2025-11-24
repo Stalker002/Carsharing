@@ -32,6 +32,44 @@ public class PaymentRepository : IPaymentRepository
         return payments;
     }
 
+    public async Task<List<Payment>> GetById(int id)
+    {
+        var paymentEntities = await _context.Payment
+            .Where(p => p.Id == id)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var payments = paymentEntities
+            .Select(p => Payment.Create(
+                p.Id,
+                p.BillId,
+                p.Sum,
+                p.Method,
+                p.Date).payment)
+            .ToList();
+
+        return payments;
+    }
+
+    public async Task<List<Payment>> GetByBillId(int billId)
+    {
+        var paymentEntities = await _context.Payment
+            .Where(p => p.BillId == billId)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var payments = paymentEntities
+            .Select(p => Payment.Create(
+                p.Id,
+                p.BillId,
+                p.Sum,
+                p.Method,
+                p.Date).payment)
+            .ToList();
+
+        return payments;
+    }
+
     public async Task<int> Create(Payment payment)
     {
         var (_, error) = Payment.Create(

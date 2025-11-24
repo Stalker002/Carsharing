@@ -33,6 +33,66 @@ public class FineRepository : IFineRepository
         return fines;
     }
 
+    public async Task<List<Fine>> GetById(int id)
+    {
+        var fineEntities = await _context.Fine
+            .Where(f => f.Id == id)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var fines = fineEntities
+            .Select(f => Fine.Create(
+                f.Id,
+                f.TripId,
+                f.StatusId,
+                f.Type,
+                f.Amount,
+                f.Date).fine)
+            .ToList();
+
+        return fines;
+    }
+
+    public async Task<List<Fine>> GetByTripId(int tripId)
+    {
+        var fineEntities = await _context.Fine
+            .Where(f => f.TripId == tripId)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var fines = fineEntities
+            .Select(f => Fine.Create(
+                f.Id,
+                f.TripId,
+                f.StatusId,
+                f.Type,
+                f.Amount,
+                f.Date).fine)
+            .ToList();
+
+        return fines;
+    }
+
+    public async Task<List<Fine>> GetByStatusId(int statusId)
+    {
+        var fineEntities = await _context.Fine
+            .Where(f => f.StatusId == statusId)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var fines = fineEntities
+            .Select(f => Fine.Create(
+                f.Id,
+                f.TripId,
+                f.StatusId,
+                f.Type,
+                f.Amount,
+                f.Date).fine)
+            .ToList();
+
+        return fines;
+    }
+
     public async Task<int> Create(Fine fine)
     {
         var (_, error) = Fine.Create(

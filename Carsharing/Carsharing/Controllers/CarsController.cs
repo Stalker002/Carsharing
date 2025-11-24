@@ -1,5 +1,4 @@
 ﻿using Carsharing.Application.DTOs;
-using Carsharing.Application.Services;
 using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
@@ -38,8 +37,21 @@ public class CarsController : ControllerBase
     {
         var carsWithInfo = await _carsService.GetCarWithInfo(id);
         var response = carsWithInfo.Select(c => new CarWithInfoDto(c.Id, c.StatusName, c.PricePerMinute, c.PricePerKm,
-            c.PricePerDay, c.CategoryName, c.FuelType, c.Model, c.Transmission, c.Year, c.VinNumber, c.StateNumber,
-            c.Mileage, c.MaxFuel, c.FuelPerKm, c.Location, c.FuelLevel));
+            c.PricePerDay, c.CategoryName, c.FuelType, c.Model, c.Transmission, c.Year,c.StateNumber, c.MaxFuel, c.Location, c.FuelLevel));
+
+        return Ok(response);
+    }
+
+    [HttpGet("byCategory")]
+    public async Task<ActionResult<List<CarsResponse>>> GetCarsByCategories([FromQuery] List<int>? ids)
+    {
+        if (ids == null || ids.Count == 0)
+            return BadRequest("Category IDs are required.");
+
+        var cars = await _carsService.GetCarsByCategoryIds(ids);
+
+        var response = cars.Select(c =>
+            new CarsResponse(c.Id, c.StatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location, c.FuelLevel));
 
         return Ok(response);
     }

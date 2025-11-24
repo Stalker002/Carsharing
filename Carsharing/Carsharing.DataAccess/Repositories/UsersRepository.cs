@@ -38,6 +38,20 @@ public class UsersRepository : IUsersRepository
         return users;
     }
 
+    public async Task<List<User>> GetUserById(int id)
+    {
+        var userEntities = await _context.Users
+            .Where(u => u.Id == id)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var users = userEntities
+            .Select(u => User.Create(u.Id, u.RoleId, u.Login, u.PasswordHash).user)
+            .ToList();
+
+        return users;
+    }
+
     public async Task<int> CreateUser(User user)
     {
         var (_, error) = User.Create(

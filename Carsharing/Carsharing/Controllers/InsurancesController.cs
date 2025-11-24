@@ -26,6 +26,36 @@ public class InsurancesController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<List<InsurancesResponse>>> GetInsuranceById(int id)
+    {
+        var insurances = await _insurancesService.GetInsuranceById(id);
+        var response = insurances.Select(i => new InsurancesResponse(i.Id, i.CarId, i.StatusId, i.Type, i.Company,
+            i.PolicyNumber, i.StartDate, i.EndDate, i.Cost));
+
+        return Ok(response);
+    }
+
+    [HttpGet("byCarId/{carId:int}")]
+    public async Task<ActionResult<List<InsurancesResponse>>> GetInsuranceByCarId(int carId)
+    {
+        var insurances = await _insurancesService.GetInsuranceByCarId(carId);
+        var response = insurances.Select(i => new InsurancesResponse(i.Id, i.CarId, i.StatusId, i.Type, i.Company,
+            i.PolicyNumber, i.StartDate, i.EndDate, i.Cost));
+
+        return Ok(response);
+    }
+
+    [HttpGet("ActiveByCarId/{carId:int}")]
+    public async Task<ActionResult<List<InsurancesResponse>>> GetActiveInsuranceByCarId(int carId)
+    {
+        var insurances = await _insurancesService.GetActiveInsuranceByCarId(carId);
+        var response = insurances.Select(i => new InsurancesResponse(i.Id, i.CarId, i.StatusId, i.Type, i.Company,
+            i.PolicyNumber, i.StartDate, i.EndDate, i.Cost));
+
+        return Ok(response);
+    }
+
     [HttpPost]
     public async Task<ActionResult<int>> CreateInsurance([FromBody] InsuranceRequest request)
     {

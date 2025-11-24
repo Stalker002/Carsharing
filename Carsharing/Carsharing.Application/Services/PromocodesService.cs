@@ -17,6 +17,21 @@ public class PromocodesService : IPromocodesService
         return await _promocodeRepository.Get();
     }
 
+    public async Task<List<Promocode>> GetPromocodeById(int id)
+    {
+        return await _promocodeRepository.GetById(id);
+    }
+
+    public async Task<List<Promocode>> GetActivePromocode()
+    {
+        return await _promocodeRepository.GetActive();
+    }
+
+    public async Task<List<Promocode?>> GetPromocodeByCode(string code)
+    {
+        return await _promocodeRepository.GetByCode(code);
+    }
+
     public async Task<int> CreatePromocode(Promocode promocode)
     {
         return await _promocodeRepository.Create(promocode);

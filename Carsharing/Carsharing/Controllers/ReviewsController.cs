@@ -2,7 +2,6 @@
 using Carsharing.Application.DTOs;
 using Carsharing.Application.Services;
 using Carsharing.Contracts;
-using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +28,17 @@ public class ReviewsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("{carId:int}")]
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<List<ReviewResponse>>> GetReviewById(int id)
+    {
+        var reviews = await _reviewsService.GetReviewById(id);
+        var response =
+            reviews.Select(r => new ReviewResponse(r.Id, r.ClientId, r.CarId, r.Rating, r.Comment, r.Date));
+
+        return Ok(response);
+    }
+
+    [HttpGet("byCar/{carId:int}")]
     public async Task<ActionResult<List<ReviewWithClientInfo>>> GetReviewsByCar(int carId)
     {
         var reviews = await _reviewsService.GetReviewsByCarId(carId);

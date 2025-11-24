@@ -55,6 +55,48 @@ public class CarRepository : ICarRepository
         return cars;
     }
 
+    public async Task<List<Car>> GetByCategoryId(List<int> categoryIds)
+    {
+        var carEntities = await _context.Car
+            .Where(c => categoryIds.Contains(c.CategoryId))
+            .AsNoTracking()
+            .ToListAsync();
+
+        var cars = carEntities
+            .Select(c => Car.Create(
+                c.Id,
+                c.StatusId,
+                c.TariffId,
+                c.CategoryId,
+                c.SpecificationId,
+                c.Location,
+                c.FuelLevel).car)
+            .ToList();
+
+        return cars;
+    }
+
+    public async Task<List<Car>> GetByStatusId(int statusId)
+    {
+        var carEntities = await _context.Car
+            .Where(c => c.StatusId == statusId)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var cars = carEntities
+            .Select(c => Car.Create(
+                c.Id,
+                c.StatusId,
+                c.TariffId,
+                c.CategoryId,
+                c.SpecificationId,
+                c.Location,
+                c.FuelLevel).car)
+            .ToList();
+
+        return cars;
+    }
+
     public async Task<int> GetCount()
     {
         return await _context.Car.CountAsync();

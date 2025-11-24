@@ -26,6 +26,36 @@ public class FinesController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<List<FinesResponse>>> GetFineById(int id)
+    {
+        var fines = await _finesService.GetFineById(id);
+
+        var response = fines.Select(f => new FinesResponse(f.Id, f.TripId, f.StatusId, f.Type, f.Amount, f.Date));
+
+        return Ok(response);
+    }
+
+    [HttpGet("byTrip/{tripId:int}")]
+    public async Task<ActionResult<List<FinesResponse>>> GetFinesByTripId(int tripId)
+    {
+        var fines = await _finesService.GetFinesByTripId(tripId);
+
+        var response = fines.Select(f => new FinesResponse(f.Id, f.TripId, f.StatusId, f.Type, f.Amount, f.Date));
+
+        return Ok(response);
+    }
+
+    [HttpGet("byStatus/{statusId:int}")]
+    public async Task<ActionResult<List<FinesResponse>>> GetFinesByStatusId(int statusId)
+    {
+        var fines = await _finesService.GetFinesByStatusId(statusId);
+
+        var response = fines.Select(f => new FinesResponse(f.Id, f.TripId, f.StatusId, f.Type, f.Amount, f.Date));
+
+        return Ok(response);
+    }
+
     [HttpPost]
     public async Task<ActionResult<int>> CreateFine([FromBody] FinesRequest request)
     {
