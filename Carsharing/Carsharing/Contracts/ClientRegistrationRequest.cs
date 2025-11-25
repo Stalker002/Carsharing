@@ -1,7 +1,6 @@
 ﻿namespace Carsharing.Contracts;
 
 public record ClientRegistrationRequest(
-    int RoleId,
     string Name,
     string Surname,
     string PhoneNumber,

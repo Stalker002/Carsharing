@@ -43,7 +43,7 @@ public class TripsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<int>> CreateTrip([FromBody] TripWithInfoDto request)
+    public async Task<ActionResult<int>> CreateTrip([FromBody] TripCreateRequest request)
     {
         var (trip, error) = Trip.Create(
             0,

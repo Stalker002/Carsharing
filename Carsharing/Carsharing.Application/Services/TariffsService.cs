@@ -17,6 +17,11 @@ public class TariffsService : ITariffsService
         return await _tariffRepository.Get();
     }
 
+    public async Task<List<Tariff>> GetTariffById(int id)
+    {
+        return await _tariffRepository.GetById(id);
+    }
+
     public async Task<int> CreateTariff(Tariff tariff)
     {
         return await _tariffRepository.Create(tariff);

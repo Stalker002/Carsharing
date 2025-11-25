@@ -49,9 +49,6 @@ public class Trip
         if (!allowedTariffTypes.Contains(tariffType))
             error = $"Invalid tariff type. Allowed: {string.Join(", ", allowedTariffTypes)}";
 
-        if (endTime < DateTime.Now)
-            error = "End trip date can not be in the past";
-
         if (startTime > endTime)
             error = "Start time can not exceed end time ";
 

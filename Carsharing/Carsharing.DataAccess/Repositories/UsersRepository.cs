@@ -101,6 +101,8 @@ public class UsersRepository : IUsersRepository
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception User: {error}");
 
+        user.PasswordHash = _myPasswordHasher.Generate(user.PasswordHash);
+
         await _context.SaveChangesAsync();
 
         return user.Id;

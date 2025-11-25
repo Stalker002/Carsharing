@@ -17,6 +17,7 @@ public static class ApiExtension
             throw new Exception("JWT configuration missing or invalid");
 
         service.Configure<JwtOptions>(jwtSection);
+
         service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
@@ -26,7 +27,8 @@ public static class ApiExtension
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
                 };
 
                 options.Events = new JwtBearerEvents
@@ -42,6 +44,14 @@ public static class ApiExtension
                     }
                 };
             });
-        service.AddAuthorization();
+        service.AddAuthorizationBuilder()
+            .AddPolicy("AdminPolicy", policy =>
+            {
+                policy.RequireClaim("userRoleId", "1");
+            })
+            .AddPolicy("ClientPolicy", policy =>
+            {
+                policy.RequireClaim("userRoleId", "2");
+            });
     }
 }

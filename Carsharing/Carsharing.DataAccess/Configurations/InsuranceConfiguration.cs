@@ -43,7 +43,7 @@ public class InsuranceConfiguration : IEntityTypeConfiguration<InsuranceEntity>
             .IsRequired();
 
         builder.Property(i => i.StartDate)
-            .HasColumnName("insurance_start_name")
+            .HasColumnName("insurance_start_date")
             .IsRequired();
 
         builder.Property(i => i.EndDate)

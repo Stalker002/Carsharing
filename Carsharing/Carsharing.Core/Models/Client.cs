@@ -53,7 +53,7 @@ public class Client
             error = "Phone number can't be empty";
         if (phoneNumber.Length > MaxPhoneLength)
             error = $"Phone number can't be longer than {MaxPhoneLength} symbols";
-        if (!Regex.IsMatch(phoneNumber, @"^(375|80)(29|44|33|25)\d{7}$"))
+        if (!Regex.IsMatch(phoneNumber, @"^(\+375|80)(29|44|33|25)\d{7}$"))
             error = "Phone number should be in format +375XXXXXXXXX or 80XXXXXXXXX";
 
         if (string.IsNullOrWhiteSpace(email))

@@ -26,6 +26,10 @@ public class FineConfiguration : IEntityTypeConfiguration<FineEntity>
             .HasColumnName("fine_status_id")
             .IsRequired();
 
+        builder.Property(f => f.Type)
+            .HasColumnName("fine_type")
+            .IsRequired();
+
         builder.Property(f => f.Amount)
             .HasColumnName("fine_amount")
             .IsRequired();

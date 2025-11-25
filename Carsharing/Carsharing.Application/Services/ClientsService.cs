@@ -7,9 +7,11 @@ public class ClientsService : IClientsService
 {
     private readonly IClientRepository _clientRepository;
     private readonly IClientDocumentRepository _clientDocumentRepository;
+    private readonly IUsersRepository _usersRepository;
 
-    public ClientsService(IClientRepository clientRepository, IClientDocumentRepository clientDocumentRepository)
+    public ClientsService(IClientRepository clientRepository, IClientDocumentRepository clientDocumentRepository, IUsersRepository usersRepository)
     {
+        _usersRepository = usersRepository;
         _clientDocumentRepository = clientDocumentRepository;
         _clientRepository = clientRepository;
     }
@@ -41,6 +43,11 @@ public class ClientsService : IClientsService
 
     public async Task<int> DeleteClient(int id)
     {
+        var client = await _clientRepository.GetById(id);
+        var userId = client.Select(c => c.UserId).FirstOrDefault();
+
+        var user = await _usersRepository.DeleteUser(userId);
+
         return await _clientRepository.Delete(id);
     }
 }

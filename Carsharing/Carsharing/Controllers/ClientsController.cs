@@ -49,7 +49,7 @@ public class ClientsController : ControllerBase
     {
         var (user, errorUser) = Core.Models.User.Create(
             0,
-            request.RoleId,
+            2,
             request.Login,
             request.PasswordHash);
 

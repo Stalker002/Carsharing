@@ -36,6 +36,7 @@ public class ClientDocument
         DateOnly issueDate, DateOnly expiryDate, string filePath)
     {
         var error = string.Empty;
+        var allowedTypes = new[] { "Водительские права", "Паспорт" };
 
         if (clientId < 0)
             error = "Client Id must be positive";
@@ -44,6 +45,8 @@ public class ClientDocument
             error = "Type can't be empty";
         if (type.Length > MaxTypeLength)
             error = $"Type can't be longer than {MaxTypeLength} symbols";
+        if (!allowedTypes.Contains(type))
+            error = $"Invalid insurance type. Allowed: {string.Join(", ", allowedTypes)}";
 
         if (string.IsNullOrWhiteSpace(number))
             error = "Number can't be empty";

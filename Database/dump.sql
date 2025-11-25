@@ -139,13 +139,11 @@ DECLARE
     v_status_partial INT;
     v_status_pending INT;
 BEGIN
-    -- Проверяем, связан ли платёж со счётом
     IF NEW.payment_bill_id IS NULL THEN
         RAISE NOTICE 'Платёж % не привязан к счёту', NEW.payment_id;
         RETURN NEW;
     END IF;
 
-    -- Получаем текущие значения
     SELECT bill_amount, bill_remaining_amount INTO v_bill_amount, v_remaining
     FROM bills
     WHERE bill_id = NEW.payment_bill_id
@@ -156,24 +154,20 @@ BEGIN
         RETURN NEW;
     END IF;
 
-    -- Вычитаем оплату
-    v_remaining := GREATEST(v_remaining - NEW.payment_sum, 0);
+    v_remaining := GREATEST(COALESCE(v_remaining,0) - COALESCE(NEW.payment_sum,0), 0);
 
-    -- Обновляем остаток
     UPDATE bills
     SET bill_remaining_amount = v_remaining
     WHERE bill_id = NEW.payment_bill_id;
 
-    -- Получаем ID статусов
     SELECT status_id INTO v_status_paid FROM status WHERE lower(status_name)='оплачен' LIMIT 1;
     SELECT status_id INTO v_status_partial FROM status WHERE lower(status_name)='частично оплачен' LIMIT 1;
     SELECT status_id INTO v_status_pending FROM status WHERE lower(status_name) IN ('ожидает оплаты','не оплачен') LIMIT 1;
 
-    -- Определяем новый статус
     IF v_remaining = 0 THEN
         UPDATE bills SET bill_status_id = v_status_paid WHERE bill_id = NEW.payment_bill_id;
         RAISE NOTICE 'Счёт % полностью оплачен', NEW.payment_bill_id;
-    ELSIF v_remaining < v_bill_amount THEN
+    ELSIF v_remaining < COALESCE(v_bill_amount,0) THEN
         UPDATE bills SET bill_status_id = v_status_partial WHERE bill_id = NEW.payment_bill_id;
         RAISE NOTICE 'Счёт % частично оплачен. Остаток: %', NEW.payment_bill_id, v_remaining;
     ELSE
@@ -193,7 +187,8 @@ $$;
 
 CREATE FUNCTION public.calculate_bill_total() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$DECLARE
+    AS $$
+    DECLARE
     v_tariff_type TEXT;
     v_price_per_minute NUMERIC(10,2);
     v_price_per_km NUMERIC(10,2);
@@ -204,12 +199,12 @@ CREATE FUNCTION public.calculate_bill_total() RETURNS trigger
     v_trip_distance NUMERIC(10,2);
     v_trip_duration NUMERIC(10,2);
     v_trip_days NUMERIC(10,2);
-	v_refueled NUMERIC(10,2);
-	v_refuel_discount NUMERIC(10,2);
-	v_insurance_cost NUMERIC(10,2) := 0;
-
-	v_refuel_discount_rate CONSTANT NUMERIC(10,2) := 60;  -- 60 руб/литр скидка
+    v_refueled NUMERIC(10,2) := 0;
+    v_refuel_discount NUMERIC(10,2) := 0;
+    v_insurance_cost NUMERIC(10,2) := 0;
+    v_refuel_discount_rate CONSTANT NUMERIC(10,2) := 60;  -- 60 руб/литр скидка
     v_insurance_percent CONSTANT NUMERIC(5,2) := 5;       -- 5% при включённой страховке
+    v_insurance_active boolean := false;
 BEGIN
     -- Получаем параметры поездки, машины и тарифа
     SELECT 
@@ -218,21 +213,31 @@ BEGIN
         t.tariff_price_per_km,
         t.tariff_price_per_day,
         tr.trip_distance_km,
-        tr.trip_duration,
-		tr.trip_refueled
+        tr.trip_duration
     INTO 
         v_tariff_type,
         v_price_per_minute,
         v_price_per_km,
         v_price_per_day,
         v_trip_distance,
-        v_trip_duration,
-		v_refueled
+        v_trip_duration
     FROM trips tr
     JOIN bookings b ON tr.trip_booking_id = b.booking_id
     JOIN cars c ON b.booking_car_id = c.car_id
     JOIN tariffs t ON c.car_tariff_id = t.tariff_id
-    WHERE tr.trip_id = NEW.bill_trip_id;
+    WHERE tr.trip_id = NEW.bill_trip_id
+    LIMIT 1;
+
+    -- Если поездка не найдена — не ломаемся
+    IF NOT FOUND THEN
+        NEW.bill_amount := 0;
+        RETURN NEW;
+    END IF;
+
+    -- Получаем сумму заправленного топлива по детали поездки (если есть несколько detail — суммируем)
+    SELECT COALESCE(SUM(td.trip_detail_refueled), 0) INTO v_refueled
+    FROM trip_details td
+    WHERE td.trip_detail_trip_id = NEW.bill_trip_id;
 
     -- Расчёт стоимости по выбранному типу тарифа
     IF v_tariff_type = 'per_minute' THEN
@@ -240,46 +245,53 @@ BEGIN
     ELSIF v_tariff_type = 'per_km' THEN
         v_trip_cost := COALESCE(v_trip_distance, 0) * COALESCE(v_price_per_km, 0);
     ELSIF v_tariff_type = 'per_day' THEN
-        v_trip_days := CEIL(v_trip_duration / (60 * 24));
+        v_trip_days := CEIL(COALESCE(v_trip_duration,0) / (60 * 24));
         v_trip_cost := v_trip_days * COALESCE(v_price_per_day, 0);
     END IF;
 
-    -- Добавляем штрафы
-	SELECT COALESCE(SUM(f.fine_amount), 0)
-	INTO v_fine_total
-	FROM fines f
-	JOIN trips tr ON f.fine_trip_id = tr.trip_id
-	WHERE f.fine_trip_id = NEW.bill_trip_id
- 	 AND (f.fine_status IS NULL OR lower(f.fine_status) NOT IN ('отменён', 'cancelled'))  -- не отменён
- 	 AND (f.fine_date IS NULL OR (f.fine_date BETWEEN tr.trip_start_time AND tr.trip_end_time))  -- штраф в пределах поездки
- 	 AND (f.fine_amount > 0);                                              -- сумма положительная
+    -- Добавляем штрафы: смотрим fines с fine_trip_id = trip и игнорируем статус "отменён"
+    SELECT COALESCE(SUM(f.fine_amount), 0)
+    INTO v_fine_total
+    FROM fines f
+    LEFT JOIN status s ON s.status_id = f.fine_status_id
+    WHERE f.fine_trip_id = NEW.bill_trip_id
+      AND (f.fine_amount IS NOT NULL AND f.fine_amount > 0)
+      AND (s.status_id IS NULL OR lower(s.status_name) NOT IN ('отменено','отменён','cancelled'));
 
-	IF v_fine_total IS NULL THEN
-	    v_fine_total := 0;
-	END IF;
+    IF v_fine_total IS NULL THEN
+        v_fine_total := 0;
+    END IF;
 
-    -- Проверяем промокод
+    -- Проверяем промокод (если указан)
     IF NEW.bill_promocode_id IS NULL THEN
         v_discount := 0;
     ELSE
-        SELECT promocode_discount INTO v_discount
+        SELECT COALESCE(promocode_discount,0) INTO v_discount
         FROM promocodes
         WHERE promocode_id = NEW.bill_promocode_id
           AND (promocode_start_date IS NULL OR promocode_start_date <= now())
-          AND (promocode_end_date IS NULL OR promocode_end_date >= now());
+          AND (promocode_end_date IS NULL OR promocode_end_date >= now())
+        LIMIT 1;
 
         IF NOT FOUND THEN
             v_discount := 0;
         END IF;
     END IF;
 
-	IF v_refueled > 0 THEN
+    -- Скидка за заправку (если у вас есть логика)
+    IF v_refueled > 0 THEN
         v_refuel_discount := v_refueled * v_refuel_discount_rate;
     ELSE
         v_refuel_discount := 0;
     END IF;
 
-	IF (SELECT trip_insurance_active FROM trips WHERE trip_id = NEW.bill_trip_id) THEN
+    -- Страховка: берём из trip_details (если хотя бы одна деталь с включённой страховкой)
+    SELECT COALESCE(MAX(CASE WHEN trip_detail_insurance_active THEN 1 ELSE 0 END),0)::boolean
+    INTO v_insurance_active
+    FROM trip_details td
+    WHERE td.trip_detail_trip_id = NEW.bill_trip_id;
+
+    IF v_insurance_active THEN
         v_insurance_cost := v_trip_cost * v_insurance_percent / 100;
     ELSE
         v_insurance_cost := 0;
@@ -291,13 +303,19 @@ BEGIN
             - (v_trip_cost * v_discount / 100)
             - v_refuel_discount,
             2)
-			);
+            );
 
-     RAISE NOTICE 'Поездка %: базовая = %, штрафы = %, промо = %%%, заправка = %, страховка = %, итог = %',
+    -- Устанавливаем начальный remaining (если INSERT)
+    IF TG_OP = 'INSERT' THEN
+        NEW.bill_remaining_amount := NEW.bill_amount;
+    END IF;
+
+    RAISE NOTICE 'Поездка %: базовая = %, штрафы = %, промо = %%%, заправка = %, страховка = %, итог = %',
         NEW.bill_trip_id, v_trip_cost, v_fine_total, v_discount, v_refuel_discount, v_insurance_cost, NEW.bill_amount;
 
     RETURN NEW;
-END;$$;
+END;
+$$;
 
 
 --
@@ -327,8 +345,8 @@ CREATE FUNCTION public.create_bill_after_trip() RETURNS trigger
     AS $$
 BEGIN
     IF NEW.trip_end_time IS NOT NULL THEN
-        INSERT INTO bills (bill_payment_id, bill_trip_id, bill_status_id)
-        VALUES (NULL, NEW.trip_id, (SELECT status_id FROM status WHERE lower(status_name)='ожидает оплаты'));
+        INSERT INTO bills (bill_trip_id, bill_status_id)
+        VALUES (NEW.trip_id, (SELECT status_id FROM status WHERE lower(status_name)='выставлен'));
     END IF;
     RETURN NEW;
 END;
@@ -404,35 +422,32 @@ CREATE FUNCTION public.set_trip_fuel_used() RETURNS trigger
     AS $$
 DECLARE
     v_fuel_per_km NUMERIC(10,3);
-    v_car_id INT;
     v_booking_id INT;
     v_distance NUMERIC(10,2);
 BEGIN
     -- Получаем booking_id и пройденное расстояние из таблицы trips
-    SELECT 
-        trip_booking_id,
-        trip_distance_km
-    INTO 
-        v_booking_id,
-        v_distance
+    SELECT trip_booking_id, trip_distance_km
+    INTO v_booking_id, v_distance
     FROM trips
-    WHERE trip_id = NEW.trip_id;
+    WHERE trip_id = NEW.trip_detail_trip_id;
 
-    -- Получаем ID машины и расход топлива из спецификации
-    SELECT 
-        b.booking_car_id,
-        s.specification_fuel_per_km
-    INTO 
-        v_car_id,
-        v_fuel_per_km
+    -- Если поездка не найдена — оставляем как есть (без аварий)
+    IF NOT FOUND THEN
+        RETURN NEW;
+    END IF;
+
+    -- Получаем расход топлива из спецификации машины через booking -> car -> specification
+    SELECT s.specification_fuel_per_km
+    INTO v_fuel_per_km
     FROM bookings b
     JOIN cars c ON c.car_id = b.booking_car_id
     JOIN specifications_car s ON s.specification_car_id = c.car_specification_id
-    WHERE b.booking_id = v_booking_id;
+    WHERE b.booking_id = v_booking_id
+    LIMIT 1;
 
     -- Если расход не указан вручную — рассчитываем автоматически
     IF NEW.trip_detail_fuel_used IS NULL OR NEW.trip_detail_fuel_used <= 0 THEN
-        NEW.trip_detail_fuel_used := COALESCE(v_fuel_per_km * v_distance, 0);
+        NEW.trip_detail_fuel_used := COALESCE(v_fuel_per_km * COALESCE(v_distance,0), 0);
     END IF;
 
     RETURN NEW;
@@ -450,35 +465,31 @@ CREATE FUNCTION public.update_car_fuel_after_trip() RETURNS trigger
     AS $$
 DECLARE
     v_car_id INT;
-    v_booking_id INT;
     v_fuel_per_km NUMERIC(10,3);
     v_fuel_max NUMERIC(10,2);
     v_fuel_used NUMERIC(10,2);
     v_new_level NUMERIC(10,2);
+    v_distance NUMERIC(10,2);
 BEGIN
-    -- Получаем booking_id по trip_id
-    SELECT trip_booking_id INTO v_booking_id
+    -- Получаем booking_id и пройденное расстояние для этой поездки
+    SELECT trip_booking_id, trip_distance_km
+    INTO STRICT v_car_id, v_distance
     FROM trips
-    WHERE trip_id = NEW.trip_id;
+    WHERE trip_id = NEW.trip_detail_trip_id;
 
-    -- Получаем car_id, расход и объём бака
-    SELECT 
-        b.booking_car_id,
-        s.specification_fuel_per_km,
-        s.specification_car_max_fuel
-    INTO 
-        v_car_id,
-        v_fuel_per_km,
-        v_fuel_max
+    -- Получаем car_id, расход и объём бака через booking -> car -> specification
+    SELECT b.booking_car_id, s.specification_fuel_per_km, s.specification_car_max_fuel
+    INTO v_car_id, v_fuel_per_km, v_fuel_max
     FROM bookings b
     JOIN cars c ON c.car_id = b.booking_car_id
     JOIN specifications_car s ON s.specification_car_id = c.car_specification_id
-    WHERE b.booking_id = v_booking_id;
+    WHERE b.booking_id = (SELECT trip_booking_id FROM trips WHERE trip_id = NEW.trip_detail_trip_id)
+    LIMIT 1;
 
     -- Берём расход и заправку из trip_details
     v_fuel_used := COALESCE(NEW.trip_detail_fuel_used, 0);
     IF v_fuel_used <= 0 THEN
-        v_fuel_used := COALESCE(v_fuel_per_km * (SELECT trip_distance_km FROM trips WHERE trip_id = NEW.trip_id), 0);
+        v_fuel_used := COALESCE(v_fuel_per_km * COALESCE(v_distance,0), 0);
     END IF;
 
     -- Получаем текущий уровень топлива
@@ -487,9 +498,9 @@ BEGIN
     WHERE car_id = v_car_id
     FOR UPDATE;
 
-    -- Новый уровень топлива
+    -- Новый уровень топлива: минус расход + заправка (trip_detail_refueled)
     v_new_level := v_new_level - v_fuel_used + COALESCE(NEW.trip_detail_refueled, 0);
-    v_new_level := LEAST(GREATEST(v_new_level, 0), v_fuel_max);
+    v_new_level := LEAST(GREATEST(v_new_level, 0), COALESCE(v_fuel_max, v_new_level));
 
     -- Обновляем значение в cars
     UPDATE cars
@@ -702,7 +713,7 @@ CREATE TABLE public.fines (
     fine_id integer NOT NULL,
     fine_trip_id integer NOT NULL,
     fine_status_id integer NOT NULL,
-    fine_type public.fine_type_enum NOT NULL,
+    fine_type VARCHAR(50) NOT NULL,
     fine_amount numeric(10,2) NOT NULL,
     fine_date date NOT NULL,
     CONSTRAINT chk_fine_amount_nonneg CHECK (((fine_amount IS NULL) OR (fine_amount >= (0)::numeric)))
@@ -733,7 +744,7 @@ CREATE TABLE public.insurance (
     insurance_id integer NOT NULL,
     insurance_car_id integer NOT NULL,
     insurance_status_id integer NOT NULL,
-    insurance_type public.insurance_type_enum NOT NULL,
+    insurance_type character varying(20) NOT NULL,
     insurance_company character varying(100) NOT NULL,
     insurance_policy_number character varying(100) NOT NULL,
     insurance_start_date date NOT NULL,
@@ -766,7 +777,7 @@ ALTER TABLE public.insurance ALTER COLUMN insurance_id ADD GENERATED ALWAYS AS I
 CREATE TABLE public.maintenance (
     maintenance_id integer NOT NULL,
     maintenance_car_id integer NOT NULL,
-    maintenance_work_type public.maintenance_type_enum,
+    maintenance_work_type character varying(50),
     maintenance_description text,
     maintenance_cost numeric(10,2),
     maintenance_date date,
@@ -798,7 +809,7 @@ CREATE TABLE public.payments (
     payment_id integer NOT NULL,
     payment_bill_id integer NOT NULL,
     payment_sum numeric NOT NULL,
-    payment_method public.payment_method DEFAULT 'Картой'::public.payment_method,
+    payment_method character varying(20) DEFAULT 'Картой'::public.payment_method,
     payment_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -887,7 +898,7 @@ ALTER TABLE public.reviews ALTER COLUMN review_id ADD GENERATED ALWAYS AS IDENTI
 
 CREATE TABLE public.roles (
     role_id integer NOT NULL,
-    role_name public.role_name NOT NULL
+    role_name character varying(20) NOT NULL
 );
 
 
@@ -913,10 +924,10 @@ ALTER TABLE public.roles ALTER COLUMN role_id ADD GENERATED ALWAYS AS IDENTITY (
 
 CREATE TABLE public.specifications_car (
     specification_car_id integer NOT NULL,
-    specification_car_fuel_type public.fuel_type NOT NULL,
+    specification_car_fuel_type character varying(20) NOT NULL,
     specification_car_brand character varying(50) NOT NULL,
     specification_car_model character varying(100) NOT NULL,
-    specification_car_transmission public.transmission_type NOT NULL,
+    specification_car_transmission character varying(20) NOT NULL,
     specification_car_year integer NOT NULL,
     specification_car_vin_number character varying(17) NOT NULL,
     specification_car_state_number character varying(15) NOT NULL,
@@ -1046,7 +1057,7 @@ CREATE TABLE public.trips (
     trip_id integer NOT NULL,
     trip_booking_id integer NOT NULL,
     trip_status_id integer NOT NULL,
-    trip_tariff_type public.tariff_type NOT NULL,
+    trip_tariff_type character varying(20) NOT NULL,
     trip_start_time timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     trip_end_time timestamp without time zone,
     trip_duration numeric DEFAULT 0,
@@ -1690,27 +1701,5 @@ INSERT INTO public.status (status_name) VALUES
 ('Выставлен'),
 ('В пути'),
 ('Отменено');
-
-ALTER TABLE public.fines 
-ALTER COLUMN fine_type TYPE VARCHAR(50);
-
-ALTER TABLE public.specifications_car 
-ALTER COLUMN specification_car_fuel_type TYPE VARCHAR(20),
-ALTER COLUMN specification_car_transmission TYPE VARCHAR(20);
-
-ALTER TABLE public.insurance 
-ALTER COLUMN insurance_type TYPE VARCHAR(20);
-
-ALTER TABLE public.maintenance 
-ALTER COLUMN maintenance_work_type TYPE VARCHAR(50);
-
-ALTER TABLE public.payments 
-ALTER COLUMN payment_method TYPE VARCHAR(20);
-
-ALTER TABLE public.roles 
-ALTER COLUMN role_name TYPE VARCHAR(20);
-
-ALTER TABLE public.trips 
-ALTER COLUMN trip_tariff_type TYPE VARCHAR(20);
 
 \unrestrict lAE0UUYfBmecnXe4if1vfrxuvMwMZ16eQ0s0C5pwTUJMp8dIz8LyAOT1oXK4tZF
