@@ -114,6 +114,15 @@ public class BookingRepository : IBookingRepository
         if (overlapping)
             throw new ArgumentException("Автомобиль недоступен на выбранное время");
 
+        var tripOverlapping = await _context.Trip.AnyAsync(t =>
+                t.BookingId == booking.Id &&
+                t.EndTime > booking.StartTime && 
+                t.StartTime < booking.EndTime
+        );
+
+        if (tripOverlapping)
+            throw new ArgumentException("Автомобиль находится в поездке в выбранное время");
+
         var byAnother = await _context.Booking.AnyAsync(b =>
             b.CarId == booking.CarId &&
             b.ClientId != booking.ClientId &&

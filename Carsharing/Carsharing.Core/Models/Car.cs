@@ -36,9 +36,10 @@ public class Car
         int categoryId, int specificationId, string location, decimal fuelLevel)
     {
         var error = string.Empty;
+        var allowedStatuses = new[] { 1, 2, 3, 4 };
 
-        if (statusId < 0)
-            error = "Status Id must be positive";
+        if (!allowedStatuses.Contains(statusId))
+            error = $"Invalid insurance type. Allowed: \"1.Доступен\", \"2. Недоступен\", \"3. На обслуживании\", \"3. В ремонте\"";
 
         if (tariffId < 0)
             error = "Tariff Id must be positive";

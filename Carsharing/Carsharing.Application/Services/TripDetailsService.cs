@@ -6,9 +6,17 @@ namespace Carsharing.Application.Services;
 public class TripDetailsService : ITripDetailsService
 {
     private readonly ITripDetailRepository _tripDetailRepository;
+    private readonly IBookingRepository _bookingRepository;
+    private readonly ICarRepository _carRepository;
+    private readonly IInsuranceRepository _insuranceRepository;
+    private readonly ITripRepository _tripRepository;
 
-    public TripDetailsService(ITripDetailRepository tripDetailRepository)
+    public TripDetailsService(ITripDetailRepository tripDetailRepository, IBookingRepository bookingRepository, ICarRepository carRepository, IInsuranceRepository insuranceRepository, ITripRepository tripRepository)
     {
+        _tripRepository = tripRepository;
+        _insuranceRepository = insuranceRepository;
+        _carRepository = carRepository;
+        _bookingRepository = bookingRepository;
         _tripDetailRepository = tripDetailRepository;
     }
 
@@ -19,6 +27,23 @@ public class TripDetailsService : ITripDetailsService
 
     public async Task<int> CreateTripDetail(TripDetail tripDetail)
     {
+        var trip = await _tripRepository.GetById(tripDetail.TripId);
+        var bookingId = trip.Select(b => b.BookingId).FirstOrDefault();
+
+        var booking = await _bookingRepository.GetById(bookingId);
+        if (booking == null)
+            throw new Exception("Бронирование не найдено");
+        var carId = booking.Select(b => b.CarId).FirstOrDefault();
+
+        var car = await _carRepository.GetById(carId);
+        if (car == null)
+            throw new Exception("Автомобиль не найден");
+
+        var insurance = await _insuranceRepository.GetActiveByCarId(carId);
+
+        if (insurance.Count == 0)
+            throw new Exception("Нельзя начать поездку: у автомобиля нет активной страховки");
+
         return await _tripDetailRepository.Create(tripDetail);
     }
 

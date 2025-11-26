@@ -26,6 +26,7 @@ public class Bill
         DateTime issueDate, decimal? amount, decimal? remainingAmount)
     {
         var error = string.Empty;
+        var allowedStatuses = new[] { 13, 14, 15 };
 
         if (tripId < 0)
             error = "Trip Id must be positive";
@@ -33,9 +34,8 @@ public class Bill
         if (promocodeId < 0)
             error = "Promo code Id must be positive";
 
-        if (statusId < 0)
-            error = "Status Id must be positive";
-        // Прописать определенные статусы
+        if (!allowedStatuses.Contains(statusId))
+            error = $"Invalid insurance type. Allowed: \"13. Не оплачен\", \"14. Оплачен\", \"15. Отменён\" ";
 
         if (issueDate < DateTime.Now)
             error = "End bill date can not be in the past";

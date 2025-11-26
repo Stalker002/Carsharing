@@ -1,7 +1,15 @@
-﻿namespace Carsharing.Core.Models;
+﻿using Carsharing.Core.Abstractions;
+
+namespace Carsharing.Core.Models;
 
 public class Booking
 {
+    private readonly IStatusRepository _statusRepository;
+
+    public Booking(IStatusRepository statusRepository)
+    {
+        _statusRepository = statusRepository;
+    }
     private Booking(int id, int statusId, int carId, int clientId,
         DateTime? startTime, DateTime? endTime)
     {
@@ -29,10 +37,10 @@ public class Booking
         DateTime? startTime, DateTime? endTime)
     {
         var error = string.Empty;
+        var allowedStatuses = new[] { 5, 6, 7 };
 
-        if (statusId < 0)
-            error = "Status Id must be positive";
-        // Прописать определенные статусы
+        if (!allowedStatuses.Contains(statusId))
+            error = $"Invalid insurance type. Allowed: \"5.Активно\", \"6. Завершено\", \"7. Отменено\" ";
 
         if (carId < 0)
             error = "Car Id must be positive";

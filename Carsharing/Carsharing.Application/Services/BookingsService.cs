@@ -11,11 +11,13 @@ public class BookingsService : IBookingsService
     private readonly ICarRepository _carRepository;
     private readonly IStatusRepository _statusRepository;
     private readonly ISpecificationCarRepository _specificationCarRepository;
+    private readonly ITripRepository _tripRepository;
 
     public BookingsService(IBookingRepository bookingRepository, IClientRepository clientRepository,
         ICarRepository carRepository, IStatusRepository statusRepository,
-        ISpecificationCarRepository specificationCarRepository)
+        ISpecificationCarRepository specificationCarRepository, ITripRepository tripRepository)
     {
+        _tripRepository = tripRepository;
         _specificationCarRepository = specificationCarRepository;
         _statusRepository = statusRepository;
         _carRepository = carRepository;

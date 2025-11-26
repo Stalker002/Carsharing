@@ -30,10 +30,10 @@ public class Promocode
         DateOnly startDate, DateOnly endDate)
     {
         var error = string.Empty;
+        var allowedStatuses = new[] { 19, 20, 21 };
 
-        if (statusId < 0)
-            error = "Status Id must be positive";
-        // Прописать определенные статусы
+        if (!allowedStatuses.Contains(statusId))
+            error = $"Invalid insurance type. Allowed: \"19. Активен\", \"20. Истек\", \"21. Использован\" ";
 
         if (string.IsNullOrWhiteSpace(code))
             error = "Code can't be empty";

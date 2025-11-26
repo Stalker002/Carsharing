@@ -36,13 +36,13 @@ public class Trip
     {
         var error = string.Empty;
         var allowedTariffTypes = new[] { "per_minute", "per_km", "per_day" };
+        var allowedTypes = new[] { 8, 9, 10, 11, 12 };
 
         if (bookingId < 0)
             error = "Booking Id must be positive";
 
-        if (statusId < 0)
-            error = "Status Id must be positive";
-        // Прописать определенные статусы
+        if (!allowedTypes.Contains(statusId))
+            error = $"Invalid insurance type. Allowed: \"8. Ожидание начала\", \"9. В пути\", \"10. Завершена\", \"11. Отменена\", \"12. Требуется оплата\" ";
 
         if (string.IsNullOrWhiteSpace(tariffType))
             error = "Tariff type can't be empty";
