@@ -1,46 +1,22 @@
-import { useState } from 'react'
 import './App.css';
 import { Routes, Route, Link } from 'react-router-dom';
 
-import Home from "./pages/Home"
-import Car_Rent from './pages/Car_Rent'
-import NotFoundPage from './pages/NotFoundPage'
-import Header from './components/Header/Header';
-import Footer from './components/Footer/Footer';
-import Login from './components/Login/Login';
-import Register from './components/Register/Register';
+import Home from "./pages/Home/Home"
+import Car_Rent from './pages/Car_Rent/Car_Rent'
+import NotFoundPage from './pages/NotFoundPage/NotFoundPage'
 import Car_Details from './components/Car_Details/Car_Details';
+import Admin from './pages/Admin/Admin';
 
 function App() {
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-
-  const openLogin = () => {
-    setIsRegisterOpen(false);
-    setIsLoginOpen(true);
-  };
-
-  const openRegister = () => {
-    setIsLoginOpen(false);
-    setIsRegisterOpen(true);
-  };
-
-  const closeAll = () => {
-    setIsLoginOpen(false);
-    setIsRegisterOpen(false);
-  };
   return (
     <>
-    <Header onLoginClick={openLogin}/>
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/car-catalog' element={<Car_Rent />} />
         <Route path="/car-catalog/:id" element={<Car_Details />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path='*' element={<NotFoundPage />} />
       </Routes>
-    <Footer />
-    <Login isOpen={isLoginOpen} onClose={closeAll} onRegisterClick={openRegister} />
-    <Register isOpen={isRegisterOpen} onClose={closeAll} onLoginClick={openLogin} />
     </>
   )
 }

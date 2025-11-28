@@ -1,0 +1,32 @@
+.admin-container {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  height: 100%;
+  background: #f6f7fb;
+  font-family: "Inter", sans-serif;
+  /* z-index: 0; */
+}
+
+.admin-page-block {
+  padding: 25px;
+}
+
+.top-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.top-buttons button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.top-buttons button:hover {
+  background: #1e4fbe;
+}

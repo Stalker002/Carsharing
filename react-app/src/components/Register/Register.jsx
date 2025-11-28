@@ -7,6 +7,8 @@ import Visible from "./../../svg/Login/visible_hide.svg"
 
 export default function Register({ isOpen, onClose, onLoginClick }) {
     const [login, setLogin] = useState("");
+    const [name, setName] = useState("");
+    const [surname, setSurname] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [pass, setPass] = useState("");
@@ -35,10 +37,18 @@ export default function Register({ isOpen, onClose, onLoginClick }) {
                 <form className="login-form">
                     <div className="login-input">
                         <input
-                            type="login"
-                            placeholder="Ваш логин"
-                            value={login}
-                            onChange={(e) => setLogin(e.target.value)}
+                            type="name"
+                            placeholder="Ваше имя"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    </div>
+                    <div className="login-input">
+                        <input
+                            type="surname"
+                            placeholder="Ваша фамилия"
+                            value={surname}
+                            onChange={(e) => setSurname(e.target.value)}
                         />
                     </div>
                     <div className="login-input">
@@ -58,6 +68,14 @@ export default function Register({ isOpen, onClose, onLoginClick }) {
                             ref={inputRef}
                             onChange={e => setPhone(e.target.value)}
 
+                        />
+                    </div>
+                    <div className="login-input">
+                        <input
+                            type="login"
+                            placeholder="Ваш логин"
+                            value={login}
+                            onChange={(e) => setLogin(e.target.value)}
                         />
                     </div>
                     <div className="pass-input">

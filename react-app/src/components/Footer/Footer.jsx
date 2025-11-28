@@ -1,37 +1,37 @@
 import './Footer.css';
 
 function Footer() {
-    const footerLinks = [
-        {
-            title: "Про нас",
-            links: [
-                { label: "Как это работает", href: "#" },
-                { label: "Рекомендации", href: "#" },
-                { label: "Сотрудничество", href: "#" },
-                { label: "Бизнес-сотрудничество", href: "#" },
-            ],
-        },
-        {
-            title: "Сообщество",
-            links: [
-                { label: "Мероприятия", href: "#" },
-                { label: "Блог", href: "#" },
-                { label: "Подкаст", href: "#" },
-            ],
-        },
-        {
-            title: "Социальные сети",
-            links: [
-                { label: "Discord", href: "#" },
-                { label: "Instagram", href: "#" },
-                { label: "Twitter", href: "#" },
-                { label: "Facebook", href: "#" },
-            ],
-        },
-    ];
+  const footerLinks = [
+    {
+      title: "Про нас",
+      links: [
+        { label: "Как это работает", href: "#" },
+        { label: "Рекомендации", href: "#" },
+        { label: "Сотрудничество", href: "#" },
+        { label: "Бизнес-сотрудничество", href: "#" },
+      ],
+    },
+    {
+      title: "Сообщество",
+      links: [
+        { label: "Мероприятия", href: "#" },
+        { label: "Блог", href: "#" },
+        { label: "Подкаст", href: "#" },
+      ],
+    },
+    {
+      title: "Социальные сети",
+      links: [
+        { label: "Discord", href: "#" },
+        { label: "Instagram", href: "#" },
+        { label: "Twitter", href: "#" },
+        { label: "Facebook", href: "#" },
+      ],
+    },
+  ];
 
-    return (
-        <footer className="footer">
+  return (
+    <footer className="footer">
       <div className="footer-container">
         <div className="footer-main">
           <div className="footer-brand">
@@ -66,6 +66,6 @@ function Footer() {
         </div>
       </div>
     </footer>
-    );
+  );
 }
 export default Footer;

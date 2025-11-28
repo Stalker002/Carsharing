@@ -9,8 +9,6 @@
     background: linear-gradient(to bottom, #8da9ff, #e9edff);
     padding: 30px 20px;
     position: relative;
-    overflow: hidden;
-    z-index: 0;
 }
 
 .step-logo {
@@ -114,7 +112,6 @@
   position: absolute;
   width: 4px;
   background: linear-gradient(#3c65f4, #3c65f4);
-  z-index: 1;
   left: 50%;
   transform: translateX(-50%);
 }

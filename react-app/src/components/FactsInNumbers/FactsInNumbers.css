@@ -3,6 +3,7 @@
     background: linear-gradient(to bottom, #8da9ff,#ffffff );
     padding: 60px 40px;
     width: 100%;
+    z-index: 0;
 }
 
 .facts_title {

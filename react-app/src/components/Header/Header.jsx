@@ -2,13 +2,37 @@ import './Header.css';
 import Like from '../../svg/Header/like.svg'
 import Search from '../../svg/Header/search.svg'
 import Notification from '../../svg/Header/notification.svg'
+import Login from './../Login/Login';
+import Register from './../Register/Register';
 
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 
-function Header({ onLoginClick }) {
+function Header() {
+    const { pathname } = useLocation();
+
     const hasNotifications = true;
-    const isHomePage = location.pathname === "/";
-    const isCatalog = location.pathname === "/car-catalog";
+    const isHomePage = pathname === "/";
+    const isCatalog = pathname === "/car-catalog";
+    const isAdmin = pathname === "/admin";
+
+    const [isLoginOpen, setIsLoginOpen] = useState(false);
+    const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+
+    const openLogin = () => {
+      setIsRegisterOpen(false);
+      setIsLoginOpen(true);
+    };
+
+    const openRegister = () => {
+      setIsLoginOpen(false);
+      setIsRegisterOpen(true);
+    };
+
+    const closeAll = () => {
+      setIsLoginOpen(false);
+      setIsRegisterOpen(false);
+    };
 
     return (
         <header className="header">
@@ -34,23 +58,34 @@ function Header({ onLoginClick }) {
                         </div>
                     </div>
                 )}
+                {isAdmin && (
+                    <div className=''>
+
+                    </div>
+                )}
                 <div className='options'>
-                    <button className="like-button">
-                        <img src={Like} alt="Избранное" width="35" height="35" />
-                    </button>
+                    <Link to='/admin'>
+                        <button className="like-button">
+                            <img src={Like} alt="Избранное" width="35" height="35" />
+                        </button>
+                    </Link>
                     <button className="notific-button">
                         <img src={Notification} alt="Уведомления" width="35" height="35" />
                         {hasNotifications && <span className="notification-dot"></span>}
                     </button>
-                    <button className="user-button" onClick={onLoginClick}>
+                    <button className="user-button" onClick={openLogin}>
                         <div className="user-avatar">
                             <span>U</span>
                         </div>
+                        
                     </button>
                 </div>
+                <Login isOpen={isLoginOpen} onClose={closeAll} onRegisterClick={openRegister} />
+                <Register isOpen={isRegisterOpen} onClose={closeAll} onLoginClick={openLogin} />
             </div>
         </header>
     );
+
 }
 
 export default Header;

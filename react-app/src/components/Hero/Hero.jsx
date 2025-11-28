@@ -11,7 +11,7 @@ function Hero() {
         <div className='hero'>
             <div className='hero-text'>
                 <h1>Твой опыт,<br />Твоя машина,<br />Твой путь</h1>
-                <p>Ощутите абсолютную свободу выбора с Morent - разработайте свое приключение, выбрав один из наших автомобилей премиум-класса.</p>
+                <p>Ощутите абсолютную свободу выбора с CarShare - разработайте свое приключение, выбрав один из наших автомобилей премиум-класса.</p>
                 <Link to='/car-catalog'><button className='btn-go-now'>Поехали!</button></Link>
             </div>
             <h1 className='hero-logo'>CARSHARE</h1>

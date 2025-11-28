@@ -2,7 +2,7 @@
   position: relative;
   background: #f8faff;
   padding: 0px 20px 40px;
-  overflow: hidden;
+  /* overflow: hidden; */
   border-radius: 12px;
   width: 100%
 }
