@@ -49,7 +49,7 @@
   align-items: center;
   border: 1px solid #ccc;
   border-radius: 10px;
-  /* overflow: hidden; */
+  overflow: hidden;
   margin-bottom: 20px;
 }
 
@@ -114,7 +114,7 @@
 .reg-toggle-pass {
     position: absolute;
     right: 35px;
-    top: 57%;
+    top: 63.8%;
     transform: translateY(-50%);
     background: none;
     border: none;
@@ -125,7 +125,7 @@
 .reg-toggle-confpass {
     position: absolute;
     right: 35px;
-    top: 66.5%;
+    top: 72%;
     transform: translateY(-50%);
     background: none;
     border: none;

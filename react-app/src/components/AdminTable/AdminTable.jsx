@@ -1,40 +1,48 @@
+import { useState } from "react";
+import CarsTab from "../Tabs/CarsTab";
+import Dashboard from "../Tabs/Dashboard";
+import PaymentsTab from "../Tabs/PaymentTab";
+import TripTab from "../Tabs/TripTab";
+import UsersTab from "../Tabs/UserTab";
 import "./AdminTable.css"
+import AddModel from "../AddModel/AddModel";
 
-function AdminTable() {
-    const rows = Array.from({ length: 50 }, () => ({
-    col1: "Текст в строке",
-    col2: "Текст в строке",
-    col3: "Текст в строке",
-    col4: "Текст в строке",
-    col5: "Текст в строке"
-  }));
-    return (
-        <table className="admin-table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Название столбца</th>
-                <th>Название столбца</th>
-                <th>Название столбца</th>
-                <th>Название столбца</th>
-                <th>Название столбца</th>
-              </tr>
-            </thead>
+function AdminTable({ activeTab }) {
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const handleAdd = (data) => {
+    console.log("Добавлено:", data);
+    // тут добавляешь в таблицу
+  };
 
-            <tbody>
-              {rows.map((r, i) => (
-                <tr key={i}>
-                  <td className="edit" />
-                  <td>{r.col1}</td>
-                  <td>{r.col2}</td>
-                  <td>{r.col3}</td>
-                  <td>{r.col4}</td>
-                  <td>{r.col5}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-    )
+  return (
+    <>
+      <div className="admin-body">
+        <div className="table-top">
+        <input className="search" placeholder="Поиск по таблице" />
+
+        {/* <button
+          className="filter-btn"
+          onClick={() => setIsFilterOpen(!isFilterOpen)}
+        >
+          <img src={FilterIcon} alt="filter" />
+        </button> */}
+        <button className="add-button" onClick={() => setIsAddOpen(true)}>
+          + Добавить работу
+        </button>
+      </div> 
+        {activeTab === "Dashboard" && <Dashboard />}
+        {activeTab === "trips" && <TripTab />}
+        {activeTab === "cars" && <CarsTab />}
+        {activeTab === "users" && <UsersTab />}
+        {activeTab === "payments" && <PaymentsTab />}
+      </div>
+      <AddModel
+        isOpen={isAddOpen}
+        onClose={() => setIsAddOpen(false)}
+        onAdd={handleAdd}
+      />
+    </>
+  )
 }
 
 export default AdminTable;

@@ -43,7 +43,7 @@ function Header() {
                 {isHomePage && (
                     <nav className="navigation">
                         <a href="#home" className="nav-link active">Главная</a>
-                        <a href="#vehicles" className="nav-link">Машины</a>
+                        <Link to='/car-catalog' className="nav-link">Машины</Link>
                         <a href="#details" className="nav-link">Детали</a>
                         <a href="#about" className="nav-link">Про нас</a>
                     </nav>
