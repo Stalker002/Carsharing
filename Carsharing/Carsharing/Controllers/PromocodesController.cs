@@ -38,7 +38,7 @@ public class PromocodesController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("Active/")]
+    [HttpGet("Active")]
     public async Task<ActionResult<List<PromocodeResponse>>> GetActivePromocodes()
     {
         var promocodes = await _promocodesService.GetActivePromocode();

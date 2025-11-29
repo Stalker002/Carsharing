@@ -6,10 +6,12 @@ import Car_Rent from './pages/Car_Rent/Car_Rent'
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage'
 import Admin from './pages/Admin/Admin';
 import CarDetails from './pages/CarDetails/Cardetails';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
 
 function App() {
   return (
-    <>
+    <Provider store={store}>
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/car-catalog' element={<Car_Rent />} />
@@ -17,7 +19,7 @@ function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path='*' element={<NotFoundPage />} />
       </Routes>
-    </>
+    </Provider>
   )
 }
 

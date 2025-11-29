@@ -44,7 +44,7 @@ public class MaintenanceController : ControllerBase
     }
 
     [HttpGet("byDate")]
-    public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceByCarId([FromQuery] DateOnly from,
+    public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceByDateRange([FromQuery] DateOnly from,
         [FromQuery] DateOnly to)
     {
         if (from > to)

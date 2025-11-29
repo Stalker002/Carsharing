@@ -29,7 +29,7 @@ public class Program
         builder.Services.AddScoped<IBookingRepository, BookingRepository>();
         builder.Services.AddScoped<IBookingsService, BookingsService>();
         builder.Services.AddScoped<ICarRepository, CarRepository>();
-        builder.Services.AddScoped<Application.Services.ICarsService, CarsService>();
+        builder.Services.AddScoped<ICarsService, CarsService>();
         builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
         builder.Services.AddScoped<ICategoriesService, CategoriesService>();
         builder.Services.AddScoped<IClientDocumentRepository, ClientDocumentRepository>();
