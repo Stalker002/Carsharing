@@ -26,6 +26,11 @@ public class ClientsService : IClientsService
         return await _clientRepository.GetById(id);
     }
 
+    public async Task<List<Client>> GetClientByUserId(int userId)
+    {
+        return await _clientRepository.GetClientByUserId(userId);
+    }
+
     public async Task<List<ClientDocument>> GetClientDocuments(int clientId)
     {
         return await _clientDocumentRepository.GetByClientId(clientId);
