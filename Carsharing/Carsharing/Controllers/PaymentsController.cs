@@ -25,6 +25,22 @@ public class PaymentsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("paged")]
+    public async Task<ActionResult<List<PaymentResponse>>> GetPagedPayments(
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
+    {
+        var totalCount = await _paymentService.GetCountPayments();
+        var payments = await _paymentService.GetPagedPayments(page, limit);
+
+        var response = payments
+            .Select(p => new PaymentResponse(p.Id, p.BillId, p.Sum, p.Method, p.Date)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
+
+        return Ok(response);
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<List<PaymentResponse>>> GetPaymentById(int id)
     {

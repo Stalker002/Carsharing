@@ -32,6 +32,16 @@ public class BookingsService : IBookingsService
         return await _bookingRepository.Get();
     }
 
+    public async Task<List<Booking>> GetPagedBookings(int page, int limit)
+    {
+        return await _bookingRepository.GetPaged(page, limit);
+    }
+
+    public async Task<int> GetCountBookings()
+    {
+        return await _bookingRepository.GetCount();
+    }
+
     public async Task<List<Booking>> GetBookingsById(int id)
     {
         return await _bookingRepository.GetById(id);
@@ -42,23 +52,33 @@ public class BookingsService : IBookingsService
         return await _bookingRepository.GetByClientId(clientId);
     }
 
+    public async Task<List<Booking>> GetPagedBookingsByClientId(int clientId, int page, int limit)
+    {
+        return await _bookingRepository.GetPagedByClientId(clientId, page, limit);
+    }
+
+    public async Task<int> GetCountBookingsByClientId(int clientId)
+    {
+        return await _bookingRepository.GetCountByClient(clientId);
+    }
+
     public async Task<List<Booking>> GetBookingsByCarId(int carId)
     {
         return await _bookingRepository.GetByCarId(carId);
     }
 
-    public async Task<List<BookingWithFullInfoDto>> GetBookingsWithInfo(int id)
+    public async Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int id)
     {
         var bookings = await _bookingRepository.GetById(id);
         if (bookings.Count == 0) return [];
         var clientId = bookings.Select(b => b.ClientId).FirstOrDefault();
+        var carId = bookings.Select(b => b.CarId).FirstOrDefault();
 
         var clients = await _clientRepository.GetById(clientId);
-        
-        var carId = bookings.Select(b => b.CarId).FirstOrDefault();
-        var cars = await _carRepository.GetById(carId);
 
+        var cars = await _carRepository.GetById(carId);
         var specificationId = cars.Select(c => c.SpecificationId).FirstOrDefault();
+
         var specification = await _specificationCarRepository.GetById(specificationId);
 
         var statuses = await _statusRepository.Get();

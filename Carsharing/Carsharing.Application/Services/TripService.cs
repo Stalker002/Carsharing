@@ -20,10 +20,20 @@ public class TripService : ITripService
         return await _tripRepository.Get();
     }
 
+    public async Task<List<Trip>> GetPagedTrips(int page, int limit)
+    {
+        return await _tripRepository.GetPaged(page, limit);
+    }
+
+    public async Task<int> GetCountTrips()
+    {
+        return await _tripRepository.GetCount();
+    }
+
     public async Task<List<TripWithInfoDto>> GetTripWithInfo(int id)
     {
         var trip = await _tripRepository.GetById(id);
-        var tripDetail = await _tripDetailRepository.Get();
+        var tripDetail = await _tripDetailRepository.GetByTripId(id);
 
         var response = (from d in tripDetail
             join tr in trip on d.TripId equals tr.Id

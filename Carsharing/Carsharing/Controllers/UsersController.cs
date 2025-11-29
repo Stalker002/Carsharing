@@ -41,6 +41,23 @@ public class UsersController : ControllerBase
         return Ok(response);
     }
 
+
+    [HttpGet("paged")]
+    public async Task<ActionResult<List<UsersResponse>>> GetPagedUsers(
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
+    {
+        var totalCount = await _usersService.GetUsersCount();
+        var users = await _usersService.GetPagedUsers(page, limit);
+
+        var response = users
+            .Select(u => new UsersResponse(u.Id, u.RoleId, u.Login, u.PasswordHash)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
+
+        return Ok(response);
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<List<UsersResponse>>> GetUserById(int id)
     {

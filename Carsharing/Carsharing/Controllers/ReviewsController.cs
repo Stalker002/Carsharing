@@ -2,6 +2,7 @@
 using Carsharing.Application.DTOs;
 using Carsharing.Application.Services;
 using Carsharing.Contracts;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,6 +29,22 @@ public class ReviewsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("paged")]
+    public async Task<ActionResult<List<ReviewResponse>>> GetPagedReviews(
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
+    {
+        var totalCount = await _reviewsService.GetReviewsCount();
+        var reviews = await _reviewsService.GetPagedReviews(page, limit);
+
+        var response = reviews
+            .Select(r => new ReviewResponse(r.Id, r.ClientId, r.CarId, r.Rating, r.Comment, r.Date)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
+
+        return Ok(response);
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<List<ReviewResponse>>> GetReviewById(int id)
     {
@@ -45,6 +62,23 @@ public class ReviewsController : ControllerBase
 
         var response =
             reviews.Select(r => new ReviewWithClientInfo(r.Id, r.Name, r.Surname, r.Rating, r.Comment, r.Date));
+
+        return Ok(response);
+    }
+
+    [HttpGet("pagedByCar/{carId:int}")]
+    public async Task<ActionResult<List<ReviewWithClientInfo>>> GetPagedReviewsByCarId(
+        int carId,
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
+    {
+        var totalCount = await _reviewsService.GetReviewsCountsByCarId(carId);
+        var reviews = await _reviewsService.GetPagedReviewsByCarId(carId, page, limit);
+
+        var response = reviews
+            .Select(r => new ReviewWithClientInfo(r.Id, r.Name, r.Surname, r.Rating, r.Comment, r.Date)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
 
         return Ok(response);
     }

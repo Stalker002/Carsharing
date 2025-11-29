@@ -29,17 +29,27 @@ public class BillsService : IBillsService
         return await _billRepository.Get();
     }
 
+    public async Task<List<Bill>> GetPagedBills(int page, int limit)
+    {
+        return await _billRepository.GetPaged(page, limit);
+    }
+
+    public async Task<int> GetBillCount()
+    {
+        return await _billRepository.GetCount();
+    }
+
     public async Task<List<Bill>> GetBillById(int id)
     {
         return await _billRepository.GetById(id);
     }
 
-    public async Task<List<BillWithMinInfoDto>> GetBillWithMinInfoByUserId(int userId)
+    public async Task<List<BillWithMinInfoDto>> GetPagedBillWithMinInfoByUserId(int userId, int page, int limit)
     {
         var client = await _clientRepository.GetClientByUserId(userId);
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
-        var bookings = await _bookingRepository.GetByClientId(clientId);
+        var bookings = await _bookingRepository.GetPagedByClientId(clientId, page, limit);
         var bookingId = bookings.Select(c => c.Id).ToList();
 
         var trip = await _tripRepository.GetByBookingId(bookingId);
@@ -62,6 +72,13 @@ public class BillsService : IBillsService
                         )).ToList();
 
         return response;
+    }
+
+    public async Task<int> GetCountPagedBillWithMinInfoByUser(int userId)
+    {
+        var client = await _clientRepository.GetClientByUserId(userId);
+        var clientId = client.Select(c => c.Id).FirstOrDefault();
+        return await _bookingRepository.GetCountByClient(clientId);
     }
 
     public async Task<List<BillWithInfoDto>> GetBillWithInfoById(int id)

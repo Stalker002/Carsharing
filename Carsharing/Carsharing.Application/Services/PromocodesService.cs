@@ -17,6 +17,16 @@ public class PromocodesService : IPromocodesService
         return await _promocodeRepository.Get();
     }
 
+    public async Task<List<Promocode>> GetPagedPromocodes(int page, int limit)
+    {
+        return await _promocodeRepository.GetPaged(page, limit);
+    }
+
+    public async Task<int> GetCountPromocodes()
+    {
+        return await _promocodeRepository.GetCount();
+    }
+
     public async Task<List<Promocode>> GetPromocodeById(int id)
     {
         return await _promocodeRepository.GetById(id);
@@ -27,7 +37,17 @@ public class PromocodesService : IPromocodesService
         return await _promocodeRepository.GetActive();
     }
 
-    public async Task<List<Promocode?>> GetPromocodeByCode(string code)
+    public async Task<List<Promocode>> GetPagedActivePromocodes(int page, int limit)
+    {
+        return await _promocodeRepository.GetPagedActive(page, limit);
+    }
+
+    public async Task<int> GetCountActivePromocodes()
+    {
+        return await _promocodeRepository.GetCountActive();
+    }
+
+    public async Task<List<Promocode>> GetPromocodeByCode(string code)
     {
         return await _promocodeRepository.GetByCode(code);
     }

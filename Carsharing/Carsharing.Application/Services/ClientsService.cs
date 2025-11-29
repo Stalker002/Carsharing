@@ -21,6 +21,16 @@ public class ClientsService : IClientsService
         return await _clientRepository.Get();
     }
 
+    public async Task<List<Client>> GetPagedClients(int page, int limit)
+    {
+        return await _clientRepository.GetPaged(page, limit);
+    }
+
+    public async Task<int> GetCountClients()
+    {
+        return await _clientRepository.GetCount();
+    }
+
     public async Task<List<Client>> GetClientById(int id)
     {
         return await _clientRepository.GetById(id);

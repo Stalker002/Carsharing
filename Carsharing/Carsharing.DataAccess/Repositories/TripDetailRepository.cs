@@ -34,10 +34,11 @@ public class TripDetailRepository : ITripDetailRepository
         return details;
     }
 
-    public async Task<List<TripDetail>> GetTrip()
+    public async Task<List<TripDetail>> GetByTripId(int tripId)
     {
         var detailEntities = await _context.TripDetail
             .AsNoTracking()
+            .Where(d => d.TripId == tripId)
             .ToListAsync();
 
         var details = detailEntities

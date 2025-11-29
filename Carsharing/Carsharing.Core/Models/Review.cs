@@ -2,7 +2,7 @@
 
 public class Review
 {
-    private Review(int id, int clientId, int carId, short rating, string comment, DateTime date)
+    private Review(int id, int clientId, int carId, short rating, string? comment, DateTime date)
     {
         Id = id;
         ClientId = clientId;
@@ -20,11 +20,11 @@ public class Review
 
     public short Rating { get; }
 
-    public string Comment { get; }
+    public string? Comment { get; }
 
     public DateTime Date { get; }
 
-    public static (Review review, string error) Create(int id, int clientId, int carId, short rating, string comment,
+    public static (Review review, string error) Create(int id, int clientId, int carId, short rating, string? comment,
         DateTime date)
     {
         var error = string.Empty;

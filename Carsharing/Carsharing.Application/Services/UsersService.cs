@@ -34,6 +34,16 @@ public class UsersService : IUsersService
         return await _userRepository.GetUser();
     }
 
+    public async Task<List<User>> GetPagedUsers(int page, int limit)
+    {
+        return await _userRepository.GetPagedUser(page, limit);
+    }
+
+    public async Task<int> GetUsersCount()
+    {
+        return await _userRepository.GetCount();
+    }
+
     public async Task<List<User>> GetUserById(int id)
     {
         return await _userRepository.GetUserById(id);

@@ -34,11 +34,12 @@ public class BillRepository : IBillRepository
         return bills;
     }
 
-    public async Task<List<Bill>> GetById(int id)
+    public async Task<List<Bill>> GetPaged(int page, int limit)
     {
         var billEntities = await _context.Bill
-            .Where(b => b.Id == id)
             .AsNoTracking()
+            .Skip((page - 1) * limit)
+            .Take(limit)
             .ToListAsync();
 
         var bills = billEntities
@@ -55,10 +56,15 @@ public class BillRepository : IBillRepository
         return bills;
     }
 
-    public async Task<List<Bill>> GetByTripId(int tripId)
+    public async Task<int> GetCount()
+    {
+        return await _context.Bill.CountAsync();
+    }
+
+    public async Task<List<Bill>> GetById(int id)
     {
         var billEntities = await _context.Bill
-            .Where(b => b.TripId == tripId)
+            .Where(b => b.Id == id)
             .AsNoTracking()
             .ToListAsync();
 

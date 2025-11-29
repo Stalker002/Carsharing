@@ -34,6 +34,33 @@ public class ClientRepository : IClientRepository
         return clients;
     }
 
+    public async Task<List<Client>> GetPaged(int page, int limit)
+    {
+        var clientEntities = await _context.Client
+            .AsNoTracking()
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        var clients = clientEntities
+            .Select(c => Client.Create(
+                c.Id,
+                c.UserId,
+                c.Name,
+                c.Surname,
+                c.PhoneNumber,
+                c.Email
+            ).client)
+            .ToList();
+
+        return clients;
+    }
+    
+    public async Task<int> GetCount()
+    {
+        return await _context.Client.CountAsync();
+    }
+
     public async Task<List<Client>> GetById(int id)
     {
         var clientEntities = await _context.Client
@@ -75,12 +102,7 @@ public class ClientRepository : IClientRepository
 
         return clients;
     }
-
-    public async Task<int> GetCount()
-    {
-        return await _context.Client.CountAsync();
-    }
-
+    
     public async Task<int> Create(Client client)
     {
         var (_, error) = Client.Create(

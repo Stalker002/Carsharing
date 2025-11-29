@@ -32,6 +32,22 @@ public class CarsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("paged")]
+    public async Task<ActionResult<List<CarsResponse>>> GetPagedCars(
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
+    {
+        var totalCount = await _carsService.GetCount();
+        var cars = await _carsService.GetPagedCars(page, limit);
+
+        var response = cars
+            .Select(c => new CarsResponse(c.Id, c.StatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location, c.FuelLevel)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
+
+        return Ok(response);
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<List<CarWithInfoDto>>> GetCarWithInfo(int id)
     {
@@ -52,6 +68,27 @@ public class CarsController : ControllerBase
 
         var response = cars.Select(c =>
             new CarsResponse(c.Id, c.StatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location, c.FuelLevel));
+
+        return Ok(response);
+    }
+
+    [HttpGet("pagedbyCategory")]
+    public async Task<ActionResult<List<CarsResponse>>> GetPagedReviewsByCarId(
+        List<int>? ids,
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
+    {
+
+        if (ids == null || ids.Count == 0)
+            return BadRequest("Category IDs are required.");
+
+        var totalCount = await _carsService.GetCountByCategory(ids);
+        var reviews = await _carsService.GetPagedCarsByCategoryIds(ids, page, limit);
+
+        var response = reviews
+            .Select(c => new CarsResponse(c.Id, c.StatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location, c.FuelLevel)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
 
         return Ok(response);
     }

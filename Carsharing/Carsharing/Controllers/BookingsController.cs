@@ -27,15 +27,22 @@ public class BookingsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<List<BookingsResponse>>> GetBookingById(int id)
+    [HttpGet("paged")]
+    public async Task<ActionResult<List<BookingsResponse>>> GetPagedBookings(
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
     {
-        var bookings = await _bookingsService.GetBookingsById(id);
-        var response = bookings.Select(b =>
-            new BookingsResponse(b.Id, b.StatusId, b.CarId, b.ClientId, b.StartTime, b.EndTime));
+        var totalCount = await _bookingsService.GetCountBookings();
+        var bookings = await _bookingsService.GetPagedBookings(page, limit);
+
+        var response = bookings
+            .Select(b => new BookingsResponse(b.Id, b.StatusId, b.CarId, b.ClientId, b.StartTime, b.EndTime)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
 
         return Ok(response);
     }
+
 
     [HttpGet("byClient/{clientId:int}")]
     public async Task<ActionResult<List<BookingsResponse>>> GetBookingByClientId(int clientId)
@@ -43,6 +50,23 @@ public class BookingsController : ControllerBase
         var bookings = await _bookingsService.GetBookingsByClientId(clientId);
         var response = bookings.Select(b =>
             new BookingsResponse(b.Id, b.StatusId, b.CarId, b.ClientId, b.StartTime, b.EndTime));
+
+        return Ok(response);
+    }
+
+    [HttpGet("pagedByCar/{clientId:int}")]
+    public async Task<ActionResult<List<BookingsResponse>>> GetPagedBookingByClientId(
+        int clientId,
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
+    {
+        var totalCount = await _bookingsService.GetCountBookingsByClientId(clientId);
+        var reviews = await _bookingsService.GetPagedBookingsByClientId(clientId, page, limit);
+
+        var response = reviews
+            .Select(b => new BookingsResponse(b.Id, b.StatusId, b.CarId, b.ClientId, b.StartTime, b.EndTime)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
 
         return Ok(response);
     }
@@ -60,7 +84,7 @@ public class BookingsController : ControllerBase
     [HttpGet("withInfo/{id:int}")]
     public async Task<ActionResult<List<BookingWithFullInfoDto>>> GetBookingsWithInfo(int id)
     {
-        var response = await _bookingsService.GetBookingsWithInfo(id);
+        var response = await _bookingsService.GetBookingWithInfo(id);
         return Ok(response);
     }
 

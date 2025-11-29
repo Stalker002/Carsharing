@@ -35,6 +35,34 @@ public class TripRepository : ITripRepository
         return trips;
     }
 
+    public async Task<List<Trip>> GetPaged(int page, int limit)
+    {
+        var tripEntities = await _context.Trip
+            .AsNoTracking()
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        var trips = tripEntities
+            .Select(t => Trip.Create(
+                t.Id,
+                t.BookingId,
+                t.StatusId,
+                t.TariffType,
+                t.StartTime,
+                t.EndTime,
+                t.Duration,
+                t.Distance).trip)
+            .ToList();
+
+        return trips;
+    }
+
+    public async Task<int> GetCount()
+    {
+        return await _context.Trip.CountAsync();
+    }
+
     public async Task<List<Trip>> GetById(int id)
     {
         var tripEntities = await _context.Trip

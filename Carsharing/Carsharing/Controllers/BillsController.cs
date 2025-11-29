@@ -1,8 +1,8 @@
-﻿using Carsharing.Application.Services;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Application.Services;
 using Carsharing.Contracts;
-using Carsharing.Core.Abstractions;
-using Microsoft.AspNetCore.Mvc;
 using Carsharing.Core.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
 
@@ -11,9 +11,11 @@ namespace Carsharing.Controllers;
 public class BillsController : ControllerBase
 {
     private readonly IBillsService _billsService;
+    private readonly IBookingsService _bookingsService;
 
-    public BillsController(IBillsService billsService)
+    public BillsController(IBillsService billsService, IBookingsService bookingsService)
     {
+        _bookingsService = bookingsService;
         _billsService = billsService;
     }
 
@@ -29,6 +31,28 @@ public class BillsController : ControllerBase
             b.IssueDate,
             b.Amount,
             b.RemainingAmount));
+
+        return Ok(response);
+    }
+
+    [HttpGet("paged")]
+    public async Task<ActionResult<List<BillsResponse>>> GetPagedBills(
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
+    {
+        var totalCount = await _billsService.GetBillCount();
+        var reviews = await _billsService.GetPagedBills(page, limit);
+
+        var response = reviews
+            .Select(b => new BillsResponse(b.Id,
+                b.TripId,
+                b.PromocodeId,
+                b.StatusId,
+                b.IssueDate,
+                b.Amount,
+                b.RemainingAmount)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
 
         return Ok(response);
     }
@@ -49,15 +73,28 @@ public class BillsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("byUser/{userId:int}")]
-    public async Task<ActionResult<List<BillsResponse>>> GetBillWithMinInfoByUserId(int userId)
+    [HttpGet("pagedByUser")]
+    public async Task<ActionResult<List<BillWithMinInfoDto>>> GetPagedBillWithMinInfoByUser(
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
     {
-        var result = await _billsService.GetBillWithMinInfoByUserId(userId);
+        var userId = int.Parse(User.FindFirst("userId")!.Value);
 
-        if (result.Count == 0)
-            return NotFound("Для данного пользователя счета не найдены");
+        var totalCount = await _billsService.GetCountPagedBillWithMinInfoByUser(userId);
+        var bills = await _billsService.GetPagedBillWithMinInfoByUserId(userId, page, limit);
 
-        return Ok(result);
+        var response = bills
+            .Select(b => new BillWithMinInfoDto(
+                b.Id,
+                b.StatusName,
+                b.IssueDate,
+                b.Amount,
+                b.RemainingAmount,
+                b.TariffType)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
+
+        return Ok(response);
     }
 
     [HttpGet("info/{id:int}")]

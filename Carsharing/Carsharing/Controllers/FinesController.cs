@@ -26,6 +26,22 @@ public class FinesController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("paged")]
+    public async Task<ActionResult<List<FinesResponse>>> GetPagedReviews(
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
+    {
+        var totalCount = await _finesService.GetCountFines();
+        var fines = await _finesService.GetPagedFines(page, limit);
+
+        var response = fines
+            .Select(f => new FinesResponse(f.Id, f.TripId, f.StatusId, f.Type, f.Amount, f.Date)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
+
+        return Ok(response);
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<List<FinesResponse>>> GetFineById(int id)
     {

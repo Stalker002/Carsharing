@@ -33,6 +33,32 @@ public class PromocodeRepository : IPromocodeRepository
         return promocodes;
     }
 
+    public async Task<List<Promocode>> GetPaged(int page, int limit)
+    {
+        var promocodeEntities = await _context.Promocode
+            .AsNoTracking()
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        var promocodes = promocodeEntities
+            .Select(pr => Promocode.Create(
+                pr.Id,
+                pr.StatusId,
+                pr.Code,
+                pr.Discount,
+                pr.StartDate,
+                pr.EndDate).promocode)
+            .ToList();
+
+        return promocodes;
+    }
+
+    public async Task<int> GetCount()
+    {
+        return await _context.Promocode.CountAsync();
+    }
+
     public async Task<List<Promocode>> GetById(int? id)
     {
         var promocodeEntities = await _context.Promocode
@@ -73,7 +99,34 @@ public class PromocodeRepository : IPromocodeRepository
         return promocodes;
     }
 
-    public async Task<List<Promocode?>> GetByCode(string code)
+    public async Task<List<Promocode>> GetPagedActive(int page, int limit)
+    {
+        var promocodeEntities = await _context.Promocode
+            .Where(pr => pr.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow))
+            .AsNoTracking()
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        var promocodes = promocodeEntities
+            .Select(pr => Promocode.Create(
+                pr.Id,
+                pr.StatusId,
+                pr.Code,
+                pr.Discount,
+                pr.StartDate,
+                pr.EndDate).promocode)
+            .ToList();
+
+        return promocodes;
+    }
+
+    public async Task<int> GetCountActive()
+    {
+        return await _context.Promocode.Where(pr => pr.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow)).CountAsync();
+    }
+
+    public async Task<List<Promocode>> GetByCode(string code)
     {
         var promocodeEntities = await _context.Promocode
             .Where(pr => pr.Code == code)

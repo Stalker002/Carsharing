@@ -5,11 +5,11 @@ namespace Carsharing.Core.Abstractions;
 public interface IReviewRepository
 {
     Task<List<Review>> Get();
-
+    Task<List<Review>> GetPaged(int page, int limit);
     Task<int> GetCount();
-
     Task<List<Review>> GetByCarId(int carId);
-
+    Task<List<Review>> GetPagedByCarId(int carId, int page, int limit);
+    Task<int> GetCountByCarId(int carId);
     Task<List<Review>> GetById(int id);
 
     Task<List<Review>> GetByClientId(int clientId);

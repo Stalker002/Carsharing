@@ -33,6 +33,27 @@ public class ReviewRepository : IReviewRepository
         return reviews;
     }
 
+    public async Task<List<Review>> GetPaged(int page, int limit)
+    {
+        var reviewEntities = await _context.Review
+            .AsNoTracking()
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        var reviews = reviewEntities
+            .Select(r => Review.Create(
+                r.Id,
+                r.ClientId,
+                r.CarId,
+                r.Rating,
+                r.Comment,
+                r.Date).review)
+            .ToList();
+
+        return reviews;
+    }
+
     public async Task<int> GetCount()
     {
         return await _context.Review.CountAsync();
@@ -56,6 +77,33 @@ public class ReviewRepository : IReviewRepository
             .ToList();
 
         return reviews;
+    }
+
+    public async Task<List<Review>> GetPagedByCarId(int carId, int page, int limit)
+    {
+        var reviewEntities = await _context.Review
+            .AsNoTracking()
+            .Where(r => r.CarId == carId)
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        var reviews = reviewEntities
+            .Select(r => Review.Create(
+                r.Id,
+                r.ClientId,
+                r.CarId,
+                r.Rating,
+                r.Comment,
+                r.Date).review)
+            .ToList();
+
+        return reviews;
+    }
+
+    public async Task<int> GetCountByCarId(int carId)
+    {
+        return await _context.Review.Where(r => r.CarId == carId).CountAsync();
     }
 
     public async Task<List<Review>> GetById(int id)
@@ -133,7 +181,8 @@ public class ReviewRepository : IReviewRepository
                      ?? throw new Exception("Review not found");
 
         if (clientId.HasValue)
-            review.CarId = carId.Value;
+            if (carId != null)
+                review.CarId = carId.Value;
 
         if (rating.HasValue)
             review.Rating = rating.Value;

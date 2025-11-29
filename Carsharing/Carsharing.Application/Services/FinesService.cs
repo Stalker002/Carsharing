@@ -17,6 +17,16 @@ public class FinesService : IFinesService
         return await _fineRepository.Get();
     }
 
+    public async Task<List<Fine>> GetPagedFines(int page, int limit)
+    {
+        return await _fineRepository.GetPaged(page, limit);
+    }
+
+    public async Task<int> GetCountFines()
+    {
+        return await _fineRepository.GetCount();
+    }
+
     public async Task<List<Fine>> GetFineById(int id)
     {
         return await _fineRepository.GetById(id);
@@ -29,7 +39,7 @@ public class FinesService : IFinesService
 
     public async Task<List<Fine>> GetFinesByStatusId(int statusId)
     {
-        return await _fineRepository.GetByTripId(statusId);
+        return await _fineRepository.GetByStatusId(statusId);
     }
 
     public async Task<int> CreateFine(Fine fine)

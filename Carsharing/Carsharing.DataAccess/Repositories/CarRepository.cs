@@ -34,6 +34,33 @@ public class CarRepository : ICarRepository
         return cars;
     }
 
+    public async Task<List<Car>> GetPaged(int page, int limit)
+    {
+        var carEntities = await _context.Car
+            .AsNoTracking()
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        var cars = carEntities
+            .Select(c => Car.Create(
+                c.Id,
+                c.StatusId,
+                c.TariffId,
+                c.CategoryId,
+                c.SpecificationId,
+                c.Location,
+                c.FuelLevel).car)
+            .ToList();
+
+        return cars;
+    }
+
+    public async Task<int> GetCount()
+    {
+        return await _context.Car.CountAsync();
+    }
+
     public async Task<List<Car>> GetById(int id)
     {
         var carEntities = await _context.Car
@@ -76,6 +103,36 @@ public class CarRepository : ICarRepository
         return cars;
     }
 
+    public async Task<List<Car>> GetPagedByCategoryId(List<int> categoryIds, int page, int limit)
+    {
+        var carEntities = await _context.Car
+            .Where(c => categoryIds.Contains(c.CategoryId) && c.StatusId == 1)
+            .AsNoTracking()
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        var cars = carEntities
+            .Select(c => Car.Create(
+                c.Id,
+                c.StatusId,
+                c.TariffId,
+                c.CategoryId,
+                c.SpecificationId,
+                c.Location,
+                c.FuelLevel).car)
+            .ToList();
+
+        return cars;
+    }
+
+    public async Task<int> GetCountByCategory(List<int> categoryIds)
+    {
+        return await _context.Car
+            .Where(c => categoryIds.Contains(c.CategoryId))
+            .CountAsync();
+    }
+
     public async Task<List<Car>> GetByStatusId(int statusId)
     {
         var carEntities = await _context.Car
@@ -95,11 +152,6 @@ public class CarRepository : ICarRepository
             .ToList();
 
         return cars;
-    }
-
-    public async Task<int> GetCount()
-    {
-        return await _context.Car.CountAsync();
     }
 
     public async Task<int> Create(Car car)

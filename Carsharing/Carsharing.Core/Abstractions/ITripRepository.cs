@@ -5,7 +5,8 @@ namespace Carsharing.Core.Abstractions;
 public interface ITripRepository
 {
     Task<List<Trip>> Get();
-
+    Task<List<Trip>> GetPaged(int page, int limit);
+    Task<int> GetCount();
     Task<List<Trip>> GetById(int id);
     Task<List<Trip>> GetByBookingId(List<int> bookingIds);
     Task<int> Create(Trip trip);

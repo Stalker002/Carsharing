@@ -38,6 +38,30 @@ public class UsersRepository : IUsersRepository
         return users;
     }
 
+    public async Task<List<User>> GetPagedUser(int page, int limit)
+    {
+        var userEntities = await _context.Users
+            .AsNoTracking()
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        var users = userEntities
+            .Select(u => User.Create(
+                u.Id, 
+                u.RoleId, 
+                u.Login, 
+                u.PasswordHash).user)
+            .ToList();
+
+        return users;
+    }
+
+    public async Task<int> GetCount()
+    {
+        return await _context.Users.CountAsync();
+    }
+
     public async Task<List<User>> GetUserById(int id)
     {
         var userEntities = await _context.Users

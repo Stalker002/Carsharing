@@ -32,6 +32,31 @@ public class PaymentRepository : IPaymentRepository
         return payments;
     }
 
+    public async Task<List<Payment>> GetPaged(int page, int limit)
+    {
+        var paymentEntities = await _context.Payment
+            .AsNoTracking()
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        var payments = paymentEntities
+            .Select(p => Payment.Create(
+                p.Id,
+                p.BillId,
+                p.Sum,
+                p.Method,
+                p.Date).payment)
+            .ToList();
+
+        return payments;
+    }
+
+    public async Task<int> GetCount()
+    {
+        return await _context.Payment.CountAsync();
+    }
+
     public async Task<List<Payment>> GetById(int id)
     {
         var paymentEntities = await _context.Payment

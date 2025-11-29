@@ -17,6 +17,16 @@ public class PaymentService : IPaymentService
         return await _paymentRepository.Get();
     }
 
+    public async Task<List<Payment>> GetPagedPayments(int page, int limit)
+    {
+        return await _paymentRepository.GetPaged(page, limit);
+    }
+
+    public async Task<int> GetCountPayments()
+    {
+        return await _paymentRepository.GetCount();
+    }
+
     public async Task<List<Payment>> GetPaymentById(int id)
     {
         return await _paymentRepository.GetById(id);

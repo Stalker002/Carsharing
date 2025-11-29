@@ -33,6 +33,32 @@ public class FineRepository : IFineRepository
         return fines;
     }
 
+    public async Task<List<Fine>> GetPaged(int page, int limit)
+    {
+        var fineEntities = await _context.Fine
+            .AsNoTracking()
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        var fines = fineEntities
+            .Select(f => Fine.Create(
+                f.Id,
+                f.TripId,
+                f.StatusId,
+                f.Type,
+                f.Amount,
+                f.Date).fine)
+            .ToList();
+
+        return fines;
+    }
+
+    public async Task<int> GetCount()
+    {
+        return await _context.Fine.CountAsync();
+    }
+
     public async Task<List<Fine>> GetById(int id)
     {
         var fineEntities = await _context.Fine

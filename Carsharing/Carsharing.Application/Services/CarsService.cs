@@ -28,6 +28,11 @@ public class CarsService : ICarsService
         return await _carRepository.Get();
     }
 
+    public async Task<List<Car>> GetPagedCars(int page, int limit)
+    {
+        return await _carRepository.GetPaged(page, limit);
+    }
+
     public async Task<int> GetCount()
     {
         return await _carRepository.GetCount();
@@ -78,9 +83,14 @@ public class CarsService : ICarsService
         return await _carRepository.GetByCategoryId(categoryIds);
     }
 
-    public async Task<List<Car>> GetCarsByStatusId(int statusId)
+    public async Task<List<Car>> GetPagedCarsByCategoryIds(List<int> categoryIds, int page, int limit)
     {
-        return await _carRepository.GetByStatusId(statusId);
+        return await _carRepository.GetPagedByCategoryId(categoryIds, page, limit);
+    }
+
+    public async Task<int> GetCountByCategory(List<int> categoryIds)
+    {
+        return await _carRepository.GetCountByCategory(categoryIds);
     }
 
     public async Task<int> CreateCar(Car car)

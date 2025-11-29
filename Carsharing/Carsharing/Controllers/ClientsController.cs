@@ -26,6 +26,22 @@ public class ClientsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("paged")]
+    public async Task<ActionResult<List<ClientsResponse>>> GetPagedClients(
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
+    {
+        var totalCount = await _clientsService.GetCountClients();
+        var clients = await _clientsService.GetPagedClients(page, limit);
+
+        var response = clients
+            .Select(cl => new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
+
+        return Ok(response);
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<List<ClientsResponse>>> GetClientById(int id)
     {

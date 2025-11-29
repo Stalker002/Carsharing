@@ -33,6 +33,32 @@ public class BookingRepository : IBookingRepository
         return bookings;
     }
 
+    public async Task<List<Booking>> GetPaged(int page, int limit)
+    {
+        var bookingEntity = await _context.Booking
+            .AsNoTracking()
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        var bookings = bookingEntity
+            .Select(b => Booking.Create(
+                b.Id,
+                b.StatusId,
+                b.CarId,
+                b.ClientId,
+                b.StartTime,
+                b.EndTime).booking)
+            .ToList();
+
+        return bookings;
+    }
+
+    public async Task<int> GetCount()
+    {
+        return await _context.Booking.CountAsync();
+    }
+
     public async Task<List<Booking>> GetById(int id)
     {
         var bookingEntity = await _context.Booking
@@ -71,6 +97,33 @@ public class BookingRepository : IBookingRepository
             .ToList();
 
         return bookings;
+    }
+
+    public async Task<List<Booking>> GetPagedByClientId(int clientId, int page, int limit)
+    {
+        var bookingEntity = await _context.Booking
+            .Where(b => b.ClientId == clientId)
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var bookings = bookingEntity
+            .Select(b => Booking.Create(
+                b.Id,
+                b.StatusId,
+                b.CarId,
+                b.ClientId,
+                b.StartTime,
+                b.EndTime).booking)
+            .ToList();
+
+        return bookings;
+    }
+
+    public async Task<int> GetCountByClient(int clientId)
+    {
+        return await _context.Booking.Where(b => b.ClientId == clientId).CountAsync();
     }
 
     public async Task<List<Booking>> GetByCarId(int carId)

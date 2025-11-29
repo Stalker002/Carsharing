@@ -21,12 +21,29 @@ public class TripsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<TripResponse>>> GetTrip()
+    public async Task<ActionResult<List<TripResponse>>> GetTrips()
     {
         var trips = await _tripService.GetTrips();
 
         var response = trips.Select(tr => new TripResponse(tr.Id, tr.BookingId, tr.StatusId, tr.TariffType,
             tr.StartTime, tr.EndTime, tr.Duration, tr.Distance));
+
+        return Ok(response);
+    }
+
+    [HttpGet("paged")]
+    public async Task<ActionResult<List<TripResponse>>> GetPagedTrips(
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
+    {
+        var totalCount = await _tripService.GetCountTrips();
+        var trips = await _tripService.GetPagedTrips(page, limit);
+
+        var response = trips
+            .Select(tr => new TripResponse(tr.Id, tr.BookingId, tr.StatusId, tr.TariffType,
+                tr.StartTime, tr.EndTime, tr.Duration, tr.Distance)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
 
         return Ok(response);
     }
