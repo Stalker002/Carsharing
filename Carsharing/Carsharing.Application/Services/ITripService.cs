@@ -8,6 +8,8 @@ public interface ITripService
     Task<List<Trip>> GetTrips();
     Task<List<Trip>> GetPagedTrips(int page, int limit);
     Task<int> GetCountTrips();
+    Task<List<TripWithMinInfoDto>> GetPagedTripWithMinInfoByUserId(int userId, int page, int limit);
+    Task<int> GetCountPagedBillWithMinInfoByUser(int userId);
     Task<List<TripWithInfoDto>> GetTripWithInfo(int id);
     Task<int> CreateTrip(Trip trip);
 

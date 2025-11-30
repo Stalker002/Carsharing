@@ -24,7 +24,13 @@ export const createInsurance = (data) => makeRequest({
     data,
 });
 
-export const deleteInsurancel = (id, config) => makeRequest({
+export const updateInsurance = (id, data) => makeRequest({
+    method: "PUT",
+    url: `${URL}/${id}`,
+    data,
+});
+
+export const deleteInsurance = (id, config) => makeRequest({
     method: "DELETE",
     url: `${URL}/${id}`,
     ...config,

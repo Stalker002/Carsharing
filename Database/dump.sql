@@ -597,6 +597,7 @@ CREATE TABLE public.cars (
     car_specification_id integer NOT NULL,
     car_location character varying(50) NOT NULL,
     car_fuel_level numeric(5,2) DEFAULT 0 NOT NULL,
+    car_image_path character varying(300),
     CONSTRAINT chk_fuel_level CHECK ((car_fuel_level >= (0)::numeric))
 );
 

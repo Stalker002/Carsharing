@@ -6,9 +6,10 @@ export const getBookings = (config) => makeRequest({
     ...config,
 });
 
-export const getMyBookings = (clientId, config) => makeRequest({
+export const getMyBookings = (config) => makeRequest({
     method: "GET",
-    url: `${URL}/byClient/${clientId}`,
+    url: `${URL}/pagedByClient`,
+    withCredentials: true,
     ...config,
 });
 
@@ -21,6 +22,12 @@ export const getBookingInfo = (id, config) => makeRequest({
 export const createBooking = (data) => makeRequest({
     method: "POST",
     url: URL,
+    data,
+});
+
+export const updateBooking = (id, data) => makeRequest({
+    method: "PUT",
+    url: `${URL}/${id}`,
     data,
 });
 

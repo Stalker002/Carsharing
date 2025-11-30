@@ -28,7 +28,8 @@ public class CarRepository : ICarRepository
                 c.CategoryId,
                 c.SpecificationId,
                 c.Location,
-                c.FuelLevel).car)
+                c.FuelLevel,
+                c.ImagePath).car)
             .ToList();
 
         return cars;
@@ -50,7 +51,8 @@ public class CarRepository : ICarRepository
                 c.CategoryId,
                 c.SpecificationId,
                 c.Location,
-                c.FuelLevel).car)
+                c.FuelLevel,
+                c.ImagePath).car)
             .ToList();
 
         return cars;
@@ -76,7 +78,8 @@ public class CarRepository : ICarRepository
                 c.CategoryId,
                 c.SpecificationId,
                 c.Location,
-                c.FuelLevel).car)
+                c.FuelLevel,
+                c.ImagePath).car)
             .ToList();
 
         return cars;
@@ -97,7 +100,8 @@ public class CarRepository : ICarRepository
                 c.CategoryId,
                 c.SpecificationId,
                 c.Location,
-                c.FuelLevel).car)
+                c.FuelLevel,
+                c.ImagePath).car)
             .ToList();
 
         return cars;
@@ -120,7 +124,8 @@ public class CarRepository : ICarRepository
                 c.CategoryId,
                 c.SpecificationId,
                 c.Location,
-                c.FuelLevel).car)
+                c.FuelLevel,
+                c.ImagePath).car)
             .ToList();
 
         return cars;
@@ -148,7 +153,8 @@ public class CarRepository : ICarRepository
                 c.CategoryId,
                 c.SpecificationId,
                 c.Location,
-                c.FuelLevel).car)
+                c.FuelLevel,
+                c.ImagePath).car)
             .ToList();
 
         return cars;
@@ -163,7 +169,8 @@ public class CarRepository : ICarRepository
             car.CategoryId,
             car.SpecificationId,
             car.Location,
-            car.FuelLevel);
+            car.FuelLevel,
+            car.ImagePath);
 
         if (!string.IsNullOrWhiteSpace(error))
             throw new ArgumentException($"Create exception car: {error}");
@@ -216,7 +223,8 @@ public class CarRepository : ICarRepository
             car.CategoryId,
             car.SpecificationId,
             car.Location,
-            car.FuelLevel);
+            car.FuelLevel,
+            car.ImagePath);
 
         if (!string.IsNullOrWhiteSpace(error))
             throw new ArgumentException($"Create exception car: {error}");

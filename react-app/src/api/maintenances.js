@@ -24,6 +24,12 @@ export const createMaintenance = (data) => makeRequest({
     data,
 });
 
+export const updateMaintenance = (data) => makeRequest({
+    method: "PUT",
+    url: `${URL}/${id}`,
+    data,
+});
+
 export const deleteMaintenance = (id, config) => makeRequest({
     method: "DELETE",
     url: `${URL}/${id}`,

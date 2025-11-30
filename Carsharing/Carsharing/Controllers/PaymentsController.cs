@@ -16,7 +16,7 @@ public class PaymentsController : ControllerBase
         _paymentService = paymentService;
     }
 
-    [HttpGet]
+    [HttpGet("unpaged")]
     public async Task<ActionResult<List<PaymentResponse>>> GetPayments()
     {
         var payments = await _paymentService.GetPayments();
@@ -25,7 +25,7 @@ public class PaymentsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("paged")]
+    [HttpGet]
     public async Task<ActionResult<List<PaymentResponse>>> GetPagedPayments(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)

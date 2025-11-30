@@ -107,6 +107,11 @@ public class TripRepository : ITripRepository
         return trips;
     }
 
+    public async Task<int> GetCountByBooking(List<int> bookingIds)
+    {
+        return await _context.Trip.Where(tr => bookingIds.Contains(tr.BookingId)).CountAsync();
+    }
+
     public async Task<int> Create(Trip trip)
     {
         var (_, error) = Trip.Create(

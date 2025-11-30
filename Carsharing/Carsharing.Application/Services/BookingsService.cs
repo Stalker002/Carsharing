@@ -47,18 +47,27 @@ public class BookingsService : IBookingsService
         return await _bookingRepository.GetById(id);
     }
 
-    public async Task<List<Booking>> GetBookingsByClientId(int clientId)
+    public async Task<List<Booking>> GetBookingsByClient(int userId)
     {
+        var client = await _clientRepository.GetClientByUserId(userId);
+        var clientId = client.Select(c => c.Id).FirstOrDefault();
+
         return await _bookingRepository.GetByClientId(clientId);
     }
 
-    public async Task<List<Booking>> GetPagedBookingsByClientId(int clientId, int page, int limit)
+    public async Task<List<Booking>> GetPagedBookingsByClient(int userId, int page, int limit)
     {
+        var client = await _clientRepository.GetClientByUserId(userId);
+        var clientId = client.Select(c => c.Id).FirstOrDefault();
+
         return await _bookingRepository.GetPagedByClientId(clientId, page, limit);
     }
 
-    public async Task<int> GetCountBookingsByClientId(int clientId)
+    public async Task<int> GetCountBookingsByClient(int userId)
     {
+        var client = await _clientRepository.GetClientByUserId(userId);
+        var clientId = client.Select(c => c.Id).FirstOrDefault();
+
         return await _bookingRepository.GetCountByClient(clientId);
     }
 

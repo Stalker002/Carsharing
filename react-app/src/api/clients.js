@@ -6,9 +6,10 @@ export const getClients = (config) => makeRequest({
     ...config,
 });
 
-export const getClientDocuments = (clientId, config) => makeRequest({
+export const getMyClientDocuments = (config) => makeRequest({
     method: "GET",
-    url: `${URL}/Documents/${clientId}`,
+    url: `${URL}/Documents`,
+    withCredentials: true,
     ...config
 });
 
@@ -22,6 +23,12 @@ export const getMyClient = (config) => makeRequest({
 export const createClient = (data) => makeRequest({
     method: "POST",
     url: `${URL}/with-user`,
+    data,
+});
+
+export const updateClient = (id, data) => makeRequest({
+    method: "PUT",
+    url: `${URL}/${id}`,
     data,
 });
 

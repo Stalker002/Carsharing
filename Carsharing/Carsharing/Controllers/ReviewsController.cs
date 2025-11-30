@@ -2,7 +2,6 @@
 using Carsharing.Application.DTOs;
 using Carsharing.Application.Services;
 using Carsharing.Contracts;
-using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +18,7 @@ public class ReviewsController : ControllerBase
         _reviewsService = reviewsService;
     }
 
-    [HttpGet]
+    [HttpGet("unpaged")]
     public async Task<ActionResult<List<ReviewResponse>>> GetReviews()
     {
         var reviews = await _reviewsService.GetReviews();
@@ -29,7 +28,7 @@ public class ReviewsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("paged")]
+    [HttpGet]
     public async Task<ActionResult<List<ReviewResponse>>> GetPagedReviews(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)

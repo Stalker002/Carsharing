@@ -16,7 +16,7 @@ public class FinesController : ControllerBase
         _finesService = finesService;
     }
 
-    [HttpGet]
+    [HttpGet("unpaged")]
     public async Task<ActionResult<List<FinesResponse>>> GetFines()
     {
         var fines = await _finesService.GetFines();
@@ -26,7 +26,7 @@ public class FinesController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("paged")]
+    [HttpGet]
     public async Task<ActionResult<List<FinesResponse>>> GetPagedReviews(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)

@@ -12,6 +12,12 @@ export const createCategory = (data) => makeRequest({
     data,
 });
 
+export const updateCategory = (id, data) => makeRequest({
+    method: "PUT",
+    url: `${URL}/${id}`,
+    data,
+});
+
 export const deleteCategory = (id, config) => makeRequest({
     method: "DELETE",
     url: `${URL}/${id}`,

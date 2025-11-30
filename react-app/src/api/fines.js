@@ -18,6 +18,12 @@ export const createFine = (data) => makeRequest({
     data,
 });
 
+export const updateFine = (id, data) => makeRequest({
+    method: "PUT",
+    url: `${URL}/${id}`,
+    data,
+});
+
 export const deleteFine = (id, config) => makeRequest({
     method: "DELETE",
     url: `${URL}/${id}`,

@@ -8,13 +8,19 @@ export const getReviews = (config) => makeRequest({
 
 export const getReviewsByCar = (carId, config) => makeRequest({
     method: "GET",
-    url: `${URL}/byCar/${carId}`,
+    url: `${URL}/pagedByCar/${carId}`,
     ...config
 });
 
 export const createReview = (data) => makeRequest({
     method: "POST",
     url: URL,
+    data,
+});
+
+export const updateReview = (id, data) => makeRequest({
+    method: "PUT",
+    url: `${URL}/${id}`,
     data,
 });
 

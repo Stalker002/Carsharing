@@ -18,6 +18,12 @@ export const createPayment = (data) => makeRequest({
     data,
 });
 
+export const updatePayment = (id, data) => makeRequest({
+    method: "PUT",
+    url: `${URL}/${id}`,
+    data,
+});
+
 export const deletePayment = (id, config) => makeRequest({
     method: "DELETE",
     url: `${URL}/${id}`,

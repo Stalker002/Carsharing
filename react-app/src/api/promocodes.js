@@ -8,13 +8,19 @@ export const getPromocodes = (config) => makeRequest({
 
 export const getActivePromocodes = (config) => makeRequest({
     method: "GET",
-    url: `${URL}/Active`,
+    url: `${URL}/pagedActive`,
     ...config
 });
 
 export const createPromocode = (data) => makeRequest({
     method: "POST",
     url: URL,
+    data,
+});
+
+export const updatePromocode = (id, data) => makeRequest({
+    method: "PUT",
+    url: `${URL}/${id}`,
     data,
 });
 

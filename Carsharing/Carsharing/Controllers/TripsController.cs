@@ -20,7 +20,7 @@ public class TripsController : ControllerBase
         _tripService = tripService;
     }
 
-    [HttpGet]
+    [HttpGet("unpaged")]
     public async Task<ActionResult<List<TripResponse>>> GetTrips()
     {
         var trips = await _tripService.GetTrips();
@@ -31,7 +31,7 @@ public class TripsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("paged")]
+    [HttpGet]
     public async Task<ActionResult<List<TripResponse>>> GetPagedTrips(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -48,11 +48,30 @@ public class TripsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("pagedByClient")]
+    public async Task<ActionResult<List<TripWithMinInfoDto>>> GetPagedTripsByClient(
+        [FromQuery(Name = "_page")] int page = 1,
+        [FromQuery(Name = "_limit")] int limit = 25)
+    {
+        var userId = int.Parse(User.FindFirst("userId")!.Value);
+
+        var totalCount = await _tripService.GetCountPagedBillWithMinInfoByUser(userId);
+        var trips = await _tripService.GetPagedTripWithMinInfoByUserId(userId, page, limit);
+
+        var response = trips
+            .Select(tr => new TripWithMinInfoDto(tr.Id, tr.BookingId, tr.StatusName, tr.TariffType, tr.StartTime,
+                tr.EndTime, tr.Duration, tr.Distance)).ToList();
+
+        Response.Headers.Append("x-total-count", totalCount.ToString());
+
+        return Ok(response);
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<List<TripWithInfoDto>>> GetTripWithInfo(int id)
     {
         var tripWithInfo = await _tripService.GetTripWithInfo(id);
-        var response = tripWithInfo.Select(t => new TripWithInfoDto(t.Id, t.BookingId, t.StatusId, t.StartLocation,
+        var response = tripWithInfo.Select(t => new TripWithInfoDto(t.Id, t.BookingId, t.StatusName, t.StartLocation,
             t.EndLocation, t.InsuranceActive, t.FuelUsed, t.Refueled, t.TariffType, t.StartTime, t.EndTime, t.Duration,
             t.Distance));
 

@@ -3,6 +3,7 @@ using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using static System.Net.Mime.MediaTypeNames;
 using ICarsService = Carsharing.Application.Services.ICarsService;
 
 namespace Carsharing.Controllers;
@@ -22,7 +23,7 @@ public class CarsController : ControllerBase
         _carsService = carsService;
     }
 
-    [HttpGet]
+    [HttpGet("unpaged")]
     public async Task<ActionResult<List<CarsResponse>>> GetCars()
     {
         var cars = await _carsService.GetCars();
@@ -32,7 +33,7 @@ public class CarsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("paged")]
+    [HttpGet]
     public async Task<ActionResult<List<CarsResponse>>> GetPagedCars(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -48,12 +49,22 @@ public class CarsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("with-info/{id:int}")]
     public async Task<ActionResult<List<CarWithInfoDto>>> GetCarWithInfo(int id)
     {
         var carsWithInfo = await _carsService.GetCarWithInfo(id);
         var response = carsWithInfo.Select(c => new CarWithInfoDto(c.Id, c.StatusName, c.PricePerMinute, c.PricePerKm,
             c.PricePerDay, c.CategoryName, c.FuelType, c.Model, c.Transmission, c.Year,c.StateNumber, c.MaxFuel, c.Location, c.FuelLevel));
+
+        return Ok(response);
+    }
+
+    [HttpGet("with-minInfo/{id:int}")]
+    public async Task<ActionResult<List<CarWithInfoDto>>> GetCarWithMinInfo(int id)
+    {
+        var carsWithMinInfo = await _carsService.GetCarWithMinInfo(id);
+        var response = carsWithMinInfo.Select(c => new CarWithMinInfoDto(c.Id, c.StatusName,
+            c.PricePerDay, c.CategoryName, c.FuelType, c.Model, c.Transmission));
 
         return Ok(response);
     }
@@ -72,9 +83,9 @@ public class CarsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("pagedbyCategory")]
-    public async Task<ActionResult<List<CarsResponse>>> GetPagedReviewsByCarId(
-        List<int>? ids,
+    [HttpGet("pagedByCategory")]
+    public async Task<ActionResult<List<CarsResponse>>> GetPagedCarsByCategories(
+        [FromQuery] List<int>? ids,
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
     {
@@ -94,7 +105,8 @@ public class CarsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<int>> CreateCar([FromBody] CarsCreateRequest request)
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<int>> CreateCar([FromBody] CarsCreateRequest request, [FromForm] IFormFile image)
     {
         var (tariff, errorTariff) = Tariff.Create(
             0,
@@ -135,7 +147,8 @@ public class CarsController : ControllerBase
             request.CategoryId,
             specificationId,
             request.Location,
-            request.FuelLevel);
+            request.FuelLevel,
+            null);
 
         if (!string.IsNullOrWhiteSpace(error))
         {
@@ -147,6 +160,36 @@ public class CarsController : ControllerBase
         var carId = await _carsService.CreateCar(cars);
 
         return Ok(carId);
+    }
+
+    [HttpPost("{id:int}/image")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadCarImage(
+        int id,
+        [FromForm] IFormFile? image)
+    {
+        if (image == null)
+            return BadRequest("Image is required.");
+
+        var car = await _carsService.GetCarById(id);
+
+        var ext = Path.GetExtension(image.FileName);
+        var fileName = $"{Guid.NewGuid()}{ext}";
+        var saveDir = Path.Combine("wwwroot", "images", "cars");
+
+        Directory.CreateDirectory(saveDir);
+
+        var filePath = Path.Combine(saveDir, fileName);
+
+        await using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await image.CopyToAsync(stream);
+        }
+
+        car.ImagePath = $"/images/cars/{fileName}";
+        await _carsService.UpdateCar(id);
+
+        return Ok(new { imageUrl = car.ImagePath });
     }
 
     [HttpPut("{id:int}")]

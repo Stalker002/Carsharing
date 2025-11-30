@@ -27,6 +27,13 @@ export const createUser = (data) => makeRequest({
     data,
 });
 
+export const updateUser = (id, data) => makeRequest({
+    method: "PUT",
+    url: `${URL}/${id}`,
+    withCredentials: true,
+    data,
+});
+
 export const deleteUser = (id, config) => makeRequest({
     method: "DELETE",
     url: `${URL}/${id}`,

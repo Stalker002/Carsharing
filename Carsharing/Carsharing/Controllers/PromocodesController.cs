@@ -16,7 +16,7 @@ public class PromocodesController : ControllerBase
         _promocodesService = promocodesService;
     }
 
-    [HttpGet]
+    [HttpGet("unpaged")]
     public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodes()
     {
         var promocodes = await _promocodesService.GetPromocodes();
@@ -27,7 +27,7 @@ public class PromocodesController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("paged")]
+    [HttpGet]
     public async Task<ActionResult<List<PromocodeResponse>>> GetPagedPromocodes(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)

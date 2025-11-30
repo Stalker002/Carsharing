@@ -12,15 +12,21 @@ export const getCarInfo = (id, config) => makeRequest({
     ...config,
 });
 
-export const getCarByCategory = (id, config) => makeRequest({
+export const getCarByCategory = (ids, config) => makeRequest({
     method: "GET",
-    url: `${URL}/byCategory`,
+    url: `${URL}/pagedByCategory`,
     ...config,
 });
 
 export const createCar = (data) => makeRequest({
     method: "POST",
     url: URL,
+    data,
+});
+
+export const updateCar = (id, data) => makeRequest({
+    method: "PUT",
+    url: `${URL}/${id}`,
     data,
 });
 

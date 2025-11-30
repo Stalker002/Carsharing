@@ -11,15 +11,13 @@ namespace Carsharing.Controllers;
 public class BillsController : ControllerBase
 {
     private readonly IBillsService _billsService;
-    private readonly IBookingsService _bookingsService;
 
-    public BillsController(IBillsService billsService, IBookingsService bookingsService)
+    public BillsController(IBillsService billsService)
     {
-        _bookingsService = bookingsService;
         _billsService = billsService;
     }
 
-    [HttpGet]
+    [HttpGet("unpaged")]
     public async Task<ActionResult<List<BillsResponse>>> GetBills()
     {
         var bills = await _billsService.GetBills();
@@ -35,7 +33,7 @@ public class BillsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("paged")]
+    [HttpGet]
     public async Task<ActionResult<List<BillsResponse>>> GetPagedBills(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)

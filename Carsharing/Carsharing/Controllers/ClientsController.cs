@@ -17,7 +17,7 @@ public class ClientsController : ControllerBase
         _clientsService = clientsService;
     }
 
-    [HttpGet]
+    [HttpGet("unpaged")]
     public async Task<ActionResult<List<ClientsResponse>>> GetClients()
     {
         var clients = await _clientsService.GetClients();
@@ -26,7 +26,7 @@ public class ClientsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("paged")]
+    [HttpGet]
     public async Task<ActionResult<List<ClientsResponse>>> GetPagedClients(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -55,16 +55,19 @@ public class ClientsController : ControllerBase
     public async Task<ActionResult<List<ClientsResponse>>> GetClientByUserId()
     {
         var userId = int.Parse(User.FindFirst("userId")!.Value);
+
         var clients = await _clientsService.GetClientByUserId(userId);
         var response = clients.Select(cl =>
             new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email));
         return Ok(response);
     }
 
-    [HttpGet("Documents/{clientId:int}")]
-    public async Task<ActionResult<List<ClientsResponse>>> GetClientDocuments(int clientId)
+    [HttpGet("Documents")]
+    public async Task<ActionResult<List<ClientsResponse>>> GetClientDocuments()
     {
-        var clients = await _clientsService.GetClientDocuments(clientId);
+        var userId = int.Parse(User.FindFirst("userId")!.Value);
+
+        var clients = await _clientsService.GetClientDocuments(userId);
         var response = clients.Select(d =>
             new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.Number, d.IssueDate, d.ExpiryDate, d.FilePath));
         return Ok(response);

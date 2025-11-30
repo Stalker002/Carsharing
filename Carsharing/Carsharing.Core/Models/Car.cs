@@ -7,7 +7,7 @@ public class Car
     public const int MaxFuelLevelLength = 200;
 
     private Car(int id, int statusId, int tariffId, int categoryId, int specificationId,
-        string location, decimal fuelLevel)
+        string location, decimal fuelLevel, string? imagePath)
     {
         Id = id;
         Location = location;
@@ -16,6 +16,7 @@ public class Car
         CategoryId = categoryId;
         SpecificationId = specificationId;
         FuelLevel = fuelLevel;
+        ImagePath = imagePath;
     }
 
     public int Id { get; }
@@ -32,8 +33,10 @@ public class Car
 
     public decimal FuelLevel { get; }
 
+    public string? ImagePath { get; }
+
     public static (Car car, string error) Create(int id, int statusId, int tariffId,
-        int categoryId, int specificationId, string location, decimal fuelLevel)
+        int categoryId, int specificationId, string location, decimal fuelLevel, string? imagePath)
     {
         var error = string.Empty;
         var allowedStatuses = new[] { 1, 2, 3, 4 };
@@ -55,7 +58,6 @@ public class Car
         if (location.Length > MaxLocationLength)
             error = $"Car location can't be longer than {MaxLocationLength} symbols";
 
-
         error = fuelLevel switch
         {
             > MaxFuelLevelLength => "There can't be that much fuel in the car.",
@@ -63,7 +65,7 @@ public class Car
             _ => error
         };
 
-        var car = new Car(id, statusId, tariffId, categoryId, specificationId, location, fuelLevel);
+        var car = new Car(id, statusId, tariffId, categoryId, specificationId, location, fuelLevel, imagePath);
 
         return (car, error);
     }

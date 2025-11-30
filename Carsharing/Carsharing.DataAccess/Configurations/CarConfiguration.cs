@@ -46,6 +46,10 @@ public class CarConfiguration : IEntityTypeConfiguration<CarEntity>
             .HasDefaultValue(0)
             .ValueGeneratedOnAdd();
 
+        builder.Property(c => c.ImagePath)
+            .HasColumnName("car_image_path")
+            .IsRequired();
+
         builder.HasIndex(c => c.SpecificationId)
             .IsUnique();
 

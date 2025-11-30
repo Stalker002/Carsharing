@@ -8,7 +8,9 @@ public interface ICarsService
     Task<List<Car>> GetCars();
     Task<List<Car>> GetPagedCars(int page, int limit);
     Task<int> GetCount();
+    Task<List<Car>> GetCarById(int id);
     Task<List<CarWithInfoDto>> GetCarWithInfo(int id);
+    Task<List<CarWithMinInfoDto>> GetCarWithMinInfo(int id);
     Task<List<Car>> GetCarsByCategoryIds(List<int> categoryIds);
     Task<List<Car>> GetPagedCarsByCategoryIds(List<int> categoryIds, int page, int limit);
     Task<int> GetCountByCategory(List<int> categoryIds);

@@ -16,6 +16,8 @@ public class CarEntity
 
     public decimal FuelLevel { get; set; }
 
+    public string? ImagePath { get; set; }
+
     public ICollection<ReviewEntity> Reviews { get; set; } = new List<ReviewEntity>();
 
     public ICollection<MaintenanceEntity> Maintenance { get; set; } = new List<MaintenanceEntity>();

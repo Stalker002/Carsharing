@@ -9,7 +9,7 @@ public interface IClientsService
     Task<int> GetCountClients();
     Task<List<Client>> GetClientById(int id);
     Task<List<Client>> GetClientByUserId(int userId);
-    Task<List<ClientDocument>> GetClientDocuments(int clientId);
+    Task<List<ClientDocument>> GetClientDocuments(int userId);
     Task<int> CreateClient(Client client);
     Task<int> UpdateClient(int id, int userId, string? name, string? surname, string? phoneNumber, string? email);
     Task<int> DeleteClient(int id);

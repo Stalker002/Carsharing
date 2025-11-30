@@ -6,9 +6,10 @@ export const getBills = (config) => makeRequest({
     ...config,
 });
 
-export const getMyBills = (userId, config) => makeRequest({
+export const getMyBills = (config) => makeRequest({
     method: "GET",
-    url: `${URL}/byUser/${userId}`,
+    url: `${URL}/pagedByUser`,
+    withCredentials: true,
     ...config
 });
 
@@ -21,6 +22,12 @@ export const getInfoBill = (id, config) => makeRequest({
 export const createBill = (data) => makeRequest({
     method: "POST",
     url: URL,
+    data,
+});
+
+export const updateBill = (id, data) => makeRequest({
+    method: "PUT",
+    url: `${URL}/${id}`,
     data,
 });
 

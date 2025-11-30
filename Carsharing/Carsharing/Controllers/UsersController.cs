@@ -33,7 +33,7 @@ public class UsersController : ControllerBase
         return Ok(new { Message = "Logged out" });
     }
 
-    [HttpGet]
+    [HttpGet("unpaged")]
     public async Task<ActionResult<List<UsersResponse>>> GetUsers()
     {
         var users = await _usersService.GetUsers();
@@ -42,7 +42,7 @@ public class UsersController : ControllerBase
     }
 
 
-    [HttpGet("paged")]
+    [HttpGet]
     public async Task<ActionResult<List<UsersResponse>>> GetPagedUsers(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
