@@ -15,7 +15,7 @@ public interface ICarRepository
     Task<int> GetCount();
     Task<int> Create(Car car);
     Task<int> Update(int id, int? statusId, int? tariffId, int? categoryId, int? specificationId,
-        string? location, decimal? fuelLevel);
+        string? location, decimal? fuelLevel, string? imagePath);
 
     Task<int> Delete(int id);
 }

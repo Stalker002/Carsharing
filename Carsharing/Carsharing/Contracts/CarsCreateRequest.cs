@@ -18,4 +18,5 @@ public record CarsCreateRequest(
     decimal MaxFuel,
     decimal FuelPerKm,
     string Location, 
-    decimal FuelLevel);
+    decimal FuelLevel,
+    IFormFile Image);

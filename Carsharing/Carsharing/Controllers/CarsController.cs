@@ -3,7 +3,6 @@ using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using static System.Net.Mime.MediaTypeNames;
 using ICarsService = Carsharing.Application.Services.ICarsService;
 
 namespace Carsharing.Controllers;
@@ -15,9 +14,11 @@ public class CarsController : ControllerBase
     private readonly ICarsService _carsService;
     private readonly ITariffsService _tariffsService;
     private readonly ISpecificationsCarService _specificationsCar;
+    private readonly IWebHostEnvironment _env;
 
-    public CarsController(ICarsService carsService, ITariffsService tariffsService, ISpecificationsCarService specificationsCar)
+    public CarsController(ICarsService carsService, ITariffsService tariffsService, ISpecificationsCarService specificationsCar, IWebHostEnvironment env)
     {
+        _env = env;
         _specificationsCar = specificationsCar;
         _tariffsService = tariffsService;
         _carsService = carsService;
@@ -28,7 +29,7 @@ public class CarsController : ControllerBase
     {
         var cars = await _carsService.GetCars();
         var response = cars.Select(c =>
-            new CarsResponse(c.Id, c.StatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location, c.FuelLevel));
+            new CarsResponse(c.Id, c.StatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location, c.FuelLevel, c.ImagePath));
 
         return Ok(response);
     }
@@ -42,7 +43,7 @@ public class CarsController : ControllerBase
         var cars = await _carsService.GetPagedCars(page, limit);
 
         var response = cars
-            .Select(c => new CarsResponse(c.Id, c.StatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location, c.FuelLevel)).ToList();
+            .Select(c => new CarsResponse(c.Id, c.StatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location, c.FuelLevel, c.ImagePath)).ToList();
 
         Response.Headers.Append("x-total-count", totalCount.ToString());
 
@@ -78,7 +79,7 @@ public class CarsController : ControllerBase
         var cars = await _carsService.GetCarsByCategoryIds(ids);
 
         var response = cars.Select(c =>
-            new CarsResponse(c.Id, c.StatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location, c.FuelLevel));
+            new CarsResponse(c.Id, c.StatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location, c.FuelLevel, c.ImagePath));
 
         return Ok(response);
     }
@@ -97,7 +98,7 @@ public class CarsController : ControllerBase
         var reviews = await _carsService.GetPagedCarsByCategoryIds(ids, page, limit);
 
         var response = reviews
-            .Select(c => new CarsResponse(c.Id, c.StatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location, c.FuelLevel)).ToList();
+            .Select(c => new CarsResponse(c.Id, c.StatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location, c.FuelLevel, c.ImagePath)).ToList();
 
         Response.Headers.Append("x-total-count", totalCount.ToString());
 
@@ -106,7 +107,7 @@ public class CarsController : ControllerBase
 
     [HttpPost]
     [Consumes("multipart/form-data")]
-    public async Task<ActionResult<int>> CreateCar([FromBody] CarsCreateRequest request, [FromForm] IFormFile image)
+    public async Task<ActionResult<int>> CreateCar([FromForm] CarsCreateRequest request)
     {
         var (tariff, errorTariff) = Tariff.Create(
             0,
@@ -140,6 +141,42 @@ public class CarsController : ControllerBase
 
         var specificationId = await _specificationsCar.CreateSpecification(specification);
 
+        string imagePath = null;
+
+        if (request.Image != null && request.Image.Length > 0)
+        {
+            var ext = Path.GetExtension(request.Image.FileName).ToLowerInvariant();
+            var allowed = new[] { ".jpg", ".jpeg", ".png" };
+
+            if (!allowed.Contains(ext))
+            {
+                await _specificationsCar.DeleteSpecification(specificationId);
+                await _tariffsService.DeleteTariff(tariffId);
+                return BadRequest("Unsupported image format");
+            }
+
+            var fileName = $"{Guid.NewGuid()}{ext}";
+            var rootPath = _env.WebRootPath;
+
+            if (string.IsNullOrEmpty(rootPath))
+            {
+                return StatusCode(500, "Не удалось определить корневой путь для загрузки файлов.");
+            }
+
+            var folder = Path.Combine(rootPath, "images", "cars");
+
+            Directory.CreateDirectory(folder);
+
+            var path = Path.Combine(folder, fileName);
+
+            await using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await request.Image.CopyToAsync(stream);
+            }
+
+            imagePath = $"/images/cars/{fileName}";
+        }
+
         var (cars, error) = Car.Create(
             0,
             request.StatusId,
@@ -148,7 +185,7 @@ public class CarsController : ControllerBase
             specificationId,
             request.Location,
             request.FuelLevel,
-            null);
+            imagePath);
 
         if (!string.IsNullOrWhiteSpace(error))
         {
@@ -164,39 +201,61 @@ public class CarsController : ControllerBase
 
     [HttpPost("{id:int}/image")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> UploadCarImage(
-        int id,
-        [FromForm] IFormFile? image)
+    // 1. Добавлен [FromForm] для Swagger
+    public async Task<IActionResult> UploadCarImage([FromRoute] int id, UploadImageDto model)
     {
-        if (image == null)
-            return BadRequest("Image is required.");
+        var cars = await _carsService.GetCarById(id);
 
-        var car = await _carsService.GetCarById(id);
+        // 2. Используем FirstOrDefault, чтобы избежать краша
+        var car = cars.FirstOrDefault();
+        var image = model.Image;
 
-        var ext = Path.GetExtension(image.FileName);
+        if (car == null)
+            return NotFound("Car not found");
+
+        if (image == null || image.Length == 0)
+            return BadRequest("Image is required");
+
+        var ext = Path.GetExtension(image.FileName).ToLowerInvariant();
+        var allowed = new[] { ".jpg", ".jpeg", ".png" };
+
+        if (!allowed.Contains(ext))
+            return BadRequest("Unsupported image format");
+
         var fileName = $"{Guid.NewGuid()}{ext}";
-        var saveDir = Path.Combine("wwwroot", "images", "cars");
+        var folder = Path.Combine(_env.WebRootPath, "images", "cars");
 
-        Directory.CreateDirectory(saveDir);
+        if (!Directory.Exists(folder))
+            Directory.CreateDirectory(folder);
 
-        var filePath = Path.Combine(saveDir, fileName);
+        var path = Path.Combine(folder, fileName);
 
-        await using (var stream = new FileStream(filePath, FileMode.Create))
+        await using (var stream = new FileStream(path, FileMode.Create))
         {
             await image.CopyToAsync(stream);
         }
 
-        car.ImagePath = $"/images/cars/{fileName}";
-        await _carsService.UpdateCar(id);
+        var imagePath = $"/images/cars/{fileName}";
 
-        return Ok(new { imageUrl = car.ImagePath });
+        await _carsService.UpdateCar(car.Id,
+            car.StatusId,
+            car.TariffId,
+            car.CategoryId,
+            car.SpecificationId,
+            car.Location,
+            car.FuelLevel,
+            imagePath
+        );
+
+        // 3. Возвращаем актуальный imagePath
+        return Ok(new { imageUrl = imagePath });
     }
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult<int>> UpdateCar(int id, [FromBody] CarsRequest request)
     {
         var carId = await _carsService.UpdateCar(id, request.StatusId, request.TariffId, request.CategoryId,
-            request.SpecificationId, request.Location, request.FuelLevel);
+            request.SpecificationId, request.Location, request.FuelLevel, null);
         return Ok(carId);
     }
 

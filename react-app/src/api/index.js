@@ -1,6 +1,6 @@
 import { createBill, deleteBill, getBills, getInfoBill, getMyBills, updateBill } from "./bills";
 import { getBookingInfo, getBookings, getMyBookings } from "./bookings";
-import { createCar, deleteCar, getCarByCategory, getCarInfo, getCars, updateCar } from "./cars";
+import { createCar, createCarImage, deleteCar, getCarByCategory, getCarInfo, getCars, updateCar } from "./cars";
 import { createCategory, deleteCategory, getCategory, updateCategory } from "./category";
 import { createClientDocument, deleteClientDocument, getClientDocuments, updateClientDocument } from "./clientDocuments";
 import { createClient, deleteClient, getClients, getMyClient, getMyClientDocuments, updateClient } from "./clients";
@@ -37,6 +37,7 @@ export const api = {
         getCarInfo,
         getCarByCategory,
         createCar,
+        createCarImage,
         updateCar,
         deleteCar
     },

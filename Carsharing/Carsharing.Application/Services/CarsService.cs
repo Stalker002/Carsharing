@@ -137,9 +137,9 @@ public class CarsService : ICarsService
     }
 
     public async Task<int> UpdateCar(int id, int? statusId, int? tariffId, int? categoryId, int? specificationId,
-        string? location, decimal? fuelLevel)
+        string? location, decimal? fuelLevel, string? imagePath)
     {
-        return await _carRepository.Update(id, statusId, tariffId, categoryId, specificationId, location, fuelLevel);
+        return await _carRepository.Update(id, statusId, tariffId, categoryId, specificationId, location, fuelLevel, imagePath);
     }
 
     public async Task<int> DeleteCar(int id)

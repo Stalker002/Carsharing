@@ -183,7 +183,8 @@ public class CarRepository : ICarRepository
             CategoryId = car.CategoryId,
             SpecificationId = car.SpecificationId,
             Location = car.Location,
-            FuelLevel = car.FuelLevel
+            FuelLevel = car.FuelLevel,
+            ImagePath = car.ImagePath
         };
 
         await _context.Car.AddAsync(carEntity);
@@ -193,7 +194,7 @@ public class CarRepository : ICarRepository
     }
 
     public async Task<int> Update(int id, int? statusId, int? tariffId, int? categoryId, int? specificationId,
-        string? location, decimal? fuelLevel)
+        string? location, decimal? fuelLevel, string? imagePath)
     {
         var car = await _context.Car.FirstOrDefaultAsync(c => c.Id == id)
                   ?? throw new Exception("Car not found");
@@ -215,6 +216,9 @@ public class CarRepository : ICarRepository
 
         if (fuelLevel.HasValue)
             car.FuelLevel = fuelLevel.Value;
+
+        if (!string.IsNullOrWhiteSpace(imagePath))
+            car.ImagePath = imagePath;
 
         var (_, error) = Car.Create(
             car.Id,

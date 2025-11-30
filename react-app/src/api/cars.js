@@ -24,6 +24,12 @@ export const createCar = (data) => makeRequest({
     data,
 });
 
+export const createCarImage = (id, data) => makeRequest({
+    method: "POST",
+    url: `${URL}/${id}/image`,
+    data,
+});
+
 export const updateCar = (id, data) => makeRequest({
     method: "PUT",
     url: `${URL}/${id}`,
