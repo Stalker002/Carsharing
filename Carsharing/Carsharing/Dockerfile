@@ -4,6 +4,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
+ENV ASPNETCORE_URLS=http://+:80
 EXPOSE 80
 
 
@@ -28,5 +29,9 @@ RUN dotnet publish "./Carsharing.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 # Этот этап используется в рабочей среде или при запуске из VS в обычном режиме (по умолчанию, когда конфигурация отладки не используется)
 FROM base AS final
 WORKDIR /app
+# wwwroot чтобы не было предупреждений
+RUN mkdir -p /app/wwwroot
+# Папка для DataProtection ключей
+RUN mkdir -p /app/keys
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Carsharing.dll"]

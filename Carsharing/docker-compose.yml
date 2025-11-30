@@ -27,9 +27,14 @@ services:
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=Carsharing;Username=postgres;Password=qazwsxKMV
     ports:
       - "5078:80"
+    volumes:
+      - ./keys:/app/keys
+      - images:/app/wwwroot/images
     depends_on:
       postgres:
         condition: service_healthy
 
 volumes:
   postgres_data:
+  keys_storage:
+  images:  

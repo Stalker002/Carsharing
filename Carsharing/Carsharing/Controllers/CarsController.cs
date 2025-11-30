@@ -155,7 +155,7 @@ public class CarsController : ControllerBase
                 return BadRequest("Unsupported image format");
             }
 
-            var fileName = $"{Guid.NewGuid()}{ext}";
+            var fileName = $"car_{Guid.NewGuid()}{ext}";
             var rootPath = _env.WebRootPath;
 
             if (string.IsNullOrEmpty(rootPath))

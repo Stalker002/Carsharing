@@ -39,7 +39,7 @@ public class CarsharingDbContext : DbContext
         optionsBuilder
             .UseNpgsql(_configuration.GetConnectionString(nameof(CarsharingDbContext)))
             .UseLoggerFactory(CreateLoggerFactory())
-            .EnableSensitiveDataLogging();
+            .EnableSensitiveDataLogging(false);
     }
 
     private static ILoggerFactory CreateLoggerFactory()

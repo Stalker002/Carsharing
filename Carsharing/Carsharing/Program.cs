@@ -5,6 +5,7 @@ using Carsharing.DataAccess;
 using Carsharing.DataAccess.Repositories;
 using Carsharing.Extension;
 using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace Carsharing;
 
@@ -62,8 +63,14 @@ public class Program
         builder.Services.AddScoped<IUsersRepository, UsersRepository>();
         builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
-
         builder.Services.AddApiAuthentication(builder.Configuration);
+
+        builder.Services.AddDataProtection()
+            .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"))
+            .SetApplicationName("carsharing-app");
+
+        builder.Services.AddDataProtection()
+            .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"));
 
         var app = builder.Build();
 
