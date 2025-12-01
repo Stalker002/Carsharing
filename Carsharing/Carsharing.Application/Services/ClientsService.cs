@@ -41,11 +41,16 @@ public class ClientsService : IClientsService
         return await _clientRepository.GetClientByUserId(userId);
     }
 
-    public async Task<List<ClientDocument>> GetClientDocuments(int userId)
+    public async Task<List<ClientDocument>> GetMyDocuments(int userId)
     {
         var client = await _clientRepository.GetClientByUserId(userId);
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
+        return await _clientDocumentRepository.GetByClientId(clientId);
+    }
+
+    public async Task<List<ClientDocument>> GetClientDocuments(int clientId)
+    {
         return await _clientDocumentRepository.GetByClientId(clientId);
     }
 

@@ -62,12 +62,21 @@ public class ClientsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("Documents")]
-    public async Task<ActionResult<List<ClientsResponse>>> GetClientDocuments()
+    [HttpGet("MyDocuments")]
+    public async Task<ActionResult<List<ClientsResponse>>> GetMyDocuments()
     {
         var userId = int.Parse(User.FindFirst("userId")!.Value);
 
-        var clients = await _clientsService.GetClientDocuments(userId);
+        var clients = await _clientsService.GetMyDocuments(userId);
+        var response = clients.Select(d =>
+            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.Number, d.IssueDate, d.ExpiryDate, d.FilePath));
+        return Ok(response);
+    }
+
+    [HttpGet("Documents/{clientId:int}")]
+    public async Task<ActionResult<List<ClientsResponse>>> GetClientDocuments(int clientId)
+    {
+        var clients = await _clientsService.GetClientDocuments(clientId);
         var response = clients.Select(d =>
             new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.Number, d.IssueDate, d.ExpiryDate, d.FilePath));
         return Ok(response);

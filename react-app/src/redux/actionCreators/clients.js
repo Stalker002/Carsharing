@@ -3,13 +3,17 @@ export const GET_CLIENTS_FAILED = "GET_CLIENTS_FAILED";
 export const GET_CLIENTS_STARTED = "GET_CLIENTS_STARTED";
 export const SET_CLIENTS_TOTAL = "SET_CLIENTS_TOTAL";
 
-export const GET_MY_CLIENTS_STARTED = "GET_MY_CLIENTS_STARTED";
-export const GET_MY_CLIENTS_SUCCESS = "GET_MY_CLIENTS_SUCCESS";
-export const GET_MY_CLIENTS_FAILED = "GET_MY_CLIENTS_FAILED";
+export const GET_MY_CLIENT_STARTED = "GET_MY_CLIENT_STARTED";
+export const GET_MY_CLIENT_SUCCESS = "GET_MY_CLIENT_SUCCESS";
+export const GET_MY_CLIENT_FAILED = "GET_MY_CLIENT_FAILED";
 
-export const GET_MY_CLIENT_DOCUMENTS_STARTED = "GET_MY_CLIENT_DOCUMENTS_STARTED";
-export const GET_MY_CLIENT_DOCUMENTS_SUCCESS = "GET_MY_CLIENT_DOCUMENTS_SUCCESS";
-export const GET_MY_CLIENT_DOCUMENTS_FAILED = "GET_MY_CLIENT_DOCUMENTS_FAILED";
+export const GET_CLIENT_DOCUMENTS_STARTED = "GET_CLIENT_DOCUMENTS_STARTED";
+export const GET_CLIENT_DOCUMENTS_SUCCESS = "GET_CLIENT_DOCUMENTS_SUCCESS";
+export const GET_CLIENT_DOCUMENTS_FAILED = "GET_CLIENT_DOCUMENTS_FAILED";
+
+export const GET_MY_DOCUMENTS_STARTED = "GET_MY_DOCUMENTS_STARTED";
+export const GET_MY_DOCUMENTS_SUCCESS = "GET_MY_DOCUMENTS_SUCCESS";
+export const GET_MY_DOCUMENTS_FAILED = "GET_MY_DOCUMENTS_FAILED";
 
 export const POST_CLIENT_STARTED = "POST_CLIENT_STARTED";
 export const POST_CLIENT_SUCCESS = "POST_CLIENT_SUCCESS";
@@ -39,27 +43,39 @@ export const setClientsTotal = (total) => ({
     payload: total,
 });
 
-export const getMyClientsStarted = () => ({
-    type: GET_MY_CLIENTS_STARTED
+export const getMyClientStarted = () => ({
+    type: GET_MY_CLIENT_STARTED
 });
-export const getMyClientsSuccess = (clients) => ({
-    type: GET_MY_CLIENTS_SUCCESS,
+export const getMyClientSuccess = (clients) => ({
+    type: GET_MY_CLIENT_SUCCESS,
     payload: clients,
 });
-export const getMyClientsFailed = (error) => ({
-    type: GET_MY_CLIENTS_FAILED,
+export const getMyClientFailed = (error) => ({
+    type: GET_MY_CLIENT_FAILED,
     payload: error,
 });
 
-export const getMyClientDocumentsStarted = () => ({
-    type: GET_MY_CLIENT_DOCUMENTS_STARTED
+export const getMyDocumentsStarted = () => ({
+    type: GET_MY_DOCUMENTS_STARTED
 });
-export const getMyClientDocumentsSuccess = (clients) => ({
-    type: GET_MY_CLIENT_DOCUMENTS_SUCCESS,
+export const getMyDocumentsSuccess = (documents) => ({
+    type: GET_MY_DOCUMENTS_SUCCESS,
+    payload: documents,
+});
+export const getMyDocumentsFailed = (error) => ({
+    type: GET_MY_DOCUMENTS_FAILED,
+    payload: error,
+});
+
+export const getClientDocumentStarted = () => ({
+    type: GET_CLIENT_DOCUMENTS_STARTED
+});
+export const getClientDocumentSuccess = (clients) => ({
+    type: GET_CLIENT_DOCUMENTS_SUCCESS,
     payload: clients,
 });
-export const getMyClientDocumentsFailed = (error) => ({
-    type: GET_MY_CLIENT_DOCUMENTS_FAILED,
+export const getClientDocumentFailed = (error) => ({
+    type: GET_CLIENT_DOCUMENTS_FAILED,
     payload: error,
 });
 

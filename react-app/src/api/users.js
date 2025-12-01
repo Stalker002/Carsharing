@@ -17,6 +17,7 @@ export const logoutUser = (config) => makeRequest({
 export const getUsers = (config) => makeRequest({
     method: "GET",
     url: URL,
+    withCredentials: true,
     ...config,
 });
 

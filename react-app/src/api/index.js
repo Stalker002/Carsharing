@@ -1,9 +1,9 @@
 import { createBill, deleteBill, getBills, getInfoBill, getMyBills, updateBill } from "./bills";
-import { getBookingInfo, getBookings, getMyBookings } from "./bookings";
+import { createBooking, deleteBooking, getBookingInfo, getBookings, getMyBookings, updateBooking } from "./bookings";
 import { createCar, createCarImage, deleteCar, getCarByCategory, getCarInfo, getCars, updateCar } from "./cars";
 import { createCategory, deleteCategory, getCategory, updateCategory } from "./category";
 import { createClientDocument, deleteClientDocument, getClientDocuments, updateClientDocument } from "./clientDocuments";
-import { createClient, deleteClient, getClients, getMyClient, getMyClientDocuments, updateClient } from "./clients";
+import { createClient, deleteClient, getClientDocument, getClients, getMyClient, getMyDocuments, updateClient } from "./clients";
 import { createFine, deleteFine, getFines, getFinesByTrip, updateFine } from "./fines";
 import { createInsurance, deleteInsurance, getActiveInsuranceByCar, getInsuranceByCar, getInsurances, updateInsurance } from "./insurances";
 import { createMaintenance, deleteMaintenance, getMaintenanceByCar, getMaintenanceByDateRange, getMaintenances, updateMaintenance } from "./maintenances";
@@ -28,9 +28,9 @@ export const api = {
         getBookings,
         getMyBookings,
         getBookingInfo,
-        createBill,
-        updateBill,
-        deleteBill
+        createBooking,
+        updateBooking,
+        deleteBooking
     },
     cars: {
         getCars,
@@ -55,7 +55,8 @@ export const api = {
     },
     clients: {
         getClients,
-        getMyClientDocuments,
+        getMyDocuments,
+        getClientDocument,
         getMyClient,
         createClient,
         updateClient,

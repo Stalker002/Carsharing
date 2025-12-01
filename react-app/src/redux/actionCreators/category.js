@@ -14,14 +14,14 @@ export const DELETE_CATEGORY_STARTED = "DELETE_CATEGORY_STARTED";
 export const DELETE_CATEGORY_SUCCESS = "DELETE_CATEGORY_SUCCESS";
 export const DELETE_CATEGORY_FAILED = "DELETE_CATEGORY_FAILED";
 
-export const getCategoriessStarted = () => ({
+export const getCategoriesStarted = () => ({
     type: GET_CATEGORIES_STARTED
 });
-export const getCategoriessSuccess = (categories) => ({
+export const getCategoriesSuccess = (categories) => ({
     type: GET_CATEGORIES_SUCCESS,
     payload: categories,
 });
-export const getCategoriessFailed = (error) => ({
+export const getCategoriesFailed = (error) => ({
     type: GET_CATEGORIES_FAILED,
     payload: error,
 });
