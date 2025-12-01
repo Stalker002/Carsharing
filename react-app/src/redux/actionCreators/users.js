@@ -11,9 +11,13 @@ export const GET_USERS_SUCCESS = "GET_USERS_SUCCESS";
 export const GET_USERS_FAILED = "GET_USERS_FAILED";
 export const SET_USERS_TOTAL = "SET_USERS_TOTAL";
 
-export const CREATE_USER_STARTED = "CREATE_USER_STARTED";
-export const CREATE_USER_SUCCESS = "CREATE_USER_SUCCESS";
-export const CREATE_USER_FAILED = "CREATE_USER_FAILED";
+export const POST_USER_STARTED = "POST_USER_STARTED";
+export const POST_USER_SUCCESS = "POST_USER_SUCCESS";
+export const POST_USER_FAILED = "POST_USER_FAILED";
+
+export const PUT_USER_STARTED = "PUT_USER_STARTED";
+export const PUT_USER_SUCCESS = "PUT_USER_SUCCESS";
+export const PUT_USER_FAILED = "PUT_USER_FAILED";
 
 export const DELETE_USER_STARTED = "DELETE_USER_STARTED";
 export const DELETE_USER_SUCCESS = "DELETE_USER_SUCCESS";
@@ -59,14 +63,26 @@ export const setUsersTotal = (total) => ({
 });
 
 export const createUserStarted = () => ({
-    type: CREATE_USER_STARTED,
+    type: POST_USER_STARTED,
 });
 export const createUserSuccess = (user) => ({
-    type: CREATE_USER_SUCCESS,
+    type: POST_USER_SUCCESS,
     payload: user,
 });
 export const createUserFailed = (error) => ({
-    type: CREATE_USER_FAILED,
+    type: POST_USER_FAILED,
+    payload: error,
+});
+
+export const updateUserStarted = () => ({
+    type: PUT_USER_STARTED,
+});
+export const updateUserSuccess = (user) => ({
+    type: PUT_USER_SUCCESS,
+    payload: user,
+});
+export const updateUserFailed = (error) => ({
+    type: PUT_USER_FAILED,
     payload: error,
 });
 
