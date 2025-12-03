@@ -20,7 +20,7 @@ public class UsersService : IUsersService
     {
         var user = await _userRepository.GetByLogin(login);
 
-        var result = _passwordHasher.Verify(password, user.PasswordHash);
+        var result = _passwordHasher.Verify(password, user.Password);
 
         if (!result) throw new Exception("Failed to login");
 
@@ -49,6 +49,11 @@ public class UsersService : IUsersService
         return await _userRepository.GetUserById(id);
     }
 
+    public async Task<User> GetUserByLogin (string login)
+    {
+        return await _userRepository.GetByLogin(login);
+    }
+
     public async Task<int> CreateUser(User user)
     {
         return await _userRepository.CreateUser(user);
@@ -62,10 +67,5 @@ public class UsersService : IUsersService
     public async Task<int> DeleteUser(int id)
     {
         return await _userRepository.DeleteUser(id);
-    }
-
-    public async Task<User> GetUserByLogin(string login)
-    {
-        return await _userRepository.GetByLogin(login);
     }
 }

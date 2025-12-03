@@ -1,3 +1,5 @@
+import { makeRequest } from "./makeRequest";
+
 const URL = "/Bookings";
 
 export const getBookings = (config) => makeRequest({

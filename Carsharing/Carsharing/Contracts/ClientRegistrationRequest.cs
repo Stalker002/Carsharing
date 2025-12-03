@@ -6,4 +6,4 @@ public record ClientRegistrationRequest(
     string PhoneNumber,
     string Email,
     string Login,
-    string PasswordHash);
+    string Password);

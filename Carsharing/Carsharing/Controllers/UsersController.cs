@@ -37,7 +37,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<List<UsersResponse>>> GetUsers()
     {
         var users = await _usersService.GetUsers();
-        var response = users.Select(u => new UsersResponse(u.Id, u.RoleId, u.Login, u.PasswordHash));
+        var response = users.Select(u => new UsersResponse(u.Id, u.RoleId, u.Login, u.Password));
         return Ok(response);
     }
 
@@ -51,7 +51,7 @@ public class UsersController : ControllerBase
         var users = await _usersService.GetPagedUsers(page, limit);
 
         var response = users
-            .Select(u => new UsersResponse(u.Id, u.RoleId, u.Login, u.PasswordHash)).ToList();
+            .Select(u => new UsersResponse(u.Id, u.RoleId, u.Login, u.Password)).ToList();
 
         Response.Headers.Append("x-total-count", totalCount.ToString());
 
@@ -62,7 +62,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<List<UsersResponse>>> GetUserById(int id)
     {
         var users = await _usersService.GetUserById(id);
-        var response = users.Select(u => new UsersResponse(u.Id, u.RoleId, u.Login, u.PasswordHash));
+        var response = users.Select(u => new UsersResponse(u.Id, u.RoleId, u.Login, u.Password));
         return Ok(response);
     }
 
@@ -73,7 +73,7 @@ public class UsersController : ControllerBase
             0,
             request.RoleId,
             request.Login,
-            request.PasswordHash);
+            request.Password);
 
         if (!string.IsNullOrEmpty(error)) return BadRequest(error);
 
@@ -85,7 +85,7 @@ public class UsersController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<int>> UpdateUser(int id, [FromBody] UsersRequest request)
     {
-        var userId = await _usersService.UpdateUser(id, request.RoleId, request.Login, request.PasswordHash);
+        var userId = await _usersService.UpdateUser(id, request.RoleId, request.Login, request.Password);
         return Ok(userId);
     }
 

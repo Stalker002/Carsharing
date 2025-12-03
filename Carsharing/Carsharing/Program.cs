@@ -18,6 +18,25 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("Frontend", policy =>
+            {
+                policy.WithOrigins("http://localhost:5173")
+                      .AllowAnyMethod()
+                      .AllowAnyHeader()
+                      .AllowCredentials()
+                      .WithExposedHeaders("x-total-count");
+            });
+            options.AddPolicy("AllowAllOriginsDevelopment",
+                policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .WithExposedHeaders("x-total-count");
+                });
+        });
         builder.Services.AddOpenApi();
 
         builder.Services.AddDbContext<CarsharingDbContext>();
@@ -85,6 +104,11 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
             app.MapOpenApi();
+            app.UseCors("Frontend");
+        }
+        else
+        {
+            app.UseCors("Frontend");
         }
 
         app.UseCookiePolicy(new CookiePolicyOptions

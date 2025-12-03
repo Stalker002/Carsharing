@@ -7,14 +7,20 @@ export const loginUser = (login, password) => {
             dispatch(loginUserStarted());
 
             const response = await api.users.loginUser({ data: { login, password } });
-            
+
             if (response.data.token) {
                 localStorage.setItem("tasty", response.data.token);
             }
 
             dispatch(loginUserSuccess(response.data));
+
+            return { success: true, data: response.data };
         } catch (error) {
+            const errorMessage = error.response?.data?.message || error.message;
+
             dispatch(loginUserFailed(error));
+
+            return { success: false, message: errorMessage };
         }
     };
 };
@@ -55,7 +61,7 @@ export const getUsers = (page = 1) => {
                 data: response.data,
                 page,
             }));
-        } 
+        }
         catch (error) {
             dispatch(getUsersFailed(error));
         }
@@ -70,7 +76,7 @@ export const createUser = (data) => {
             const response = await api.users.createUser(data);
 
             dispatch(createUserSuccess(response.data));
-        } 
+        }
         catch (error) {
             dispatch(createUserFailed(error));
         }
@@ -78,31 +84,31 @@ export const createUser = (data) => {
 };
 
 export const updateUser = (id, data) => {
-  return async (dispatch) => {
-    try {
-      dispatch(updateUserStarted());
+    return async (dispatch) => {
+        try {
+            dispatch(updateUserStarted());
 
-      const response = await api.users.updateUser(id, data);
+            const response = await api.users.updateUser(id, data);
 
-      dispatch(updateUserSuccess(response.data));
-    } 
-    catch (error) {
-      dispatch(updateUserFailed(error));
-    }
-  };
+            dispatch(updateUserSuccess(response.data));
+        }
+        catch (error) {
+            dispatch(updateUserFailed(error));
+        }
+    };
 };
 
 export const deleteUser = (id) => {
-  return async (dispatch) => {
-    try {
-      dispatch(deleteUserStarted());
+    return async (dispatch) => {
+        try {
+            dispatch(deleteUserStarted());
 
-      const response = await api.users.deleteUser(id);
+            const response = await api.users.deleteUser(id);
 
-      dispatch(deleteUserSuccess(response.data));
-    } 
-    catch (error) {
-      dispatch(deleteUserFailed(error));
-    }
-  };
+            dispatch(deleteUserSuccess(response.data));
+        }
+        catch (error) {
+            dispatch(deleteUserFailed(error));
+        }
+    };
 };

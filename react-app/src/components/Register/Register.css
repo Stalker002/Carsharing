@@ -1,76 +1,110 @@
-.modal-overlay {
+.modal-overlay { 
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 2000;
+  backdrop-filter: blur(2px);
 }
 
 .modal-container {
   background: #fff;
-  border-radius: 15px;
-  width: 400px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  position: fixed;
-  z-index: 1001;
+  border-radius: 16px;
+  width: 420px;
+  padding: 32px;
+  position: relative;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.25s ease;
+  z-index: 2001;
   text-align: center;
 }
 
 .modal-close {
   position: absolute;
   right: 15px;
-  top: 10px;
+  top: 12px;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 28px;
   cursor: pointer;
+  color: #555;
+  transition: 0.2s;
+}
+
+.modal-close:hover {
+  color: #000;
 }
 
 .modal-container h2 {
-  font-size: 30px;
+  font-size: 28px;
   margin-bottom: 5px;
-  color: #111;
+  color: #222;
+  font-weight: 700;
 }
 
 .login-option {
-  color: #555;
+  color: #666;
+  font-size: 15px;
+  margin-bottom: 35px;
+}
+
+.reg-element {
+  text-align: left;
+  margin-bottom: 18px;
+}
+
+.element-name {
   font-size: 14px;
-  margin-bottom: 40px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
 }
 
-.login-input, .pass-input {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
+.element-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
   border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-
-.login-input input,.pass-input input {
-  flex: 2;
-  border: none;
-  padding: 10px;
-  font-size: 16px;
+  font-size: 15px;
   outline: none;
+  transition: border 0.2s;
 }
 
-.toggle-pass {
-    position: absolute;
-    right: 33px;
-    top: 52.7%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
+.element-input:focus {
+  border-color: #2563eb;
 }
+
+.toggle-pass, 
+.reg-toggle-pass, 
+.reg-toggle-confpass {
+  position: absolute;
+  right: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.toggle-pass img,
+.reg-toggle-pass img,
+.reg-toggle-confpass img {
+  width: 22px;
+  opacity: 0.7;
+  transition: 0.2s;
+}
+
+.toggle-pass:hover img,
+.reg-toggle-pass:hover img,
+.reg-toggle-confpass:hover img {
+  opacity: 1;
+}
+
+.reg-toggle-pass { top: 62%; }
+.reg-toggle-confpass { top: 72.5%; }
 
 .submit-btn {
   background: #2563eb;
@@ -79,56 +113,34 @@
   width: 100%;
   padding: 12px;
   border-radius: 10px;
-  font-size: 16px;
+  font-size: 17px;
+  font-weight: 600;
+  margin-top: 10px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: 0.25s;
+}
+
+.submit-btn:hover {
+  background: #1d4ed8;
 }
 
 .submit-btn:disabled {
-  background: #ccc;
+  background: #a5a5a5;
   cursor: not-allowed;
-}
-
-.submit-btn:hover:not(:disabled) {
-  background: #183e92;
 }
 
 .agreement {
   color: #555;
   font-size: 14px;
-  margin: 40px 0 10px;
+  margin-top: 30px;
 }
 
-.agreement a {
-  color: #3563e9;
-  text-decoration: none;
-}
 .link-btn {
-    background: none;
-    border: none;
-    color: #3563e9;
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-.reg-toggle-pass {
-    position: absolute;
-    right: 35px;
-    top: 63.8%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-}
-
-.reg-toggle-confpass {
-    position: absolute;
-    right: 35px;
-    top: 72%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
+  background: none;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: underline;
+  margin-top: 5px;
 }

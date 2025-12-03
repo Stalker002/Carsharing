@@ -21,7 +21,7 @@ public class Client
 
     public int Id { get; }
 
-    public int UserId { get; }
+    public int UserId { get; set; }
 
     public string Name { get; } = string.Empty;
 

@@ -1,3 +1,5 @@
+import { makeRequest } from "./makeRequest";
+
 const URL = "/Reviews";
 
 export const getReviews = (config) => makeRequest({

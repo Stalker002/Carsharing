@@ -1,3 +1,5 @@
+import { makeRequest } from "./makeRequest";
+
 const URL = "/Category";
 
 export const getCategory = (config) => makeRequest({

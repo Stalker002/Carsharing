@@ -1,6 +1,7 @@
 ﻿using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Carsharing.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -10,9 +11,11 @@ public class ClientsController : ControllerBase
 {
     private readonly IClientsService _clientsService;
     private readonly IUsersService _usersService;
+    private readonly CarsharingDbContext _context;
 
-    public ClientsController(IClientsService clientsService, IUsersService usersService)
+    public ClientsController(IClientsService clientsService, IUsersService usersService, CarsharingDbContext context)
     {
+        _context = context;
         _usersService = usersService;
         _clientsService = clientsService;
     }
@@ -85,38 +88,51 @@ public class ClientsController : ControllerBase
     [HttpPost("with-user")]
     public async Task<ActionResult<int>> CreateClient([FromBody] ClientRegistrationRequest request)
     {
-        var (user, errorUser) = Core.Models.User.Create(
-            0,
-            2,
-            request.Login,
-            request.PasswordHash);
+        var userExists = await _usersService.GetUserByLogin(request.Login);
+        if (userExists != null)
+            return Conflict("Пользователь с таким логином уже существует");
 
-        if (!string.IsNullOrEmpty(errorUser)) return BadRequest(errorUser);
+        await using var transaction = await _context.Database.BeginTransactionAsync();
 
-        var userId = await _usersService.CreateUser(user);
-
-        var (client, error) = Client.Create(
-            0,
-            userId,
-            request.Name,
-            request.Surname,
-            request.PhoneNumber,
-            request.Email);
-
-        if (!string.IsNullOrWhiteSpace(error))
+        try
         {
-            await _usersService.DeleteUser(userId);
-            return BadRequest(error);
+            var (user, userError) = Core.Models.User.Create(
+                0,
+                2,
+                request.Login,
+                request.Password);
+
+            if (userError is { Length: > 0 })
+                return BadRequest(userError);
+
+            var (client, clientError) = Client.Create(
+                0,
+                0,
+                request.Name,
+                request.Surname,
+                request.PhoneNumber,
+                request.Email);
+
+            if (clientError is { Length: > 0 })
+                return BadRequest(clientError);
+
+            client.UserId = await _usersService.CreateUser(user);
+            var clientId = await _clientsService.CreateClient(client);
+
+            await transaction.CommitAsync();
+
+            return Ok(new
+            {
+                Message = "Registration successful",
+                UserId = client.UserId,
+                ClientId = clientId
+            });
         }
-
-        var clientId = await _clientsService.CreateClient(client);
-
-        return Ok(new
+        catch (Exception ex)
         {
-            Message = "Registration successful",
-            UserId = userId,
-            ClientId = clientId
-        });
+            await transaction.RollbackAsync();
+            return StatusCode(500, $"Server error: {ex.Message}");
+        }
     }
 
     [HttpPut("{id:int}")]

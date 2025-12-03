@@ -1,3 +1,5 @@
+import { makeRequest } from "./makeRequest";
+
 const URL = "/Trips";
 
 export const getTrips = (config) => makeRequest({

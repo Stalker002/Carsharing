@@ -29,7 +29,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
             .HasMaxLength(User.MaxLoginLength)
             .IsRequired();
 
-        builder.Property(u => u.PasswordHash)
+        builder.Property(u => u.Password)
             .HasColumnName("user_password_hash")
             .HasMaxLength(User.MaxPasswordLength)
             .IsRequired();

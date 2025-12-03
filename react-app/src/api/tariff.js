@@ -1,3 +1,5 @@
+import { makeRequest } from "./makeRequest";
+
 const URL = "/Tariff";
 
 export const getTariffs = (config) => makeRequest({

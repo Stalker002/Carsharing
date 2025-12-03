@@ -1,3 +1,5 @@
+import { makeRequest } from "./makeRequest";
+
 const URL = "/Users";
 
 export const loginUser = (config) => makeRequest({

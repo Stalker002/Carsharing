@@ -1,28 +1,120 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Register.css";
-import { useMask, format } from '@react-input/mask';
-
-import Hide from "./../../svg/Login/eye_hide.svg"
-import Visible from "./../../svg/Login/visible_hide.svg"
+import { useMask } from '@react-input/mask';
+import { useDispatch } from "react-redux";
+import { createClient } from "../../redux/actions/clients";
+import { loginUser } from "../../redux/actions/users";
 
 export default function Register({ isOpen, onClose, onLoginClick }) {
-    const [login, setLogin] = useState("");
-    const [name, setName] = useState("");
-    const [surname, setSurname] = useState("");
-    const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
-    const [pass, setPass] = useState("");
-    const [confirmPass, setConfirmPass] = useState("");
-    const [showPass, setShowPass] = useState(false);
-    const [showConfirmPass, setShowConfirmPass] = useState(false);
-
-
-    const options = {
-        mask: '+375 (__) ___-__-__',
+    const inputRef = useMask({
+        mask: "+___ (__) ___-__-__",
         replacement: { _: /\d/ },
+    });
+
+    const phoneRegex = /^(\+375|80)(29|44|33|25)\d{7}$/;
+
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+    const dispatch = useDispatch();
+    const [error, setError] = useState("");
+
+    const [regForm, setRegForm] = useState({
+        name: "",
+        surname: "",
+        phoneNumber: "",
+        email: "",
+        login: "",
+        password: "",
+        confirmPassword: ""
+    });
+
+    useEffect(() => {
+        if (isOpen) {
+            setRegForm({
+                name: "",
+                surname: "",
+                phoneNumber: "",
+                email: "",
+                login: "",
+                password: "",
+                confirmPassword: ""
+            });
+            setError("");
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Escape') onClose();
+        };
+        if (isOpen) {
+            document.addEventListener('keydown', handleKeyPress);
+        }
+        return () => document.removeEventListener("keydown", handleKeyPress);
+    }, [isOpen, onClose]);
+
+    const regInputConfig = [
+        { label: "Фамилия", name: "surname", input: "Введите фамилию", type: "text" },
+        { label: "Имя", name: "name", input: "Введите имя", type: "text" },
+        { label: "Почта", name: "email", input: "Введите почту", type: "email" },
+        { label: "Номер телефона", name: "phoneNumber", input: "+375 (__) ___-__-__" },
+        { label: "Логин", name: "login", input: "Введите логин", type: "text" },
+        { label: "Пароль", name: "password", input: "Введите пароль", type: "password" },
+        { label: "Подтверждение пароля", name: "confirmPassword", input: "Подтверждение пароля", type: "password" },
+    ];
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setRegForm(prev => ({ ...prev, [name]: value }));
+        if (error) setError("");
     };
-    const inputRef = useMask(options);
-    const defaultValue = format('0123456789', options);
+
+    const submitReg = async (e) => {
+        e.preventDefault();
+
+        if (!regForm.name || !regForm.surname || !regForm.login) {
+            setError("Пожалуйста, заполните все поля.");
+            return;
+        }
+
+        if (!emailRegex.test(regForm.email)) {
+            setError("Введите корректный email!");
+            return;
+        }
+
+        if (!regForm.phoneNumber || regForm.phoneNumber.length < 10) {
+            setError("Введите корректный номер телефона!");
+            return;
+        }
+
+        if (regForm.password.length < 6) {
+            setError("Пароль должен быть минимум 6 символов!");
+            return;
+        }
+
+        if (regForm.password !== regForm.confirmPassword) {
+            setError("Пароли не совпадают!");
+            return;
+        }
+
+        const cleanedPhone = regForm.phoneNumber.replace(/[^\d+]/g, '');
+
+        if (!phoneRegex.test(cleanedPhone)) {
+            setError("Phone number should be in format +375XXXXXXXXX or 80XXXXXXXXX");
+            return;
+        }
+
+        const { confirmPassword, ...dataToSend } = {
+            ...regForm,
+            phoneNumber: cleanedPhone
+        };
+
+        const result = dispatch(createClient(dataToSend)).then(() => {
+            dispatch(loginUser(dataToSend.login, dataToSend.password));
+        });
+
+        onClose();
+    };
 
     if (!isOpen) return null;
 
@@ -34,98 +126,44 @@ export default function Register({ isOpen, onClose, onLoginClick }) {
                 <h2>Регистрация</h2>
                 <p className="login-option">Заполните данные, чтобы создать аккаунт</p>
 
-                <form className="login-form">
-                    <div className="login-input">
-                        <input
-                            type="name"
-                            placeholder="Ваше имя"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
+                <form onSubmit={submitReg}>
+                    <div>
+                        {regInputConfig.map((item) => (
+                            <div className='reg-element' key={item.name}>
+                                <label className='element-name'>{item.label}</label>
+                                {item.name === "phoneNumber" ? (
+                                    <input
+                                        ref={inputRef}
+                                        value={regForm.phoneNumber}
+                                        className="element-input"
+                                        placeholder="+375 (__) ___-__-__"
+                                        onInput={(e) =>
+                                            setRegForm(prev => ({ ...prev, phoneNumber: e.target.value }))
+                                        }
+                                    />
+                                ) : (
+                                    <input
+                                        className="element-input"
+                                        placeholder={item.input}
+                                        type={item.type}
+                                        name={item.name}
+                                        onChange={handleChange}
+                                        value={regForm[item.name]}
+                                        required
+                                    />
+                                )}
+                            </div>
+                        ))}
                     </div>
-                    <div className="login-input">
-                        <input
-                            type="surname"
-                            placeholder="Ваша фамилия"
-                            value={surname}
-                            onChange={(e) => setSurname(e.target.value)}
-                        />
-                    </div>
-                    <div className="login-input">
-                        <input
-                            type="email"
-                            placeholder="Ваша почта"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
-                    <div className="login-input">
-                        <input
-                            defaultValue={defaultValue}
-                            type="tel"
-                            placeholder="+375 (__) ___-__-__"
-                            value={phone}
-                            ref={inputRef}
-                            onChange={e => setPhone(e.target.value)}
 
-                        />
-                    </div>
-                    <div className="login-input">
-                        <input
-                            type="login"
-                            placeholder="Ваш логин"
-                            value={login}
-                            onChange={(e) => setLogin(e.target.value)}
-                        />
-                    </div>
-                    <div className="pass-input">
-                        <input
-                            type={showPass ? "text" : "password"}
-                            placeholder="Пароль"
-                            value={pass}
-                            onChange={(e) => setPass(e.target.value)}
-                            required
-                        />
-                        <button
-                            type="button"
-                            className="reg-toggle-pass"
-                            onClick={() => setShowPass(!showPass)}
-                        >
-                            <img
-                                src={showPass ? Hide : Visible}
-                                alt={showPass ? "Скрыть" : "Показать"}
-                                width={35}
-                                height={35}
-                            />
-                        </button>
-                    </div>
-                    <div className="pass-input">
-                        <input
-                            type={showConfirmPass ? "text" : "password"}
-                            placeholder="Повторите пароль"
-                            value={confirmPass}
-                            onChange={(e) => setConfirmPass(e.target.value)}
-                            required
-                        />
-                        <button
-                            type="button"
-                            className="reg-toggle-confpass"
-                            onClick={() => setShowConfirmPass(!showConfirmPass)}
-                        >
-                            <img
-                                src={showConfirmPass ? Hide : Visible}
-                                alt={showConfirmPass ? "Скрыть" : "Показать"}
-                                width={35}
-                                height={35}
-                            />
-                        </button>
-                    </div>
+                    {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
+
                     <button type="submit" className="submit-btn">
                         Зарегистрироваться
                     </button>
-                    <p className="agreement"> 
-                        Уже есть аккаунт?
-                        <br />
+
+                    <p className="agreement">
+                        Уже есть аккаунт? <br />
                         <button type="button" className="link-btn" onClick={onLoginClick}>
                             Войти
                         </button>
@@ -133,5 +171,5 @@ export default function Register({ isOpen, onClose, onLoginClick }) {
                 </form>
             </div>
         </div>
-    )
+    );
 }

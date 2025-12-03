@@ -1,4 +1,4 @@
-import { GET_INSURANCES_STARTED, GET_INSURANCES_SUCCESS, GET_INSURANCES_FAILED, POST_INSURANCE_STARTED, POST_INSURANCE_SUCCESS, POST_INSURANCE_FAILED, DELETE_INSURANCE_STARTED, DELETE_INSURANCE_SUCCESS, DELETE_INSURANCE_FAILED, GET_INSURANCES_BY_CAR_STARTED, GET_INSURANCES_BY_CAR_SUCCESS, GET_INSURANCES_BY_CAR_FAILED } from "../actionCreators/insurances";
+import { GET_INSURANCES_STARTED, GET_INSURANCES_SUCCESS, GET_INSURANCES_FAILED, POST_INSURANCE_STARTED, POST_INSURANCE_SUCCESS, POST_INSURANCE_FAILED, DELETE_INSURANCE_STARTED, DELETE_INSURANCE_SUCCESS, DELETE_INSURANCE_FAILED, GET_INSURANCES_BY_CAR_STARTED, GET_INSURANCES_BY_CAR_SUCCESS, GET_INSURANCES_BY_CAR_FAILED, PUT_INSURANCE_STARTED, PUT_INSURANCE_SUCCESS, PUT_INSURANCE_FAILED } from "../actionCreators/insurances";
 
 const initialState = {
     insurances: [],
@@ -62,18 +62,18 @@ export const insurancesReducer = (state = initialState, action) => {
                 isInsurancesCreateLoading: false
             };
 
-        case PUT_BILL_STARTED:
+        case PUT_INSURANCE_STARTED:
             return {
                 ...state,
                 isInsurancesUpdateBillLoading: true
             };
-        case PUT_BILL_SUCCESS:
+        case PUT_INSURANCE_SUCCESS:
             return {
                 ...state,
                 bills: state.bills.map(b => b.id === action.payload.id ? action.payload : b),
                 isInsurancesUpdateBillLoading: false
             };
-        case PUT_BILL_FAILED:
+        case PUT_INSURANCE_FAILED:
             return {
                 ...state,
                 isInsurancesUpdateBillLoading: false

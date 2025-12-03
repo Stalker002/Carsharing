@@ -1,3 +1,5 @@
+import { makeRequest } from "./makeRequest";
+
 const URL = "/Maintenance";
 
 export const getMaintenances = (config) => makeRequest({

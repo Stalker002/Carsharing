@@ -113,4 +113,4 @@ export const deleteClientSuccess = (id) => ({
 export const deleteClientFailed = (error) => ({
     type: DELETE_CLIENT_FAILED,
     payload: error,
-});MYDOCUMENTS_
+});

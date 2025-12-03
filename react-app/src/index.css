@@ -11,8 +11,3 @@
   user-select: none;
 }
 
-input[type="password"]::-ms-reveal,
-input[type="password"]::-ms-clear {
-  display: none;
-}
-

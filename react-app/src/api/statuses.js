@@ -1,3 +1,5 @@
+import { makeRequest } from "./makeRequest";
+
 const URL = "/Statuses";
 
 export const getStatuses = (config) => makeRequest({

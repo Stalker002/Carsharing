@@ -22,7 +22,7 @@ public class UsersRepository : IUsersRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Login == login) ?? throw new Exception();
 
-        return User.Create(userEntity.Id, userEntity.RoleId, userEntity.Login, userEntity.PasswordHash).user;
+        return User.Create(userEntity.Id, userEntity.RoleId, userEntity.Login, userEntity.Password).user;
     }
 
     public async Task<List<User>> GetUser()
@@ -32,7 +32,7 @@ public class UsersRepository : IUsersRepository
             .ToListAsync();
 
         var users = userEntities
-            .Select(u => User.Create(u.Id, u.RoleId, u.Login, u.PasswordHash).user)
+            .Select(u => User.Create(u.Id, u.RoleId, u.Login, u.Password).user)
             .ToList();
 
         return users;
@@ -51,7 +51,7 @@ public class UsersRepository : IUsersRepository
                 u.Id, 
                 u.RoleId, 
                 u.Login, 
-                u.PasswordHash).user)
+                u.Password).user)
             .ToList();
 
         return users;
@@ -70,7 +70,7 @@ public class UsersRepository : IUsersRepository
             .ToListAsync();
 
         var users = userEntities
-            .Select(u => User.Create(u.Id, u.RoleId, u.Login, u.PasswordHash).user)
+            .Select(u => User.Create(u.Id, u.RoleId, u.Login, u.Password).user)
             .ToList();
 
         return users;
@@ -82,18 +82,18 @@ public class UsersRepository : IUsersRepository
             0,
             user.RoleId,
             user.Login,
-            user.PasswordHash);
+            user.Password);
 
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception User: {error}");
 
-        var hashedPassword = _myPasswordHasher.Generate(user.PasswordHash);
+        var hashedPassword = _myPasswordHasher.Generate(user.Password);
 
         var userEntity = new UserEntity
         {
             RoleId = user.RoleId,
             Login = user.Login,
-            PasswordHash = hashedPassword
+            Password = hashedPassword
         };
 
         await _context.Users.AddAsync(userEntity);
@@ -102,7 +102,7 @@ public class UsersRepository : IUsersRepository
         return userEntity.Id;
     }
 
-    public async Task<int> UpdateUser(int id, int? roleId, string? login, string? passwordHash)
+    public async Task<int> UpdateUser(int id, int? roleId, string? login, string? password)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id)
                    ?? throw new Exception("User not found");
@@ -113,19 +113,19 @@ public class UsersRepository : IUsersRepository
         if (!string.IsNullOrWhiteSpace(login))
             user.Login = login;
 
-        if (!string.IsNullOrWhiteSpace(passwordHash))
-            user.PasswordHash = passwordHash;
+        if (!string.IsNullOrWhiteSpace(password))
+            user.Password = password;
 
         var (_, error) = User.Create(
             0,
             user.RoleId,
             user.Login,
-            user.PasswordHash);
+            user.Password);
 
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception User: {error}");
 
-        user.PasswordHash = _myPasswordHasher.Generate(user.PasswordHash);
+        user.Password = _myPasswordHasher.Generate(user.Password);
 
         await _context.SaveChangesAsync();
 

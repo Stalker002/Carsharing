@@ -1,3 +1,5 @@
+import { makeRequest } from "./makeRequest";
+
 const URL = "/Promocodes";
 
 export const getPromocodes = (config) => makeRequest({

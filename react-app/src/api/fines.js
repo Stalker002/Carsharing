@@ -1,3 +1,5 @@
+import { makeRequest } from "./makeRequest";
+
 const URL = "/Fines";
 
 export const getFines = (config) => makeRequest({

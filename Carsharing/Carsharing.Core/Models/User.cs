@@ -11,7 +11,7 @@ public class User
         Id = id;
         RoleId = roleId;
         Login = login;
-        PasswordHash = passwordHash;
+        Password = passwordHash;
     }
 
     public int Id { get; }
@@ -20,9 +20,9 @@ public class User
 
     public string Login { get; }
 
-    public string PasswordHash { get; }
+    public string Password { get; }
 
-    public static (User user, string error) Create(int id, int roleId, string login, string passwordHash)
+    public static (User user, string error) Create(int id, int roleId, string login, string password)
     {
         var error = string.Empty;
 
@@ -34,16 +34,16 @@ public class User
         if (login.Length > MaxLoginLength)
             error = $"Login can't be longer than {MaxLoginLength} symbols";
 
-        if (string.IsNullOrWhiteSpace(passwordHash))
+        if (string.IsNullOrWhiteSpace(password))
             error = "Password can't be empty";
-        error = passwordHash.Length switch
+        error = password.Length switch
         {
             > MaxPasswordLength => $"Password can't be longer than {MaxPasswordLength} symbols",
             < MinPasswordLength => $"Password can't be shoter than {MinPasswordLength} symbols",
             _ => error
         };
 
-        var user = new User(id, roleId, login, passwordHash);
+        var user = new User(id, roleId, login, password);
 
         return (user, error);
     }
