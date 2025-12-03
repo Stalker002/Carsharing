@@ -55,13 +55,14 @@ export default function Login({ isOpen, onClose, onRegisterClick }) {
             return;
         }
 
-        const result = dispatch(loginUser(authForm.login, authForm.password));
-        
-        if (result && result.success) {
-            onClose();
-        } else {
+        const result = await dispatch(loginUser(authForm.login, authForm.password));
+
+        if (!result.success) {
             setError(result.message || "Ошибка авторизации");
+            return;
         }
+
+        onClose();
     };
 
     if (!isOpen) return null;

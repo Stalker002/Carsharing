@@ -15,6 +15,7 @@ export const loginUser = (login, password) => {
             dispatch(loginUserSuccess(response.data));
 
             return { success: true, data: response.data };
+
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message;
 
@@ -76,9 +77,15 @@ export const createUser = (data) => {
             const response = await api.users.createUser(data);
 
             dispatch(createUserSuccess(response.data));
+
+            return { success: true, data: response.data };
         }
         catch (error) {
+            const errorMessage = error.response?.data?.message || error.message;
+
             dispatch(createUserFailed(error));
+
+            return { success: false, message: errorMessage };
         }
     };
 };

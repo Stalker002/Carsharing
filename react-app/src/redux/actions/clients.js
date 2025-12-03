@@ -83,13 +83,13 @@ export const createClient = (data) => {
             const response = await api.clients.createClient(data);
 
             dispatch(createClientSuccess(response.data));
+
             return { success: true, data: response.data };
         }
         catch (error) {
             const errorMessage = 
-                error.response?.data?.message || // Если бэк вернул объект с полем 'message'
-                error.response?.data ||          // Если бэк вернул простую строку ошибки (как в твоем C# коде!)
-                error.message ||                 // Сетевая ошибка (например, "Network Error")
+                error.response?.data?.message ||        
+                error.message ||                
                 "Неизвестная ошибка регистрации";
 
             dispatch(createClientFailed(error));
