@@ -3,8 +3,8 @@ const token = localStorage.getItem("tasty");
 
 const initialState = {
     users: [],
-    isLoggedIn: !!token,
-    isUsersLoading: true
+    isLoggedIn: !token,
+    isUsersLoading: false
 }
 
 export const userReducer = (state = initialState, action) => {

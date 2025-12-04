@@ -46,9 +46,9 @@ export const setClientsTotal = (total) => ({
 export const getMyClientStarted = () => ({
     type: GET_MY_CLIENT_STARTED
 });
-export const getMyClientSuccess = (clients) => ({
+export const getMyClientSuccess = (client) => ({
     type: GET_MY_CLIENT_SUCCESS,
-    payload: clients,
+    payload: client,
 });
 export const getMyClientFailed = (error) => ({
     type: GET_MY_CLIENT_FAILED,

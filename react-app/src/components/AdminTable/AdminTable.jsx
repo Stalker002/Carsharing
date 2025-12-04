@@ -39,6 +39,8 @@ function AdminTable({ activeTab }) {
       <AddModel
         isOpen={isAddOpen}
         onClose={() => setIsAddOpen(false)}
+        activeTable={activeTable}
+        setPage={setPage}
         onAdd={handleAdd}
       />
     </>

@@ -20,9 +20,21 @@ public class UsersRepository : IUsersRepository
     {
         var userEntity = await _context.Users
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Login == login) ?? throw new Exception();
+            .FirstOrDefaultAsync(u => u.Login == login);
 
-        return User.Create(userEntity.Id, userEntity.RoleId, userEntity.Login, userEntity.Password).user;
+        if (userEntity == null)
+        {
+            return null;
+        }
+
+        var (user, error) = Core.Models.User.Create(
+            userEntity.Id,
+            userEntity.RoleId,
+            userEntity.Login,
+            userEntity.Password
+        );
+
+        return user;
     }
 
     public async Task<List<User>> GetUser()

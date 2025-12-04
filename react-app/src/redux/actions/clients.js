@@ -1,5 +1,4 @@
 import { api } from "../../api";
-import { deleteUser } from "../../api/users";
 import { createClientFailed, createClientStarted, createClientSuccess, deleteClientFailed, deleteClientStarted, deleteClientSuccess, getClientDocumentFailed, getClientDocumentStarted, getClientDocumentSuccess, getClientsFailed, getClientsStarted, getClientsSuccess, getMyClientFailed, getMyClientStarted, getMyClientSuccess, getMyDocumentsFailed, getMyDocumentsStarted, getMyDocumentsSuccess, setClientsTotal, updateClientFailed, updateClientStarted, updateClientSuccess } from "../actionCreators/clients";
 
 export const getClients = (page = 1) => {

@@ -16,6 +16,7 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/car-catalog' element={<Car_Rent />} />
         <Route path="/car-catalog/:id" element={<CarDetails />} />
+        <Route path="/personal-page" element={<Admin />} />
         <Route path="/admin" element={<Admin />} />
         <Route path='*' element={<NotFoundPage />} />
       </Routes>

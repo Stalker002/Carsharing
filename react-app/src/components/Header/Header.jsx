@@ -2,37 +2,17 @@ import './Header.css';
 import Like from '../../svg/Header/like.svg'
 import Search from '../../svg/Header/search.svg'
 import Notification from '../../svg/Header/notification.svg'
-import Login from './../Login/Login';
-import Register from './../Register/Register';
 
 import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import Account from '../Account/Account';
 
 function Header() {
     const { pathname } = useLocation();
-
+    
     const hasNotifications = true;
     const isHomePage = pathname === "/";
     const isCatalog = pathname === "/car-catalog";
     const isAdmin = pathname === "/admin";
-
-    const [isLoginOpen, setIsLoginOpen] = useState(false);
-    const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-
-    const openLogin = () => {
-      setIsRegisterOpen(false);
-      setIsLoginOpen(true);
-    };
-
-    const openRegister = () => {
-      setIsLoginOpen(false);
-      setIsRegisterOpen(true);
-    };
-
-    const closeAll = () => {
-      setIsLoginOpen(false);
-      setIsRegisterOpen(false);
-    };
 
     return (
         <header className="header">
@@ -73,15 +53,8 @@ function Header() {
                         <img src={Notification} alt="Уведомления" width="35" height="35" />
                         {hasNotifications && <span className="notification-dot"></span>}
                     </button>
-                    <button className="user-button" onClick={openLogin}>
-                        <div className="user-avatar">
-                            <span>U</span>
-                        </div>
-                        
-                    </button>
+                    <Account />
                 </div>
-                <Login isOpen={isLoginOpen} onClose={closeAll} onRegisterClick={openRegister} />
-                <Register isOpen={isRegisterOpen} onClose={closeAll} onLoginClick={openLogin} />
             </div>
         </header>
     );
