@@ -10,7 +10,7 @@ function Profile() {
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState({
-    category: "Категория прав C",
+    category: "Категория прав ПОМЕНЯТЬ",
   });
 
   const formatPhoneNumber = (rawNumber) => {

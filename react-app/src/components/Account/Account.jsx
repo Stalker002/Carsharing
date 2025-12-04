@@ -3,6 +3,7 @@ import { getMyClient } from "../../redux/actions/clients";
 import { useEffect, useState } from "react";
 import Register from "../Register/Register";
 import Login from "../Login/Login";
+import Exit from "./../../svg/Profile/whiteExit.png";
 
 import "./Account.css";
 import { useNavigate } from "react-router-dom";
@@ -45,7 +46,7 @@ function Account() {
       <>
         <button className="user-button" onClick={openLogin}>
           <div className="user-avatar">
-            <span>U</span>
+            <img src={Exit} />
           </div>
         </button>
         <Login

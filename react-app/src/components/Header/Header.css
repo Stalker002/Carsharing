@@ -154,26 +154,4 @@
     background: #ef4444;
     border: 2px solid white;
     border-radius: 50%;
-}
-
-.user-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-}
-
-.user-avatar {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    background: #2563eb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 0.875rem;
-}
-
- 
+} 
