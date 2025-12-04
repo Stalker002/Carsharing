@@ -3,7 +3,7 @@ import "./SidebarAdmin.css"
 function SidebarAdmin({ activeTab, setActiveTab }) {
   return (
     <div className="admin-sidebar">
-      <nav className="sidebar-menu">
+      <nav className="sidebar-menu-admin">
         <button
           className={activeTab === "Dashboard" ? "sidebar-btn active" : "sidebar-btn"}
           onClick={() => setActiveTab("Dashboard")}>

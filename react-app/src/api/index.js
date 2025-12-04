@@ -13,7 +13,7 @@ import { createReview, deleteReview, getReviews, getReviewsByCar, updateReview }
 import { getStatuses } from "./statuses";
 import { getTariffs } from "./tariff";
 import { createTrip, deleteTrip, getMyTrips, getTrips, getTripWithInfo, updateTrip } from "./trips";
-import { createUser, deleteUser, getUsers, loginUser, logoutUser, updateUser } from "./users";
+import { createUser, deleteUser, getMyUser, getUsers, loginUser, logoutUser, updateUser } from "./users";
 
 export const api = {
     bills: {
@@ -124,6 +124,7 @@ export const api = {
         loginUser,
         logoutUser,
         getUsers,
+        getMyUser,
         createUser,
         updateUser,
         deleteUser

@@ -1,4 +1,5 @@
-﻿using Carsharing.Contracts;
+﻿using Carsharing.Application.Services;
+using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -63,6 +64,17 @@ public class UsersController : ControllerBase
     {
         var users = await _usersService.GetUserById(id);
         var response = users.Select(u => new UsersResponse(u.Id, u.RoleId, u.Login, u.Password));
+        return Ok(response);
+    }
+
+    [HttpGet("MyUser")]
+    public async Task<ActionResult<List<UsersResponse>>> GetMyUser()
+    {
+        var userId = int.Parse(User.FindFirst("userId")!.Value);
+
+        var users = await _usersService.GetUserById(userId);
+        var response = users.Select(u =>
+            new UsersResponse(u.Id, u.RoleId, u.Login, u.Password));
         return Ok(response);
     }
 

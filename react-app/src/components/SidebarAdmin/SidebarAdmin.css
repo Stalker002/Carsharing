@@ -13,7 +13,7 @@
   margin-bottom: 30px;
 }
 
-.sidebar-menu {
+.sidebar-menu-admin {
     display: flex;
     flex-direction: column;
     gap: 18px;

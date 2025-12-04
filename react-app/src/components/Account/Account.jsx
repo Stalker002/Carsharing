@@ -5,18 +5,21 @@ import Register from "../Register/Register";
 import Login from "../Login/Login";
 
 import "./Account.css";
+import { useNavigate } from "react-router-dom";
 
 function Account() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const myClient = useSelector((state) => state.clients.myClient);
   const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
+  const isMyClientLoading = useSelector((state) => state.clients.isClientsLoading);
 
   useEffect(() => {
-    if (isLoggedIn && Object.keys(myClient).length === 0) {
-      dispatch(getMyClient());
+    if (isLoggedIn && Object.keys(myClient).length === 0 && !isMyClientLoading) {
+        dispatch(getMyClient());
     }
-  }, [isLoggedIn, myClient, dispatch]);
+  }, [isMyClientLoading, dispatch]);
   console.log("myClient =", myClient);
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -61,14 +64,24 @@ function Account() {
 
   return (
     <>
-      <p className="client-name">
-        {myClient[0]?.name} {myClient[0]?.surname}
+      <p
+        className="client-name"
+        onClick={() => {
+          navigate("/personal-page");
+        }}
+      >
+        {myClient.name} {myClient.surname}
       </p>
-      <button className="user-button">
+      <button
+        className="user-button"
+        onClick={() => {
+          navigate("/personal-page");
+        }}
+      >
         <div className="user-avatar">
           <span>
-            {myClient[0]?.name?.[0]}
-            {myClient[0]?.surname?.[0]}
+            {myClient.name?.[0]}
+            {myClient.surname?.[0]}
           </span>
         </div>
       </button>

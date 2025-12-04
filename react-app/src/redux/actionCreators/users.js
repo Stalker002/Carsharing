@@ -11,6 +11,10 @@ export const GET_USERS_SUCCESS = "GET_USERS_SUCCESS";
 export const GET_USERS_FAILED = "GET_USERS_FAILED";
 export const SET_USERS_TOTAL = "SET_USERS_TOTAL";
 
+export const GET_MY_USER_STARTED = "GET_MY_USER_STARTED";
+export const GET_MY_USER_SUCCESS = "GET_MY_USER_SUCCESS";
+export const GET_MY_USER_FAILED = "GET_MY_USER_FAILED";
+
 export const POST_USER_STARTED = "POST_USER_STARTED";
 export const POST_USER_SUCCESS = "POST_USER_SUCCESS";
 export const POST_USER_FAILED = "POST_USER_FAILED";
@@ -60,6 +64,18 @@ export const getUsersFailed = (error) => ({
 export const setUsersTotal = (total) => ({
     type: SET_USERS_TOTAL,
     payload: total,
+});
+
+export const getMyUserStarted = () => ({
+    type: GET_MY_USER_STARTED
+});
+export const getMyUserSuccess = (client) => ({
+    type: GET_MY_USER_SUCCESS,
+    payload: client,
+});
+export const getMyUserFailed = (error) => ({
+    type: GET_MY_USER_FAILED,
+    payload: error,
 });
 
 export const createUserStarted = () => ({

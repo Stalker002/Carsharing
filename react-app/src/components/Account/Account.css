@@ -1,6 +1,13 @@
+.account-header {
+    display: flex;
+    flex-direction: row;
+}
+
 .client-name {
     text-decoration: none;
     cursor: pointer;
+    background: none;
+    border: none;
     color: #000000;
     font-weight: 500;
 }

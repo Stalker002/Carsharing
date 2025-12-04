@@ -1,0 +1,96 @@
+.profile-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.profile-card {
+  background: #fff;
+  width: 100%;
+  max-width: 850px;
+  border-radius: 16px;
+  padding: 35px 40px;
+  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.06);
+}
+
+/* Заголовок */
+.profile-name {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.profile-category {
+  font-size: 15px;
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.profile-description {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #6b7280;
+  margin-bottom: 35px;
+}
+
+/* Сетка параметров */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px 40px;
+  margin-bottom: 40px;
+}
+
+.profile-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-label {
+  font-size: 14px;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+.item-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Кнопка */
+.profile-actions {
+  display: flex;
+  justify-content: flex-start;
+  justify-content: space-between;
+}
+
+.profile-edit-btn {
+  padding: 12px 28px;
+  background: #2563eb;
+  border-radius: 10px;
+  color: white;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.profile-edit-btn:hover {
+  background: #1e3fae;
+}
+
+/* Адаптив */
+@media (max-width: 700px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-card {
+    padding: 25px;
+  }
+
+  .profile-name {
+    font-size: 26px;
+  }
+}

@@ -45,7 +45,7 @@ export const clientsReducer = (state = initialState, action) => {
         case GET_MY_CLIENT_SUCCESS:
             return {
                 ...state,
-                myClient: action.payload,
+                myClient: action.payload[0],
                 isClientsLoading: false,
             };
         case GET_MY_CLIENT_FAILED:

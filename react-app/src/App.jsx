@@ -8,6 +8,7 @@ import Admin from './pages/Admin/Admin';
 import CarDetails from './pages/CarDetails/Cardetails';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
+import PersonalPage from './pages/PersonalPage/PersonalPage';
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/car-catalog' element={<Car_Rent />} />
         <Route path="/car-catalog/:id" element={<CarDetails />} />
-        <Route path="/personal-page" element={<Admin />} />
+        <Route path="/personal-page" element={<PersonalPage />} />
         <Route path="/admin" element={<Admin />} />
         <Route path='*' element={<NotFoundPage />} />
       </Routes>

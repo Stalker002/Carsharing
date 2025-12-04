@@ -23,6 +23,13 @@ export const getUsers = (config) => makeRequest({
     ...config,
 });
 
+export const getMyUser = (config) => makeRequest({
+    method: "GET",
+    url: `${URL}/MyUser`,
+    withCredentials: true,
+    ...config
+});
+
 export const createUser = (data) => makeRequest({
     method: "POST",
     url: URL,

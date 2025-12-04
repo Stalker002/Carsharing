@@ -1,5 +1,5 @@
 import { api } from "../../api";
-import { createUserFailed, createUserStarted, createUserSuccess, deleteUserFailed, deleteUserStarted, deleteUserSuccess, getUsersFailed, getUsersStarted, getUsersSuccess, loginUserFailed, loginUserStarted, loginUserSuccess, logoutUserFailed, logoutUserStarted, logoutUserSuccess, setUsersTotal, updateUserFailed, updateUserStarted, updateUserSuccess } from "../actionCreators/users";
+import { createUserFailed, createUserStarted, createUserSuccess, deleteUserFailed, deleteUserStarted, deleteUserSuccess, getMyUserFailed, getMyUserStarted, getMyUserSuccess, getUsersFailed, getUsersStarted, getUsersSuccess, loginUserFailed, loginUserStarted, loginUserSuccess, logoutUserFailed, logoutUserStarted, logoutUserSuccess, setUsersTotal, updateUserFailed, updateUserStarted, updateUserSuccess } from "../actionCreators/users";
 
 export const loginUser = (login, password) => {
     return async (dispatch) => {
@@ -65,6 +65,21 @@ export const getUsers = (page = 1) => {
         }
         catch (error) {
             dispatch(getUsersFailed(error));
+        }
+    };
+};
+
+export const getMyUser = () => {
+    return async (dispatch) => {
+        try {
+            dispatch(getMyUserStarted())
+
+            const response = await api.users.getMyUser();
+
+            dispatch(getMyUserSuccess(response.data));
+        }
+        catch (error) {
+            dispatch(getMyUserFailed(error));
         }
     };
 };
