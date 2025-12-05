@@ -1,15 +1,7 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import "./UpdateModal.css";
 
-const UpdateModal = ({ 
-  title, 
-  onClose, 
-  children, 
-  onDelete, // Новая функция для удаления
-  formId,   // ID формы, чтобы кнопка "Сохранить" работала снаружи
-  saveLabel = "Сохранить" // Текст кнопки (опционально)
-}) => {
-  
+const UpdateModal = ({ title, onClose, children, onDelete, formId }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
@@ -20,56 +12,23 @@ const UpdateModal = ({
 
   return (
     <div className="modal-overlay" onMouseDown={onClose}>
-      <div className="modal-content" onMouseDown={(e) => e.stopPropagation()}>
-        
+      <div className="modal-container" onMouseDown={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3>{title}</h3>
-          <button className="close-icon-btn" onClick={onClose}>×</button>
+          <button className="modal-close" onClick={onClose}>×</button>
         </div>
+        <div className="modal-body">{children}</div>
 
-        {/* Тело модалки (здесь будут инпуты) */}
-        <div className="modal-body">
-          {children}
-        </div>
-
-        {/* Футер с кнопками теперь тут */}
-        <div className="modal-actions">
-          {/* Кнопка УДАЛИТЬ (рендерим, только если передали функцию onDelete) */}
+        <div className="modal-footer" style={{justifyContent: "space-between"}}>
           {onDelete ? (
-            <button 
-              type="button" 
-              className="btn-delete" 
-              onClick={onDelete}
-            >
-              Удалить
-            </button>
-          ) : (
-            <div></div> /* Пустой блок, чтобы flexbox не ломался */
-          )}
+            <button type="button" className="btn-delete" onClick={onDelete}>Удалить</button>
+          ) : <div></div>}
 
-          <div className="right-actions">
-            <button 
-              type="button" 
-              className="btn-cancel" 
-              onClick={onClose}
-            >
-              Отмена
-            </button>
-            
-            {/* 
-                ВАЖНО: form={formId} 
-                Это связывает кнопку с тегом <form id="...">, который лежит внутри children 
-            */}
-            <button 
-              type="submit" 
-              form={formId} 
-              className="btn-save"
-            >
-              {saveLabel}
-            </button>
+          <div className="right-actions" style={{display: 'flex', gap: '10px'}}>
+            <button type="button" className="btn-cancel" onClick={onClose}>Отмена</button>
+            <button type="submit" form={formId} className="modal-add-btn">Сохранить</button>
           </div>
         </div>
-        
       </div>
     </div>
   );

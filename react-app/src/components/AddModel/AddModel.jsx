@@ -1,58 +1,103 @@
-import "./AddModel.css"
+import { useEffect } from "react";
+import "./AddModel.css";
 
-function AddModel({ isOpen, onClose, activeTable, onAdd }) {
-    if (!isOpen) return null;
+function AddModel({ isOpen, onClose, title, fields, onAdd }) {
+  if (!isOpen) return null;
 
-    return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h3>Добавление работы</h3>
-                    <button className="modal-close" onClick={onClose}>×</button>
-                </div>
-                <div className="modal-body">
-                    <label>Название работы</label>
-                    <input type="text" placeholder="Введите название" id="work-title" />
+  if (!fields) return null;
 
-                    <label>Категория</label>
-                    <select id="work-category">
-                        <option value="">Выберите категорию</option>
-                        <option value="Подвеска">Подвеска</option>
-                        <option value="Визуализация">Визуализация</option>
-                        <option value="Внутрянка">Внутрянка</option>
-                    </select>
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
-                    <label>Описание</label>
-                    <textarea
-                        id="work-desc"
-                        placeholder="Введите описание"
-                        rows={3}
-                    />
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    const isSuccess = await onAdd(data);
 
-                    <label>Нормативное время</label>
-                    <input type="number" id="work-time" placeholder="Введите время" />
-                </div>
+    if (isSuccess) {
+      onClose();
+    }
+  };
 
-                <div className="modal-footer">
-                    <button
-                        className="modal-add-btn"
-                        onClick={() => {
-                            const data = {
-                                title: document.getElementById("work-title").value,
-                                category: document.getElementById("work-category").value,
-                                description: document.getElementById("work-desc").value,
-                                time: document.getElementById("work-time").value,
-                            };
-                            onAdd(data);
-                            onClose();
-                        }}
-                    >
-                        Добавить
-                    </button>
-                </div>
-            </div>
+  return (
+    <div className="modal-overlay" onMouseDown={onClose}>
+      <div className="modal-container" onMouseDown={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>{title}</h3>
+          <button className="modal-close" onClick={onClose}>
+            ×
+          </button>
         </div>
-    )
+
+        <form onSubmit={handleSubmit}>
+          <div className="modal-body">
+            {fields.map((field) => (
+              <div key={field.name} className="form-group">
+                <label>{field.label}</label>
+
+                {field.type === "select" ? (
+                  <select
+                    name={field.name}
+                    className="modal-input"
+                    required={field.required}
+                    defaultValue=""
+                  >
+                    <option value="" disabled>
+                      Выберите...
+                    </option>
+                    {field.options.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : field.type === "textarea" ? (
+                  <textarea
+                    name={field.name}
+                    className="modal-input"
+                    placeholder={field.placeholder}
+                    rows={3}
+                    required={field.required}
+                  />
+                ) : field.type === "file" ? (
+                  <div key={field.name} className="form-group">
+                    <label>{field.label}</label>
+                    <input
+                      type="file"
+                      name={field.name}
+                      className="modal-input"
+                      accept="image/*"
+                      required={field.required}
+                    />
+                  </div>
+                ) : (
+                  <input
+                    type={field.type}
+                    name={field.name}
+                    className="modal-input"
+                    placeholder={field.placeholder}
+                    required={field.required}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="modal-footer">
+            <button type="submit" className="modal-add-btn">
+              Добавить
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
 
-export default AddModel
+export default AddModel;

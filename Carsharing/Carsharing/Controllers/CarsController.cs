@@ -201,12 +201,10 @@ public class CarsController : ControllerBase
 
     [HttpPost("{id:int}/image")]
     [Consumes("multipart/form-data")]
-    // 1. Добавлен [FromForm] для Swagger
     public async Task<IActionResult> UploadCarImage([FromRoute] int id, UploadImageDto model)
     {
         var cars = await _carsService.GetCarById(id);
 
-        // 2. Используем FirstOrDefault, чтобы избежать краша
         var car = cars.FirstOrDefault();
         var image = model.Image;
 
@@ -247,7 +245,6 @@ public class CarsController : ControllerBase
             imagePath
         );
 
-        // 3. Возвращаем актуальный imagePath
         return Ok(new { imageUrl = imagePath });
     }
 

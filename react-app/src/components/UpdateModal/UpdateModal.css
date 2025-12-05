@@ -1,4 +1,3 @@
-/* --- 1. Оболочка (Фон) --- */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -127,7 +126,7 @@
 }
 
 .btn-save {
-  background-color: #1890ff;
+  background-color: #2563eb;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -138,5 +137,5 @@
 }
 
 .btn-save:hover {
-  background-color: #096dd9;
+  background-color: #095cd9;
 }

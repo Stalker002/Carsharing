@@ -1,93 +1,129 @@
 import { api } from "../../api";
-import { createCarFailed, createCarStarted, createCarSuccess, deleteCarFailed, deleteCarStarted, deleteCarSuccess, getCarsByCategoryFailed, getCarsByCategoryStarted, getCarsByCategorySuccess, getCarsFailed, getCarsStarted, getCarsSuccess, getInfoCarFailed, getInfoCarStarted, getInfoCarSuccess, setCarsByCategoryTotal, setCarsTotal, updateCarFailed, updateCarStarted, updateCarSuccess } from "../actionCreators/cars";
+import {
+  createCarFailed,
+  createCarStarted,
+  createCarSuccess,
+  deleteCarFailed,
+  deleteCarStarted,
+  deleteCarSuccess,
+  getCarsByCategoryFailed,
+  getCarsByCategoryStarted,
+  getCarsByCategorySuccess,
+  getCarsFailed,
+  getCarsStarted,
+  getCarsSuccess,
+  getInfoCarFailed,
+  getInfoCarStarted,
+  getInfoCarSuccess,
+  setCarsByCategoryTotal,
+  setCarsTotal,
+  updateCarFailed,
+  updateCarStarted,
+  updateCarSuccess,
+} from "../actionCreators/cars";
 
 export const getCars = (page = 1) => {
-    return async (dispatch) => {
-        try {
-            dispatch(getCarsStarted());
+  return async (dispatch) => {
+    try {
+      dispatch(getCarsStarted());
 
-            const response = await api.cars.getCars({
-                params: {
-                    _page: page,
-                    _limit: 25,
-                },
-            });
+      const response = await api.cars.getCars({
+        params: {
+          _page: page,
+          _limit: 25,
+        },
+      });
 
-            const totalCount = parseInt(response.headers["x-total-count"], 10);
-            if (!isNaN(totalCount)) {
-                dispatch(setCarsTotal(totalCount));
-            }
+      const totalCount = parseInt(response.headers["x-total-count"], 10);
+      if (!isNaN(totalCount)) {
+        dispatch(setCarsTotal(totalCount));
+      }
 
-            dispatch(getCarsSuccess({
-                data: response.data,
-                page,
-            }));
-        } 
-        catch (error) {
-            dispatch(getCarsFailed(error));
-        }
-    };
+      dispatch(
+        getCarsSuccess({
+          data: response.data,
+          page,
+        })
+      );
+    } catch (error) {
+      dispatch(getCarsFailed(error));
+    }
+  };
 };
 
 export const getCarsByCategory = (ids, page = 1) => {
-    return async (dispatch) => {
-        try {
-            dispatch(getCarsByCategoryStarted())
+  return async (dispatch) => {
+    try {
+      dispatch(getCarsByCategoryStarted());
 
-            const response = await api.cars.getCarByCategory({
-                params: {
-                    ids: ids,
-                    _page: page,
-                    _limit: 25,
-                },
-            });
+      const response = await api.cars.getCarByCategory({
+        params: {
+          ids: ids,
+          _page: page,
+          _limit: 25,
+        },
+      });
 
-            const totalCount = parseInt(response.headers["x-total-count"], 10);
-            if (!isNaN(totalCount)) {
-                dispatch(setCarsByCategoryTotal(totalCount));
-            }
+      const totalCount = parseInt(response.headers["x-total-count"], 10);
+      if (!isNaN(totalCount)) {
+        dispatch(setCarsByCategoryTotal(totalCount));
+      }
 
-            dispatch(getCarsByCategorySuccess({
-                data: response.data,
-                page,
-            }));
-        } 
-        catch (error) {
-            dispatch(getCarsByCategoryFailed(error));
-        }
-    };
+      dispatch(
+        getCarsByCategorySuccess({
+          data: response.data,
+          page,
+        })
+      );
+    } catch (error) {
+      dispatch(getCarsByCategoryFailed(error));
+    }
+  };
 };
 
 export const getInfoCars = (id) => {
-    return async (dispatch) => {
-        try {
-            dispatch(getInfoCarStarted())
-
-            const response = await api.cars.getCarInfo(id);
-
-            dispatch(getInfoCarSuccess(response.data));
-        } 
-        catch (error) {
-            dispatch(getInfoCarFailed(error));
-        }
-    };
+  return async (dispatch) => {
+    try {
+      dispatch(getInfoCarStarted());
+      const response = await api.cars.getCarInfo(id);
+      dispatch(getInfoCarSuccess(response.data));
+    } catch (error) {
+      dispatch(getInfoCarFailed(error));
+    }
+  };
 };
 
 export const createCar = (data) => {
-    return async (dispatch) => {
-        try {
-            dispatch(createCarStarted());
+  return async (dispatch) => {
+    try {
+      dispatch(createCarStarted());
 
-            const response = await api.cars.createCar(data);
+      const formData = new FormData();
 
-            dispatch(createCarSuccess(response.data));
+      Object.keys(data).forEach((key) => {
+        if (key === "image" && data[key] instanceof File) {
+          formData.append("Image", data[key]);
         } 
-        catch (error) {
-            dispatch(createCarFailed(error));
+        else if (data[key] !== null && data[key] !== undefined) {
+          formData.append(key, data[key]);
         }
-    };
+      });
+
+      const response = await api.cars.createCar(formData);
+
+      dispatch(createCarSuccess(response.data));
+      
+      return { success: true };
+    } catch (error) {
+      const errorMessage = error.response?.data || error.message;
+      dispatch(createCarFailed(error));
+      
+      return { success: false, message: errorMessage };
+    }
+  };
 };
 
+// === UPDATE CAR ===
 export const updateCar = (id, data) => {
   return async (dispatch) => {
     try {
@@ -96,9 +132,13 @@ export const updateCar = (id, data) => {
       const response = await api.cars.updateCar(id, data);
 
       dispatch(updateCarSuccess(response.data));
-    } 
-    catch (error) {
+
+      return { success: true };
+    } catch (error) {
+      const errorMessage = error.response?.data || error.message;
       dispatch(updateCarFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -111,9 +151,13 @@ export const deleteCar = (id) => {
       const response = await api.cars.deleteCar(id);
 
       dispatch(deleteCarSuccess(response.data));
-    } 
-    catch (error) {
+
+      return { success: true };
+    } catch (error) {
+      const errorMessage = error.response?.data || error.message;
       dispatch(deleteCarFailed(error));
+      
+      return { success: false, message: errorMessage };
     }
   };
 };

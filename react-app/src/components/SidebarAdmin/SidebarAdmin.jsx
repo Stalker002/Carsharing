@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import Exit from "./../../svg/Profile/exit.svg";
 
 import "./SidebarAdmin.css"
 
 function SidebarAdmin({ activeTab, setActiveTab }) {
+  const navigate = useNavigate();
   return (
     <div className="admin-sidebar">
       <nav className="sidebar-menu-admin">
@@ -68,7 +70,7 @@ function SidebarAdmin({ activeTab, setActiveTab }) {
         </button>
         <div className="admin-action">
           <a>Помощь</a>
-          <button className="logout"> <img src={Exit} />Выйти</button>
+          <button className="logout" onClick={() => navigate("/")}> <img src={Exit} />Выйти</button>
         </div>
       </nav>
     </div>
