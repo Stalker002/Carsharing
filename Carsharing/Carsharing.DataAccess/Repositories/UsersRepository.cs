@@ -40,6 +40,7 @@ public class UsersRepository : IUsersRepository
     public async Task<List<User>> GetUser()
     {
         var userEntities = await _context.Users
+            .OrderBy(u => u.Id)
             .AsNoTracking()
             .ToListAsync();
 
@@ -54,6 +55,7 @@ public class UsersRepository : IUsersRepository
     {
         var userEntities = await _context.Users
             .AsNoTracking()
+            .OrderBy(u => u.Id)
             .Skip((page - 1) * limit)
             .Take(limit)
             .ToListAsync();

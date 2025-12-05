@@ -41,6 +41,7 @@ public class CarRepository : ICarRepository
             .AsNoTracking()
             .Skip((page - 1) * limit)
             .Take(limit)
+            .OrderBy(c => c.Id)
             .ToListAsync();
 
         var cars = carEntities

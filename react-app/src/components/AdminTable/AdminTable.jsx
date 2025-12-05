@@ -9,6 +9,8 @@ import AddModel from "../AddModel/AddModel";
 
 function AdminTable({ activeTab }) {
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  
   const handleAdd = (data) => {
     console.log("Добавлено:", data);
     // тут добавляешь в таблицу
@@ -39,7 +41,7 @@ function AdminTable({ activeTab }) {
       <AddModel
         isOpen={isAddOpen}
         onClose={() => setIsAddOpen(false)}
-        activeTable={activeTable}
+        activeTable={activeTab}
         setPage={setPage}
         onAdd={handleAdd}
       />

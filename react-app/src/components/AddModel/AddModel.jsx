@@ -1,6 +1,6 @@
 import "./AddModel.css"
 
-function AddModel({ isOpen, onClose, onAdd }) {
+function AddModel({ isOpen, onClose, activeTable, onAdd }) {
     if (!isOpen) return null;
 
     return (

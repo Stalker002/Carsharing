@@ -1,3 +1,5 @@
+import Exit from "./../../svg/Profile/exit.svg";
+
 import "./SidebarAdmin.css"
 
 function SidebarAdmin({ activeTab, setActiveTab }) {
@@ -7,7 +9,7 @@ function SidebarAdmin({ activeTab, setActiveTab }) {
         <button
           className={activeTab === "Dashboard" ? "sidebar-btn active" : "sidebar-btn"}
           onClick={() => setActiveTab("Dashboard")}>
-          Dashboard
+          Статистика
         </button>
         <button
           className={activeTab === "cars" ? "sidebar-btn active" : "sidebar-btn"}
@@ -66,7 +68,7 @@ function SidebarAdmin({ activeTab, setActiveTab }) {
         </button>
         <div className="admin-action">
           <a>Помощь</a>
-          <button className="logout">Выйти</button>
+          <button className="logout"> <img src={Exit} />Выйти</button>
         </div>
       </nav>
     </div>

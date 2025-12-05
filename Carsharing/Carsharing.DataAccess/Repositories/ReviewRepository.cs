@@ -18,6 +18,7 @@ public class ReviewRepository : IReviewRepository
     {
         var reviewEntities = await _context.Review
             .AsNoTracking()
+            .OrderBy(r => r.Id)
             .ToListAsync();
 
         var reviews = reviewEntities
@@ -37,6 +38,7 @@ public class ReviewRepository : IReviewRepository
     {
         var reviewEntities = await _context.Review
             .AsNoTracking()
+            .OrderBy(r => r.Id)
             .Skip((page - 1) * limit)
             .Take(limit)
             .ToListAsync();
@@ -130,6 +132,7 @@ public class ReviewRepository : IReviewRepository
     {
         var reviewEntities = await _context.Review
             .Where(r => r.ClientId == clientId)
+            .OrderBy(r => r.Id)
             .AsNoTracking()
             .ToListAsync();
 

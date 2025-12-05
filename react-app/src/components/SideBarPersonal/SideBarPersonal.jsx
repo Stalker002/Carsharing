@@ -31,7 +31,6 @@ function SideBarPersonal({ active, onChange }) {
           </button>
         ))}
       </div>
-
       <button
         className="sidebar-logout"
         onClick={() => {

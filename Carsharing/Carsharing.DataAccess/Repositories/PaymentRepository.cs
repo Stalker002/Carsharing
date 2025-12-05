@@ -36,6 +36,7 @@ public class PaymentRepository : IPaymentRepository
     {
         var paymentEntities = await _context.Payment
             .AsNoTracking()
+            .OrderBy(p => p.Id)
             .Skip((page - 1) * limit)
             .Take(limit)
             .ToListAsync();

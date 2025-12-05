@@ -18,6 +18,7 @@ public class StatusRepository : IStatusRepository
     {
         var statusEntity = await _context.Status
             .AsNoTracking()
+            .OrderBy(s => s.Id)
             .ToListAsync();
 
         var statuses = statusEntity

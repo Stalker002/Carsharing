@@ -63,6 +63,7 @@ public class InsuranceRepository : IInsuranceRepository
     {
         var insuranceEntities = await _context.Insurance
             .Where(i => i.CarId == carId)
+            .OrderBy(i => i.Id)
             .AsNoTracking()
             .ToListAsync();
 
@@ -87,6 +88,7 @@ public class InsuranceRepository : IInsuranceRepository
         var insuranceEntities = await _context.Insurance
             .Where(i => i.CarId == carId && i.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow))
             .AsNoTracking()
+            .OrderBy(i => i.Id)
             .ToListAsync();
 
         var insurances = insuranceEntities

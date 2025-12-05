@@ -17,6 +17,7 @@ public class TripDetailRepository : ITripDetailRepository
     public async Task<List<TripDetail>> Get()
     {
         var detailEntities = await _context.TripDetail
+            .OrderBy(tr => tr.Id)
             .AsNoTracking()
             .ToListAsync();
 
@@ -38,6 +39,7 @@ public class TripDetailRepository : ITripDetailRepository
     {
         var detailEntities = await _context.TripDetail
             .AsNoTracking()
+            .OrderBy(tr => tr.Id)
             .Where(tr => tripIds.Contains(tr.TripId))
             .ToListAsync();
 

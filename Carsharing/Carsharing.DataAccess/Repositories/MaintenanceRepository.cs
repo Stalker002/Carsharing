@@ -77,6 +77,7 @@ public class MaintenanceRepository : IMaintenanceRepository
     {
         var maintenanceEntity = await _context.Maintenance
             .Where(m => m.Date >= from && m.Date <= to)
+            .OrderBy(m => m.Id)
             .AsNoTracking()
             .ToListAsync();
 

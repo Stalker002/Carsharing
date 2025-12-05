@@ -17,6 +17,7 @@ public class SpecificationCarRepository : ISpecificationCarRepository
     public async Task<List<SpecificationCar>> Get()
     {
         var specificationEntity = await _context.SpecificationCar
+            .OrderBy(sp => sp.Id)
             .AsNoTracking()
             .ToListAsync();
 

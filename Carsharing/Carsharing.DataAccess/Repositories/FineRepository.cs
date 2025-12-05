@@ -38,6 +38,7 @@ public class FineRepository : IFineRepository
         var fineEntities = await _context.Fine
             .AsNoTracking()
             .Skip((page - 1) * limit)
+            .OrderBy(f => f.Id)
             .Take(limit)
             .ToListAsync();
 
@@ -83,6 +84,7 @@ public class FineRepository : IFineRepository
     {
         var fineEntities = await _context.Fine
             .Where(f => f.TripId == tripId)
+            .OrderBy(f => f.Id)
             .AsNoTracking()
             .ToListAsync();
 
@@ -103,6 +105,7 @@ public class FineRepository : IFineRepository
     {
         var fineEntities = await _context.Fine
             .Where(f => f.StatusId == statusId)
+            .OrderBy(f => f.Id)
             .AsNoTracking()
             .ToListAsync();
 

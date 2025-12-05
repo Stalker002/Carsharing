@@ -13,14 +13,16 @@ function Account() {
   const navigate = useNavigate();
 
   const myClient = useSelector((state) => state.clients.myClient);
-  const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
-  const isMyClientLoading = useSelector((state) => state.clients.isClientsLoading);
+  const isLoggedIn = !useSelector((state) => state.users.isLoggedIn);
+  const isMyClientLoading = useSelector(
+    (state) => state.clients.isClientsLoading
+  );
 
   useEffect(() => {
     if (isLoggedIn && Object.keys(myClient).length === 0 && !isMyClientLoading) {
         dispatch(getMyClient());
     }
-  }, [isMyClientLoading, dispatch]);
+  }, [myClient, isMyClientLoading, dispatch]);
   console.log("myClient =", myClient);
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);

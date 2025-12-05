@@ -27,9 +27,10 @@ const token = localStorage.getItem("tasty");
 const initialState = {
   users: [],
   myUser: {},
-  isLoggedIn: !token,
+  isLoggedIn: !!token,
   isMyUserLoading: false,
   isUsersLoading: false,
+  usersTotal: 0,
 };
 
 export const userReducer = (state = initialState, action) => {
@@ -136,8 +137,10 @@ export const userReducer = (state = initialState, action) => {
     case PUT_USER_SUCCESS:
       return {
         ...state,
-        users: state.users.map((b) =>
-          b.id === action.payload.id ? action.payload : b
+        users: state.users.map((user) =>
+          user.id === action.payload.id
+            ? { ...user, ...action.payload } // <--- исправление
+            : user
         ),
         isUpdateUserLoading: false,
       };

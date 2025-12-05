@@ -18,6 +18,7 @@ public class TripRepository : ITripRepository
     {
         var tripEntities = await _context.Trip
             .AsNoTracking()
+            .OrderBy(tr => tr.Id)
             .ToListAsync();
 
         var trips = tripEntities
@@ -39,6 +40,7 @@ public class TripRepository : ITripRepository
     {
         var tripEntities = await _context.Trip
             .AsNoTracking()
+            .OrderBy(tr => tr.Id)
             .Skip((page - 1) * limit)
             .Take(limit)
             .ToListAsync();
@@ -89,6 +91,7 @@ public class TripRepository : ITripRepository
     {
         var tripEntities = await _context.Trip
             .Where(tr => bookingIds.Contains(tr.BookingId))
+            .OrderBy(tr => tr.Id)
             .AsNoTracking()
             .ToListAsync();
 

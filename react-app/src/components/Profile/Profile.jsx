@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import "./Profile.css";
 import { useDispatch, useSelector } from "react-redux";
 import { getMyUser } from "../../redux/actions/users";
@@ -37,20 +36,19 @@ function Profile() {
 
   const myClient = useSelector((state) => state.clients.myClient);
   const myUser = useSelector((state) => state.users.myUser);
-  const isMyClientLoading = useSelector(
-    (state) => state.clients.isClientsLoading
+  const isMyUserLoading = useSelector(
+    (state) => state.users.isMyUserLoading
   );
 
   useEffect(() => {
-    if (Object.keys(myUser).length === 0 && !isMyClientLoading) {
+    if (Object.keys(myUser).length === 0 && !isMyUserLoading) {
       dispatch(getMyUser());
     }
-  }, [isMyClientLoading, dispatch]);
+  }, [isMyUserLoading, dispatch]);
   console.log("myUser =", myUser);
 
   const userRoleId = myUser.roleId;
 
-  // Условие:
   const isSpecialUser = userRoleId === 1;
 
   return (

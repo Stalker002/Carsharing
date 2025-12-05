@@ -18,6 +18,7 @@ public class CategoryRepository : ICategoryRepository
     {
         var categoryEntities = await _context.Category
             .AsNoTracking()
+            .OrderBy(c => c.Id)
             .ToListAsync();
 
         var categories = categoryEntities

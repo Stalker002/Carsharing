@@ -113,9 +113,12 @@ export const updateUser = (id, data) => {
             const response = await api.users.updateUser(id, data);
 
             dispatch(updateUserSuccess(response.data));
+            return { success: true };
         }
         catch (error) {
+            const errorMessage = error.response?.data?.message || error.message;
             dispatch(updateUserFailed(error));
+            return { success: false, message: errorMessage };
         }
     };
 };

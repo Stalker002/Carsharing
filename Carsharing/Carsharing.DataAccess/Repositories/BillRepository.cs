@@ -40,6 +40,7 @@ public class BillRepository : IBillRepository
             .AsNoTracking()
             .Skip((page - 1) * limit)
             .Take(limit)
+            .OrderBy(b => b.Id)
             .ToListAsync();
 
         var bills = billEntities

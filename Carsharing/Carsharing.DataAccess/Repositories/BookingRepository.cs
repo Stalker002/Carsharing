@@ -39,6 +39,7 @@ public class BookingRepository : IBookingRepository
             .AsNoTracking()
             .Skip((page - 1) * limit)
             .Take(limit)
+            .OrderBy(b => b.Id)
             .ToListAsync();
 
         var bookings = bookingEntity

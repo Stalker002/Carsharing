@@ -39,6 +39,7 @@ public class ClientRepository : IClientRepository
         var clientEntities = await _context.Client
             .AsNoTracking()
             .Skip((page - 1) * limit)
+            .OrderBy(cl => cl.Id)
             .Take(limit)
             .ToListAsync();
 

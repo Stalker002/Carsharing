@@ -9,6 +9,7 @@ const initialState = {
     isCreateCarImageLoading: false,
     isUpdateCarLoading: false,
     isDeleteCarLoading: false,
+    carsTotal: 0,
 };
 
 export const carsReducer = (state = initialState, action) => {
@@ -34,8 +35,9 @@ export const carsReducer = (state = initialState, action) => {
         case SET_CARS_TOTAL:
             return {
                 ...state,
-                billsTotal: action.payload,
+                carsTotal: action.payload,
             };
+
         case GET_CARS_BY_CATEGORY_STARTED:
             return {
                 ...state,

@@ -38,6 +38,7 @@ public class ClientDocumentRepository : IClientDocumentRepository
     {
         var clientDocumentEntities = await _context.ClientDocument
             .Where(d => d.ClientId == clientId)
+            .OrderBy(cl => cl.Id)
             .AsNoTracking()
             .ToListAsync();
 

@@ -18,6 +18,7 @@ public class TariffRepository : ITariffRepository
     {
         var tariffEntities = await _context.Tariff
             .AsNoTracking()
+            .OrderBy(t => t.Id)
             .ToListAsync();
 
         var tariffs = tariffEntities

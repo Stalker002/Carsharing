@@ -14,7 +14,6 @@ function Admin() {
                 <SidebarAdmin activeTab={activeTab} setActiveTab={setActiveTab}/>
                 <AdminTable activeTab={activeTab}/>
             </div>
-            <Footer />
         </>
     )
 }
