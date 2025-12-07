@@ -19,9 +19,7 @@ export const fieldsUsers = [
 export const columnsCars = ["id", "location", "fuelLevel", "statusId", "categoryId", "tariffId"];
 export const headTextCars = ["ID", "Локация", "Топливо (%)", "ID Статуса", "ID Категории", "ID Тарифа"];
 
-// === ПОЛЯ ФОРМЫ (Добавление / Редактирование) ===
 export const fieldsCars = [
-  // --- Блок 1: Основное (Машина) ---
   { 
     name: "id", 
     label: "ID", 
@@ -65,10 +63,6 @@ export const fieldsCars = [
     ],
     required: true
   },
-
-  // --- Блок 2: Спецификация (Specification) ---
-  // В твоем контроллере UpdateCar НЕ обновляет эти данные.
-  // Поэтому ставим hideOnEdit: true (или readOnly: true).
   
   { name: "brand", label: "Марка", type: "text", placeholder: "BMW", required: true, hideOnEdit: true },
   { name: "model", label: "Модель", type: "text", placeholder: "X5", required: true, hideOnEdit: true },
@@ -81,23 +75,19 @@ export const fieldsCars = [
   { name: "maxFuel", label: "Бак (литров)", type: "number", required: true, hideOnEdit: true },
   { name: "fuelPerKm", label: "Расход (л/км)", type: "number", required: true, hideOnEdit: true },
 
-  // --- Блок 3: Тариф (Tariff) ---
-  // Тоже создается 1 раз при создании машины
   { name: "name", label: "Название тарифа", type: "text", placeholder: "Базовый", required: true, hideOnEdit: true },
   { name: "pricePerMinute", label: "Цена/мин", type: "number", required: true, hideOnEdit: true },
   { name: "pricePerKm", label: "Цена/км", type: "number", required: true, hideOnEdit: true },
   { name: "pricePerDay", label: "Цена/сутки", type: "number", required: true, hideOnEdit: true },
 
-  // --- Блок 4: Картинка ---
   { 
     name: "image", 
     label: "Фото автомобиля", 
-    type: "file", // ВАЖНО: нужно поддержать этот тип в AddModel
+    type: "file",
     required: true, 
-    hideOnEdit: true // Обновление фото у тебя идет через отдельный метод /image, пока скроем здесь
+    hideOnEdit: true 
   }
 ];
-
 
 export const columnsTrips = ["id", "startDate", "endDate", "userId", "carId"];
 export const headTextTrips = ["ID", "Начало", "Конец", "ID Клиента", "ID Авто"];

@@ -13,16 +13,16 @@ function Account() {
   const navigate = useNavigate();
 
   const myClient = useSelector((state) => state.clients.myClient);
-  const isLoggedIn = !useSelector((state) => state.users.isLoggedIn);
+  const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
   const isMyClientLoading = useSelector(
     (state) => state.clients.isClientsLoading
   );
 
   useEffect(() => {
-    if (isLoggedIn && Object.keys(myClient).length === 0 && !isMyClientLoading) {
+    if (!isLoggedIn) {
         dispatch(getMyClient());
     }
-  }, [myClient, isMyClientLoading, dispatch]);
+  }, [isLoggedIn, dispatch]);
   console.log("myClient =", myClient);
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -43,7 +43,7 @@ function Account() {
     setIsRegisterOpen(false);
   };
 
-  if (!isLoggedIn) {
+  if (isLoggedIn) {
     return (
       <>
         <button className="user-button" onClick={openLogin}>

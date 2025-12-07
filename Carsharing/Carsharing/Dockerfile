@@ -29,9 +29,13 @@ RUN dotnet publish "./Carsharing.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 # Этот этап используется в рабочей среде или при запуске из VS в обычном режиме (по умолчанию, когда конфигурация отладки не используется)
 FROM base AS final
 WORKDIR /app
+USER root
 # wwwroot чтобы не было предупреждений
-RUN mkdir -p /app/wwwroot
+RUN mkdir -p /app/wwwroot/images/cars
+RUN chown -R app:app /app/wwwroot
 # Папка для DataProtection ключей
 RUN mkdir -p /app/keys
+RUN chown -R app:app /app/keys
 COPY --from=publish /app/publish .
+USER app
 ENTRYPOINT ["dotnet", "Carsharing.dll"]

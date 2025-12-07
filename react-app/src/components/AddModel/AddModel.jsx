@@ -27,7 +27,7 @@ function AddModel({ isOpen, onClose, title, fields, onAdd }) {
 
   return (
     <div className="modal-overlay" onMouseDown={onClose}>
-      <div className="modal-container" onMouseDown={(e) => e.stopPropagation()}>
+      <div className="admin-modal-container" onMouseDown={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3>{title}</h3>
           <button className="modal-close" onClick={onClose}>

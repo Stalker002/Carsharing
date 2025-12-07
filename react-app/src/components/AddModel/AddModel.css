@@ -1,31 +1,37 @@
-/* AddModel.css */
-
-/* Контейнер модалки */
-.modal-container {
-  background: #ffffff;
-  padding: 0; /* Убираем паддинг у контейнера, перенесем внутрь */
-  border-radius: 12px;
-  width: 600px; /* Сделаем чуть шире для удобства */
-  max-width: 95%;
-  
-  /* 🔥 ГЛАВНОЕ: Ограничиваем высоту и включаем Flex */
-  max-height: 90vh; 
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
-  flex-direction: column;
-  
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  position: relative;
-  animation: slideDown 0.3s ease;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
 }
 
-/* Шапка зафиксирована сверху */
+.admin-modal-container {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 600px;
+  max-width: 95%;
+  height: auto;
+  max-height: 90vh;  
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
 .modal-header {
   padding: 20px 25px;
   border-bottom: 1px solid #eaeaea;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-shrink: 0; /* Не сжимается */
+  flex-shrink: 0;
 }
 
 .modal-header h3 {
@@ -34,26 +40,20 @@
   color: #333;
 }
 
-/* 🔥 ФОРМА занимает всё доступное пространство */
-.modal-container form {
+.admin-modal-container form {
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Чтобы скролл был только у body */
-  flex: 1; /* Растягиваем форму */
+  overflow: hidden; 
 }
 
-/* 🔥 ТЕЛО С ИНПУТАМИ (Скроллится только оно) */
 .modal-body {
   padding: 25px;
-  overflow-y: auto; /* Включаем вертикальный скролл */
-  
-  /* Сетка: Делаем 2 колонки для компактности */
+  overflow-y: auto;
   display: grid;
   grid-template-columns: 1fr 1fr; 
-  gap: 15px 20px; /* Отступы между ячейками */
+  gap: 15px 20px;
 }
 
-/* Если поле textarea или файл - пусть занимают всю ширину (2 колонки) */
 .form-group:has(textarea), 
 .form-group:has(input[type="file"]) {
   grid-column: span 2;
@@ -64,9 +64,9 @@
   border-top: 1px solid #eaeaea;
   display: flex;
   justify-content: flex-end;
-  background-color: #f9f9f9; /* Чуть серый фон для красоты */
+  background-color: #f9f9f9;
   border-radius: 0 0 12px 12px;
-  flex-shrink: 0; /* Не сжимается */
+  flex-shrink: 0;
 }
 
 .form-group label {
@@ -93,7 +93,7 @@
 }
 
 .modal-add-btn {
-  background-color: #28a745;
+  background-color: #2563eb;
   color: white;
   border: none;
   padding: 10px 24px;
@@ -101,6 +101,10 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.modal-add-btn:hover {
+  background-color: #095cd9;
 }
 
 .modal-close {
@@ -111,7 +115,6 @@
   color: #999;
 }
 
-/* Адаптив: на мобильных возвращаем 1 колонку */
 @media (max-width: 600px) {
   .modal-body {
     grid-template-columns: 1fr;

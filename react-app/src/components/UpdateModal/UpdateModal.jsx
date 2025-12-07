@@ -11,22 +11,45 @@ const UpdateModal = ({ title, onClose, children, onDelete, formId }) => {
   }, [onClose]);
 
   return (
-    <div className="modal-overlay" onMouseDown={onClose}>
-      <div className="modal-container" onMouseDown={(e) => e.stopPropagation()}>
-        <div className="modal-header">
+    <div className="update-overlay" onMouseDown={onClose}>
+      <div
+        className="update-container"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        <div className="update-header">
+          <span style={{ width: "24px" }}></span>
           <h3>{title}</h3>
-          <button className="modal-close" onClick={onClose}>×</button>
+          <button className="update-close-btn" onClick={onClose}>
+            ×
+          </button>
         </div>
-        <div className="modal-body">{children}</div>
 
-        <div className="modal-footer" style={{justifyContent: "space-between"}}>
+        <div className="update-body">{children}</div>
+
+        <div className="update-footer">
           {onDelete ? (
-            <button type="button" className="btn-delete" onClick={onDelete}>Удалить</button>
-          ) : <div></div>}
+            <button
+              type="button"
+              className="update-btn-delete"
+              onClick={onDelete}
+            >
+              Удалить
+            </button>
+          ) : (
+            <div></div>
+          )}
 
-          <div className="right-actions" style={{display: 'flex', gap: '10px'}}>
-            <button type="button" className="btn-cancel" onClick={onClose}>Отмена</button>
-            <button type="submit" form={formId} className="modal-add-btn">Сохранить</button>
+          <div className="update-right-actions">
+            <button
+              type="button"
+              className="update-btn-cancel"
+              onClick={onClose}
+            >
+              Отмена
+            </button>
+            <button type="submit" form={formId} className="update-btn-save">
+              Сохранить
+            </button>
           </div>
         </div>
       </div>

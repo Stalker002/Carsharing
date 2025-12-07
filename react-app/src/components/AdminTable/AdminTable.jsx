@@ -3,7 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { GenericTable } from "./GenericTable";
 
-import { createUser, getUsers, updateUser } from "../../redux/actions/users";
+import {
+  createUser,
+  deleteUser,
+  getUsers,
+  updateUser,
+} from "../../redux/actions/users";
 import {
   createCar,
   deleteCar,
@@ -26,6 +31,8 @@ import {
   columnsTrips,
   headTextTrips,
 } from "./configs";
+import CategoryManager from "../CategoryManager/CategoryManager";
+import { getPayments } from "../../redux/actions/payments";
 
 function AdminTable({ activeTab }) {
   const dispatch = useDispatch();
@@ -33,6 +40,7 @@ function AdminTable({ activeTab }) {
   const [page, setPage] = useState(1);
   const [editingItem, setEditingItem] = useState(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isCatOpen, setIsCatOpen] = useState(false);
 
   const isLoadingRef = useRef(false);
   const isSwitchingTable = useRef(false);
@@ -59,6 +67,7 @@ function AdminTable({ activeTab }) {
       updateAction: (id, data) =>
         updateUser(id, { ...data, roleId: Number(data.roleId) }),
       addAction: (data) => createUser({ ...data, roleId: Number(data.roleId) }),
+      deleteAction: (id) => deleteUser(id),
       addTitle: "Новый пользователь",
       editTitle: "Редактирование пользователя",
     },
@@ -95,7 +104,7 @@ function AdminTable({ activeTab }) {
     payments: {
       data: payments,
       total: totalPayments,
-      action: null,
+      action: getPayments,
       columns: null,
       headText: null,
     },
@@ -172,9 +181,9 @@ function AdminTable({ activeTab }) {
 
     const result = await dispatch(cfg.updateAction(finalData.id, finalData));
     if (!result.success) {
-        alert(result.message);
-        return;
-      }
+      alert(result.message);
+      return;
+    }
 
     setEditingItem(null);
     refreshTable();
@@ -211,17 +220,27 @@ function AdminTable({ activeTab }) {
       <div className="admin-body">
         <div className="table-top">
           <input className="search" placeholder="Поиск по таблице" />
-          <button className="add-button" onClick={() => setIsAddOpen(true)}>
-            + Добавить запись
-          </button>
+          <div>
+            {activeTab === "cars" && (
+              <button
+                className="category-button"
+                onClick={() => setIsCatOpen(true)}
+              >
+                Категории
+              </button>
+            )}
+            <button className="add-button" onClick={() => setIsAddOpen(true)}>
+              + Добавить запись
+            </button>
+          </div>
         </div>
 
         <GenericTable
           headText={cfg.headText}
           bodyText={cfg.data || []}
           columns={cfg.columns}
-          onEditClick={handleEditClick} // Теперь эта функция существует
-          nextHandler={nextHandler} // И эта тоже
+          onEditClick={handleEditClick}
+          nextHandler={nextHandler}
           hasMore={(cfg.data?.length || 0) < (cfg.total || 0)}
         />
       </div>
@@ -234,7 +253,6 @@ function AdminTable({ activeTab }) {
           onDelete={
             cfg.deleteAction
               ? () => {
-                  // Можно добавить подтверждение удаления
                   if (window.confirm("Удалить?")) {
                     dispatch(cfg.deleteAction(editingItem.id));
                     setEditingItem(null);
@@ -246,7 +264,7 @@ function AdminTable({ activeTab }) {
         >
           <form id="edit-form" onSubmit={handleSaveEdit}>
             {editFields.map((field) => (
-              <div className="form-group" key={field.name}>
+              <div className="update-group" key={field.name}>
                 <label>{field.label}</label>
 
                 {field.type === "select" ? (
@@ -289,6 +307,8 @@ function AdminTable({ activeTab }) {
         fields={addFields}
         onAdd={handleAdd}
       />
+
+      <CategoryManager isOpen={isCatOpen} onClose={() => setIsCatOpen(false)} />
     </>
   );
 }

@@ -1,0 +1,90 @@
+/* Делаем модалку чуть уже, чем для добавления машин */
+.category-modal {
+  width: 500px;
+  max-height: 80vh;
+}
+
+.category-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* Переопределяем grid из AddModel.css */
+  display: flex !important; 
+}
+
+/* Форма добавления сверху */
+.add-category-row {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.small-btn {
+  padding: 0 20px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Список */
+.categories-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.category-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+.cat-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.empty-text {
+  text-align: center;
+  color: #999;
+  margin-top: 20px;
+}
+
+/* Кнопки действий */
+.item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.edit-btn:hover { color: #2563eb; background: #eff6ff; }
+.del-btn:hover { color: #dc2626; background: #fef2f2; }
+.save-btn { color: #16a34a; }
+.cancel-btn { color: #666; }
+
+.edit-input {
+  padding: 5px 10px;
+  width: 70%;
+}
+
+.grey-btn {
+  background-color: #6c757d;
+}
+.grey-btn:hover {
+  background-color: #5a6268;
+}

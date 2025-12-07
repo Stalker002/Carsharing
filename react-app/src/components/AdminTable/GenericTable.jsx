@@ -24,8 +24,7 @@ export const GenericTable = ({
                 <th key={index} className="column-names">
                   <div className="column-elements">
                     <span className="names">{item}</span>
-                    {/* 
-                    Кнопка сортировки 
+                    {/* Кнопка сортировки 
                     <button className="button-sort">
                        ⇅
                     </button>
