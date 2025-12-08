@@ -22,7 +22,8 @@ import {
   PUT_USER_SUCCESS,
   SET_USERS_TOTAL,
 } from "../actionCreators/users";
-const token = localStorage.getItem("tasty");
+
+const token = localStorage.getItem("tasty"); 
 
 const initialState = {
   users: [],

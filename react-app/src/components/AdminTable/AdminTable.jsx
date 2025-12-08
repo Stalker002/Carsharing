@@ -15,7 +15,6 @@ import {
   getCars,
   updateCar,
 } from "../../redux/actions/cars";
-import { getTrips, updateTrip } from "../../redux/actions/trips";
 
 import UpdateModal from "../UpdateModal/UpdateModal";
 import AddModel from "../AddModel/AddModel";
@@ -30,9 +29,78 @@ import {
   headTextUsers,
   columnsTrips,
   headTextTrips,
+  columnsBills,
+  headTextBills,
+  fieldsBills,
+  columnsBookings,
+  headTextBookings,
+  fieldsBookings,
+  columnsClients,
+  headTextClients,
+  fieldsClients,
+  columnsFines,
+  headTextFines,
+  fieldsFines,
+  columnsInsurances,
+  headTextInsurances,
+  fieldsInsurances,
+  columnsPayments,
+  headTextPayments,
+  fieldsPayments,
+  columnsPromocodes,
+  headTextPromocodes,
+  fieldsPromocodes,
+  fieldsTrips,
 } from "./configs";
 import CategoryManager from "../CategoryManager/CategoryManager";
-import { getPayments } from "../../redux/actions/payments";
+import {
+  createPayment,
+  deletePayment,
+  getPayments,
+  updatePayment,
+} from "../../redux/actions/payments";
+import {
+  createBill,
+  deleteBill,
+  getBills,
+  updateBill,
+} from "../../redux/actions/bills";
+import {
+  createBooking,
+  deleteBooking,
+  getBookings,
+  updateBooking,
+} from "../../redux/actions/bookings";
+import {
+  createClient,
+  deleteClient,
+  getClients,
+  updateClient,
+} from "../../redux/actions/clients";
+import {
+  createFine,
+  deleteFine,
+  getFines,
+  updateFine,
+} from "../../redux/actions/fines";
+import {
+  createInsurance,
+  deleteInsurance,
+  getInsurances,
+  updateInsurance,
+} from "../../redux/actions/insurance";
+import {
+  createPromocode,
+  deletePromocode,
+  getPromocodes,
+  updatePromocode,
+} from "../../redux/actions/promocodes";
+import {
+  createTrip,
+  deleteTrip,
+  getTrips,
+  updateTrip,
+} from "../../redux/actions/trips";
 
 function AdminTable({ activeTab }) {
   const dispatch = useDispatch();
@@ -51,25 +119,76 @@ function AdminTable({ activeTab }) {
   const cars = useSelector((state) => state.cars?.cars || []);
   const totalCars = useSelector((state) => state.cars?.totalCars || 0);
 
-  const trips = [];
-  const totalTrips = 0;
-  const payments = [];
-  const totalPayments = 0;
-
   const tableConfig = {
-    users: {
-      data: users,
-      total: totalUsers,
-      columns: columnsUsers,
-      headText: headTextUsers,
-      fields: fieldsUsers,
-      action: getUsers,
+    bills: {
+      data: useSelector((state) => state.bills?.bills || []), // Проверь свой редьюсер
+      total: useSelector((state) => state.bills?.billsTotal || 0),
+      columns: columnsBills,
+      headText: headTextBills,
+      fields: fieldsBills,
+
+      action: getBills,
+
+      addAction: (data) =>
+        createBill({
+          ...data,
+          tripId: Number(data.tripId),
+          promocodeId: data.promocodeId ? Number(data.promocodeId) : null,
+          statusId: Number(data.statusId),
+          amount: Number(data.amount),
+          remainingAmount: Number(data.remainingAmount),
+          startTime: new Date(data.startTime).toISOString(),
+          endTime: new Date(data.endTime).toISOString(),
+        }),
+      addTitle: "Выставление счета",
+
       updateAction: (id, data) =>
-        updateUser(id, { ...data, roleId: Number(data.roleId) }),
-      addAction: (data) => createUser({ ...data, roleId: Number(data.roleId) }),
-      deleteAction: (id) => deleteUser(id),
-      addTitle: "Новый пользователь",
-      editTitle: "Редактирование пользователя",
+        updateBill(id, {
+          ...data,
+          tripId: Number(data.tripId),
+          promocodeId: data.promocodeId ? Number(data.promocodeId) : null,
+          statusId: Number(data.statusId),
+          amount: Number(data.amount),
+          remainingAmount: Number(data.remainingAmount),
+          startTime: new Date(data.startTime).toISOString(),
+          endTime: new Date(data.endTime).toISOString(),
+        }),
+      editTitle: "Редактирование счета",
+
+      deleteAction: (id) => deleteBill(id),
+    },
+    bookings: {
+      data: useSelector((state) => state.bookings?.bookings || []), // Проверь редьюсер
+      total: useSelector((state) => state.bookings?.bookingsTotal || 0),
+      columns: columnsBookings,
+      headText: headTextBookings,
+      fields: fieldsBookings,
+
+      action: getBookings,
+
+      // POST
+      addAction: (data) =>
+        createBooking({
+          ...data,
+          statusId: Number(data.statusId),
+          carId: Number(data.carId),
+          clientId: Number(data.clientId),
+          // startTime и endTime обычно отправляются как строки ISO,
+          // datetime-local возвращает строку вида "YYYY-MM-DDTHH:mm", что подходит
+        }),
+      addTitle: "Создание бронирования",
+
+      // PUT
+      updateAction: (id, data) =>
+        updateBooking(id, {
+          ...data,
+          statusId: Number(data.statusId),
+          carId: Number(data.carId),
+          clientId: Number(data.clientId),
+        }),
+      editTitle: "Изменение бронирования",
+
+      deleteAction: (id) => deleteBooking(id),
     },
     cars: {
       data: cars,
@@ -92,24 +211,223 @@ function AdminTable({ activeTab }) {
       editTitle: "Редактирование параметров",
       deleteAction: (id) => deleteCar(id),
     },
-    trips: {
-      data: trips,
-      total: totalTrips,
-      action: getTrips,
-      updateAction: updateTrip,
-      columns: columnsTrips,
-      headText: headTextTrips,
-      fields: [],
+    clients: {
+      data: useSelector((state) => state.clients?.clients || []),
+      total: useSelector((state) => state.clients?.clientsTotal || 0),
+      columns: columnsClients,
+      headText: headTextClients,
+      fields: fieldsClients,
+
+      action: getClients,
+
+      // POST: Создание Клиента + Юзера
+      addAction: (data) =>
+        createClient({
+          login: data.login,
+          password: data.password,
+          name: data.name,
+          surname: data.surname,
+          phoneNumber: data.phoneNumber,
+          email: data.email,
+        }),
+      addTitle: "Регистрация нового клиента",
+
+      // PUT: Обновление данных клиента
+      updateAction: (id, data) =>
+        updateClient(id, {
+          userId: Number(data.userId), // Контроллер требует userId в теле запроса
+          name: data.name,
+          surname: data.surname,
+          phoneNumber: data.phoneNumber,
+          email: data.email,
+        }),
+      editTitle: "Редактирование профиля клиента",
+
+      deleteAction: (id) => deleteClient(id),
+    },
+    fines: {
+      data: useSelector((state) => state.fines?.fines || []), // Проверь редьюсер
+      total: useSelector((state) => state.fines?.finesTotal || 0),
+      columns: columnsFines,
+      headText: headTextFines,
+      fields: fieldsFines,
+
+      action: getFines,
+
+      // POST
+      addAction: (data) =>
+        createFine({
+          ...data,
+          tripId: Number(data.tripId),
+          statusId: Number(data.statusId),
+          amount: Number(data.amount),
+          // type и date остаются строками
+        }),
+      addTitle: "Регистрация штрафа",
+
+      // PUT
+      updateAction: (id, data) =>
+        updateFine(id, {
+          ...data,
+          tripId: Number(data.tripId),
+          statusId: Number(data.statusId),
+          amount: Number(data.amount),
+        }),
+      editTitle: "Редактирование штрафа",
+
+      deleteAction: (id) => deleteFine(id),
+    },
+    insurances: {
+      data: useSelector((state) => state.insurances?.insurances || []),
+      total: useSelector((state) => state.insurances?.insurancesTotal || 0), // Если есть пагинация на бэке, но в контроллере я вижу только GetInsurances (без страниц), значит total может быть просто length
+      columns: columnsInsurances,
+      headText: headTextInsurances,
+      fields: fieldsInsurances,
+
+      // Обрати внимание: в контроллере нет метода GetPagedInsurances,
+      // поэтому action просто getInsurances() без параметров страницы.
+      action: getInsurances,
+
+      // POST
+      addAction: (data) =>
+        createInsurance({
+          ...data,
+          carId: Number(data.carId),
+          statusId: Number(data.statusId),
+          cost: Number(data.cost),
+        }),
+      addTitle: "Оформление страховки",
+
+      // PUT
+      updateAction: (id, data) =>
+        updateInsurance(id, {
+          ...data,
+          carId: Number(data.carId),
+          statusId: Number(data.statusId),
+          cost: Number(data.cost),
+        }),
+      editTitle: "Редактирование страховки",
+
+      deleteAction: (id) => deleteInsurance(id),
     },
     payments: {
-      data: payments,
-      total: totalPayments,
+      data: useSelector((state) => state.payments?.payments || []), // Проверь редьюсер
+      total: useSelector((state) => state.payments?.paymentsTotal || 0),
+      columns: columnsPayments,
+      headText: headTextPayments,
+      fields: fieldsPayments,
+
       action: getPayments,
-      columns: null,
-      headText: null,
+
+      // POST
+      addAction: (data) =>
+        createPayment({
+          ...data,
+          billId: Number(data.billId),
+          sum: Number(data.sum),
+          // method и date отправляем строками
+        }),
+      addTitle: "Регистрация платежа",
+
+      // PUT
+      updateAction: (id, data) =>
+        updatePayment(id, {
+          ...data,
+          billId: Number(data.billId),
+          sum: Number(data.sum),
+        }),
+      editTitle: "Редактирование платежа",
+
+      deleteAction: (id) => deletePayment(id),
     },
-    Dashboard: {
-      isDashboard: true,
+    promocodes: {
+      data: useSelector((state) => state.promocodes?.promocodes || []),
+      total: useSelector((state) => state.promocodes?.promocodesTotal || 0),
+      columns: columnsPromocodes,
+      headText: headTextPromocodes,
+      fields: fieldsPromocodes,
+
+      action: getPromocodes,
+
+      // POST
+      addAction: (data) =>
+        createPromocode({
+          ...data,
+          statusId: Number(data.statusId),
+          discount: Number(data.discount),
+          // code, startDate, endDate отправляются как строки
+        }),
+      addTitle: "Создание промокода",
+
+      // PUT
+      updateAction: (id, data) =>
+        updatePromocode(id, {
+          ...data,
+          statusId: Number(data.statusId),
+          discount: Number(data.discount),
+        }),
+      editTitle: "Редактирование промокода",
+
+      deleteAction: (id) => deletePromocode(id),
+    },
+    trips: {
+      data: useSelector((state) => state.trips?.trips || []),
+      total: useSelector((state) => state.trips?.tripsTotal || 0),
+      columns: columnsTrips,
+      headText: headTextTrips,
+      fields: fieldsTrips,
+
+      action: getTrips,
+
+      // POST: Отправляем и данные Trip, и данные Detail
+      addAction: (data) =>
+        createTrip({
+          ...data,
+          bookingId: Number(data.bookingId),
+          statusId: Number(data.statusId),
+          duration: Number(data.duration),
+          distance: Number(data.distance),
+          fuelUsed: Number(data.fuelUsed),
+          // Преобразуем строковые "true"/"false" из select в boolean
+          insuranceActive: data.insuranceActive === "true",
+          refueled: data.refueled === "true",
+        }),
+      addTitle: "Создание поездки (Full)",
+
+      // PUT: Обновляем только основные данные (как в контроллере)
+      updateAction: (id, data) =>
+        updateTrip(id, {
+          ...data,
+          bookingId: Number(data.bookingId),
+          statusId: Number(data.statusId),
+          duration: Number(data.duration),
+          distance: Number(data.distance),
+          // Поля Detail тут игнорируются, так как их нет в fields при редактировании
+        }),
+      editTitle: "Редактирование поездки",
+
+      deleteAction: (id) => deleteTrip(id),
+    },
+    users: {
+      data: useSelector((state) => state.users?.users || []),
+      total: useSelector((state) => state.users?.usersTotal || 0),
+      columns: columnsUsers,
+      headText: headTextUsers,
+      fields: fieldsUsers,
+      action: getUsers,
+      addAction: (data) =>
+        createUser({
+          ...data,
+          roleId: Number(data.roleId),
+        }),
+      addTitle: "Создание пользователя",
+      updateAction: (id, data) =>
+        updateUser(id, {
+          ...data,
+          roleId: Number(data.roleId),
+        }),
+      editTitle: "Редактирование пользователя",
+      deleteAction: (id) => deleteUser(id),
     },
   };
 

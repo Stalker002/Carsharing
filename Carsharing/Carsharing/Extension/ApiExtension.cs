@@ -39,6 +39,10 @@ public static class ApiExtension
 
                         if (!string.IsNullOrEmpty(token))
                             context.Token = token;
+                        if (context.Request.Cookies.ContainsKey("tasty"))
+                        {
+                            context.Token = context.Request.Cookies["tasty"];
+                        }
 
                         return Task.CompletedTask;
                     }

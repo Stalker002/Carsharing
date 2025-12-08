@@ -23,7 +23,7 @@ public class UsersController : ControllerBase
 
         Response.Cookies.Append("tasty", token);
 
-        return Ok(new { Message = "Logged in" });
+        return Ok(new { Token = token, Message = "Logged in" });
     }
 
     [HttpPost("logout")]

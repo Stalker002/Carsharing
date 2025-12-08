@@ -14,72 +14,62 @@ function Account() {
 
   const myClient = useSelector((state) => state.clients.myClient);
   const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
-  const isMyClientLoading = useSelector(
-    (state) => state.clients.isClientsLoading
-  );
+  const isClientLoading = useSelector((state) => state.clients.isClientsLoading);
 
   useEffect(() => {
-    if (!isLoggedIn) {
-        dispatch(getMyClient());
+    // Эта логика у тебя работает правильно (судя по логам)
+    if (isLoggedIn && (!myClient || Object.keys(myClient).length === 0)) {
+        if (!isClientLoading) {
+            dispatch(getMyClient());
+        }
     }
-  }, [isLoggedIn, dispatch]);
-  console.log("myClient =", myClient);
+  }, [isLoggedIn, myClient, isClientLoading, dispatch]);
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
-  const openLogin = () => {
-    setIsRegisterOpen(false);
-    setIsLoginOpen(true);
-  };
+  const openLogin = () => { setIsRegisterOpen(false); setIsLoginOpen(true); };
+  const openRegister = () => { setIsLoginOpen(false); setIsRegisterOpen(true); };
+  const closeAll = () => { setIsLoginOpen(false); setIsRegisterOpen(false); };
 
-  const openRegister = () => {
-    setIsLoginOpen(false);
-    setIsRegisterOpen(true);
-  };
-
-  const closeAll = () => {
-    setIsLoginOpen(false);
-    setIsRegisterOpen(false);
-  };
-
-  if (isLoggedIn) {
+  // 1. Если НЕ залогинен -> Кнопка входа
+  if (!isLoggedIn) {
     return (
       <>
         <button className="user-button" onClick={openLogin}>
           <div className="user-avatar">
-            <img src={Exit} />
+            <img src={Exit} alt="Войти" />
           </div>
         </button>
-        <Login
-          isOpen={isLoginOpen}
-          onClose={closeAll}
-          onRegisterClick={openRegister}
-        />
-        <Register
-          isOpen={isRegisterOpen}
-          onClose={closeAll}
-          onLoginClick={openLogin}
-        />
+        <Login isOpen={isLoginOpen} onClose={closeAll} onRegisterClick={openRegister} />
+        <Register isOpen={isRegisterOpen} onClose={closeAll} onLoginClick={openLogin} />
       </>
     );
   }
 
+  // 2. Если залогинен, но данные еще грузятся (myClient пустой) -> Лоадер
+  if (!myClient || Object.keys(myClient).length === 0) {
+    return (
+      <button className="user-button">
+         {/* Можно поставить спиннер или просто точки */}
+         <div className="user-avatar">...</div> 
+      </button>
+    );
+  }
+
+  // 3. Если залогинен И данные есть -> Рисуем профиль
+  // (Этот код был внутри условия "если данных нет", я вынес его сюда)
   return (
     <>
       <p
         className="client-name"
-        onClick={() => {
-          navigate("/personal-page");
-        }}
+        onClick={() => navigate("/personal-page")}
       >
         {myClient.name} {myClient.surname}
       </p>
       <button
         className="user-button"
-        onClick={() => {
-          navigate("/personal-page");
-        }}
+        onClick={() => navigate("/personal-page")}
       >
         <div className="user-avatar">
           <span>

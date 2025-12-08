@@ -2,6 +2,7 @@
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -55,10 +56,14 @@ public class ClientsController : ControllerBase
     }
 
     [HttpGet("My")]
+    [Authorize]
     public async Task<ActionResult<List<ClientsResponse>>> GetClientByUserId()
     {
         var userId = int.Parse(User.FindFirst("userId")!.Value);
-
+        if (userId == null)
+        {
+            return Unauthorized("User ID claim not found");
+        }
         var clients = await _clientsService.GetClientByUserId(userId);
         var response = clients.Select(cl =>
             new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email));

@@ -5,7 +5,7 @@ import Home from "./pages/Home/Home"
 import Car_Rent from './pages/Car_Rent/Car_Rent'
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage'
 import Admin from './pages/Admin/Admin';
-import CarDetails from './pages/CarDetails/Cardetails';
+import CarDetails from './pages/CarDetails/CarDetails';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import PersonalPage from './pages/PersonalPage/PersonalPage';
