@@ -69,9 +69,9 @@ export const setUsersTotal = (total) => ({
 export const getMyUserStarted = () => ({
     type: GET_MY_USER_STARTED
 });
-export const getMyUserSuccess = (client) => ({
+export const getMyUserSuccess = (user) => ({
     type: GET_MY_USER_SUCCESS,
-    payload: client,
+    payload: user,
 });
 export const getMyUserFailed = (error) => ({
     type: GET_MY_USER_FAILED,

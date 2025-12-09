@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from "react-redux";
-import { getMyClient } from "../../redux/actions/clients";
 import { useEffect, useState } from "react";
 import Register from "../Register/Register";
 import Login from "../Login/Login";
@@ -7,6 +6,7 @@ import Exit from "./../../svg/Profile/whiteExit.png";
 
 import "./Account.css";
 import { useNavigate } from "react-router-dom";
+import { getMyClient } from "../../redux/actions/clients";
 
 function Account() {
   const dispatch = useDispatch();
@@ -14,23 +14,35 @@ function Account() {
 
   const myClient = useSelector((state) => state.clients.myClient);
   const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
-  const isClientLoading = useSelector((state) => state.clients.isClientsLoading);
+  const isClientLoading = useSelector(
+    (state) => state.clients.isClientsLoading
+  );
+  const clientError = useSelector((state) => state.clients.error);
 
   useEffect(() => {
     // Эта логика у тебя работает правильно (судя по логам)
     if (isLoggedIn && (!myClient || Object.keys(myClient).length === 0)) {
-        if (!isClientLoading) {
-            dispatch(getMyClient());
-        }
+      if (!isClientLoading && !clientError) {
+        dispatch(getMyClient());
+      }
     }
-  }, [isLoggedIn, myClient, isClientLoading, dispatch]);
+  }, [isLoggedIn, myClient, isClientLoading, clientError, dispatch]);
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
-  const openLogin = () => { setIsRegisterOpen(false); setIsLoginOpen(true); };
-  const openRegister = () => { setIsLoginOpen(false); setIsRegisterOpen(true); };
-  const closeAll = () => { setIsLoginOpen(false); setIsRegisterOpen(false); };
+  const openLogin = () => {
+    setIsRegisterOpen(false);
+    setIsLoginOpen(true);
+  };
+  const openRegister = () => {
+    setIsLoginOpen(false);
+    setIsRegisterOpen(true);
+  };
+  const closeAll = () => {
+    setIsLoginOpen(false);
+    setIsRegisterOpen(false);
+  };
 
   // 1. Если НЕ залогинен -> Кнопка входа
   if (!isLoggedIn) {
@@ -41,8 +53,16 @@ function Account() {
             <img src={Exit} alt="Войти" />
           </div>
         </button>
-        <Login isOpen={isLoginOpen} onClose={closeAll} onRegisterClick={openRegister} />
-        <Register isOpen={isRegisterOpen} onClose={closeAll} onLoginClick={openLogin} />
+        <Login
+          isOpen={isLoginOpen}
+          onClose={closeAll}
+          onRegisterClick={openRegister}
+        />
+        <Register
+          isOpen={isRegisterOpen}
+          onClose={closeAll}
+          onLoginClick={openLogin}
+        />
       </>
     );
   }
@@ -51,8 +71,8 @@ function Account() {
   if (!myClient || Object.keys(myClient).length === 0) {
     return (
       <button className="user-button">
-         {/* Можно поставить спиннер или просто точки */}
-         <div className="user-avatar">...</div> 
+        {/* Можно поставить спиннер или просто точки */}
+        <div className="user-avatar">...</div>
       </button>
     );
   }
@@ -61,10 +81,7 @@ function Account() {
   // (Этот код был внутри условия "если данных нет", я вынес его сюда)
   return (
     <>
-      <p
-        className="client-name"
-        onClick={() => navigate("/personal-page")}
-      >
+      <p className="client-name" onClick={() => navigate("/personal-page")}>
         {myClient.name} {myClient.surname}
       </p>
       <button

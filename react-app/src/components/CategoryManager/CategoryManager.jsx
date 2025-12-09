@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// Импортируй свои экшены для категорий
- // <-- Убедись, что создал этот файл actions
 
 import "./CategoryManager.css";
 import { createCategory, deleteCategory, getCategories, updateCategory } from "../../redux/actions/category";
@@ -9,15 +7,12 @@ import { createCategory, deleteCategory, getCategories, updateCategory } from ".
 const CategoryManager = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
   
-  // Берем категории из Redux (или можно грузить локально)
-  // Предположим, что в redux они лежат в state.categories.items
   const categories = useSelector((state) => state.categories?.categories || []); 
   
   const [newCategoryName, setNewCategoryName] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editingName, setEditingName] = useState("");
 
-  // При открытии модалки загружаем актуальный список
   useEffect(() => {
     if (isOpen) {
       dispatch(getCategories());
@@ -26,32 +21,26 @@ const CategoryManager = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  // --- Хендлеры ---
-
-  // 1. Создание
   const handleAdd = async (e) => {
     e.preventDefault();
     if (!newCategoryName.trim()) return;
     
     await dispatch(createCategory({ name: newCategoryName }));
     setNewCategoryName("");
-    dispatch(getCategories()); // Если createCategory не обновляет стейт сам
+    dispatch(getCategories());
   };
 
-  // 2. Удаление
   const handleDelete = async (id) => {
     if (window.confirm("Удалить категорию?")) {
       await dispatch(deleteCategory(id));
     }
   };
 
-  // 3. Начало редактирования
   const startEdit = (cat) => {
     setEditingId(cat.id);
     setEditingName(cat.name);
   };
 
-  // 4. Сохранение редактирования
   const saveEdit = async () => {
     if (!editingName.trim()) return;
     await dispatch(updateCategory(editingId, { id: editingId, name: editingName }));
@@ -82,14 +71,12 @@ const CategoryManager = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          {/* Список категорий */}
           <div className="categories-list">
             {categories.length === 0 && <p className="empty-text">Категорий нет</p>}
             
             {categories.map((cat) => (
               <div key={cat.id} className="category-item">
                 {editingId === cat.id ? (
-                  // Режим редактирования строки
                   <>
                     <input 
                       type="text" 
@@ -103,7 +90,6 @@ const CategoryManager = ({ isOpen, onClose }) => {
                     </div>
                   </>
                 ) : (
-                  // Режим просмотра строки
                   <>
                     <span className="cat-name">{cat.name}</span>
                     <div className="item-actions">

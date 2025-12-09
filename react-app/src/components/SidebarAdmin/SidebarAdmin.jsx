@@ -24,11 +24,6 @@ function SidebarAdmin({ activeTab, setActiveTab }) {
           Пользователи
         </button>
         <button
-          className={activeTab === "clients" ? "sidebar-btn active" : "sidebar-btn"}
-          onClick={() => setActiveTab("clients")}>
-          Клиенты
-        </button>
-        <button
           className={activeTab === "bookings" ? "sidebar-btn active" : "sidebar-btn"}
           onClick={() => setActiveTab("bookings")}>
           Бронирования
@@ -52,21 +47,6 @@ function SidebarAdmin({ activeTab, setActiveTab }) {
           className={activeTab === "promocodes" ? "sidebar-btn active" : "sidebar-btn"}
           onClick={() => setActiveTab("promocodes")}>
           Промокоды
-        </button>
-        <button
-          className={activeTab === "reviews" ? "sidebar-btn active" : "sidebar-btn"}
-          onClick={() => setActiveTab("reviews")}>
-          Отзывы
-        </button>
-        <button
-          className={activeTab === "insurance" ? "sidebar-btn active" : "sidebar-btn"}
-          onClick={() => setActiveTab("insurance")}>
-          Страховки
-        </button>
-        <button
-          className={activeTab === "fines" ? "sidebar-btn active" : "sidebar-btn"}
-          onClick={() => setActiveTab("fines")}>
-          Штрафы
         </button>
         <div className="admin-action">
           <a>Помощь</a>

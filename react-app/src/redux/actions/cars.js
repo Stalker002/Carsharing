@@ -87,8 +87,10 @@ export const getInfoCars = (id) => {
       dispatch(getInfoCarStarted());
       const response = await api.cars.getCarInfo(id);
       dispatch(getInfoCarSuccess(response.data));
+      return { success: true, data: response.data[0] };
     } catch (error) {
       dispatch(getInfoCarFailed(error));
+      return { success: false, message: error.message };
     }
   };
 };

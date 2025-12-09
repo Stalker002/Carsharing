@@ -7,6 +7,7 @@ export const GenericTable = ({
   onEditClick,
   nextHandler,
   hasMore,
+  onRowClick
 }) => {
   return (
     <InfiniteScroll
@@ -39,9 +40,19 @@ export const GenericTable = ({
               <tr
                 key={row.id || rowIndex}
                 className={`table-row ${rowIndex % 2 === 0 ? "even" : "odd"}`}
+                // ВАЖНО: Добавляем клик по строке
+                onClick={() => onRowClick && onRowClick(row)}
+                style={{ cursor: "pointer" }} // Курсор-рука
               >
                 <td>
-                  <button className="edit-btn" onClick={() => onEditClick(row)}>
+                  <button
+                    className="edit-btn"
+                    // Останавливаем всплытие, чтобы клик по кнопке не открывал просмотр
+                    onClick={(e) => {
+                        e.stopPropagation(); 
+                        onEditClick(row);
+                    }}
+                  >
                     ✎
                   </button>
                 </td>

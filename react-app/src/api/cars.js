@@ -11,7 +11,7 @@ export const getCars = (config) => makeRequest({
 
 export const getCarInfo = (id, config) => makeRequest({
     method: "GET",
-    url: `${URL}/${id}`,
+    url: `${URL}/with-info/${id}`,
     withCredentials: true,
     ...config,
 });

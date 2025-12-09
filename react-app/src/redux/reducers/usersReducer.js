@@ -121,7 +121,6 @@ export const userReducer = (state = initialState, action) => {
       return {
         ...state,
         isUsersLoading: false,
-        isLoggedIn: true,
         users: [action.payload, ...state.users],
       };
     case POST_USER_FAILED:

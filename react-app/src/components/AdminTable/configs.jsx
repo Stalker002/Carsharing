@@ -134,6 +134,7 @@ export const fieldsCars = [
   },
   {
     name: "statusId",
+    viewName: "statusName", // 🔥 Берем значение из statusName для просмотра
     label: "Статус",
     type: "select",
     options: [
@@ -145,6 +146,7 @@ export const fieldsCars = [
   },
   {
     name: "categoryId",
+    viewName: "categoryName", // 🔥 Берем значение из categoryName для просмотра
     label: "Категория",
     type: "select",
     options: [
@@ -158,7 +160,16 @@ export const fieldsCars = [
   { name: "brand", label: "Марка", type: "text", placeholder: "BMW", required: true, hideOnEdit: true },
   { name: "model", label: "Модель", type: "text", placeholder: "X5", required: true, hideOnEdit: true },
   { name: "year", label: "Год выпуска", type: "number", placeholder: "2023", required: true, hideOnEdit: true },
-  { name: "vinNumber", label: "VIN номер", type: "text", required: true, hideOnEdit: true },
+  
+  { 
+    name: "vinNumber", 
+    label: "VIN номер", 
+    type: "text", 
+    required: true, 
+    hideOnEdit: true,
+    // hideOnDetail: true // 💡 Раскомментируй, если хочешь скрыть VIN в просмотре
+  },
+  
   { name: "stateNumber", label: "Гос. номер", type: "text", placeholder: "1234 AB-7", required: true, hideOnEdit: true },
   { name: "transmission", label: "Коробка", type: "text", placeholder: "Automatic", required: true, hideOnEdit: true },
   { name: "fuelType", label: "Тип топлива", type: "text", placeholder: "Petrol", required: true, hideOnEdit: true },
@@ -176,7 +187,8 @@ export const fieldsCars = [
     label: "Фото автомобиля", 
     type: "file",
     required: true, 
-    hideOnEdit: true 
+    hideOnEdit: true,
+    hideOnDetail: true // 🔥 Скрываем поле загрузки файла в деталях
   }
 ];
 
@@ -426,8 +438,8 @@ export const fieldsPromocodes = [
     label: "Статус",
     type: "select",
     options: [
-      { value: "1", label: "Активен" },
-      { value: "2", label: "Неактивен" },
+      { value: "19", label: "Активен" },
+      { value: "20", label: "Неактивен" },
       { value: "3", label: "Истек" }
     ],
     required: true
