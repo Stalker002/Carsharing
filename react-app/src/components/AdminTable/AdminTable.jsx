@@ -51,7 +51,7 @@ function AdminTable({ activeTab }) {
     dispatch(cfg.action(page)).finally(() => {
       isLoadingRef.current = false;
     });
-  }, [page, activeTab, dispatch, cfg]);
+  }, [page, activeTab, dispatch]);
 
   const refreshTable = () => {
     document.getElementById("container")?.scrollTo(0, 0);
@@ -241,6 +241,7 @@ function AdminTable({ activeTab }) {
                     className="modal-input"
                     readOnly={field.readOnly}
                     disabled={field.readOnly}
+                    step={field.step}
                   />
                 )}
               </div>

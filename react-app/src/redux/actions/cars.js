@@ -38,7 +38,6 @@ export const getCars = (page = 1) => {
       if (!isNaN(totalCount)) {
         dispatch(setCarsTotal(totalCount));
       }
-
       dispatch(
         getCarsSuccess({
           data: response.data,

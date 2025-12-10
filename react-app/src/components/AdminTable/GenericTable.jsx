@@ -40,14 +40,12 @@ export const GenericTable = ({
               <tr
                 key={row.id || rowIndex}
                 className={`table-row ${rowIndex % 2 === 0 ? "even" : "odd"}`}
-                // ВАЖНО: Добавляем клик по строке
                 onClick={() => onRowClick && onRowClick(row)}
-                style={{ cursor: "pointer" }} // Курсор-рука
+                style={{ cursor: "pointer" }}
               >
                 <td>
                   <button
                     className="edit-btn"
-                    // Останавливаем всплытие, чтобы клик по кнопке не открывал просмотр
                     onClick={(e) => {
                         e.stopPropagation(); 
                         onEditClick(row);
@@ -56,13 +54,40 @@ export const GenericTable = ({
                     ✎
                   </button>
                 </td>
-                {columns.map((columnKey, colIndex) => (
-                  <td key={colIndex} className="td-sum">
-                    {row[columnKey] !== undefined && row[columnKey] !== null
-                      ? row[columnKey].toString()
-                      : "-"}
-                  </td>
-                ))}
+                {columns.map((columnKey, colIndex) => {
+                  let cellValue = row[columnKey];
+
+                  if (cellValue === null || cellValue === undefined) {
+                    cellValue = "-";
+                  } 
+                  else if (
+                    columnKey.toLowerCase().includes("time") || 
+                    columnKey.toLowerCase().includes("date")
+                  ) {
+                    let dateString = cellValue.toString();
+                    
+                    if (!dateString.endsWith("Z") && !dateString.includes("+")) {
+                        dateString += "Z";
+                    }
+
+                    cellValue = new Date(dateString).toLocaleString("ru-RU", {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    });
+                  } 
+                  else {
+                    cellValue = cellValue.toString();
+                  }
+
+                  return (
+                    <td key={colIndex} className="td-sum">
+                      {cellValue}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>

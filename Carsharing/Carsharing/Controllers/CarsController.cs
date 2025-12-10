@@ -2,7 +2,9 @@
 using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Carsharing.DataAccess;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ICarsService = Carsharing.Application.Services.ICarsService;
 
 namespace Carsharing.Controllers;
@@ -15,9 +17,11 @@ public class CarsController : ControllerBase
     private readonly ITariffsService _tariffsService;
     private readonly ISpecificationsCarService _specificationsCar;
     private readonly IWebHostEnvironment _env;
+    private readonly CarsharingDbContext _context;
 
-    public CarsController(ICarsService carsService, ITariffsService tariffsService, ISpecificationsCarService specificationsCar, IWebHostEnvironment env)
+    public CarsController(ICarsService carsService, ITariffsService tariffsService, ISpecificationsCarService specificationsCar, IWebHostEnvironment env, CarsharingDbContext context)
     {
+        _context = context;
         _env = env;
         _specificationsCar = specificationsCar;
         _tariffsService = tariffsService;
@@ -109,143 +113,181 @@ public class CarsController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<ActionResult<int>> CreateCar([FromForm] CarsCreateRequest request)
     {
-        var (tariff, errorTariff) = Tariff.Create(
-            0,
-            request.Name,
-            request.PricePerMinute,
-            request.PricePerKm,
-            request.PricePerDay);
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        string? createdImagePath = null;
 
-        if (!string.IsNullOrWhiteSpace(errorTariff)) return BadRequest(errorTariff);
-
-        var tariffId = await _tariffsService.CreateTariff(tariff);
-
-        var (specification, errorSpecification) = SpecificationCar.Create(
-            0,
-            request.FuelType,
-            request.Brand,
-            request.Model,
-            request.Transmission,
-            request.Year,
-            request.VinNumber,
-            request.StateNumber,
-            request.Mileage,
-            request.MaxFuel,
-            request.FuelPerKm);
-
-        if (!string.IsNullOrWhiteSpace(errorSpecification))
+        try
         {
-            await _tariffsService.DeleteTariff(tariffId);
-            return BadRequest(errorSpecification);
-        }
+            var (tariff, errorTariff) = Tariff.Create(
+                0,
+                request.Name,
+                request.PricePerMinute,
+                request.PricePerKm,
+                request.PricePerDay);
 
-        var specificationId = await _specificationsCar.CreateSpecification(specification);
+            if (!string.IsNullOrWhiteSpace(errorTariff)) return BadRequest(errorTariff);
 
-        string imagePath = null;
+            var tariffId = await _tariffsService.CreateTariff(tariff);
 
-        if (request.Image != null && request.Image.Length > 0)
-        {
-            var ext = Path.GetExtension(request.Image.FileName).ToLowerInvariant();
-            var allowed = new[] { ".jpg", ".jpeg", ".png" };
+            var (specification, errorSpecification) = SpecificationCar.Create(
+                0,
+                request.FuelType,
+                request.Brand,
+                request.Model,
+                request.Transmission,
+                request.Year,
+                request.VinNumber,
+                request.StateNumber,
+                request.Mileage,
+                request.MaxFuel,
+                request.FuelPerKm);
 
-            if (!allowed.Contains(ext))
+            if (!string.IsNullOrWhiteSpace(errorSpecification))
             {
-                await _specificationsCar.DeleteSpecification(specificationId);
-                await _tariffsService.DeleteTariff(tariffId);
-                return BadRequest("Unsupported image format");
+                return BadRequest(errorSpecification);
             }
 
-            var fileName = $"car_{Guid.NewGuid()}{ext}";
-            var rootPath = _env.WebRootPath;
+            var specificationId = await _specificationsCar.CreateSpecification(specification);
 
-            if (string.IsNullOrEmpty(rootPath))
+            string? imagePath = null;
+
+            if (request.Image is { Length: > 0 })
             {
-                return StatusCode(500, "Не удалось определить корневой путь для загрузки файлов.");
+                var ext = Path.GetExtension(request.Image.FileName).ToLowerInvariant();
+                var allowed = new[] { ".jpg", ".jpeg", ".png" };
+
+                if (!allowed.Contains(ext))
+                {
+                    return BadRequest("Unsupported image format");
+                }
+
+                var fileName = $"car_{Guid.NewGuid()}{ext}";
+                var rootPath = _env.WebRootPath;
+
+                if (string.IsNullOrEmpty(rootPath))
+                {
+                    return StatusCode(500, "Не удалось определить корневой путь для загрузки файлов.");
+                }
+
+                var folder = Path.Combine(rootPath, "images", "cars");
+                Directory.CreateDirectory(folder);
+
+                var path = Path.Combine(folder, fileName);
+
+                await using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await request.Image.CopyToAsync(stream);
+                }
+
+                imagePath = $"/images/cars/{fileName}";
+                createdImagePath = path; 
             }
 
-            var folder = Path.Combine(rootPath, "images", "cars");
+            var (car, error) = Car.Create(
+                0,
+                request.StatusId,
+                tariffId,
+                request.CategoryId,
+                specificationId,
+                request.Location,
+                request.FuelLevel,
+                imagePath);
 
-            Directory.CreateDirectory(folder);
-
-            var path = Path.Combine(folder, fileName);
-
-            await using (var stream = new FileStream(path, FileMode.Create))
+            if (!string.IsNullOrWhiteSpace(error))
             {
-                await request.Image.CopyToAsync(stream);
+                if (createdImagePath != null && System.IO.File.Exists(createdImagePath))
+                {
+                    System.IO.File.Delete(createdImagePath);
+                }
+                return BadRequest(error);
             }
 
-            imagePath = $"/images/cars/{fileName}";
+            var carId = await _carsService.CreateCar(car);
+
+            await transaction.CommitAsync();
+
+            return Ok(carId);
         }
-
-        var (cars, error) = Car.Create(
-            0,
-            request.StatusId,
-            tariffId,
-            request.CategoryId,
-            specificationId,
-            request.Location,
-            request.FuelLevel,
-            imagePath);
-
-        if (!string.IsNullOrWhiteSpace(error))
+        catch (Exception ex)
         {
-            await _specificationsCar.DeleteSpecification(specificationId);
-            await _tariffsService.DeleteTariff(tariffId);
-            return BadRequest(error);
+            await transaction.RollbackAsync();
+
+            if (createdImagePath == null || !System.IO.File.Exists(createdImagePath))
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            try { System.IO.File.Delete(createdImagePath); }
+            catch
+            {
+                // ignored
+            }
+
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
-
-        var carId = await _carsService.CreateCar(cars);
-
-        return Ok(carId);
     }
 
     [HttpPost("{id:int}/image")]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> UploadCarImage([FromRoute] int id, UploadImageDto model)
     {
-        var cars = await _carsService.GetCarById(id);
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        string? createdImagePath = null;
 
-        var car = cars.FirstOrDefault();
-        var image = model.Image;
-
-        if (car == null)
-            return NotFound("Car not found");
-
-        if (image == null || image.Length == 0)
-            return BadRequest("Image is required");
-
-        var ext = Path.GetExtension(image.FileName).ToLowerInvariant();
-        var allowed = new[] { ".jpg", ".jpeg", ".png" };
-
-        if (!allowed.Contains(ext))
-            return BadRequest("Unsupported image format");
-
-        var fileName = $"{Guid.NewGuid()}{ext}";
-        var folder = Path.Combine(_env.WebRootPath, "images", "cars");
-
-        if (!Directory.Exists(folder))
-            Directory.CreateDirectory(folder);
-
-        var path = Path.Combine(folder, fileName);
-
-        await using (var stream = new FileStream(path, FileMode.Create))
+        try
         {
-            await image.CopyToAsync(stream);
+            var carsList = await _carsService.GetCarById(id);
+            var car = carsList.FirstOrDefault();
+            var image = model.Image;
+
+            if (car == null) return NotFound("Car not found");
+            if (image.Length == 0) return BadRequest("Image is required");
+
+            var ext = Path.GetExtension(image.FileName).ToLowerInvariant();
+            var allowed = new[] { ".jpg", ".jpeg", ".png" };
+
+            if (!allowed.Contains(ext)) return BadRequest("Unsupported image format");
+
+            var fileName = $"{Guid.NewGuid()}{ext}";
+            var folder = Path.Combine(_env.WebRootPath, "images", "cars");
+
+            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+
+            var path = Path.Combine(folder, fileName);
+
+            await using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+
+            createdImagePath = path; 
+            var webImagePath = $"/images/cars/{fileName}";
+
+            await _carsService.UpdateCar(car.Id,
+                car.StatusId,
+                car.TariffId,
+                car.CategoryId,
+                car.SpecificationId,
+                car.Location,
+                car.FuelLevel,
+                webImagePath
+            );
+
+            await transaction.CommitAsync();
+
+            return Ok(new { imageUrl = webImagePath });
         }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
 
-        var imagePath = $"/images/cars/{fileName}";
+            if (createdImagePath == null || !System.IO.File.Exists(createdImagePath))
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            try { System.IO.File.Delete(createdImagePath); }
+            catch
+            {
+                // ignored
+            }
 
-        await _carsService.UpdateCar(car.Id,
-            car.StatusId,
-            car.TariffId,
-            car.CategoryId,
-            car.SpecificationId,
-            car.Location,
-            car.FuelLevel,
-            imagePath
-        );
-
-        return Ok(new { imageUrl = imagePath });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 
     [HttpPut("{id:int}")]

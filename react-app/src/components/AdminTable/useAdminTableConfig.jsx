@@ -1,36 +1,105 @@
 import { useSelector } from "react-redux";
 
-// === ИМПОРТЫ ЭКШЕНОВ (ВСТАВИТЬ ВСЕ) ===
-import { getUsers, createUser, updateUser, deleteUser } from "../../redux/actions/users";
-import { getCars, createCar, updateCar, deleteCar, getInfoCars } from "../../redux/actions/cars";
-import { getBills, createBill, updateBill, deleteBill } from "../../redux/actions/bills";
-import { getBookings, createBooking, updateBooking, deleteBooking } from "../../redux/actions/bookings";
-import { getClients, createClient, updateClient, deleteClient } from "../../redux/actions/clients";
-import { getFines, createFine, updateFine, deleteFine } from "../../redux/actions/fines";
-import { getInsurances, createInsurance, updateInsurance, deleteInsurance } from "../../redux/actions/insurance";
-import { getPayments, createPayment, updatePayment, deletePayment } from "../../redux/actions/payments";
-import { getPromocodes, createPromocode, updatePromocode, deletePromocode } from "../../redux/actions/promocodes";
-import { getTrips, createTrip, updateTrip, deleteTrip } from "../../redux/actions/trips";
-
-// === ИМПОРТЫ КОНФИГОВ ===
 import {
-  columnsBills, headTextBills, fieldsBills,
-  columnsBookings, headTextBookings, fieldsBookings,
-  columnsCars, headTextCars, fieldsCars,
-  columnsClients, headTextClients, fieldsClients,
-  columnsFines, headTextFines, fieldsFines,
-  columnsInsurances, headTextInsurances, fieldsInsurances,
-  columnsPayments, headTextPayments, fieldsPayments,
-  columnsPromocodes, headTextPromocodes, fieldsPromocodes,
-  columnsTrips, headTextTrips, fieldsTrips,
-  columnsUsers, headTextUsers, fieldsUsers
+  getUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+} from "../../redux/actions/users";
+import {
+  getCars,
+  createCar,
+  updateCar,
+  deleteCar,
+  getInfoCars,
+} from "../../redux/actions/cars";
+import {
+  getBills,
+  createBill,
+  updateBill,
+  deleteBill,
+} from "../../redux/actions/bills";
+import {
+  getBookings,
+  createBooking,
+  updateBooking,
+  deleteBooking,
+} from "../../redux/actions/bookings";
+import {
+  getClients,
+  createClient,
+  updateClient,
+  deleteClient,
+} from "../../redux/actions/clients";
+import {
+  getFines,
+  createFine,
+  updateFine,
+  deleteFine,
+} from "../../redux/actions/fines";
+import {
+  getInsurances,
+  createInsurance,
+  updateInsurance,
+  deleteInsurance,
+} from "../../redux/actions/insurance";
+import {
+  getPayments,
+  createPayment,
+  updatePayment,
+  deletePayment,
+} from "../../redux/actions/payments";
+import {
+  getPromocodes,
+  createPromocode,
+  updatePromocode,
+  deletePromocode,
+} from "../../redux/actions/promocodes";
+import {
+  getTrips,
+  createTrip,
+  updateTrip,
+  deleteTrip,
+} from "../../redux/actions/trips";
+
+import {
+  columnsBills,
+  headTextBills,
+  fieldsBills,
+  columnsBookings,
+  headTextBookings,
+  fieldsBookings,
+  columnsCars,
+  headTextCars,
+  fieldsCars,
+  columnsClients,
+  headTextClients,
+  fieldsClients,
+  columnsFines,
+  headTextFines,
+  fieldsFines,
+  columnsInsurances,
+  headTextInsurances,
+  fieldsInsurances,
+  columnsPayments,
+  headTextPayments,
+  fieldsPayments,
+  columnsPromocodes,
+  headTextPromocodes,
+  fieldsPromocodes,
+  columnsTrips,
+  headTextTrips,
+  fieldsTrips,
+  columnsUsers,
+  headTextUsers,
+  fieldsUsers,
 } from "./configs";
 
 export const useAdminTableConfig = (activeTab) => {
   // 1. Селекторы данных
   const users = useSelector((state) => state.users?.users || []);
   const totalUsers = useSelector((state) => state.users?.usersTotal || 0);
-  
+
   const cars = useSelector((state) => state.cars?.cars || []);
   const totalCars = useSelector((state) => state.cars?.totalCars || 0);
 
@@ -38,7 +107,9 @@ export const useAdminTableConfig = (activeTab) => {
   const totalBills = useSelector((state) => state.bills?.billsTotal || 0);
 
   const bookings = useSelector((state) => state.bookings?.bookings || []);
-  const totalBookings = useSelector((state) => state.bookings?.bookingsTotal || 0);
+  const totalBookings = useSelector(
+    (state) => state.bookings?.bookingsTotal || 0
+  );
 
   const clients = useSelector((state) => state.clients?.clients || []);
   const totalClients = useSelector((state) => state.clients?.clientsTotal || 0);
@@ -47,18 +118,23 @@ export const useAdminTableConfig = (activeTab) => {
   const totalFines = useSelector((state) => state.fines?.finesTotal || 0);
 
   const insurances = useSelector((state) => state.insurances?.insurances || []);
-  const totalInsurances = useSelector((state) => state.insurances?.insurancesTotal || 0);
+  const totalInsurances = useSelector(
+    (state) => state.insurances?.insurancesTotal || 0
+  );
 
   const payments = useSelector((state) => state.payments?.payments || []);
-  const totalPayments = useSelector((state) => state.payments?.paymentsTotal || 0);
+  const totalPayments = useSelector(
+    (state) => state.payments?.paymentsTotal || 0
+  );
 
   const promocodes = useSelector((state) => state.promocodes?.promocodes || []);
-  const totalPromocodes = useSelector((state) => state.promocodes?.promocodesTotal || 0);
+  const totalPromocodes = useSelector(
+    (state) => state.promocodes?.promocodesTotal || 0
+  );
 
   const trips = useSelector((state) => state.trips?.trips || []);
   const totalTrips = useSelector((state) => state.trips?.tripsTotal || 0);
 
-  // 2. Объект конфигурации
   const tableConfig = {
     bills: {
       data: bills,
@@ -67,9 +143,29 @@ export const useAdminTableConfig = (activeTab) => {
       headText: headTextBills,
       fields: fieldsBills,
       action: getBills,
-      addAction: (data) => createBill({ ...data, tripId: Number(data.tripId), promocodeId: data.promocodeId ? Number(data.promocodeId) : null, statusId: Number(data.statusId), amount: Number(data.amount), remainingAmount: Number(data.remainingAmount), startTime: new Date(data.startTime).toISOString(), endTime: new Date(data.endTime).toISOString() }),
+      addAction: (data) =>
+        createBill({
+          ...data,
+          tripId: Number(data.tripId),
+          promocodeId: data.promocodeId ? Number(data.promocodeId) : null,
+          statusId: Number(data.statusId),
+          amount: Number(data.amount),
+          remainingAmount: Number(data.remainingAmount),
+          startTime: new Date(data.startTime).toISOString(),
+          endTime: new Date(data.endTime).toISOString(),
+        }),
       addTitle: "Выставление счета",
-      updateAction: (id, data) => updateBill(id, { ...data, tripId: Number(data.tripId), promocodeId: data.promocodeId ? Number(data.promocodeId) : null, statusId: Number(data.statusId), amount: Number(data.amount), remainingAmount: Number(data.remainingAmount), startTime: new Date(data.startTime).toISOString(), endTime: new Date(data.endTime).toISOString() }),
+      updateAction: (id, data) =>
+        updateBill(id, {
+          ...data,
+          tripId: Number(data.tripId),
+          promocodeId: data.promocodeId ? Number(data.promocodeId) : null,
+          statusId: Number(data.statusId),
+          amount: Number(data.amount),
+          remainingAmount: Number(data.remainingAmount),
+          startTime: new Date(data.startTime).toISOString(),
+          endTime: new Date(data.endTime).toISOString(),
+        }),
       editTitle: "Редактирование счета",
       deleteAction: (id) => deleteBill(id),
     },
@@ -80,9 +176,25 @@ export const useAdminTableConfig = (activeTab) => {
       headText: headTextBookings,
       fields: fieldsBookings,
       action: getBookings,
-      addAction: (data) => createBooking({ ...data, statusId: Number(data.statusId), carId: Number(data.carId), clientId: Number(data.clientId) }),
+      addAction: (data) =>
+        createBooking({
+          ...data,
+          statusId: Number(data.statusId),
+          carId: Number(data.carId),
+          clientId: Number(data.clientId),
+          startTime: new Date(data.startTime).toISOString(),
+          endTime: new Date(data.endTime).toISOString(),
+        }),
       addTitle: "Создание бронирования",
-      updateAction: (id, data) => updateBooking(id, { ...data, statusId: Number(data.statusId), carId: Number(data.carId), clientId: Number(data.clientId) }),
+      updateAction: (id, data) =>
+        updateBooking(id, {
+          ...data,
+          statusId: Number(data.statusId),
+          carId: Number(data.carId),
+          clientId: Number(data.clientId),
+          startTime: new Date(data.startTime).toISOString(),
+          endTime: new Date(data.endTime).toISOString(),
+        }),
       editTitle: "Изменение бронирования",
       deleteAction: (id) => deleteBooking(id),
     },
@@ -95,7 +207,15 @@ export const useAdminTableConfig = (activeTab) => {
       action: getCars,
       addAction: (data) => createCar(data),
       addTitle: "Добавление авто (Full)",
-      updateAction: (id, data) => updateCar(id, { statusId: Number(data.statusId), tariffId: Number(data.tariffId), categoryId: Number(data.categoryId), specificationId: Number(data.specificationId), location: data.location, fuelLevel: Number(data.fuelLevel) }),
+      updateAction: (id, data) =>
+        updateCar(id, {
+          statusId: Number(data.statusId),
+          tariffId: Number(data.tariffId),
+          categoryId: Number(data.categoryId),
+          specificationId: Number(data.specificationId),
+          location: data.location,
+          fuelLevel: Number(data.fuelLevel),
+        }),
       editTitle: "Редактирование параметров",
       deleteAction: (id) => deleteCar(id),
       detailAction: (id) => getInfoCars(id),
@@ -109,7 +229,14 @@ export const useAdminTableConfig = (activeTab) => {
       action: getClients,
       addAction: (data) => createClient({ ...data }),
       addTitle: "Регистрация нового клиента",
-      updateAction: (id, data) => updateClient(id, { userId: Number(data.userId), name: data.name, surname: data.surname, phoneNumber: data.phoneNumber, email: data.email }),
+      updateAction: (id, data) =>
+        updateClient(id, {
+          userId: Number(data.userId),
+          name: data.name,
+          surname: data.surname,
+          phoneNumber: data.phoneNumber,
+          email: data.email,
+        }),
       editTitle: "Редактирование профиля клиента",
       deleteAction: (id) => deleteClient(id),
     },
@@ -120,9 +247,21 @@ export const useAdminTableConfig = (activeTab) => {
       headText: headTextFines,
       fields: fieldsFines,
       action: getFines,
-      addAction: (data) => createFine({ ...data, tripId: Number(data.tripId), statusId: Number(data.statusId), amount: Number(data.amount) }),
+      addAction: (data) =>
+        createFine({
+          ...data,
+          tripId: Number(data.tripId),
+          statusId: Number(data.statusId),
+          amount: Number(data.amount),
+        }),
       addTitle: "Регистрация штрафа",
-      updateAction: (id, data) => updateFine(id, { ...data, tripId: Number(data.tripId), statusId: Number(data.statusId), amount: Number(data.amount) }),
+      updateAction: (id, data) =>
+        updateFine(id, {
+          ...data,
+          tripId: Number(data.tripId),
+          statusId: Number(data.statusId),
+          amount: Number(data.amount),
+        }),
       editTitle: "Редактирование штрафа",
       deleteAction: (id) => deleteFine(id),
     },
@@ -133,9 +272,21 @@ export const useAdminTableConfig = (activeTab) => {
       headText: headTextInsurances,
       fields: fieldsInsurances,
       action: getInsurances,
-      addAction: (data) => createInsurance({ ...data, carId: Number(data.carId), statusId: Number(data.statusId), cost: Number(data.cost) }),
+      addAction: (data) =>
+        createInsurance({
+          ...data,
+          carId: Number(data.carId),
+          statusId: Number(data.statusId),
+          cost: Number(data.cost),
+        }),
       addTitle: "Оформление страховки",
-      updateAction: (id, data) => updateInsurance(id, { ...data, carId: Number(data.carId), statusId: Number(data.statusId), cost: Number(data.cost) }),
+      updateAction: (id, data) =>
+        updateInsurance(id, {
+          ...data,
+          carId: Number(data.carId),
+          statusId: Number(data.statusId),
+          cost: Number(data.cost),
+        }),
       editTitle: "Редактирование страховки",
       deleteAction: (id) => deleteInsurance(id),
     },
@@ -146,9 +297,19 @@ export const useAdminTableConfig = (activeTab) => {
       headText: headTextPayments,
       fields: fieldsPayments,
       action: getPayments,
-      addAction: (data) => createPayment({ ...data, billId: Number(data.billId), sum: Number(data.sum) }),
+      addAction: (data) =>
+        createPayment({
+          ...data,
+          billId: Number(data.billId),
+          sum: Number(data.sum),
+        }),
       addTitle: "Регистрация платежа",
-      updateAction: (id, data) => updatePayment(id, { ...data, billId: Number(data.billId), sum: Number(data.sum) }),
+      updateAction: (id, data) =>
+        updatePayment(id, {
+          ...data,
+          billId: Number(data.billId),
+          sum: Number(data.sum),
+        }),
       editTitle: "Редактирование платежа",
       deleteAction: (id) => deletePayment(id),
     },
@@ -159,9 +320,19 @@ export const useAdminTableConfig = (activeTab) => {
       headText: headTextPromocodes,
       fields: fieldsPromocodes,
       action: getPromocodes,
-      addAction: (data) => createPromocode({ ...data, statusId: Number(data.statusId), discount: Number(data.discount) }),
+      addAction: (data) =>
+        createPromocode({
+          ...data,
+          statusId: Number(data.statusId),
+          discount: Number(data.discount),
+        }),
       addTitle: "Создание промокода",
-      updateAction: (id, data) => updatePromocode(id, { ...data, statusId: Number(data.statusId), discount: Number(data.discount) }),
+      updateAction: (id, data) =>
+        updatePromocode(id, {
+          ...data,
+          statusId: Number(data.statusId),
+          discount: Number(data.discount),
+        }),
       editTitle: "Редактирование промокода",
       deleteAction: (id) => deletePromocode(id),
     },
@@ -172,9 +343,30 @@ export const useAdminTableConfig = (activeTab) => {
       headText: headTextTrips,
       fields: fieldsTrips,
       action: getTrips,
-      addAction: (data) => createTrip({ ...data, bookingId: Number(data.bookingId), statusId: Number(data.statusId), duration: Number(data.duration), distance: Number(data.distance), fuelUsed: Number(data.fuelUsed), insuranceActive: data.insuranceActive === "true", refueled: data.refueled === "true" }),
+      addAction: (data) =>
+        createTrip({
+          ...data,
+          bookingId: Number(data.bookingId),
+          statusId: Number(data.statusId),
+          duration: data.duration ? Number(data.duration) : null,
+          distance: data.distance ? Number(data.distance) : null,
+          fuelUsed: data.fuelUsed ? Number(data.fuelUsed) : null,
+          refueled: data.refueled ? Number(data.refueled) : 0,
+          insuranceActive: data.insuranceActive === "true",
+          startTime: new Date(data.startTime).toISOString(),
+          endTime: new Date(data.endTime).toISOString(),
+        }),
       addTitle: "Создание поездки (Full)",
-      updateAction: (id, data) => updateTrip(id, { ...data, bookingId: Number(data.bookingId), statusId: Number(data.statusId), duration: Number(data.duration), distance: Number(data.distance) }),
+      updateAction: (id, data) =>
+        updateTrip(id, {
+          ...data,
+          bookingId: Number(data.bookingId),
+          statusId: Number(data.statusId),
+          duration: data.duration,
+          distance: Number(data.distance),
+          startTime: new Date(data.startTime).toISOString(),
+          endTime: new Date(data.endTime).toISOString(),
+        }),
       editTitle: "Редактирование поездки",
       deleteAction: (id) => deleteTrip(id),
     },
@@ -187,7 +379,8 @@ export const useAdminTableConfig = (activeTab) => {
       action: getUsers,
       addAction: (data) => createUser({ ...data, roleId: Number(data.roleId) }),
       addTitle: "Создание пользователя",
-      updateAction: (id, data) => updateUser(id, { ...data, roleId: Number(data.roleId) }),
+      updateAction: (id, data) =>
+        updateUser(id, { ...data, roleId: Number(data.roleId) }),
       editTitle: "Редактирование пользователя",
       deleteAction: (id) => deleteUser(id),
     },

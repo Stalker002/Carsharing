@@ -39,11 +39,14 @@ public class TripDetailsService : ITripDetailsService
         if (car == null)
             throw new Exception("Автомобиль не найден");
 
-        var insurance = await _insuranceRepository.GetActiveByCarId(carId);
+        if (tripDetail.InsuranceActive)
+        {
+            var insurance = await _insuranceRepository.GetActiveByCarId(carId);
 
-        if (insurance.Count == 0)
-            throw new Exception("Нельзя начать поездку: у автомобиля нет активной страховки");
-
+            if (insurance.Count == 0)
+                throw new Exception("Нельзя начать поездку: у автомобиля нет активной страховки");
+        }
+        
         return await _tripDetailRepository.Create(tripDetail);
     }
 

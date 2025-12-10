@@ -20,7 +20,6 @@ function Account() {
   const clientError = useSelector((state) => state.clients.error);
 
   useEffect(() => {
-    // Эта логика у тебя работает правильно (судя по логам)
     if (isLoggedIn && (!myClient || Object.keys(myClient).length === 0)) {
       if (!isClientLoading && !clientError) {
         dispatch(getMyClient());
@@ -44,7 +43,6 @@ function Account() {
     setIsRegisterOpen(false);
   };
 
-  // 1. Если НЕ залогинен -> Кнопка входа
   if (!isLoggedIn) {
     return (
       <>
@@ -67,7 +65,6 @@ function Account() {
     );
   }
 
-  // 2. Если залогинен, но данные еще грузятся (myClient пустой) -> Лоадер
   if (!myClient || Object.keys(myClient).length === 0) {
     return (
       <button className="user-button">
@@ -77,8 +74,6 @@ function Account() {
     );
   }
 
-  // 3. Если залогинен И данные есть -> Рисуем профиль
-  // (Этот код был внутри условия "если данных нет", я вынес его сюда)
   return (
     <>
       <p className="client-name" onClick={() => navigate("/personal-page")}>

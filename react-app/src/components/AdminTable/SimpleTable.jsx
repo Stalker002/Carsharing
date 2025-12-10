@@ -1,6 +1,6 @@
 const SimpleTable = ({ data, columns, headers }) => {
   if (!data || data.length === 0)
-    return <p style={{ textAlign: "center", color: "#999" }}>Нет данных</p>;
+    return <p className="simple-table-p">Нет данных</p>;
   return (
     <table className="inner-table">
       <thead>

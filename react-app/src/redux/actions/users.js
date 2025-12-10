@@ -41,6 +41,10 @@ export const loginUser = (login, password) => {
 
       return { success: true, data: response.data };
     } catch (error) {
+      if (error.response && error.response.status === 401) {
+        await api.users.logoutUser();
+        localStorage.removeItem("tasty");
+      }
       const errorMessage = error.response?.data?.message || error.message;
 
       dispatch(loginUserFailed(error));

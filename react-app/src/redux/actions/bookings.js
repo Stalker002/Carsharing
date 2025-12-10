@@ -1,90 +1,117 @@
 import { api } from "../../api";
-import { createBookingFailed, createBookingStarted, createBookingSuccess, deleteBookingFailed, deleteBookingStarted, deleteBookingSuccess, getBookingsFailed, getBookingsStarted, getBookingsSuccess, getInfoBookingFailed, getInfoBookingStarted, getInfoBookingSuccess, getMyBookingsFailed, getMyBookingsStarted, getMyBookingsSuccess, setBookingsTotal, setMyBookingsTotal, updateBookingFailed, updateBookingStarted, updateBookingSuccess } from "../actionCreators/bookings";
+import {
+  createBookingFailed,
+  createBookingStarted,
+  createBookingSuccess,
+  deleteBookingFailed,
+  deleteBookingStarted,
+  deleteBookingSuccess,
+  getBookingsFailed,
+  getBookingsStarted,
+  getBookingsSuccess,
+  getInfoBookingFailed,
+  getInfoBookingStarted,
+  getInfoBookingSuccess,
+  getMyBookingsFailed,
+  getMyBookingsStarted,
+  getMyBookingsSuccess,
+  setBookingsTotal,
+  setMyBookingsTotal,
+  updateBookingFailed,
+  updateBookingStarted,
+  updateBookingSuccess,
+} from "../actionCreators/bookings";
 
 export const getBookings = (page = 1) => {
-    return async (dispatch) => {
-        try {
-            dispatch(getBookingsStarted());
+  return async (dispatch) => {
+    try {
+      dispatch(getBookingsStarted());
 
-            const response = await api.bookings.getBookings({
-                params: {
-                    _page: page,
-                    _limit: 25,
-                },
-            });
+      const response = await api.bookings.getBookings({
+        params: {
+          _page: page,
+          _limit: 25,
+        },
+      });
 
-            const totalCount = parseInt(response.headers["x-total-count"], 10);
-            if (!isNaN(totalCount)) {
-                dispatch(setBookingsTotal(totalCount));
-            }
+      const totalCount = parseInt(response.headers["x-total-count"], 10);
+      if (!isNaN(totalCount)) {
+        dispatch(setBookingsTotal(totalCount));
+      }
 
-            dispatch(getBookingsSuccess({
-                data: response.data,
-                page,
-            }));
-        } 
-        catch (error) {
-            dispatch(getBookingsFailed(error));
-        }
-    };
+      dispatch(
+        getBookingsSuccess({
+          data: response.data,
+          page,
+        })
+      );
+    } catch (error) {
+      dispatch(getBookingsFailed(error));
+    }
+  };
 };
 
 export const getMyBookings = (page = 1) => {
-    return async (dispatch) => {
-        try {
-            dispatch(getMyBookingsStarted())
+  return async (dispatch) => {
+    try {
+      dispatch(getMyBookingsStarted());
 
-            const response = await api.bookings.getMyBookings({
-                params: {
-                    _page: page,
-                    _limit: 25,
-                },
-            });
+      const response = await api.bookings.getMyBookings({
+        params: {
+          _page: page,
+          _limit: 25,
+        },
+      });
 
-            const totalCount = parseInt(response.headers["x-total-count"], 10);
-            if (!isNaN(totalCount)) {
-                dispatch(setMyBookingsTotal(totalCount));
-            }
+      const totalCount = parseInt(response.headers["x-total-count"], 10);
+      if (!isNaN(totalCount)) {
+        dispatch(setMyBookingsTotal(totalCount));
+      }
 
-            dispatch(getMyBookingsSuccess({
-                data: response.data,
-                page,
-            }));
-        } 
-        catch (error) {
-            dispatch(getMyBookingsFailed(error));
-        }
-    };
+      dispatch(
+        getMyBookingsSuccess({
+          data: response.data,
+          page,
+        })
+      );
+    } catch (error) {
+      dispatch(getMyBookingsFailed(error));
+    }
+  };
 };
 
 export const getInfoBookings = (id) => {
-    return async (dispatch) => {
-        try {
-            dispatch(getInfoBookingStarted())
+  return async (dispatch) => {
+    try {
+      dispatch(getInfoBookingStarted());
 
-            const response = await api.bookings.getBookingInfo(id);
+      const response = await api.bookings.getBookingInfo(id);
 
-            dispatch(getInfoBookingSuccess(response.data));
-        } 
-        catch (error) {
-            dispatch(getInfoBookingFailed(error));
-        }
-    };
+      dispatch(getInfoBookingSuccess(response.data));
+    } catch (error) {
+      dispatch(getInfoBookingFailed(error));
+    }
+  };
 };
 
 export const createBooking = (data) => {
-    return async (dispatch) => {
-        try {
-            dispatch(createBookingStarted());
+  return async (dispatch) => {
+    try {
+      dispatch(createBookingStarted());
 
-            const response = await api.bookings.createBooking(data);
+      const response = await api.bookings.createBooking(data);
 
-            dispatch(createBookingSuccess(response.data));
-        } 
-        catch (error) {
-            dispatch(createBookingFailed(error));
-        }
-    };
+      dispatch(createBookingSuccess(response.data));
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка бронирования";
+      dispatch(createBookingFailed(error));
+      return { success: false, message: errorMessage };
+    }
+  };
 };
 
 export const updateBooking = (id, data) => {
@@ -95,9 +122,14 @@ export const updateBooking = (id, data) => {
       const response = await api.bookings.updateBooking(id, data);
 
       dispatch(updateBookingSuccess(response.data));
-    } 
-    catch (error) {
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка бронирования";
       dispatch(updateBookingFailed(error));
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -110,8 +142,7 @@ export const deleteBooking = (id) => {
       const response = await api.bookings.deleteBooking(id);
 
       dispatch(deleteBookingSuccess(response.data));
-    } 
-    catch (error) {
+    } catch (error) {
       dispatch(deleteBookingFailed(error));
     }
   };

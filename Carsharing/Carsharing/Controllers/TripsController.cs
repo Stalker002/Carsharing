@@ -3,6 +3,7 @@ using Carsharing.Application.Services;
 using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Carsharing.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -13,9 +14,11 @@ public class TripsController : ControllerBase
 {
     private readonly ITripService _tripService;
     private readonly ITripDetailsService _tripDetailsService;
+    private readonly CarsharingDbContext _context;
 
-    public TripsController(ITripService tripService, ITripDetailsService tripDetailsService)
+    public TripsController(ITripService tripService, ITripDetailsService tripDetailsService, CarsharingDbContext context)
     {
+        _context = context;
         _tripDetailsService = tripDetailsService;
         _tripService = tripService;
     }
@@ -81,38 +84,54 @@ public class TripsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<int>> CreateTrip([FromBody] TripCreateRequest request)
     {
-        var (trip, error) = Trip.Create(
-            0,
-            request.BookingId,
-            request.StatusId,
-            request.TariffType,
-            request.StartTime,
-            request.EndTime,
-            request.Duration,
-            request.Distance);
+        await using var transaction = await _context.Database.BeginTransactionAsync();
 
-        if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
-
-        var tripId = await _tripService.CreateTrip(trip);
-
-        var (tripDetail, errorTripDetail) = TripDetail.Create(
-            0,
-            tripId,
-            request.StartLocation,
-            request.EndLocation,
-            request.InsuranceActive,
-            request.FuelUsed,
-            request.Refueled);
-
-        if (!string.IsNullOrWhiteSpace(errorTripDetail))
+        try
         {
-            await _tripService.DeleteTrip(tripId);
-            return BadRequest(errorTripDetail);
+            var (trip, error) = Trip.Create(
+                0,
+                request.BookingId,
+                request.StatusId,
+                request.TariffType,
+                request.StartTime,
+                request.EndTime,
+                request.Duration,
+                request.Distance);
+
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                return BadRequest(error);
+            }
+
+           
+            var tripId = await _tripService.CreateTrip(trip);
+
+            var (tripDetail, errorTripDetail) = TripDetail.Create(
+                0,
+                tripId,
+                request.StartLocation,
+                request.EndLocation,
+                request.InsuranceActive,
+                request.FuelUsed,
+                request.Refueled);
+
+            if (!string.IsNullOrWhiteSpace(errorTripDetail))
+            {
+                await transaction.RollbackAsync();
+                return BadRequest(errorTripDetail);
+            }
+
+            await _tripDetailsService.CreateTripDetail(tripDetail);
+
+            await transaction.CommitAsync();
+
+            return Ok(tripId);
         }
-
-        var tripDetailId = await _tripDetailsService.CreateTripDetail(tripDetail);
-
-        return Ok(tripId);
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 
     [HttpPut("{id:int}")]

@@ -52,6 +52,7 @@ public class ClientsController : ControllerBase
         var clients = await _clientsService.GetClientById(id);
         var response = clients.Select(cl =>
             new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email));
+
         return Ok(response);
     }
 

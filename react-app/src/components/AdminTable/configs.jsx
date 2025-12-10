@@ -497,9 +497,11 @@ export const fieldsTrips = [
     label: "Статус поездки",
     type: "select",
     options: [
-      { value: "1", label: "Начата" },
-      { value: "2", label: "Завершена" },
-      { value: "3", label: "Отменена" }
+      { value: "8", label: "Ожидает начала" },
+      { value: "9", label: "В пути" },
+      { value: "10", label: "Завершена" },
+      { value: "11", label: "Отменена" },
+      { value: "12", label: "Требуется оплата" },
     ],
     required: true
   },
@@ -558,8 +560,8 @@ export const fieldsTrips = [
     name: "fuelUsed", 
     label: "Потрачено топлива (л)", 
     type: "number", 
-    placeholder: "5", 
-    required: true,
+    placeholder: "5",
+    step: "0.01",
     hideOnEdit: true 
   },
   {
@@ -575,15 +577,12 @@ export const fieldsTrips = [
   },
   {
     name: "refueled",
-    label: "Была заправка?",
-    type: "select",
-    options: [
-      { value: "true", label: "Да" },
-      { value: "false", label: "Нет" }
-    ],
-    required: true,
-    hideOnEdit: true
-  }
+    label: "Заправлено (литров)", // Поменяли название и тип
+    type: "number",
+    placeholder: "0",
+    step: "0.01", // Разрешаем дробные
+    required: false // Можно оставить пустым, если не заправлялся
+  },
 ];
 export const columnsUsers = ["id", "roleId", "login", "password"];
 export const headTextUsers = ["ID", "ID Роли", "Логин", "Пароль"];

@@ -83,6 +83,7 @@ function AddModel({ isOpen, onClose, title, fields, onAdd }) {
                     className="modal-input"
                     placeholder={field.placeholder}
                     required={field.required}
+                    step={field.step}
                   />
                 )}
               </div>
