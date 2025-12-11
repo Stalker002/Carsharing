@@ -16,6 +16,13 @@ export const getCarInfo = (id, config) => makeRequest({
     ...config,
 });
 
+export const getCarInfoAdmin = (id, config) => makeRequest({
+    method: "GET",
+    url: `${URL}/with-info-admin/${id}`,
+    withCredentials: true,
+    ...config,
+});
+
 export const getCarByCategory = (config) => makeRequest({
     method: "GET",
     url: `${URL}/pagedByCategory`,
@@ -26,13 +33,6 @@ export const getCarByCategory = (config) => makeRequest({
 export const createCar = (data) => makeRequest({
     method: "POST",
     url: URL,
-    withCredentials: true,
-    data,
-});
-
-export const createCarImage = (id, data) => makeRequest({
-    method: "POST",
-    url: `${URL}/${id}/image`,
     withCredentials: true,
     data,
 });

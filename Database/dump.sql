@@ -346,7 +346,7 @@ CREATE FUNCTION public.create_bill_after_trip() RETURNS trigger
 BEGIN
     IF NEW.trip_end_time IS NOT NULL THEN
         INSERT INTO bills (bill_trip_id, bill_status_id)
-        VALUES (NEW.trip_id, (SELECT status_id FROM status WHERE lower(status_name)='выставлен'));
+        VALUES (NEW.trip_id, (SELECT status_id FROM status WHERE lower(status_name)='не оплачен'));
     END IF;
     RETURN NEW;
 END;
@@ -1714,6 +1714,7 @@ INSERT INTO public.status (status_name, status_description) VALUES
 
 -- Счёт
 (N'Не оплачен', N'Счёт ожидает оплаты'),
+(N'Частично оплачен', N'Счёт частично оплаты'),
 (N'Оплачен', N'Счёт полностью оплачен'),
 (N'Отменён', N'Счёт был отменён'),
 

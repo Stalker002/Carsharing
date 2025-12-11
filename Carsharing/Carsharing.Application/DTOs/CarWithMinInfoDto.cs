@@ -7,4 +7,5 @@ public record CarWithMinInfoDto(
     string CategoryName,
     string FuelType,
     string Model,
-    string Transmission);
+    string Transmission,
+    string? ImagePath);

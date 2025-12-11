@@ -3,6 +3,9 @@ import {
   createTripFailed,
   createTripStarted,
   createTripSuccess,
+  deleteTripFailed,
+  deleteTripStarted,
+  deleteTripSuccess,
   getInfoTripFailed,
   getInfoTripStarted,
   getInfoTripSuccess,
@@ -14,6 +17,9 @@ import {
   getTripsSuccess,
   setMyTripsTotal,
   setTripsTotal,
+  updateTripFailed,
+  updateTripStarted,
+  updateTripSuccess,
 } from "../actionCreators/trips";
 
 export const getTrips = (page = 1) => {
@@ -116,8 +122,14 @@ export const updateTrip = (id, data) => {
       const response = await api.trips.updateTrip(id, data);
 
       dispatch(updateTripSuccess(response.data));
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка поездок";
       dispatch(updateTripFailed(error));
+      return { success: false, message: errorMessage };
     }
   };
 };

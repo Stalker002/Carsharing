@@ -1,12 +1,12 @@
-import { GET_CARS_SUCCESS, GET_CARS_FAILED, GET_CARS_STARTED, POST_CAR_STARTED, POST_CAR_SUCCESS, POST_CAR_FAILED, PUT_CAR_STARTED, PUT_CAR_SUCCESS, PUT_CAR_FAILED, DELETE_CAR_STARTED, DELETE_CAR_SUCCESS, DELETE_CAR_FAILED, SET_CARS_TOTAL, SET_CARS_BY_CATEGORY_TOTAL, GET_CARS_BY_CATEGORY_FAILED, GET_CARS_BY_CATEGORY_SUCCESS, GET_CARS_BY_CATEGORY_STARTED, GET_INFO_CAR_STARTED, GET_INFO_CAR_SUCCESS, GET_INFO_CAR_FAILED, POST_CAR_IMAGE_STARTED, POST_CAR_IMAGE_SUCCESS, POST_CAR_IMAGE_FAILED } from "../actionCreators/cars";
+import { GET_CARS_SUCCESS, GET_CARS_FAILED, GET_CARS_STARTED, POST_CAR_STARTED, POST_CAR_SUCCESS, POST_CAR_FAILED, PUT_CAR_STARTED, PUT_CAR_SUCCESS, PUT_CAR_FAILED, DELETE_CAR_STARTED, DELETE_CAR_SUCCESS, DELETE_CAR_FAILED, SET_CARS_TOTAL, SET_CARS_BY_CATEGORY_TOTAL, GET_CARS_BY_CATEGORY_FAILED, GET_CARS_BY_CATEGORY_SUCCESS, GET_CARS_BY_CATEGORY_STARTED, GET_INFO_CAR_STARTED, GET_INFO_CAR_SUCCESS, GET_INFO_CAR_FAILED, GET_INFO_CAR_ADMIN_STARTED, GET_INFO_CAR_ADMIN_SUCCESS, GET_INFO_CAR_ADMIN_FAILED } from "../actionCreators/cars";
 
 const initialState = {
     cars: [],
     carsByCategory: [],
     infoCar: {},
+    infoCarAdmin: {},
     isCarsLoading: false,
     isCreateCarLoading: false,
-    isCreateCarImageLoading: false,
     isUpdateCarLoading: false,
     isDeleteCarLoading: false,
     carsTotal: 0,
@@ -61,6 +61,7 @@ export const carsReducer = (state = initialState, action) => {
                 ...state,
                 carsByCategoryTotal: action.payload,
             };
+
         case GET_INFO_CAR_STARTED:
             return {
                 ...state,
@@ -75,7 +76,24 @@ export const carsReducer = (state = initialState, action) => {
         case GET_INFO_CAR_FAILED:
             return {
                 ...state,
-                iscarsLoading: action.payload,
+                iscarsLoading: false,
+            };
+
+        case GET_INFO_CAR_ADMIN_STARTED:
+            return {
+                ...state,
+                isCarsLoading: true,
+            };
+        case GET_INFO_CAR_ADMIN_SUCCESS:
+            return {
+                ...state,
+                isCarsLoading: false,
+                infoCarAdmin: action.payload,
+            };
+        case GET_INFO_CAR_ADMIN_FAILED:
+            return {
+                ...state,
+                isCarsLoading: false,
             };
 
         case POST_CAR_STARTED:
@@ -93,23 +111,6 @@ export const carsReducer = (state = initialState, action) => {
             return { 
                 ...state, 
                 isCreateCarLoading: false
-             };
-
-        case POST_CAR_IMAGE_STARTED:
-            return { 
-                ...state, 
-                isCreateCarImageLoading: true 
-            };
-        case POST_CAR_IMAGE_SUCCESS:
-            return {
-                ...state,
-                cars: [...state.cars, action.payload],
-                isCreateCarImageLoading: false,
-            };
-        case POST_CAR_IMAGE_FAILED:
-            return { 
-                ...state, 
-                isCreateCarImageLoading: false
              };
 
         case PUT_CAR_STARTED:

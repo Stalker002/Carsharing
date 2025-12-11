@@ -12,6 +12,9 @@ import {
   getCarsFailed,
   getCarsStarted,
   getCarsSuccess,
+  getInfoCarAdminFailed,
+  getInfoCarAdminStarted,
+  getInfoCarAdminSuccess,
   getInfoCarFailed,
   getInfoCarStarted,
   getInfoCarSuccess,
@@ -94,6 +97,20 @@ export const getInfoCars = (id) => {
   };
 };
 
+export const getInfoCarAdmin = (id) => {
+  return async (dispatch) => {
+    try {
+      dispatch(getInfoCarAdminStarted());
+      const response = await api.cars.getCarInfoAdmin(id);
+      dispatch(getInfoCarAdminSuccess(response.data));
+      return { success: true, data: response.data[0] };
+    } catch (error) {
+      dispatch(getInfoCarAdminFailed(error));
+      return { success: false, message: error.message };
+    }
+  };
+};
+
 export const createCar = (data) => {
   return async (dispatch) => {
     try {
@@ -124,13 +141,23 @@ export const createCar = (data) => {
   };
 };
 
-// === UPDATE CAR ===
 export const updateCar = (id, data) => {
   return async (dispatch) => {
     try {
       dispatch(updateCarStarted());
 
-      const response = await api.cars.updateCar(id, data);
+      const formData = new FormData();
+
+      Object.keys(data).forEach((key) => {
+        if (key === "image" && data[key] instanceof File) {
+          formData.append("Image", data[key]);
+        } 
+        else if (data[key] !== null && data[key] !== undefined) {
+          formData.append(key, data[key]);
+        }
+      });
+
+      const response = await api.cars.updateCar(id, formData);
 
       dispatch(updateCarSuccess(response.data));
 

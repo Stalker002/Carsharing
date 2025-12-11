@@ -11,7 +11,7 @@ import {
   createCar,
   updateCar,
   deleteCar,
-  getInfoCars,
+  getInfoCarAdmin,
 } from "../../redux/actions/cars";
 import {
   getBills,
@@ -218,7 +218,7 @@ export const useAdminTableConfig = (activeTab) => {
         }),
       editTitle: "Редактирование параметров",
       deleteAction: (id) => deleteCar(id),
-      detailAction: (id) => getInfoCars(id),
+      detailAction: (id) => getInfoCarAdmin(id),
     },
     clients: {
       data: clients,
@@ -302,6 +302,7 @@ export const useAdminTableConfig = (activeTab) => {
           ...data,
           billId: Number(data.billId),
           sum: Number(data.sum),
+          date: new Date(data.date).toISOString(),
         }),
       addTitle: "Регистрация платежа",
       updateAction: (id, data) =>

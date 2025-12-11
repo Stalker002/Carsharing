@@ -1,5 +1,4 @@
-﻿using Carsharing.Application.Services;
-using Carsharing.Contracts;
+﻿using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +22,8 @@ public class UsersController : ControllerBase
 
         Response.Cookies.Append("tasty", token);
 
-        return Ok(new { Token = token, Message = "Logged in" });
+        return Ok(new { Token = token, 
+            Message = "Logged in" });
     }
 
     [HttpPost("logout")]

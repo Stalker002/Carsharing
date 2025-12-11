@@ -1,8 +1,6 @@
 ﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Collections.Generic;
 
 namespace Carsharing.Application.Services;
 

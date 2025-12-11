@@ -6,4 +6,5 @@ public record CarsRequest(
     int CategoryId,
     int SpecificationId,
     string Location,
-    decimal FuelLevel);
+    decimal FuelLevel,
+    IFormFile? Image);
