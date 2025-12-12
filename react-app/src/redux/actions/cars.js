@@ -47,8 +47,16 @@ export const getCars = (page = 1) => {
           page,
         })
       );
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка машины";
+
       dispatch(getCarsFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -77,8 +85,16 @@ export const getCarsByCategory = (ids, page = 1) => {
           page,
         })
       );
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка машины";
+
       dispatch(getCarsByCategoryFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -91,8 +107,14 @@ export const getInfoCars = (id) => {
       dispatch(getInfoCarSuccess(response.data));
       return { success: true, data: response.data[0] };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка машины";
+
       dispatch(getInfoCarFailed(error));
-      return { success: false, message: error.message };
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -105,8 +127,14 @@ export const getInfoCarAdmin = (id) => {
       dispatch(getInfoCarAdminSuccess(response.data));
       return { success: true, data: response.data[0] };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка машины";
+
       dispatch(getInfoCarAdminFailed(error));
-      return { success: false, message: error.message };
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -121,8 +149,7 @@ export const createCar = (data) => {
       Object.keys(data).forEach((key) => {
         if (key === "image" && data[key] instanceof File) {
           formData.append("Image", data[key]);
-        } 
-        else if (data[key] !== null && data[key] !== undefined) {
+        } else if (data[key] !== null && data[key] !== undefined) {
           formData.append(key, data[key]);
         }
       });
@@ -130,12 +157,16 @@ export const createCar = (data) => {
       const response = await api.cars.createCar(formData);
 
       dispatch(createCarSuccess(response.data));
-      
-      return { success: true };
+
+      return { success: true, data: response.data };
     } catch (error) {
-      const errorMessage = error.response?.data || error.message;
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка машины";
+
       dispatch(createCarFailed(error));
-      
+
       return { success: false, message: errorMessage };
     }
   };
@@ -151,8 +182,7 @@ export const updateCar = (id, data) => {
       Object.keys(data).forEach((key) => {
         if (key === "image" && data[key] instanceof File) {
           formData.append("Image", data[key]);
-        } 
-        else if (data[key] !== null && data[key] !== undefined) {
+        } else if (data[key] !== null && data[key] !== undefined) {
           formData.append(key, data[key]);
         }
       });
@@ -161,9 +191,13 @@ export const updateCar = (id, data) => {
 
       dispatch(updateCarSuccess(response.data));
 
-      return { success: true };
+      return { success: true, data: response.data };
     } catch (error) {
-      const errorMessage = error.response?.data || error.message;
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка машины";
+
       dispatch(updateCarFailed(error));
 
       return { success: false, message: errorMessage };
@@ -180,11 +214,15 @@ export const deleteCar = (id) => {
 
       dispatch(deleteCarSuccess(response.data));
 
-      return { success: true };
+      return { success: true, data: response.data };
     } catch (error) {
-      const errorMessage = error.response?.data || error.message;
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка машины";
+
       dispatch(deleteCarFailed(error));
-      
+
       return { success: false, message: errorMessage };
     }
   };

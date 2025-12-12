@@ -45,8 +45,16 @@ export const getTrips = (page = 1) => {
           page,
         })
       );
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка поездок";
+
       dispatch(getTripsFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -74,8 +82,16 @@ export const getMyTrips = (page = 1) => {
           page,
         })
       );
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка поездок";
+
       dispatch(getMyTripsFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -88,8 +104,16 @@ export const getTripWithInfo = (id) => {
       const response = await api.trips.getTripWithInfo(id);
 
       dispatch(getInfoTripSuccess(response.data));
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка поездок";
+
       dispatch(getInfoTripFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -108,7 +132,9 @@ export const createTrip = (data) => {
         error.response?.data?.message ||
         error.message ||
         "Неизвестная ошибка поездок";
+
       dispatch(createTripFailed(error));
+
       return { success: false, message: errorMessage };
     }
   };
@@ -142,8 +168,16 @@ export const deleteTrip = (id) => {
       const response = await api.trips.deleteTrip(id);
 
       dispatch(deleteTripSuccess(response.data));
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка поездок";
+
       dispatch(deleteTripFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };

@@ -1,3 +1,5 @@
+import "./SimpleTable.css";
+
 const SimpleTable = ({ data, columns, headers }) => {
   if (!data || data.length === 0)
     return <p className="simple-table-p">Нет данных</p>;

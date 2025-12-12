@@ -56,8 +56,6 @@ const CategoryManager = ({ isOpen, onClose }) => {
         </div>
 
         <div className="modal-body category-body">
-          
-          {/* Форма добавления */}
           <div className="add-category-row">
             <input 
               type="text" 

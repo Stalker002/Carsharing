@@ -67,7 +67,6 @@ function AddModel({ isOpen, onClose, title, fields, onAdd }) {
                   />
                 ) : field.type === "file" ? (
                   <div key={field.name} className="form-group">
-                    <label>{field.label}</label>
                     <input
                       type="file"
                       name={field.name}

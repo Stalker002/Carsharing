@@ -93,7 +93,11 @@ import {
   columnsUsers,
   headTextUsers,
   fieldsUsers,
+  columnsMaintenances,
+  headTextMaintenances,
+  fieldsMaintenances,
 } from "./configs";
+import { createMaintenance, deleteMaintenance, getMaintenances, updateMaintenance } from "../../redux/actions/maintenance";
 
 export const useAdminTableConfig = (activeTab) => {
   // 1. Селекторы данных
@@ -116,6 +120,8 @@ export const useAdminTableConfig = (activeTab) => {
 
   const fines = useSelector((state) => state.fines?.fines || []);
   const totalFines = useSelector((state) => state.fines?.finesTotal || 0);
+
+  const maintenances = useSelector((state) => state.maintenances?.maintenances || []);
 
   const insurances = useSelector((state) => state.insurances?.insurances || []);
   const totalInsurances = useSelector(
@@ -289,6 +295,26 @@ export const useAdminTableConfig = (activeTab) => {
         }),
       editTitle: "Редактирование страховки",
       deleteAction: (id) => deleteInsurance(id),
+    },
+     maintenance: {
+      data: maintenances,
+      columns: columnsMaintenances,
+      headText: headTextMaintenances,
+      fields: fieldsMaintenances,
+      action: getMaintenances,
+      addAction: (data) => createMaintenance({
+          ...data,
+          carId: Number(data.carId),
+          cost: Number(data.cost),
+      }),
+      addTitle: "Запись на обслуживание",
+      updateAction: (id, data) => updateMaintenance(id, {
+          ...data,
+          carId: Number(data.carId),
+          cost: Number(data.cost)
+      }),
+      editTitle: "Редактирование записи ТО",
+      deleteAction: (id) => deleteMaintenance(id),
     },
     payments: {
       data: payments,

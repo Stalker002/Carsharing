@@ -1,75 +1,118 @@
 import { api } from "../../api";
-import { createPromocodeFailed, createPromocodeStarted, createPromocodeSuccess, deletePromocodeFailed, deletePromocodeStarted, deletePromocodeSuccess, getActivePromocodesFailed, getActivePromocodesStarted, getActivePromocodesSuccess, getPromocodesFailed, getPromocodesStarted, getPromocodesSuccess, setActivePromocodesTotal, setPromocodesTotal, updatePromocodeFailed, updatePromocodeStarted, updatePromocodeSuccess } from "../actionCreators/promocodes";
+import {
+  createPromocodeFailed,
+  createPromocodeStarted,
+  createPromocodeSuccess,
+  deletePromocodeFailed,
+  deletePromocodeStarted,
+  deletePromocodeSuccess,
+  getActivePromocodesFailed,
+  getActivePromocodesStarted,
+  getActivePromocodesSuccess,
+  getPromocodesFailed,
+  getPromocodesStarted,
+  getPromocodesSuccess,
+  setActivePromocodesTotal,
+  setPromocodesTotal,
+  updatePromocodeFailed,
+  updatePromocodeStarted,
+  updatePromocodeSuccess,
+} from "../actionCreators/promocodes";
 
 export const getPromocodes = (page = 1) => {
-    return async (dispatch) => {
-        try {
-            dispatch(getPromocodesStarted());
+  return async (dispatch) => {
+    try {
+      dispatch(getPromocodesStarted());
 
-            const response = await api.promocodes.getPromocodes({
-                params: {
-                    _page: page,
-                    _limit: 25,
-                },
-            });
+      const response = await api.promocodes.getPromocodes({
+        params: {
+          _page: page,
+          _limit: 25,
+        },
+      });
 
-            const totalCount = parseInt(response.headers["x-total-count"], 10);
-            if (!isNaN(totalCount)) {
-                dispatch(setPromocodesTotal(totalCount));
-            }
+      const totalCount = parseInt(response.headers["x-total-count"], 10);
+      if (!isNaN(totalCount)) {
+        dispatch(setPromocodesTotal(totalCount));
+      }
 
-            dispatch(getPromocodesSuccess({
-                data: response.data,
-                page,
-            }));
-        } 
-        catch (error) {
-            dispatch(getPromocodesFailed(error));
-        }
-    };
+      dispatch(
+        getPromocodesSuccess({
+          data: response.data,
+          page,
+        })
+      );
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка промокода";
+
+      dispatch(getPromocodesFailed(error));
+
+      return { success: false, message: errorMessage };
+    }
+  };
 };
 
 export const getActivePromocodes = (page = 1) => {
-    return async (dispatch) => {
-        try {
-            dispatch(getActivePromocodesStarted())
+  return async (dispatch) => {
+    try {
+      dispatch(getActivePromocodesStarted());
 
-            const response = await api.promocodes.getActivePromocodes({
-                params: {
-                    _page: page,
-                    _limit: 25,
-                },
-            });
+      const response = await api.promocodes.getActivePromocodes({
+        params: {
+          _page: page,
+          _limit: 25,
+        },
+      });
 
-            const totalCount = parseInt(response.headers["x-total-count"], 10);
-            if (!isNaN(totalCount)) {
-                dispatch(setActivePromocodesTotal(totalCount));
-            }
+      const totalCount = parseInt(response.headers["x-total-count"], 10);
+      if (!isNaN(totalCount)) {
+        dispatch(setActivePromocodesTotal(totalCount));
+      }
 
-            dispatch(getActivePromocodesSuccess({
-                data: response.data,
-                page,
-            }));
-        } 
-        catch (error) {
-            dispatch(getActivePromocodesFailed(error));
-        }
-    };
+      dispatch(
+        getActivePromocodesSuccess({
+          data: response.data,
+          page,
+        })
+      );
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка промокода";
+
+      dispatch(getActivePromocodesFailed(error));
+
+      return { success: false, message: errorMessage };
+    }
+  };
 };
 
 export const createPromocode = (data) => {
-    return async (dispatch) => {
-        try {
-            dispatch(createPromocodeStarted());
+  return async (dispatch) => {
+    try {
+      dispatch(createPromocodeStarted());
 
-            const response = await api.promocodes.createPromocode(data);
+      const response = await api.promocodes.createPromocode(data);
 
-            dispatch(createPromocodeSuccess(response.data));
-        } 
-        catch (error) {
-            dispatch(createPromocodeFailed(error));
-        }
-    };
+      dispatch(createPromocodeSuccess(response.data));
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка промокода";
+
+      dispatch(createPromocodeFailed(error));
+
+      return { success: false, message: errorMessage };
+    }
+  };
 };
 
 export const updatePromocode = (id, data) => {
@@ -80,9 +123,16 @@ export const updatePromocode = (id, data) => {
       const response = await api.promocodes.updatePromocode(id, data);
 
       dispatch(updatePromocodeSuccess(response.data));
-    } 
-    catch (error) {
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка промокода";
+
       dispatch(updatePromocodeFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -95,9 +145,16 @@ export const deletePromocode = (id) => {
       const response = await api.promocodes.deletePromocode(id);
 
       dispatch(deletePromocodeSuccess(response.data));
-    } 
-    catch (error) {
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка промокода";
+
       dispatch(deletePromocodeFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };

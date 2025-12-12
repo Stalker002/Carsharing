@@ -1,7 +1,7 @@
 import { GET_MAINTENANCES_STARTED, GET_MAINTENANCES_SUCCESS, GET_MAINTENANCES_FAILED, POST_MAINTENANCE_STARTED, POST_MAINTENANCE_SUCCESS, POST_MAINTENANCE_FAILED, PUT_MAINTENANCE_STARTED, PUT_MAINTENANCE_SUCCESS, PUT_MAINTENANCE_FAILED, DELETE_MAINTENANCE_STARTED, DELETE_MAINTENANCE_SUCCESS, DELETE_MAINTENANCE_FAILED, GET_MAINTENANCES_BY_CAR_STARTED, GET_MAINTENANCES_BY_CAR_SUCCESS, GET_MAINTENANCES_BY_CAR_FAILED, GET_MAINTENANCE_BY_DATE_RANGE_STARTED, GET_MAINTENANCE_BY_DATE_RANGE_SUCCESS, GET_MAINTENANCE_BY_DATE_RANGE_FAILED } from "../actionCreators/maintenance";
 
 const initialState = {
-    maintenanceList: [],
+    maintenances: [],
     maintenanceByCarList: [],
     maintenanceByDateRangeList: [],
     isMaintenanceLoading: false,
@@ -20,7 +20,7 @@ export const maintenancesReducer = (state = initialState, action) => {
         case GET_MAINTENANCES_SUCCESS:
             return {
                 ...state,
-                maintenanceList: action.payload, 
+                maintenances: action.payload, 
                 isMaintenanceLoading: false
             };
         case GET_MAINTENANCES_FAILED:

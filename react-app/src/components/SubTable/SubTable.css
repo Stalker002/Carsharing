@@ -1,0 +1,127 @@
+/* --- Обертка подтаблицы --- */
+.sub-table-wrapper {
+  margin-top: 10px;
+  width: 100%;
+}
+
+/* --- Верхняя панель (Кнопка добавить) --- */
+.sub-table-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+.sub-add-btn {
+  background-color: #28a745; /* Зеленый */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.sub-add-btn:hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+}
+
+/* --- Сама таблица --- */
+.sub-table {
+  width: 100%;
+  border-collapse: collapse; /* Убирает двойные границы */
+  font-size: 14px;
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  overflow: hidden; /* Чтобы скругление работало на углах */
+}
+
+/* Заголовки */
+.sub-table th {
+  text-align: left;
+  padding: 12px 16px;
+  background-color: #f9fafb; /* Очень светло-серый */
+  color: #6b7280; /* Серый текст */
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #eaeaea;
+  letter-spacing: 0.5px;
+}
+
+/* Ячейки */
+.sub-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #374151;
+}
+
+/* Последняя строка без границы снизу */
+.sub-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Эффект наведения на строку */
+.sub-table tbody tr:hover {
+  background-color: #f3f4f6;
+}
+
+/* --- Кнопки действий (Редактировать / Удалить) --- */
+.sub-action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end; /* Кнопки прижаты вправо в своей колонке */
+}
+
+.sub-icon-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px; /* Размер иконки */
+}
+
+/* Стиль кнопки редактирования */
+.sub-icon-btn.edit {
+  color: #3b82f6; /* Синий */
+  background-color: #eff6ff;
+}
+
+.sub-icon-btn.edit:hover {
+  border-color: #3b82f6;
+  background-color: #dbeafe;
+}
+
+/* Стиль кнопки удаления */
+.sub-icon-btn.delete {
+  color: #ef4444; /* Красный */
+  background-color: #fef2f2;
+}
+
+.sub-icon-btn.delete:hover {
+  border-color: #ef4444;
+  background-color: #fee2e2;
+}
+
+/* --- Пустое состояние --- */
+.sub-empty-text {
+  text-align: center;
+  padding: 30px;
+  color: #9ca3af;
+  font-style: italic;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px dashed #e5e7eb;
+}

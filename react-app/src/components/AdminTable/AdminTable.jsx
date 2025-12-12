@@ -2,15 +2,26 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 
 import { GenericTable } from "./GenericTable";
-
 import UpdateModal from "../UpdateModal/UpdateModal";
 import AddModel from "../AddModel/AddModel";
-
-import "./AdminTable.css";
-import CategoryManager from "../CategoryManager/CategoryManager";
 import DetailingModal from "../DetailModal/DetailModal";
+import CategoryManager from "../CategoryManager/CategoryManager";
+import SimpleTable from "../SimpleTable/SimpleTable";
 import { useAdminTableConfig } from "./useAdminTableConfig";
-import SimpleTable from "./SimpleTable";
+import "./AdminTable.css";
+
+import { fieldsInsurances, fieldsMaintenances } from "./configs";
+import {
+  createInsurance,
+  deleteInsurance,
+  getInsuranceByCars,
+  updateInsurance,
+} from "../../redux/actions/insurance";
+import {
+  createMaintenance,
+  getMaintenanceByCars,
+} from "../../redux/actions/maintenance";
+import SubTable from "../SubTable/SubTable";
 
 function AdminTable({ activeTab }) {
   const dispatch = useDispatch();
@@ -22,10 +33,14 @@ function AdminTable({ activeTab }) {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isCatOpen, setIsCatOpen] = useState(false);
 
-  const [isDetailLoading, setIsDetailLoading] = useState(false);
+  const [subEditingItem, setSubEditingItem] = useState(null);
+  const [isSubAddOpen, setIsSubAddOpen] = useState(false);
+  const [subType, setSubType] = useState(null);
+
   const [carInsurances, setCarInsurances] = useState([]);
   const [carMaintenances, setCarMaintenances] = useState([]);
 
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
   const isLoadingRef = useRef(false);
   const isSwitchingTable = useRef(false);
 
@@ -51,7 +66,7 @@ function AdminTable({ activeTab }) {
     dispatch(cfg.action(page)).finally(() => {
       isLoadingRef.current = false;
     });
-  }, [page, activeTab, dispatch]);
+  }, [page, activeTab, dispatch, cfg]);
 
   const refreshTable = () => {
     document.getElementById("container")?.scrollTo(0, 0);
@@ -69,28 +84,26 @@ function AdminTable({ activeTab }) {
     setPage((prev) => prev + 1);
   };
 
-  const handleEditClick = (item) => {
-    setEditingItem(item);
+  const fetchSubData = async (itemId) => {
+    if (activeTab === "cars") {
+      const ins = await dispatch(getInsuranceByCars(itemId));
+      setCarInsurances(ins.data);
+
+      const maintenance = await dispatch(getMaintenanceByCars(itemId));
+      setCarMaintenances(maintenance.data);
+    }
   };
-// const insRes = await dispatch(getInsurancesByCar(row.id));
-        // setCarInsurances(insRes.data || []);
-  // === ОБНОВЛЕННЫЙ ХЕНДЛЕР КЛИКА ===
+
   const handleRowClick = async (row) => {
     if (cfg.detailAction) {
       setIsDetailLoading(true);
       const result = await dispatch(cfg.detailAction(row.id));
-      
-      // Логика загрузки доп. таблиц (можно тоже вынести в хук, но пока оставим)
-      if (activeTab === 'cars') {
-          setCarInsurances([/*...заглушка...*/]); 
-          setCarMaintenances([]); 
-      }
-
       setIsDetailLoading(false);
 
       if (result.success && result.data) {
         setEditingItem(null);
         setDetailingItem(result.data);
+        fetchSubData(result.data.id);
       } else {
         alert("Не удалось загрузить детали");
       }
@@ -99,35 +112,23 @@ function AdminTable({ activeTab }) {
     }
   };
 
-  // === ПОДГОТОВКА ТАБОВ ===
-  // Мы создаем массив табов динамически
-  const getAdditionalTabs = () => {
-    if (activeTab === "cars") {
-      return [
-        {
-          title: "Страховки",
-          content: (
-            <SimpleTable
-              data={carInsurances}
-              columns={["id", "type", "company", "endDate"]}
-              headers={["ID", "Тип", "Компания", "Окончание"]}
-            />
-          ),
-        },
-        {
-          title: "Обслуживание",
-          content: (
-            <SimpleTable
-              data={carMaintenances}
-              columns={["id", "date", "description", "cost"]}
-              headers={["ID", "Дата", "Описание", "Стоимость"]}
-            />
-          ),
-        },
-      ];
+  const handleEditClick = (item) => {
+    setDetailingItem(null);
+    setEditingItem(item);
+    fetchSubData(item.id);
+  };
+
+  const handleAdd = async (data) => {
+    if (cfg?.addAction) {
+      const result = await dispatch(cfg.addAction(data));
+      if (!result.success) {
+        alert(result.message);
+        return false;
+      }
+      refreshTable();
+      return true;
     }
-    // Для других таблиц (например, Клиенты -> История поездок) можно добавить свои условия
-    return [];
+    return false;
   };
 
   const handleSaveEdit = async (e) => {
@@ -147,23 +148,143 @@ function AdminTable({ activeTab }) {
     refreshTable();
   };
 
-  const handleAdd = async (data) => {
-    if (cfg?.addAction) {
-      const result = await dispatch(cfg.addAction(data));
-      if (!result.success) {
-        alert(result.message);
-        return false;
-      }
-      refreshTable();
-      return true;
-    }
-    return false;
+  const openSubAdd = (type) => {
+    setSubType(type);
+    setIsSubAddOpen(true);
   };
 
-  if (activeTab === "Dashboard") {
-    return <div>Здесь будет компонент Dashboard</div>;
-  }
+  const openSubEdit = (item, type) => {
+    setSubType(type);
+    setSubEditingItem(item);
+  };
 
+  const handleSubAddSave = async (data) => {
+    const payload = { ...data, carId: Number(editingItem.id) };
+    let result = { success: false };
+
+    if (subType === "insurance") {
+      result = await dispatch(
+        createInsurance({
+          ...payload,
+          statusId: Number(payload.statusId),
+          cost: Number(payload.cost),
+        })
+      );
+    }
+
+    if (subType === "maintenance") {
+      result = await dispatch(
+        createMaintenance({
+          ...payload,
+          statusId: Number(payload.statusId),
+          cost: Number(payload.cost),
+        })
+      );
+    }
+
+    if (result.success) {
+      fetchSubData(editingItem.id);
+      return true;
+    } else {
+      alert(result.message);
+      return false;
+    }
+  };
+
+  const handleSubUpdateSave = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const rawData = Object.fromEntries(formData.entries());
+    const finalData = { ...subEditingItem, ...rawData };
+
+    let result = { success: false };
+
+    if (subType === "insurance") {
+      result = await dispatch(
+        updateInsurance(finalData.id, {
+          ...finalData,
+          carId: Number(editingItem.id),
+          statusId: Number(finalData.statusId),
+          cost: Number(finalData.cost),
+        })
+      );
+    }
+
+    if (result.success) {
+      setSubEditingItem(null);
+      fetchSubData(editingItem.id);
+    } else {
+      alert(result.message);
+    }
+  };
+
+  const handleSubDelete = async (id) => {
+    if (!window.confirm("Удалить запись?")) return;
+    let result = { success: false };
+
+    if (subType === "insurance") result = await dispatch(deleteInsurance(id));
+
+    if (result.success) {
+      setSubEditingItem(null);
+      fetchSubData(editingItem.id);
+    }
+  };
+
+  const getTabs = (isEditMode) => {
+    if (activeTab === "cars") {
+      const TableComponent = isEditMode ? SubTable : SimpleTable;
+
+      const editProps = (type) =>
+        isEditMode
+          ? {
+              onAdd: () => openSubAdd(type),
+              onEdit: (item) => openSubEdit(item, type),
+              onDelete: (id) => {
+                setSubType(type);
+                handleSubDelete(id);
+              },
+              addButtonText: type === "insurance" ? "Страховку" : "ТО",
+            }
+          : {};
+
+      return [
+        {
+          title: "Страховки",
+          content: (
+            <TableComponent
+              data={carInsurances}
+              columns={["id", "type", "company", "endDate"]}
+              headers={["ID", "Тип", "Компания", "Окончание"]}
+              {...editProps("insurance")}
+            />
+          ),
+        },
+        {
+          title: "Обслуживание",
+          content: (
+            <TableComponent
+              data={carMaintenances}
+              columns={["id", "date", "workType", "cost"]}
+              headers={["ID", "Дата", "Тип работ", "Стоимость"]}
+              {...editProps("maintenance")}
+            />
+          ),
+        },
+      ];
+    }
+    return [];
+  };
+
+  const getSubFields = () => {
+    if (subType === "maintenance")
+      return fieldsMaintenances.filter((f) => f.name !== "carId");
+    if (subType === "insurance")
+      return fieldsInsurances.filter((f) => f.name !== "carId");
+    return [];
+  };
+
+  if (activeTab === "Dashboard")
+    return <div>Здесь будет компонент Dashboard</div>;
   if (!cfg) return <div>Ошибка конфигурации для таблицы: {activeTab}</div>;
 
   const addFields = cfg.fields ? cfg.fields.filter((f) => !f.hideOnAdd) : [];
@@ -193,10 +314,11 @@ function AdminTable({ activeTab }) {
           headText={cfg.headText}
           bodyText={cfg.data || []}
           columns={cfg.columns}
-          onEditClick={setEditingItem}
+          onEditClick={handleEditClick}
           onRowClick={handleRowClick}
           nextHandler={nextHandler}
           hasMore={(cfg.data?.length || 0) < (cfg.total || 0)}
+          style={{ cursor: isDetailLoading ? "wait" : "default" }}
         />
       </div>
 
@@ -205,6 +327,7 @@ function AdminTable({ activeTab }) {
           title={`${cfg.editTitle || "Редактирование"} #${editingItem.id}`}
           onClose={() => setEditingItem(null)}
           formId="edit-form"
+          additionalTabs={getTabs(true)}
           onDelete={
             cfg.deleteAction
               ? () => {
@@ -217,7 +340,11 @@ function AdminTable({ activeTab }) {
               : null
           }
         >
-          <form id="edit-form" onSubmit={handleSaveEdit}>
+          <form
+            id="edit-form"
+            onSubmit={handleSaveEdit}
+            className="update-modal__form-grid"
+          >
             {editFields.map((field) => (
               <div className="update-group" key={field.name}>
                 <label>{field.label}</label>
@@ -228,9 +355,13 @@ function AdminTable({ activeTab }) {
                     defaultValue={editingItem[field.name]}
                     disabled={field.readOnly}
                   >
-                    <option value="" disabled>Выберите...</option>
+                    <option value="" disabled>
+                      Выберите...
+                    </option>
                     {field.options.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
                     ))}
                   </select>
                 ) : (
@@ -255,7 +386,7 @@ function AdminTable({ activeTab }) {
         data={detailingItem}
         fields={cfg.fields}
         onClose={() => setDetailingItem(null)}
-        additionalTabs={getAdditionalTabs()}
+        additionalTabs={getTabs(false)}
       />
 
       <AddModel
@@ -265,6 +396,44 @@ function AdminTable({ activeTab }) {
         fields={addFields}
         onAdd={handleAdd}
       />
+
+      <AddModel
+        isOpen={isSubAddOpen}
+        onClose={() => setIsSubAddOpen(false)}
+        title={subType === "insurance" ? "Добавить страховку" : "Добавить ТО"}
+        fields={getSubFields().filter((f) => !f.hideOnAdd)}
+        onAdd={handleSubAddSave}
+      />
+
+      {subEditingItem && (
+        <UpdateModal
+          title={`Редактирование #${subEditingItem.id}`}
+          onClose={() => setSubEditingItem(null)}
+          formId="sub-edit-form"
+          onDelete={() => handleSubDelete(subEditingItem.id)}
+        >
+          <form
+            id="sub-edit-form"
+            onSubmit={handleSubUpdateSave}
+            className="update-modal__form-grid"
+          >
+            {getSubFields()
+              .filter((f) => !f.hideOnEdit)
+              .map((field) => (
+                <div className="update-group" key={field.name}>
+                  <label>{field.label}</label>
+                  <input
+                    name={field.name}
+                    defaultValue={subEditingItem[field.name]}
+                    className="modal-input"
+                    type={field.type}
+                    readOnly={field.readOnly}
+                  />
+                </div>
+              ))}
+          </form>
+        </UpdateModal>
+      )}
 
       <CategoryManager isOpen={isCatOpen} onClose={() => setIsCatOpen(false)} />
     </>

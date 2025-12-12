@@ -63,8 +63,11 @@ export const logoutUser = () => {
       localStorage.removeItem("tasty");
 
       dispatch(logoutUserSuccess());
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
       dispatch(logoutUserFailed(error));
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -92,8 +95,16 @@ export const getUsers = (page = 1) => {
           page,
         })
       );
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка пользователей";
+
       dispatch(getUsersFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -107,7 +118,14 @@ export const getMyUser = () => {
 
       dispatch(getMyUserSuccess(response.data));
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка пользователей";
+
       dispatch(getMyUserFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -123,7 +141,10 @@ export const createUser = (data) => {
 
       return { success: true, data: response.data };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message;
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка пользователей";
 
       dispatch(createUserFailed(error));
 
@@ -142,8 +163,13 @@ export const updateUser = (id, data) => {
       dispatch(updateUserSuccess(response.data));
       return { success: true };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message;
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка пользователей";
+
       dispatch(updateUserFailed(error));
+
       return { success: false, message: errorMessage };
     }
   };
@@ -157,8 +183,16 @@ export const deleteUser = (id) => {
       const response = await api.users.deleteUser(id);
 
       dispatch(deleteUserSuccess(response.data));
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка пользователей";
+
       dispatch(deleteUserFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };

@@ -48,8 +48,16 @@ export const getClients = (page = 1) => {
           page,
         })
       );
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка клиента";
+
       dispatch(getClientsFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -62,11 +70,19 @@ export const getMyClient = () => {
       const response = await api.clients.getMyClient();
 
       dispatch(getMyClientSuccess(response.data));
+      return { success: true, data: response.data };
     } catch (error) {
       if (error.response && error.response.status === 401) {
         dispatch(logoutUser());
       }
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка клиента";
+
       dispatch(getMyClientFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -79,8 +95,16 @@ export const getMyDocuments = () => {
       const response = await api.clients.getMyDocuments();
 
       dispatch(getMyDocumentsSuccess(response.data));
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка клиента";
+
       dispatch(getMyDocumentsFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -93,8 +117,16 @@ export const getClientDocument = (clientId) => {
       const response = await api.clients.getClientDocument(clientId);
 
       dispatch(getClientDocumentSuccess(response.data));
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка клиента";
+
       dispatch(getClientDocumentFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -130,8 +162,16 @@ export const updateClient = (id, data) => {
       const response = await api.clients.updateClient(id, data);
 
       dispatch(updateClientSuccess(response.data));
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка клиента";
+
       dispatch(updateClientFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -144,8 +184,16 @@ export const deleteClient = (id) => {
       const response = await api.clients.deleteClient(id);
 
       dispatch(deleteClientSuccess(response.data));
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка клиента";
+
       dispatch(deleteClientFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };

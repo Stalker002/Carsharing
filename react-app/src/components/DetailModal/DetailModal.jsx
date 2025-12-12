@@ -7,25 +7,21 @@ const DetailModal = ({ title, data, fields, onClose, additionalTabs = [] }) => {
   if (!data) return null;
 
   return (
-    // Уникальный класс оверлея
-    <div className="detail-modal__overlay" onMouseDown={onClose}>
+    <div className="detail-modal-overlay" onMouseDown={onClose}>
       <div
-        className="detail-modal__container"
+        className="detail-modal-container"
         onMouseDown={(e) => e.stopPropagation()}
       >
-        {/* Хедер */}
-        <div className="detail-modal__header">
-          <h3 className="detail-modal__title">{title}</h3>
-          <button className="detail-modal__close" onClick={onClose}>
+        <div className="detail-modal-header">
+          <h3 className="detail-modal-title">{title}</h3>
+          <button className="detail-modal-close" onClick={onClose}>
             ×
           </button>
         </div>
-
-        {/* Табы */}
-        <div className="detail-modal__tabs">
+        <div className="detail-modal-tabs">
           <button
-            className={`detail-modal__tab-btn ${
-              activeTab === "main" ? "detail-modal__tab-btn--active" : ""
+            className={`detail-modal-tab-btn ${
+              activeTab === "main" ? "detail-modal-tab-btn-active" : ""
             }`}
             onClick={() => setActiveTab("main")}
           >
@@ -35,8 +31,8 @@ const DetailModal = ({ title, data, fields, onClose, additionalTabs = [] }) => {
           {additionalTabs.map((tab, index) => (
             <button
               key={index}
-              className={`detail-modal__tab-btn ${
-                activeTab === index ? "detail-modal__tab-btn--active" : ""
+              className={`detail-modal-tab-btn ${
+                activeTab === index ? "detail-modal-tab-btn-active" : ""
               }`}
               onClick={() => setActiveTab(index)}
             >
@@ -45,36 +41,37 @@ const DetailModal = ({ title, data, fields, onClose, additionalTabs = [] }) => {
           ))}
         </div>
 
-        {/* Тело */}
-        <div className="detail-modal__body">
-          {/* Вкладка: Основное */}
+        <div className="detail-modal-body">
           {activeTab === "main" && (
-            <div className="detail-modal__grid">
+            <div className="detail-modal-grid">
               {fields
                 .filter((f) => !f.hideOnDetail)
                 .map((field) => {
-                  // Логика получения значения (учитываем viewName)
                   const fieldKey = field.viewName || field.name;
-                  const value = data[fieldKey] !== undefined ? data[fieldKey] : data[field.name];
+                  const value =
+                    data[fieldKey] !== undefined
+                      ? data[fieldKey]
+                      : data[field.name];
 
                   let displayValue = value;
 
-                  // Форматирование
                   if (field.type === "select") {
                     const option = field.options?.find(
                       (opt) => String(opt.value) === String(value)
                     );
-                    // Если нашли опцию в конфиге - показываем её label, иначе оставляем value (например "Эконом")
                     if (option) displayValue = option.label;
                   }
-                  
+
                   if (field.type === "datetime-local" && value) {
                     displayValue = new Date(value).toLocaleString("ru-RU", {
-                        day: 'numeric', month: 'long', year: 'numeric',
-                        hour: '2-digit', minute: '2-digit'
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
                     });
                   }
-                  
+
                   if (
                     field.type === "boolean" ||
                     (field.options && field.options[0]?.value === true)
@@ -83,11 +80,13 @@ const DetailModal = ({ title, data, fields, onClose, additionalTabs = [] }) => {
                   }
 
                   return (
-                    <div key={field.name} className="detail-modal__row">
-                      <span className="detail-modal__label">{field.label}</span>
-                      <span className="detail-modal__value">
-                        {displayValue !== undefined && displayValue !== null && displayValue !== "" 
-                          ? displayValue 
+                    <div key={field.name} className="detail-modal-row">
+                      <span className="detail-modal-label">{field.label}</span>
+                      <span className="detail-modal-value">
+                        {displayValue !== undefined &&
+                        displayValue !== null &&
+                        displayValue !== ""
+                          ? displayValue
                           : "—"}
                       </span>
                     </div>
@@ -96,17 +95,15 @@ const DetailModal = ({ title, data, fields, onClose, additionalTabs = [] }) => {
             </div>
           )}
 
-          {/* Вкладки: Дополнительные */}
           {typeof activeTab === "number" && additionalTabs[activeTab] && (
-            <div className="detail-modal__tab-content">
+            <div className="detail-modal-tab-content">
               {additionalTabs[activeTab].content}
             </div>
           )}
         </div>
 
-        {/* Футер */}
-        <div className="detail-modal__footer">
-          <button className="detail-modal__btn" onClick={onClose}>
+        <div className="detail-modal-footer">
+          <button className="detail-modal-btn" onClick={onClose}>
             Закрыть
           </button>
         </div>

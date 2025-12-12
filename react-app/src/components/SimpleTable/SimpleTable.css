@@ -1,0 +1,60 @@
+/* SimpleTable.css */
+
+/* --- Сообщение "Нет данных" --- */
+.simple-table-p {
+  text-align: center;
+  padding: 30px;
+  color: #9ca3af; /* Мягкий серый */
+  font-style: italic;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px dashed #e5e7eb;
+  margin: 0;
+}
+
+/* --- Сама таблица --- */
+.inner-table {
+  width: 100%;
+  border-collapse: collapse; /* Убирает двойные границы */
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #374151; /* Темно-серый текст */
+  border-radius: 8px;
+  overflow: hidden; /* Чтобы углы были скруглены */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Легкая тень */
+}
+
+/* --- Заголовки (th) --- */
+.inner-table th {
+  text-align: left;
+  padding: 12px 16px;
+  background-color: #f3f4f6; /* Светло-серый фон шапки */
+  color: #4b5563;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase; /* Заголовки капсом */
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* --- Ячейки (td) --- */
+.inner-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+}
+
+/* --- Эффекты --- */
+.inner-table tbody tr {
+  transition: background-color 0.2s;
+}
+
+/* Подсветка строки при наведении */
+.inner-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* Убираем границу у последней строки, чтобы было красиво */
+.inner-table tbody tr:last-child td {
+  border-bottom: none;
+}

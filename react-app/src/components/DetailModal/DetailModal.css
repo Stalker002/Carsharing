@@ -1,10 +1,10 @@
-.detail-modal__overlay {
+.detail-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: #00000080;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,7 +12,7 @@
   backdrop-filter: blur(4px);
 }
 
-.detail-modal__container {
+.detail-modal-container {
   background: #ffffff;
   border-radius: 16px; 
   width: 650px;
@@ -20,11 +20,10 @@
   max-height: 90vh; 
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
 
-.detail-modal__header {
+.detail-modal-header {
   padding: 20px 30px;
   border-bottom: 1px solid #f0f0f0;
   display: flex;
@@ -33,30 +32,28 @@
   background-color: #fff;
 }
 
-.detail-modal__title {
+.detail-modal-title {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 700;
   color: #1f1f1f;
 }
 
-.detail-modal__close {
-  background: transparent;
+.detail-modal-close {
+  background: #ffffff;
   border: none;
   font-size: 28px;
   line-height: 1;
   color: #8c8c8c;
   cursor: pointer;
-  transition: color 0.2s;
   padding: 0;
 }
 
-.detail-modal__close:hover {
+.detail-modal-close:hover {
   color: #1f1f1f;
 }
 
-/* --- Табы --- */
-.detail-modal__tabs {
+.detail-modal-tabs {
   display: flex;
   padding: 0 30px;
   background-color: #fafafa;
@@ -64,7 +61,7 @@
   gap: 24px;
 }
 
-.detail-modal__tab-btn {
+.detail-modal-tab-btn {
   background: none;
   border: none;
   padding: 16px 0;
@@ -73,19 +70,18 @@
   color: #595959;
   cursor: pointer;
   position: relative;
-  transition: all 0.2s;
 }
 
-.detail-modal__tab-btn:hover {
+.detail-modal-tab-btn:hover {
   color: #095cd9;
 }
 
-.detail-modal__tab-btn--active {
+.detail-modal-tab-btn-active {
   color: #095cd9;
   font-weight: 600;
 }
 
-.detail-modal__tab-btn--active::after {
+.detail-modal-tab-btn-active::after {
   content: "";
   position: absolute;
   bottom: -1px;
@@ -96,25 +92,25 @@
   border-radius: 2px 2px 0 0;
 }
 
-.detail-modal__body {
+.detail-modal-body {
   padding: 30px;
   overflow-y: auto;
   flex: 1; 
   background-color: #ffffff;
 }
 
-.detail-modal__grid {
+.detail-modal-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr); 
   gap: 20px 40px;
 }
 
-.detail-modal__row {
+.detail-modal-row {
   display: flex;
   flex-direction: column;
 }
 
-.detail-modal__label {
+.detail-modal-label {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -123,20 +119,20 @@
   font-weight: 600;
 }
 
-.detail-modal__value {
+.detail-modal-value {
   font-size: 15px;
   color: #262626;
   font-weight: 500;
-  word-break: break-word; /* */
+  word-break: break-word;
 }
 
-.detail-modal__table {
+.detail-modal-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
 }
 
-.detail-modal__table th {
+.detail-modal-table th {
   text-align: left;
   padding: 12px;
   background: #fafafa;
@@ -145,17 +141,17 @@
   font-weight: 600;
 }
 
-.detail-modal__table td {
+.detail-modal-table td {
   padding: 12px;
   border-bottom: 1px solid #f0f0f0;
   color: #262626;
 }
 
-.detail-modal__table tr:last-child td {
+.detail-modal-table tr:last-child td {
   border-bottom: none;
 }
 
-.detail-modal__footer {
+.detail-modal-footer {
   padding: 16px 30px;
   border-top: 1px solid #f0f0f0;
   display: flex;
@@ -163,7 +159,7 @@
   background-color: #fafafa;
 }
 
-.detail-modal__btn {
+.detail-modal-btn {
   padding: 8px 24px;
   border-radius: 8px;
   font-size: 14px;
@@ -175,6 +171,6 @@
   transition: all 0.2s;
 }
 
-.detail-modal__btn:hover {
+.detail-modal-btn:hover {
   color: #095cd9;
 }

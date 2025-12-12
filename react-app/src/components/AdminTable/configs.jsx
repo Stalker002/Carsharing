@@ -551,6 +551,69 @@ export const fieldsInsurances = [
   },
 ];
 
+export const columnsMaintenances = [
+  "id", 
+  "carId", 
+  "workType", 
+  "cost", 
+  "date",
+  "description"
+];
+
+export const headTextMaintenances = [
+  "ID", 
+  "ID Авто", 
+  "Тип работ", 
+  "Стоимость", 
+  "Дата",
+  "Описание"
+];
+
+export const fieldsMaintenances = [
+  { 
+    name: "id", 
+    label: "ID", 
+    type: "text", 
+    readOnly: true, 
+    hideOnAdd: true 
+  },
+  { 
+    name: "carId", 
+    label: "ID Автомобиля", 
+    type: "number", 
+    placeholder: "123", 
+    required: true 
+  },
+  { 
+    name: "workType", 
+    label: "Тип работ", 
+    type: "text", 
+    placeholder: "Замена масла", 
+    required: true 
+  },
+  { 
+    name: "description", 
+    label: "Описание", 
+    type: "textarea",
+    placeholder: "Детали выполненных работ...", 
+    required: true 
+  },
+  { 
+    name: "cost", 
+    label: "Стоимость (BYN)", 
+    type: "number", 
+    step: "0.01",
+    placeholder: "150.00", 
+    required: true 
+  },
+  { 
+    name: "date", 
+    label: "Дата проведения", 
+    type: "date",
+    required: true 
+  }
+];
+
 export const columnsPayments = ["id", "billId", "sum", "method", "date"];
 export const headTextPayments = [
   "ID",

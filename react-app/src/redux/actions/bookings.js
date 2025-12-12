@@ -45,8 +45,16 @@ export const getBookings = (page = 1) => {
           page,
         })
       );
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка бронирования";
+
       dispatch(getBookingsFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -74,8 +82,16 @@ export const getMyBookings = (page = 1) => {
           page,
         })
       );
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка бронирования";
+
       dispatch(getMyBookingsFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -88,8 +104,16 @@ export const getInfoBookings = (id) => {
       const response = await api.bookings.getBookingInfo(id);
 
       dispatch(getInfoBookingSuccess(response.data));
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка бронирования";
+
       dispatch(getInfoBookingFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
@@ -108,7 +132,9 @@ export const createBooking = (data) => {
         error.response?.data?.message ||
         error.message ||
         "Неизвестная ошибка бронирования";
+
       dispatch(createBookingFailed(error));
+
       return { success: false, message: errorMessage };
     }
   };
@@ -142,8 +168,16 @@ export const deleteBooking = (id) => {
       const response = await api.bookings.deleteBooking(id);
 
       dispatch(deleteBookingSuccess(response.data));
+      return { success: true, data: response.data };
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка бронирования";
+
       dispatch(deleteBookingFailed(error));
+
+      return { success: false, message: errorMessage };
     }
   };
 };
