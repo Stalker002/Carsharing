@@ -81,6 +81,7 @@ public class Program
         builder.Services.AddScoped<IUsersService, UsersService>();
         builder.Services.AddScoped<IUsersRepository, UsersRepository>();
         builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+        builder.Services.AddScoped<IImageService, ImageService>();
 
         builder.Services.AddApiAuthentication(builder.Configuration);
 

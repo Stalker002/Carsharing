@@ -16,9 +16,7 @@ public interface ICarsService
     Task<List<Car>> GetPagedCarsByCategoryIds(List<int> categoryIds, int page, int limit);
     Task<int> GetCountByCategory(List<int> categoryIds);
     Task<int> CreateCar(Car car);
-
-    Task<int> UpdateCar(int id, int? statusId, int? tariffId, int? categoryId, int? specificationId,
-        string? location, decimal? fuelLevel, string? imagePath);
-
+    Task<(int? Id, string Error)> CreateCarFullAsync(CarsCreateRequest request);
+    Task<(bool IsSuccess, string Error)> UpdateCarFullAsync(int id, CarUpdateDto request);
     Task<int> DeleteCar(int id);
 }
