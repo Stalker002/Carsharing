@@ -56,6 +56,16 @@ public class ClientsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("ByUserId/{userId:int}")]
+    [Authorize]
+    public async Task<ActionResult<List<ClientsResponse>>> GetClientByUserId(int userId)
+    {
+        var clients = await _clientsService.GetClientByUserId(userId);
+        var response = clients.Select(cl =>
+            new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email));
+        return Ok(response);
+    }
+
     [HttpGet("My")]
     [Authorize]
     public async Task<ActionResult<List<ClientsResponse>>> GetClientByUserId()

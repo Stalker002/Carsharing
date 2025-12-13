@@ -37,7 +37,7 @@ public class CarsController : ControllerBase
     {
         var carsWithInfo = await _carsService.GetCarWithInfo(id);
         var response = carsWithInfo.Select(c => new CarWithInfoDto(c.Id, c.StatusName, c.PricePerMinute, c.PricePerKm,
-            c.PricePerDay, c.CategoryName, c.FuelType, c.Model, c.Transmission, c.Year, c.StateNumber, c.MaxFuel, c.Location, c.FuelLevel, c.ImagePath));
+            c.PricePerDay, c.CategoryName, c.FuelType, c.Brand, c.Model, c.Transmission, c.Year, c.StateNumber, c.MaxFuel, c.Location, c.FuelLevel, c.ImagePath));
 
         return Ok(response);
     }
@@ -47,7 +47,7 @@ public class CarsController : ControllerBase
     {
         var carsWithInfo = await _carsService.GetCarWithInfoAdmin(id);
         var response = carsWithInfo.Select(c => new CarWithInfoAdminDto(c.Id, c.StatusName, c.CategoryName,
-            c.Transmission, c.Model, c.Year, c.Location, c.VinNumber, c.StateNumber, c.FuelType, c.FuelLevel, c.MaxFuel,
+            c.Transmission, c.Brand, c.Model, c.Year, c.Location, c.VinNumber, c.StateNumber, c.FuelType, c.FuelLevel, c.MaxFuel,
             c.FuelPerKm, c.Mileage, c.TariffName, c.PricePerMinute, c.PricePerKm, c.PricePerDay, c.Image));
 
         return Ok(response);
@@ -64,7 +64,7 @@ public class CarsController : ControllerBase
             var cars = await _carsService.GetPagedCarsByClients(page, limit);
 
             var response = cars
-                .Select(c => new CarWithMinInfoDto(c.Id, c.StatusName, c.PricePerDay, c.CategoryName, c.FuelType, c.Model, c.Transmission, c.ImagePath)).ToList();
+                .Select(c => new CarWithMinInfoDto(c.Id, c.StatusName, c.PricePerDay, c.CategoryName, c.FuelType, c.Brand, c.Model, c.Transmission, c.ImagePath)).ToList();
 
             Response.Headers.Append("x-total-count", totalCount.ToString());
 
@@ -76,7 +76,7 @@ public class CarsController : ControllerBase
             var cars = await _carsService.GetCarWithMinInfoByCategoryIds(ids, page, limit);
 
             var response = cars.Select(c =>
-                new CarWithMinInfoDto(c.Id, c.StatusName, c.PricePerDay, c.CategoryName, c.FuelType, c.Model, c.Transmission, c.ImagePath));
+                new CarWithMinInfoDto(c.Id, c.StatusName, c.PricePerDay, c.CategoryName, c.FuelType, c.Brand, c.Model, c.Transmission, c.ImagePath));
 
             Response.Headers.Append("x-total-count", totalCount.ToString());
 

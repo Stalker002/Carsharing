@@ -8,6 +8,7 @@ public record CarWithInfoDto(
     decimal PricePerDay,
     string CategoryName,
     string FuelType,
+    string Brand,
     string Model,
     string Transmission,
     int Year,

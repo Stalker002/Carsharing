@@ -66,7 +66,8 @@ public class CarsService : ICarsService
                             t.PricePerDay,
                             cat.Name,
                             sp.FuelType,
-                            $"{sp.Brand} {sp.Model}",
+                            sp.Brand,
+                            sp.Model,
                             sp.Transmission,
                             c.ImagePath)).ToList();
 
@@ -113,7 +114,8 @@ public class CarsService : ICarsService
                             t.PricePerDay,
                             cat.Name,
                             sp.FuelType,
-                            $"{sp.Brand} {sp.Model}",
+                            sp.Brand,
+                            sp.Model,
                             sp.Transmission,
                             sp.Year,
                             sp.StateNumber,
@@ -151,7 +153,8 @@ public class CarsService : ICarsService
                             st.Name,
                             cat.Name,
                             sp.Transmission,
-                            $"{sp.Brand} {sp.Model}",
+                            sp.Brand,
+                            sp.Model,
                             sp.Year,
                             c.Location,
                             sp.VinNumber,
@@ -198,7 +201,8 @@ public class CarsService : ICarsService
                             t.PricePerDay,
                             cat.Name,
                             sp.FuelType,
-                            $"{sp.Brand} {sp.Model}",
+                            sp.Brand,
+                            sp.Model,
                             sp.Transmission,
                             c.ImagePath)).ToList();
 

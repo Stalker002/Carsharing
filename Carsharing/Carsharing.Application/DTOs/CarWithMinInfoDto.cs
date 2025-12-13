@@ -6,6 +6,7 @@ public record CarWithMinInfoDto(
     decimal PricePerDay,
     string CategoryName,
     string FuelType,
+    string Brand,
     string Model,
     string Transmission,
     string? ImagePath);
