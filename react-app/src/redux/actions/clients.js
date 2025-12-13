@@ -6,6 +6,9 @@ import {
   deleteClientFailed,
   deleteClientStarted,
   deleteClientSuccess,
+  getClientByUserFailed,
+  getClientByUserStarted,
+  getClientByUserSuccess,
   getClientDocumentFailed,
   getClientDocumentStarted,
   getClientDocumentSuccess,
@@ -81,6 +84,28 @@ export const getMyClient = () => {
         "Неизвестная ошибка клиента";
 
       dispatch(getMyClientFailed(error));
+
+      return { success: false, message: errorMessage };
+    }
+  };
+};
+
+export const getClientByUser = (userId) => {
+  return async (dispatch) => {
+    try {
+      dispatch(getClientByUserStarted());
+
+      const response = await api.clients.getClientByUserId(userId);
+
+      dispatch(getClientByUserSuccess(response.data));
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка клиента";
+
+      dispatch(getClientByUserFailed(error));
 
       return { success: false, message: errorMessage };
     }

@@ -54,7 +54,6 @@ function Profile() {
   return (
     <div className="profile-wrapper">
       <div className="profile-card">
-        {/* ФИО */}
         <h1 className="profile-name">
           {myClient.name} {myClient.surname}
         </h1>

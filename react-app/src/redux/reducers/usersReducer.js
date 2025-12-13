@@ -76,12 +76,13 @@ export const userReducer = (state = initialState, action) => {
         isUsersLoading: true,
       };
     case GET_USERS_SUCCESS:
+      const rawUsers = action.payload.page === 1
+            ? action.payload.data
+            : [...state.users, ...action.payload.data];
+      const uniqueUsers = [...new Map(rawUsers.map(item => [item.id, item])).values()];
       return {
         ...state,
-        users:
-          action.payload.page === 1
-            ? action.payload.data
-            : [...state.users, ...action.payload.data],
+        users: uniqueUsers,
         isUsersLoading: false,
       };
     case GET_USERS_FAILED:

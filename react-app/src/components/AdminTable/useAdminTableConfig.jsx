@@ -30,6 +30,7 @@ import {
   createClient,
   updateClient,
   deleteClient,
+  getClientByUser,
 } from "../../redux/actions/clients";
 import {
   getFines,
@@ -97,10 +98,29 @@ import {
   headTextMaintenances,
   fieldsMaintenances,
 } from "./configs";
-import { createMaintenance, deleteMaintenance, getMaintenances, updateMaintenance } from "../../redux/actions/maintenance";
+import {
+  createMaintenance,
+  deleteMaintenance,
+  getMaintenances,
+  updateMaintenance,
+} from "../../redux/actions/maintenance";
+
+export const STATUS_FILTERS = {
+    cars: [
+      "Доступна",
+      "Недоступна",
+      "На обслуживании",
+      "В ремонте",
+    ],
+    promocodes: ["Активен", "Истёк"],
+    bookings: ["Активно", "Завершено", "Отменено"],
+    bills: ["Не оплачен", "Частично оплачен", "Оплачен", "Отменен"],
+    insurances: ["Активно", "Завершено", "Отменено"],
+    trips: ["Ожидание начала", "В пути", "Завершена", "Отменена системой", "Требуется оплата",],
+    fines: ["Начислен", "Ожидает оплаты", "Оплачен"],
+  };
 
 export const useAdminTableConfig = (activeTab) => {
-  // 1. Селекторы данных
   const users = useSelector((state) => state.users?.users || []);
   const totalUsers = useSelector((state) => state.users?.usersTotal || 0);
 
@@ -121,7 +141,9 @@ export const useAdminTableConfig = (activeTab) => {
   const fines = useSelector((state) => state.fines?.fines || []);
   const totalFines = useSelector((state) => state.fines?.finesTotal || 0);
 
-  const maintenances = useSelector((state) => state.maintenances?.maintenances || []);
+  const maintenances = useSelector(
+    (state) => state.maintenances?.maintenances || []
+  );
 
   const insurances = useSelector((state) => state.insurances?.insurances || []);
   const totalInsurances = useSelector(
@@ -215,12 +237,13 @@ export const useAdminTableConfig = (activeTab) => {
       addTitle: "Добавление авто (Full)",
       updateAction: (id, data) =>
         updateCar(id, {
+          ...data,
           statusId: Number(data.statusId),
           tariffId: Number(data.tariffId),
           categoryId: Number(data.categoryId),
-          specificationId: Number(data.specificationId),
-          location: data.location,
           fuelLevel: Number(data.fuelLevel),
+          tariffName: data.tariffName || data.name,
+          image: data.image,
         }),
       editTitle: "Редактирование параметров",
       deleteAction: (id) => deleteCar(id),
@@ -296,23 +319,25 @@ export const useAdminTableConfig = (activeTab) => {
       editTitle: "Редактирование страховки",
       deleteAction: (id) => deleteInsurance(id),
     },
-     maintenance: {
+    maintenance: {
       data: maintenances,
       columns: columnsMaintenances,
       headText: headTextMaintenances,
       fields: fieldsMaintenances,
       action: getMaintenances,
-      addAction: (data) => createMaintenance({
+      addAction: (data) =>
+        createMaintenance({
           ...data,
           carId: Number(data.carId),
           cost: Number(data.cost),
-      }),
+        }),
       addTitle: "Запись на обслуживание",
-      updateAction: (id, data) => updateMaintenance(id, {
+      updateAction: (id, data) =>
+        updateMaintenance(id, {
           ...data,
           carId: Number(data.carId),
-          cost: Number(data.cost)
-      }),
+          cost: Number(data.cost),
+        }),
       editTitle: "Редактирование записи ТО",
       deleteAction: (id) => deleteMaintenance(id),
     },

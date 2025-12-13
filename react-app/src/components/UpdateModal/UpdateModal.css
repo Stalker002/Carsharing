@@ -15,7 +15,7 @@
 .update-modal-container {
   background: #ffffff;
   border-radius: 16px;
-  width: 650px;
+  min-width: 35%;
   max-width: 95%;
   max-height: 90vh;
   display: flex;
@@ -76,12 +76,12 @@
   color: #095cd9;
 }
 
-.update-modal-tab-btn--active {
+.update-modal-tab-btn-active {
   color: #095cd9;
   font-weight: 600;
 }
 
-.update-modal-tab-btn--active::after {
+.update-modal-tab-btn-active::after {
   content: "";
   position: absolute;
   bottom: -1px;
@@ -93,7 +93,7 @@
 }
 
 .update-modal-body {
-  padding: 30px;
+  padding: 10px 30px 30px;
   overflow-y: auto;
   flex: 1;
   background-color: #fff;
@@ -116,9 +116,9 @@
 
 .update-group label {
   display: block;
-  margin-bottom: 6px;
+  margin: 6px;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 14px;
   color: #8c8c8c;
 }
 

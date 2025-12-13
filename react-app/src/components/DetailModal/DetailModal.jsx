@@ -1,9 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./DetailModal.css";
 
-const DetailModal = ({ title, data, fields, onClose, additionalTabs = [] }) => {
+const DetailModal = ({
+  title,
+  data,
+  fields,
+  onClose,
+  additionalTabs = [],
+  onTabChange,
+}) => {
   const [activeTab, setActiveTab] = useState("main");
 
+  useEffect(() => {
+    setActiveTab("main");
+  }, [data]);
+
+  const handleTabClick = (index) => {
+    setActiveTab(index);
+    if (onTabChange) {
+      onTabChange(index);
+    }
+  };
   if (!data) return null;
 
   return (
@@ -27,14 +44,13 @@ const DetailModal = ({ title, data, fields, onClose, additionalTabs = [] }) => {
           >
             Основное
           </button>
-
           {additionalTabs.map((tab, index) => (
             <button
               key={index}
               className={`detail-modal-tab-btn ${
                 activeTab === index ? "detail-modal-tab-btn-active" : ""
               }`}
-              onClick={() => setActiveTab(index)}
+              onClick={() => handleTabClick(index)}
             >
               {tab.title}
             </button>
@@ -52,7 +68,29 @@ const DetailModal = ({ title, data, fields, onClose, additionalTabs = [] }) => {
                     data[fieldKey] !== undefined
                       ? data[fieldKey]
                       : data[field.name];
-
+                  if (field.type === "file") {
+                    return (
+                      <div
+                        key={field.name}
+                        className="detail-modal-row"
+                        style={{
+                          gridColumn: "1 / -1",
+                        }}
+                      >
+                        <span className="detail-modal-label">
+                          {field.label}
+                        </span>
+                        {value ? (
+                          <img
+                            src={`http://localhost:5078${value}`}
+                            alt={field.label}
+                          />
+                        ) : (
+                          <span className="detail-modal-value">—</span>
+                        )}
+                      </div>
+                    );
+                  }
                   let displayValue = value;
 
                   if (field.type === "select") {
@@ -61,7 +99,6 @@ const DetailModal = ({ title, data, fields, onClose, additionalTabs = [] }) => {
                     );
                     if (option) displayValue = option.label;
                   }
-
                   if (field.type === "datetime-local" && value) {
                     displayValue = new Date(value).toLocaleString("ru-RU", {
                       day: "numeric",
@@ -71,14 +108,12 @@ const DetailModal = ({ title, data, fields, onClose, additionalTabs = [] }) => {
                       minute: "2-digit",
                     });
                   }
-
                   if (
                     field.type === "boolean" ||
                     (field.options && field.options[0]?.value === true)
                   ) {
                     displayValue = value ? "Да" : "Нет";
                   }
-
                   return (
                     <div key={field.name} className="detail-modal-row">
                       <span className="detail-modal-label">{field.label}</span>
@@ -94,14 +129,12 @@ const DetailModal = ({ title, data, fields, onClose, additionalTabs = [] }) => {
                 })}
             </div>
           )}
-
           {typeof activeTab === "number" && additionalTabs[activeTab] && (
             <div className="detail-modal-tab-content">
               {additionalTabs[activeTab].content}
             </div>
           )}
         </div>
-
         <div className="detail-modal-footer">
           <button className="detail-modal-btn" onClick={onClose}>
             Закрыть

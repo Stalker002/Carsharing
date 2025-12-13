@@ -164,26 +164,18 @@ export const fieldsCars = [
   },
   {
     name: "statusId",
-    viewName: "statusName", // 🔥 Берем значение из statusName для просмотра
+    viewName: "statusName",
     label: "Статус",
     type: "select",
-    options: [
-      { value: "1", label: "Доступна" },
-      { value: "2", label: "В аренде" },
-      { value: "3", label: "На обслуживании" },
-    ],
+    options: [],
     required: true,
   },
   {
     name: "categoryId",
-    viewName: "categoryName", // 🔥 Берем значение из categoryName для просмотра
+    viewName: "categoryName",
     label: "Категория",
     type: "select",
-    options: [
-      { value: "1", label: "Эконом" },
-      { value: "2", label: "Комфорт" },
-      { value: "3", label: "Бизнес" },
-    ],
+    options: [],
     required: true,
   },
   {
@@ -192,7 +184,6 @@ export const fieldsCars = [
     type: "text",
     placeholder: "Automatic",
     required: true,
-    hideOnEdit: true,
   },
   {
     name: "brand",
@@ -200,8 +191,6 @@ export const fieldsCars = [
     type: "text",
     placeholder: "BMW",
     required: true,
-    hideOnEdit: true,
-    hideOnDetail: true
   },
   {
     name: "model",
@@ -209,7 +198,6 @@ export const fieldsCars = [
     type: "text",
     placeholder: "X5",
     required: true,
-    hideOnEdit: true,
   },
   {
     name: "year",
@@ -217,7 +205,6 @@ export const fieldsCars = [
     type: "number",
     placeholder: "2023",
     required: true,
-    hideOnEdit: true,
   },
   {
     name: "location",
@@ -233,7 +220,6 @@ export const fieldsCars = [
     type: "text",
     placeholder: "Petrol",
     required: true,
-    hideOnEdit: true,
   },
   {
     name: "fuelLevel",
@@ -247,21 +233,18 @@ export const fieldsCars = [
     label: "Бак (литров)",
     type: "number",
     required: true,
-    hideOnEdit: true,
   },
   {
     name: "fuelPerKm",
     label: "Расход (л/км)",
     type: "number",
     required: true,
-    hideOnEdit: true,
   },
   {
     name: "vinNumber",
     label: "VIN номер",
     type: "text",
     required: true,
-    hideOnEdit: true,
   },
   {
     name: "stateNumber",
@@ -269,22 +252,19 @@ export const fieldsCars = [
     type: "text",
     placeholder: "1234 AB-7",
     required: true,
-    hideOnEdit: true,
   },
   {
     name: "mileage",
     label: "Пробег (км)",
     type: "number",
     required: true,
-    hideOnEdit: true,
   },
   {
-    name: "name",
+    name: "tariffName",
     label: "Название тарифа",
     type: "text",
     placeholder: "Базовый",
     required: true,
-    hideOnEdit: true,
     hideOnDetail: true 
   },
   {
@@ -292,28 +272,25 @@ export const fieldsCars = [
     label: "Цена/мин",
     type: "number",
     required: true,
-    hideOnEdit: true,
   },
   {
     name: "pricePerKm",
     label: "Цена/км",
     type: "number",
     required: true,
-    hideOnEdit: true,
   },
   {
     name: "pricePerDay",
     label: "Цена/сутки",
     type: "number",
     required: true,
-    hideOnEdit: true,
   },
 
   {
     name: "image",
     label: "Фото автомобиля",
     type: "file",
-    hideOnEdit: true, // 🔥 Скрываем поле загрузки файла в деталях
+    required: false
   },
 ];
 
@@ -342,32 +319,13 @@ export const fieldsClients = [
     readOnly: true,
     hideOnAdd: true,
   },
-  // ID Пользователя нужен для Связи при обновлении, но при создании он генерируется сам
   {
     name: "userId",
     label: "ID Аккаунта (User)",
     type: "number",
-    readOnly: true, // Не даем менять привязку к юзеру вручную
+    readOnly: true,
     hideOnAdd: true,
   },
-  // --- Поля для регистрации (ТОЛЬКО Create) ---
-  {
-    name: "login",
-    label: "Логин (для входа)",
-    type: "text",
-    placeholder: "client_login",
-    required: true,
-    hideOnEdit: true, // Скрываем при редактировании
-  },
-  {
-    name: "password",
-    label: "Пароль",
-    type: "password", // Можно password, но админу иногда удобно видеть, что создает
-    placeholder: "secret",
-    required: true,
-    hideOnEdit: true,
-  },
-  // --- Основные поля ---
   {
     name: "name",
     label: "Имя",
@@ -513,6 +471,10 @@ export const fieldsInsurances = [
     name: "type",
     label: "Тип страховки",
     type: "text",
+    options: [
+      { value: "ОСАГО", label: "ОСАГО" },
+      { value: "КАСКО", label: "КАСКО" },
+    ],
     placeholder: "ОСАГО / КАСКО",
     required: true,
   },

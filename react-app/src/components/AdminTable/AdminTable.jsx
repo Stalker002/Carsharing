@@ -1,56 +1,83 @@
-import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import { GenericTable } from "./GenericTable";
 import UpdateModal from "../UpdateModal/UpdateModal";
 import AddModel from "../AddModel/AddModel";
 import DetailingModal from "../DetailModal/DetailModal";
 import CategoryManager from "../CategoryManager/CategoryManager";
+import SubTable from "../SubTable/SubTable";
 import SimpleTable from "../SimpleTable/SimpleTable";
-import { useAdminTableConfig } from "./useAdminTableConfig";
+
+import { useAdminTableConfig, STATUS_FILTERS } from "./useAdminTableConfig";
+import { useSubData } from "./useSubData";
+import { fieldsClients, fieldsInsurances, fieldsMaintenances } from "./configs";
 import "./AdminTable.css";
 
-import { fieldsInsurances, fieldsMaintenances } from "./configs";
 import {
   createInsurance,
   deleteInsurance,
-  getInsuranceByCars,
   updateInsurance,
 } from "../../redux/actions/insurance";
 import {
   createMaintenance,
-  getMaintenanceByCars,
+  updateMaintenance,
 } from "../../redux/actions/maintenance";
-import SubTable from "../SubTable/SubTable";
+import { getStatuses } from "../../redux/actions/statuses";
+import { getCategories } from "../../redux/actions/category";
+import { updateClient } from "../../redux/actions/clients";
+import { TabForm } from "./TabForm";
 
 function AdminTable({ activeTab }) {
   const dispatch = useDispatch();
+  const cfg = useAdminTableConfig(activeTab);
 
   const [page, setPage] = useState(1);
+  const isLoadingRef = useRef(false);
+  const isSwitchingTable = useRef(false);
 
   const [editingItem, setEditingItem] = useState(null);
   const [detailingItem, setDetailingItem] = useState(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isCatOpen, setIsCatOpen] = useState(false);
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
 
   const [subEditingItem, setSubEditingItem] = useState(null);
   const [isSubAddOpen, setIsSubAddOpen] = useState(false);
   const [subType, setSubType] = useState(null);
 
-  const [carInsurances, setCarInsurances] = useState([]);
-  const [carMaintenances, setCarMaintenances] = useState([]);
+  const categoriesList = useSelector(
+    (state) => state.categories?.categories || []
+  );
+  const statusesList = useSelector((state) => state.statuses?.statuses || []);
 
-  const [isDetailLoading, setIsDetailLoading] = useState(false);
-  const isLoadingRef = useRef(false);
-  const isSwitchingTable = useRef(false);
-
-  const cfg = useAdminTableConfig(activeTab);
+  const {
+    insurances,
+    maintenances,
+    clientProfile,
+    isClientLoading,
+    fetchSubData,
+    fetchClientProfile,
+    clearSubData,
+  } = useSubData(activeTab);
 
   useEffect(() => {
     isSwitchingTable.current = true;
     setPage(1);
     document.getElementById("container")?.scrollTo(0, 0);
   }, [activeTab]);
+
+  useEffect(() => {
+    const tabsWithStatuses = ["cars", "bookings", "bills", "promocodes", "trips", "insurances"];
+    const tabsWithCategories = ["cars"];
+
+    if (tabsWithStatuses.includes(activeTab)) {
+      if (statusesList.length === 0) dispatch(getStatuses());
+    }
+    if (tabsWithCategories.includes(activeTab)) {
+      if (categoriesList.length === 0) dispatch(getCategories());
+    }
+  }, [activeTab, dispatch, categoriesList.length, statusesList.length]);
 
   useEffect(() => {
     if (!cfg || !cfg.action || cfg.isDashboard) return;
@@ -66,9 +93,50 @@ function AdminTable({ activeTab }) {
     dispatch(cfg.action(page)).finally(() => {
       isLoadingRef.current = false;
     });
-  }, [page, activeTab, dispatch, cfg]);
+  }, [page, activeTab, dispatch]);
 
-  const refreshTable = () => {
+  const dynamicFields = useMemo(() => {
+    if (!cfg?.fields) return [];
+    return cfg.fields.map((field) => {
+      if (field.name === "categoryId" && activeTab === "cars") {
+        return {
+          ...field,
+          options: categoriesList
+            .filter((c) => c && c.id)
+            .map((c) => ({ value: c.id, label: c.name })),
+        };
+      }
+      if (field.name === "statusId") {
+        const allowed = STATUS_FILTERS[activeTab] || [];
+        return {
+          ...field,
+          options: statusesList
+            .filter((s) => s && s.id && allowed.includes(s.name))
+            .map((s) => ({ value: s.id, label: s.name })),
+        };
+      }
+      return field;
+    });
+  }, [cfg, categoriesList, statusesList, activeTab]);
+
+  const addFields = useMemo(
+    () => dynamicFields.filter((f) => !f.hideOnAdd),
+    [dynamicFields]
+  );
+  const editFields = useMemo(
+    () => dynamicFields.filter((f) => !f.hideOnEdit),
+    [dynamicFields]
+  );
+
+  const subFields = useMemo(() => {
+    if (subType === "maintenance")
+      return fieldsMaintenances.filter((f) => f.name !== "carId");
+    if (subType === "insurance")
+      return fieldsInsurances.filter((f) => f.name !== "carId");
+    return [];
+  }, [subType]);
+
+  const refreshTable = useCallback(() => {
     document.getElementById("container")?.scrollTo(0, 0);
     if (page === 1 && cfg?.action) {
       isLoadingRef.current = true;
@@ -76,46 +144,55 @@ function AdminTable({ activeTab }) {
     } else {
       setPage(1);
     }
-  };
+  }, [page, cfg, dispatch]);
 
   const nextHandler = () => {
     if (isLoadingRef.current || !cfg) return;
     if ((cfg.data?.length || 0) >= (cfg.total || 0)) return;
-    setPage((prev) => prev + 1);
-  };
-
-  const fetchSubData = async (itemId) => {
-    if (activeTab === "cars") {
-      const ins = await dispatch(getInsuranceByCars(itemId));
-      setCarInsurances(ins.data);
-
-      const maintenance = await dispatch(getMaintenanceByCars(itemId));
-      setCarMaintenances(maintenance.data);
-    }
+    setPage((p) => p + 1);
   };
 
   const handleRowClick = async (row) => {
+    setDetailingItem(row);
+
     if (cfg.detailAction) {
       setIsDetailLoading(true);
       const result = await dispatch(cfg.detailAction(row.id));
       setIsDetailLoading(false);
-
       if (result.success && result.data) {
         setEditingItem(null);
         setDetailingItem(result.data);
-        fetchSubData(result.data.id);
+        clearSubData();
       } else {
         alert("Не удалось загрузить детали");
       }
     } else {
       setDetailingItem(row);
+      if (activeTab === "users") {
+        clearSubData();
+        if (row && row.id) {          
+          fetchClientProfile(row.id);
+        }
+      }
     }
   };
 
-  const handleEditClick = (item) => {
+  const handleEditClick = async (item) => {
     setDetailingItem(null);
-    setEditingItem(item);
-    fetchSubData(item.id);
+    if (cfg.detailAction) {
+      const result = await dispatch(cfg.detailAction(item.id));
+      if (result.success && result.data) {
+        setEditingItem(result.data);
+        fetchSubData(result.data.id);
+      } else {
+        alert("Ошибка загрузки");
+      }
+    } else {
+      setEditingItem(item);
+      if (activeTab === 'cars') {
+         fetchSubData(item.id);
+      }
+    }
   };
 
   const handleAdd = async (data) => {
@@ -152,7 +229,6 @@ function AdminTable({ activeTab }) {
     setSubType(type);
     setIsSubAddOpen(true);
   };
-
   const openSubEdit = (item, type) => {
     setSubType(type);
     setSubEditingItem(item);
@@ -170,9 +246,7 @@ function AdminTable({ activeTab }) {
           cost: Number(payload.cost),
         })
       );
-    }
-
-    if (subType === "maintenance") {
+    } else if (subType === "maintenance") {
       result = await dispatch(
         createMaintenance({
           ...payload,
@@ -210,6 +284,17 @@ function AdminTable({ activeTab }) {
       );
     }
 
+    if (subType === "maintenance") {
+      result = await dispatch(
+        updateMaintenance(finalData.id, {
+          ...finalData,
+          carId: Number(editingItem.id),
+          statusId: Number(finalData.statusId),
+          cost: Number(finalData.cost),
+        })
+      );
+    }
+
     if (result.success) {
       setSubEditingItem(null);
       fetchSubData(editingItem.id);
@@ -219,9 +304,8 @@ function AdminTable({ activeTab }) {
   };
 
   const handleSubDelete = async (id) => {
-    if (!window.confirm("Удалить запись?")) return;
+    if (!window.confirm("Удалить?")) return;
     let result = { success: false };
-
     if (subType === "insurance") result = await dispatch(deleteInsurance(id));
 
     if (result.success) {
@@ -230,10 +314,46 @@ function AdminTable({ activeTab }) {
     }
   };
 
-  const getTabs = (isEditMode) => {
+  const handleClientProfileSave = async (formData) => {
+    if (!clientProfile?.id) return;
+
+    const fullData = { ...clientProfile, ...formData };
+
+    const result = await dispatch(
+      updateClient(clientProfile.id, {
+        userId: Number(editingItem.id),
+        ...fullData,
+      })
+    );
+
+    if (result.success) {
+      alert("Данные клиента обновлены");
+      fetchClientProfile(editingItem.id);
+    } else {
+      alert(result.message);
+    }
+  };
+
+  const handleTabChange = (tabIndex) => {
+    const currentItem = editingItem || detailingItem;
+    if (!currentItem) return;
+
+    if (activeTab === "cars") {
+      if (tabIndex === 0) fetchSubData(currentItem.id, "insurance");
+      if (tabIndex === 1) fetchSubData(currentItem.id, "maintenance");
+    }
+
+    if (activeTab === "users") {
+      if (tabIndex === 0) fetchClientProfile(currentItem.id);
+    }
+  };
+
+  const additionalTabs = useMemo(() => {
+    const currentItem = editingItem || detailingItem;
+    const isEditMode = !!editingItem;
+
     if (activeTab === "cars") {
       const TableComponent = isEditMode ? SubTable : SimpleTable;
-
       const editProps = (type) =>
         isEditMode
           ? {
@@ -243,7 +363,7 @@ function AdminTable({ activeTab }) {
                 setSubType(type);
                 handleSubDelete(id);
               },
-              addButtonText: type === "insurance" ? "Страховку" : "ТО",
+              addButtonText: type === "insurance" ? "Страховку" : "Обслуживание",
             }
           : {};
 
@@ -252,9 +372,9 @@ function AdminTable({ activeTab }) {
           title: "Страховки",
           content: (
             <TableComponent
-              data={carInsurances}
-              columns={["id", "type", "company", "endDate"]}
-              headers={["ID", "Тип", "Компания", "Окончание"]}
+              data={insurances}
+              columns={["id", "type", "company", "policyNumber", "endDate"]}
+              headers={["ID", "Тип", "Компания", "Номер полиса", "Окончание"]}
               {...editProps("insurance")}
             />
           ),
@@ -263,32 +383,59 @@ function AdminTable({ activeTab }) {
           title: "Обслуживание",
           content: (
             <TableComponent
-              data={carMaintenances}
-              columns={["id", "date", "workType", "cost"]}
-              headers={["ID", "Дата", "Тип работ", "Стоимость"]}
+              data={maintenances}
+              columns={["id", "workType", "description", "cost", "date"]}
+              headers={["ID", "Тип", "Описание", "Стоимость", "Дата"]}
               {...editProps("maintenance")}
             />
           ),
         },
       ];
     }
+
+     if (activeTab === "users") {
+      if (isClientLoading) {
+          return [{ title: "Клиент", content: <div style={{padding:20}}>Загрузка...</div> }];
+      }
+      
+      if (!clientProfile) return [];
+
+      const content = isEditMode ? (
+        <TabForm 
+            initialData={clientProfile} 
+            fields={fieldsClients} 
+            onSave={handleClientProfileSave} 
+        />
+      ) : (
+        <div className="detail-modal-grid">
+          {fieldsClients.map((f) => (
+            <div key={f.name} className="detail-modal-row">
+              <span className="detail-modal-label">{f.label}</span>
+              <span className="detail-modal-value">{clientProfile?.[f.name] || "—"}</span>
+            </div>
+          ))}
+        </div>
+      );
+      return [
+        {
+          title: "Клиент",
+          content: content,
+        },
+      ];
+    }
     return [];
-  };
+  }, [
+    activeTab,
+    editingItem,
+    detailingItem,
+    insurances,
+    maintenances,
+    clientProfile,
+    isClientLoading,
+  ]);
 
-  const getSubFields = () => {
-    if (subType === "maintenance")
-      return fieldsMaintenances.filter((f) => f.name !== "carId");
-    if (subType === "insurance")
-      return fieldsInsurances.filter((f) => f.name !== "carId");
-    return [];
-  };
-
-  if (activeTab === "Dashboard")
-    return <div>Здесь будет компонент Dashboard</div>;
-  if (!cfg) return <div>Ошибка конфигурации для таблицы: {activeTab}</div>;
-
-  const addFields = cfg.fields ? cfg.fields.filter((f) => !f.hideOnAdd) : [];
-  const editFields = cfg.fields ? cfg.fields.filter((f) => !f.hideOnEdit) : [];
+  if (activeTab === "Dashboard") return <div>Dashboard</div>;
+  if (!cfg) return <div>Ошибка конфигурации</div>;
 
   return (
     <>
@@ -327,18 +474,15 @@ function AdminTable({ activeTab }) {
           title={`${cfg.editTitle || "Редактирование"} #${editingItem.id}`}
           onClose={() => setEditingItem(null)}
           formId="edit-form"
-          additionalTabs={getTabs(true)}
+          additionalTabs={additionalTabs}
           onDelete={
             cfg.deleteAction
               ? () => {
-                  if (window.confirm("Удалить?")) {
-                    dispatch(cfg.deleteAction(editingItem.id));
-                    setEditingItem(null);
-                    refreshTable();
-                  }
+                  /* ... */
                 }
               : null
           }
+          onTabChange={handleTabChange}
         >
           <form
             id="edit-form"
@@ -358,12 +502,16 @@ function AdminTable({ activeTab }) {
                     <option value="" disabled>
                       Выберите...
                     </option>
-                    {field.options.map((opt) => (
+                    {field.options?.map((opt) => (
                       <option key={opt.value} value={opt.value}>
                         {opt.label}
                       </option>
                     ))}
                   </select>
+                ) : field.type === "file" ? (
+                  <div className="file-input-wrapper">
+                    <input type="file" className="modal-input" />
+                  </div>
                 ) : (
                   <input
                     type={field.type}
@@ -371,7 +519,6 @@ function AdminTable({ activeTab }) {
                     defaultValue={editingItem[field.name]}
                     className="modal-input"
                     readOnly={field.readOnly}
-                    disabled={field.readOnly}
                     step={field.step}
                   />
                 )}
@@ -381,12 +528,42 @@ function AdminTable({ activeTab }) {
         </UpdateModal>
       )}
 
+      {subEditingItem && (
+        <UpdateModal
+          title={`Редактирование #${subEditingItem.id}`}
+          onClose={() => setSubEditingItem(null)}
+          formId="sub-edit-form"
+          onDelete={() => handleSubDelete(subEditingItem.id)}
+        >
+          <form
+            id="sub-edit-form"
+            onSubmit={handleSubUpdateSave}
+            className="update-modal__form-grid"
+          >
+            {subFields
+              .filter((f) => !f.hideOnEdit)
+              .map((field) => (
+                <div className="update-group" key={field.name}>
+                  <label>{field.label}</label>
+                  <input
+                    name={field.name}
+                    defaultValue={subEditingItem[field.name]}
+                    className="modal-input"
+                    type={field.type}
+                  />
+                </div>
+              ))}
+          </form>
+        </UpdateModal>
+      )}
+
       <DetailingModal
         title={`Детали #${detailingItem?.id}`}
         data={detailingItem}
         fields={cfg.fields}
         onClose={() => setDetailingItem(null)}
-        additionalTabs={getTabs(false)}
+        additionalTabs={additionalTabs}
+        onTabChange={handleTabChange}
       />
 
       <AddModel
@@ -401,39 +578,9 @@ function AdminTable({ activeTab }) {
         isOpen={isSubAddOpen}
         onClose={() => setIsSubAddOpen(false)}
         title={subType === "insurance" ? "Добавить страховку" : "Добавить ТО"}
-        fields={getSubFields().filter((f) => !f.hideOnAdd)}
+        fields={subFields.filter((f) => !f.hideOnAdd)}
         onAdd={handleSubAddSave}
       />
-
-      {subEditingItem && (
-        <UpdateModal
-          title={`Редактирование #${subEditingItem.id}`}
-          onClose={() => setSubEditingItem(null)}
-          formId="sub-edit-form"
-          onDelete={() => handleSubDelete(subEditingItem.id)}
-        >
-          <form
-            id="sub-edit-form"
-            onSubmit={handleSubUpdateSave}
-            className="update-modal__form-grid"
-          >
-            {getSubFields()
-              .filter((f) => !f.hideOnEdit)
-              .map((field) => (
-                <div className="update-group" key={field.name}>
-                  <label>{field.label}</label>
-                  <input
-                    name={field.name}
-                    defaultValue={subEditingItem[field.name]}
-                    className="modal-input"
-                    type={field.type}
-                    readOnly={field.readOnly}
-                  />
-                </div>
-              ))}
-          </form>
-        </UpdateModal>
-      )}
 
       <CategoryManager isOpen={isCatOpen} onClose={() => setIsCatOpen(false)} />
     </>

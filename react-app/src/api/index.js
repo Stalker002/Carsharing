@@ -3,7 +3,7 @@ import { createBooking, deleteBooking, getBookingInfo, getBookings, getMyBooking
 import { createCar, deleteCar, getCarByCategory, getCarInfo, getCarInfoAdmin, getCars, updateCar } from "./cars";
 import { createCategory, deleteCategory, getCategory, updateCategory } from "./category";
 import { createClientDocument, deleteClientDocument, getClientDocuments, updateClientDocument } from "./clientDocuments";
-import { createClient, deleteClient, getClientDocument, getClients, getMyClient, getMyDocuments, updateClient } from "./clients";
+import { createClient, deleteClient, getClientByUserId, getClientDocument, getClients, getMyClient, getMyDocuments, updateClient } from "./clients";
 import { createFine, deleteFine, getFines, getFinesByTrip, updateFine } from "./fines";
 import { createInsurance, deleteInsurance, getActiveInsuranceByCar, getInsuranceByCar, getInsurances, updateInsurance } from "./insurances";
 import { createMaintenance, deleteMaintenance, getMaintenanceByCar, getMaintenanceByDateRange, getMaintenances, updateMaintenance } from "./maintenances";
@@ -58,6 +58,7 @@ export const api = {
         getMyDocuments,
         getClientDocument,
         getMyClient,
+        getClientByUserId,
         createClient,
         updateClient,
         deleteClient

@@ -34,18 +34,17 @@ const UpdateModal = ({
         <div className="update-modal-tabs">
           <button
             className={`update-modal-tab-btn ${
-              activeTab === "main" ? "update-modal-tab-btn--active" : ""
+              activeTab === "main" ? "update-modal-tab-btn-active" : ""
             }`}
             onClick={() => setActiveTab("main")}
           >
             Основное
           </button>
-
           {additionalTabs.map((tab, index) => (
             <button
               key={index}
               className={`update-modal-tab-btn ${
-                activeTab === index ? "update-modal-tab-btn--active" : ""
+                activeTab === index ? "update-modal-tab-btn-active" : ""
               }`}
               onClick={() => setActiveTab(index)}
             >

@@ -65,7 +65,7 @@
     text-align: left;
     font-size: 15px;
     padding: 12px 14px;
-    color: #c0392b !important;
+    color: #c0392b;
      border-radius: 8px;
     transition: 0.25s;
     display: flex;
@@ -79,5 +79,5 @@
 
 .logout:hover {
     background: #ff1900;
-    color: #ffffff !important;
+    color: #ffffff;
 }

@@ -23,6 +23,13 @@ export const getClientDocument = (clientId, config) => makeRequest({
     ...config
 });
 
+export const getClientByUserId = (userId, config) => makeRequest({
+    method: "GET",
+    url: `${URL}/ByUserId/${userId}`,
+    withCredentials: true,
+    ...config
+});
+
 export const getMyClient = (config) => makeRequest({
     method: "GET",
     url: `${URL}/My`,

@@ -7,6 +7,10 @@ export const GET_MY_CLIENT_STARTED = "GET_MY_CLIENT_STARTED";
 export const GET_MY_CLIENT_SUCCESS = "GET_MY_CLIENT_SUCCESS";
 export const GET_MY_CLIENT_FAILED = "GET_MY_CLIENT_FAILED";
 
+export const GET_CLIENT_BY_USER_STARTED = "GET_CLIENT_BY_USER_STARTED";
+export const GET_CLIENT_BY_USER_SUCCESS = "GET_CLIENT_BY_USER_SUCCESS";
+export const GET_CLIENT_BY_USER_FAILED = "GET_CLIENT_BY_USER_FAILED";
+
 export const GET_CLIENT_DOCUMENTS_STARTED = "GET_CLIENT_DOCUMENTS_STARTED";
 export const GET_CLIENT_DOCUMENTS_SUCCESS = "GET_CLIENT_DOCUMENTS_SUCCESS";
 export const GET_CLIENT_DOCUMENTS_FAILED = "GET_CLIENT_DOCUMENTS_FAILED";
@@ -52,6 +56,18 @@ export const getMyClientSuccess = (client) => ({
 });
 export const getMyClientFailed = (error) => ({
     type: GET_MY_CLIENT_FAILED,
+    payload: error,
+});
+
+export const getClientByUserStarted = () => ({
+    type: GET_CLIENT_BY_USER_STARTED
+});
+export const getClientByUserSuccess = (client) => ({
+    type: GET_CLIENT_BY_USER_SUCCESS,
+    payload: client,
+});
+export const getClientByUserFailed = (error) => ({
+    type: GET_CLIENT_BY_USER_FAILED,
     payload: error,
 });
 

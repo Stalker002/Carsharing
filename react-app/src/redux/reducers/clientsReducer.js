@@ -1,6 +1,7 @@
-import { DELETE_CLIENT_FAILED, DELETE_CLIENT_STARTED, DELETE_CLIENT_SUCCESS, GET_CLIENT_DOCUMENTS_FAILED, GET_CLIENT_DOCUMENTS_STARTED, GET_CLIENT_DOCUMENTS_SUCCESS, GET_CLIENTS_FAILED, GET_CLIENTS_STARTED, GET_CLIENTS_SUCCESS, GET_MY_CLIENT_FAILED, GET_MY_CLIENT_STARTED, GET_MY_CLIENT_SUCCESS, GET_MY_DOCUMENTS_FAILED, GET_MY_DOCUMENTS_STARTED, GET_MY_DOCUMENTS_SUCCESS, POST_CLIENT_FAILED, POST_CLIENT_STARTED, POST_CLIENT_SUCCESS, PUT_CLIENT_FAILED, PUT_CLIENT_STARTED, PUT_CLIENT_SUCCESS, SET_CLIENTS_TOTAL } from "../actionCreators/clients";
+import { DELETE_CLIENT_FAILED, DELETE_CLIENT_STARTED, DELETE_CLIENT_SUCCESS, GET_CLIENT_BY_USER_FAILED, GET_CLIENT_BY_USER_STARTED, GET_CLIENT_BY_USER_SUCCESS, GET_CLIENT_DOCUMENTS_FAILED, GET_CLIENT_DOCUMENTS_STARTED, GET_CLIENT_DOCUMENTS_SUCCESS, GET_CLIENTS_FAILED, GET_CLIENTS_STARTED, GET_CLIENTS_SUCCESS, GET_MY_CLIENT_FAILED, GET_MY_CLIENT_STARTED, GET_MY_CLIENT_SUCCESS, GET_MY_DOCUMENTS_FAILED, GET_MY_DOCUMENTS_STARTED, GET_MY_DOCUMENTS_SUCCESS, POST_CLIENT_FAILED, POST_CLIENT_STARTED, POST_CLIENT_SUCCESS, PUT_CLIENT_FAILED, PUT_CLIENT_STARTED, PUT_CLIENT_SUCCESS, SET_CLIENTS_TOTAL } from "../actionCreators/clients";
 
 const initialState = {
+    client: {},
     clients: [],
     myClient: {},
     clientDocument: {},
@@ -49,6 +50,23 @@ export const clientsReducer = (state = initialState, action) => {
                 isClientsLoading: false,
             };
         case GET_MY_CLIENT_FAILED:
+            return {
+                ...state,
+                isClientsLoading: false,
+            };
+
+        case GET_CLIENT_BY_USER_STARTED:
+            return {
+                ...state,
+                isClientsLoading: true,
+            };
+        case GET_CLIENT_BY_USER_SUCCESS:
+            return {
+                ...state,
+                client: action.payload[0],
+                isClientsLoading: false,
+            };
+        case GET_CLIENT_BY_USER_FAILED:
             return {
                 ...state,
                 isClientsLoading: false,

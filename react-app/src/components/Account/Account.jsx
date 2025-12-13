@@ -68,7 +68,6 @@ function Account() {
   if (!myClient || Object.keys(myClient).length === 0) {
     return (
       <button className="user-button">
-        {/* Можно поставить спиннер или просто точки */}
         <div className="user-avatar">...</div>
       </button>
     );
