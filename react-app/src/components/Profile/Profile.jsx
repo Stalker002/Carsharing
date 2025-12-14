@@ -45,7 +45,6 @@ function Profile() {
       dispatch(getMyUser());
     }
   }, [isMyUserLoading, dispatch]);
-  console.log("myUser =", myUser);
 
   const userRoleId = myUser.roleId;
 

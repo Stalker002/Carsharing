@@ -5,63 +5,64 @@ import {
   createUser,
   updateUser,
   deleteUser,
-} from "../../redux/actions/users";
+} from "../../../redux/actions/users";
 import {
   getCars,
   createCar,
   updateCar,
   deleteCar,
   getInfoCarAdmin,
-} from "../../redux/actions/cars";
+} from "../../../redux/actions/cars";
 import {
   getBills,
   createBill,
   updateBill,
   deleteBill,
-} from "../../redux/actions/bills";
+} from "../../../redux/actions/bills";
 import {
   getBookings,
   createBooking,
   updateBooking,
   deleteBooking,
-} from "../../redux/actions/bookings";
+} from "../../../redux/actions/bookings";
 import {
   getClients,
   createClient,
   updateClient,
   deleteClient,
   getClientByUser,
-} from "../../redux/actions/clients";
+} from "../../../redux/actions/clients";
 import {
   getFines,
   createFine,
   updateFine,
   deleteFine,
-} from "../../redux/actions/fines";
+} from "../../../redux/actions/fines";
 import {
   getInsurances,
   createInsurance,
   updateInsurance,
   deleteInsurance,
-} from "../../redux/actions/insurance";
+} from "../../../redux/actions/insurance";
 import {
   getPayments,
   createPayment,
   updatePayment,
   deletePayment,
-} from "../../redux/actions/payments";
+} from "../../../redux/actions/payments";
 import {
   getPromocodes,
   createPromocode,
   updatePromocode,
   deletePromocode,
-} from "../../redux/actions/promocodes";
+} from "../../../redux/actions/promocodes";
 import {
   getTrips,
   createTrip,
   updateTrip,
   deleteTrip,
-} from "../../redux/actions/trips";
+  getTripWithInfo,
+} from "../../../redux/actions/trips";
 
 import {
   columnsBills,
@@ -97,13 +98,13 @@ import {
   columnsMaintenances,
   headTextMaintenances,
   fieldsMaintenances,
-} from "./configs";
+} from "../configs";
 import {
   createMaintenance,
   deleteMaintenance,
   getMaintenances,
   updateMaintenance,
-} from "../../redux/actions/maintenance";
+} from "../../../redux/actions/maintenance";
 
 export const STATUS_FILTERS = {
     cars: [
@@ -179,8 +180,7 @@ export const useAdminTableConfig = (activeTab) => {
           statusId: Number(data.statusId),
           amount: Number(data.amount),
           remainingAmount: Number(data.remainingAmount),
-          startTime: new Date(data.startTime).toISOString(),
-          endTime: new Date(data.endTime).toISOString(),
+          issueDate: data.issueDate ? new Date(data.issueDate).toISOString() : null,
         }),
       addTitle: "Выставление счета",
       updateAction: (id, data) =>
@@ -191,8 +191,7 @@ export const useAdminTableConfig = (activeTab) => {
           statusId: Number(data.statusId),
           amount: Number(data.amount),
           remainingAmount: Number(data.remainingAmount),
-          startTime: new Date(data.startTime).toISOString(),
-          endTime: new Date(data.endTime).toISOString(),
+          issueDate: data.issueDate ? new Date(data.issueDate).toISOString(): null
         }),
       editTitle: "Редактирование счета",
       deleteAction: (id) => deleteBill(id),
@@ -282,6 +281,7 @@ export const useAdminTableConfig = (activeTab) => {
           tripId: Number(data.tripId),
           statusId: Number(data.statusId),
           amount: Number(data.amount),
+          date: new Date(data.date).toISOString(),
         }),
       addTitle: "Регистрация штрафа",
       updateAction: (id, data) =>
@@ -290,11 +290,12 @@ export const useAdminTableConfig = (activeTab) => {
           tripId: Number(data.tripId),
           statusId: Number(data.statusId),
           amount: Number(data.amount),
+          date: new Date(data.date).toISOString(),
         }),
       editTitle: "Редактирование штрафа",
       deleteAction: (id) => deleteFine(id),
     },
-    insurances: {
+    insurance: {
       data: insurances,
       total: totalInsurances,
       columns: columnsInsurances,
@@ -406,7 +407,7 @@ export const useAdminTableConfig = (activeTab) => {
           refueled: data.refueled ? Number(data.refueled) : 0,
           insuranceActive: data.insuranceActive === "true",
           startTime: new Date(data.startTime).toISOString(),
-          endTime: new Date(data.endTime).toISOString(),
+          endTime: data.endTime ? new Date(data.endTime).toISOString(): null
         }),
       addTitle: "Создание поездки (Full)",
       updateAction: (id, data) =>
@@ -421,6 +422,7 @@ export const useAdminTableConfig = (activeTab) => {
         }),
       editTitle: "Редактирование поездки",
       deleteAction: (id) => deleteTrip(id),
+      detailAction: (id) => getTripWithInfo(id),
     },
     users: {
       data: users,

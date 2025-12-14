@@ -74,21 +74,8 @@
   color: #dc2626;
   background: #fef2f2;
 }
-.save-btn {
-  color: #16a34a;
-}
-.cancel-btn {
-  color: #666;
-}
 
 .edit-input {
   padding: 5px 10px;
   width: 70%;
-}
-
-.grey-btn {
-  background-color: #6c757d;
-}
-.grey-btn:hover {
-  background-color: #5a6268;
 }

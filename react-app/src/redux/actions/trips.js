@@ -103,8 +103,12 @@ export const getTripWithInfo = (id) => {
 
       const response = await api.trips.getTripWithInfo(id);
 
-      dispatch(getInfoTripSuccess(response.data));
-      return { success: true, data: response.data };
+      const data = Array.isArray(response.data) && response.data.length > 0 
+          ? response.data[0] 
+          : response.data;
+
+      dispatch(getInfoTripSuccess(data));
+      return { success: true, data: data };
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||

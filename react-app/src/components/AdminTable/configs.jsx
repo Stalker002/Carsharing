@@ -44,17 +44,17 @@ export const fieldsBills = [
     label: "Статус",
     type: "select",
     options: [
-      { value: "1", label: "Не оплачен" },
-      { value: "2", label: "Оплачен" },
-      { value: "3", label: "Отменен" },
-      { value: "4", label: "Просрочен" },
+      { value: "13", label: "Не оплачен" },
+      { value: "14", label: "Частично оплачен" },
+      { value: "15", label: "Оплачен" },
+      { value: "16", label: "Отменён" },
     ],
     required: true,
   },
   {
     name: "issueDate",
     label: "Дата выставления",
-    type: "datetime-local", // Используем datetime, так как счета точные
+    type: "datetime-local",
     required: true,
   },
   {
@@ -294,6 +294,39 @@ export const fieldsCars = [
   },
 ];
 
+export const columnsDocuments = ["id", "type", "number", "issueDate", "expiryDate"];
+export const headTextDocuments = ["ID", "Тип", "Номер", "Выдан", "Истекает"];
+
+export const fieldsClientDocuments = [
+  { name: "id", label: "ID", type: "text", readOnly: true, hideOnAdd: true },
+  { 
+    name: "type", 
+    label: "Тип документа", 
+    type: "text", 
+    placeholder: "Паспорт / ВУ", 
+    required: true 
+  },
+  { 
+    name: "number", 
+    label: "Номер", 
+    type: "text", 
+    required: true 
+  },
+  { 
+    name: "issueDate", 
+    label: "Дата выдачи", 
+    type: "date", 
+    required: true 
+  },
+  { 
+    name: "expiryDate", 
+    label: "Срок действия", 
+    type: "date", 
+    required: true 
+  },
+  // { name: "filePath", label: "Файл", type: "file", hideOnEdit: true }
+];
+
 export const columnsClients = [
   "id",
   "userId",
@@ -390,9 +423,9 @@ export const fieldsFines = [
     label: "Статус оплаты",
     type: "select",
     options: [
-      { value: "1", label: "Не оплачен" },
-      { value: "2", label: "Оплачен" },
-      { value: "3", label: "Оспаривается" },
+      { value: "17", label: "Не оплачен" },
+      { value: "18", label: "Оплачен" },
+      { value: "19", label: "Оспаривается" },
     ],
     required: true,
   },
@@ -731,6 +764,7 @@ export const fieldsTrips = [
   },
   {
     name: "statusId",
+    viewName: "statusName", 
     label: "Статус поездки",
     type: "select",
     options: [
@@ -759,7 +793,6 @@ export const fieldsTrips = [
     name: "endTime",
     label: "Время окончания",
     type: "datetime-local",
-    required: true,
   },
   {
     name: "duration",
@@ -775,8 +808,6 @@ export const fieldsTrips = [
     placeholder: "12.5",
     required: true,
   },
-
-  // --- Детали поездки (TripDetail) - Только при создании ---
   {
     name: "startLocation",
     label: "Начальная локация",
@@ -839,7 +870,6 @@ export const fieldsUsers = [
     options: [
       { value: "1", label: "Администратор" },
       { value: "2", label: "Клиент" },
-      { value: "3", label: "Менеджер" },
     ],
     required: true,
   },

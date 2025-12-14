@@ -7,7 +7,8 @@ export const GenericTable = ({
   onEditClick,
   nextHandler,
   hasMore,
-  onRowClick
+  onRowClick,
+  statuses = []
 }) => {
   return (
     <InfiniteScroll
@@ -56,27 +57,32 @@ export const GenericTable = ({
                 </td>
                 {columns.map((columnKey, colIndex) => {
                   let cellValue = row[columnKey];
-
                   if (cellValue === null || cellValue === undefined) {
                     cellValue = "-";
-                  } 
+                  }
+                  else if (columnKey === "statusId") {
+                      const foundStatus = statuses.find(s => String(s.id) === String(cellValue));
+                      if (foundStatus) {
+                          cellValue = foundStatus.name; 
+                      }
+                  }
                   else if (
                     columnKey.toLowerCase().includes("time") || 
                     columnKey.toLowerCase().includes("date")
                   ) {
                     let dateString = cellValue.toString();
-                    
                     if (!dateString.endsWith("Z") && !dateString.includes("+")) {
                         dateString += "Z";
                     }
-
-                    cellValue = new Date(dateString).toLocaleString("ru-RU", {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    });
+                    const date = new Date(dateString);
+                    if (date.getFullYear() <= 1970) {
+                        cellValue = "-";
+                    } else {
+                        cellValue = date.toLocaleString("ru-RU", {
+                          year: 'numeric', month: '2-digit', day: '2-digit',
+                          hour: '2-digit', minute: '2-digit'
+                        });
+                    }
                   } 
                   else {
                     cellValue = cellValue.toString();

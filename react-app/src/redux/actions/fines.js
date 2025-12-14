@@ -55,7 +55,7 @@ export const getFines = (page = 1) => {
   };
 };
 
-export const getFineByTrips = (tripId) => {
+export const getFinesByTrip = (tripId) => {
   return async (dispatch) => {
     try {
       dispatch(getFineByTripStarted());

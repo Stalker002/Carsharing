@@ -88,7 +88,7 @@ export const maintenancesReducer = (state = initialState, action) => {
         case PUT_MAINTENANCE_SUCCESS:
             return {
                 ...state,
-                maintenanceList: state.maintenanceList.map(m =>
+                maintenanceList: state.maintenances.map(m =>
                     m.id === action.payload.id ? action.payload : m
                 ),
                 isMaintenanceUpdateLoading: false

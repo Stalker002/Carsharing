@@ -14,7 +14,7 @@
           <input
             type={field.type}
             name={field.name}
-            defaultValue={initialData[field.name]}
+            defaultValue={initialData?.[field.name] || ""}
             className="modal-input"
             readOnly={field.readOnly}
             required={field.required}
