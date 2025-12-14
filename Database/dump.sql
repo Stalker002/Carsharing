@@ -716,7 +716,7 @@ CREATE TABLE public.fines (
     fine_status_id integer NOT NULL,
     fine_type VARCHAR(50) NOT NULL,
     fine_amount numeric(10,2) NOT NULL,
-    fine_date date NOT NULL,
+    fine_date timestamp without time zone NOT NULL,
     CONSTRAINT chk_fine_amount_nonneg CHECK (((fine_amount IS NULL) OR (fine_amount >= (0)::numeric)))
 );
 
