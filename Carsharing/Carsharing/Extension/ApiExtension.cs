@@ -17,8 +17,11 @@ public static class ApiExtension
             throw new Exception("JWT configuration missing or invalid");
 
         service.Configure<JwtOptions>(jwtSection);
-
-        service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        service.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -40,22 +43,29 @@ public static class ApiExtension
                         if (!string.IsNullOrEmpty(token))
                             context.Token = token;
                         if (context.Request.Cookies.ContainsKey("tasty"))
-                        {
                             context.Token = context.Request.Cookies["tasty"];
-                        }
 
                         return Task.CompletedTask;
                     }
                 };
             });
-        service.AddAuthorizationBuilder()
-            .AddPolicy("AdminPolicy", policy =>
+
+        service.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminClientPolicy", policy =>
             {
-                policy.RequireClaim("userRoleId", "1");
-            })
-            .AddPolicy("ClientPolicy", policy =>
+                policy.RequireClaim("userRoleId", "1", "2");
+            });
+
+            options.AddPolicy("ClientPolicy", policy =>
             {
                 policy.RequireClaim("userRoleId", "2");
             });
+
+            options.AddPolicy("AdminPolicy", policy =>
+            {
+                policy.RequireClaim("userRoleId", "1");
+            });
+        });
     }
 }

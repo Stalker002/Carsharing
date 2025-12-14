@@ -3,7 +3,7 @@
 public class Fine
 {
     private Fine(int id, int tripId, int statusId, string type, decimal amount,
-        DateOnly date)
+        DateTime date)
     {
         Id = id;
         TripId = tripId;
@@ -23,10 +23,10 @@ public class Fine
 
     public decimal Amount { get; }
 
-    public DateOnly Date { get; }
+    public DateTime Date { get; }
 
     public static (Fine fine, string error) Create(int id, int tripId, int statusId, string type, decimal amount,
-        DateOnly date)
+        DateTime date)
     {
         var error = string.Empty;
         var allowedTypes = new[]
@@ -50,7 +50,7 @@ public class Fine
         if (amount < 0)
             error = "Cost must be positive";
 
-        if (date > DateOnly.FromDateTime(DateTime.Now))
+        if (date > DateTime.Now)
             error = "Fine date can not be in the future";
 
         var fine = new Fine(id, tripId, statusId, type, amount, date);

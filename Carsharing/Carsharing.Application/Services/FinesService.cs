@@ -48,7 +48,7 @@ public class FinesService : IFinesService
     }
 
     public async Task<int> UpdateFine(int id, int? tripId, int? statusId, string? type, decimal? amount,
-        DateOnly? date)
+        DateTime? date)
     {
         return await _fineRepository.Update(id, tripId, statusId, type, amount, date);
     }

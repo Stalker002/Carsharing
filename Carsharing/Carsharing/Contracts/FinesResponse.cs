@@ -6,4 +6,4 @@ public record FinesResponse(
     int StatusId, 
     string Type, 
     decimal Amount,
-    DateOnly Date);
+    DateTime Date);

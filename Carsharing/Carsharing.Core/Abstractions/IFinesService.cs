@@ -13,7 +13,7 @@ public interface IFinesService
     Task<int> CreateFine(Fine fine);
 
     Task<int> UpdateFine(int id, int? tripId, int? statusId, string? type, decimal? amount,
-        DateOnly? date);
+        DateTime? date);
 
     Task<int> DeleteFine(int id);
 }

@@ -152,7 +152,7 @@ public class FineRepository : IFineRepository
     }
 
     public async Task<int> Update(int id, int? tripId, int? statusId, string? type, decimal? amount,
-        DateOnly? date)
+        DateTime? date)
     {
         var fine = await _context.Fine.FirstOrDefaultAsync(f => f.Id == id)
                    ?? throw new Exception("Fine not found");

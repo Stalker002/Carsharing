@@ -2,6 +2,7 @@
 using Carsharing.Application.Services;
 using Carsharing.Contracts;
 using Carsharing.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -18,6 +19,7 @@ public class BillsController : ControllerBase
     }
 
     [HttpGet("unpaged")]
+    // [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<BillsResponse>>> GetBills()
     {
         var bills = await _billsService.GetBills();

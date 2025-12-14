@@ -13,7 +13,7 @@ public interface IFineRepository
     Task<int> Create(Fine fine);
 
     Task<int> Update(int id, int? tripId, int? statusId, string? type, decimal? amount,
-        DateOnly? date);
+        DateTime? date);
 
     Task<int> Delete(int id);
 }
