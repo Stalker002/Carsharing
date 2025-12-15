@@ -33,6 +33,7 @@ const CategoryManager = ({ isOpen, onClose }) => {
   const handleDelete = async (id) => {
     if (window.confirm("Удалить категорию?")) {
       await dispatch(deleteCategory(id));
+      dispatch(getCategories());
     }
   };
 
@@ -45,6 +46,7 @@ const CategoryManager = ({ isOpen, onClose }) => {
     if (!editingName.trim()) return;
     await dispatch(updateCategory(editingId, { id: editingId, name: editingName }));
     setEditingId(null);
+    dispatch(getCategories());
   };
 
   return (

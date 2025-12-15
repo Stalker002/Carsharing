@@ -61,7 +61,7 @@ export const getCars = (page = 1) => {
   };
 };
 
-export const getCarsByCategory = (ids, page = 1) => {
+export const getCarsByCategory = (ids = [], page = 1) => {
   return async (dispatch) => {
     try {
       dispatch(getCarsByCategoryStarted());

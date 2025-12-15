@@ -16,23 +16,20 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
   const categoriesList = useSelector((state) => state.categories?.categories || []);
   const statusesList = useSelector((state) => state.statuses?.statuses || []);
 
-  // Сброс страницы при переключении вкладки
-  useEffect(() => {
-    isSwitchingTable.current = true;
-    setPage(1);
-    document.getElementById("container")?.scrollTo(0, 0);
-  }, [activeTab]);
+//   useEffect(() => {
+//     isSwitchingTable.current = true;
+//     setPage(1);
+//     document.getElementById("container")?.scrollTo(0, 0);
+//   }, [activeTab]);
 
-  // Загрузка справочников (статусы, категории)
   useEffect(() => {
     const tabsWithStatuses = ["cars", "bookings", "bills", "promocodes", "trips", "fines", "insurances"];
     const tabsWithCategories = ["cars"];
 
     if (tabsWithStatuses.includes(activeTab) && statusesList.length === 0) dispatch(getStatuses());
     if (tabsWithCategories.includes(activeTab) && categoriesList.length === 0) dispatch(getCategories());
-  }, [activeTab, dispatch, categoriesList.length, statusesList.length]);
+  }, [activeTab, categoriesList.length, statusesList.length]);
 
-  // Основная загрузка данных таблицы
   const refreshTable = useCallback(() => {
     document.getElementById("container")?.scrollTo(0, 0);
     if (page === 1 && cfg?.action) {
@@ -41,7 +38,7 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
     } else {
       setPage(1);
     }
-  }, [page, cfg, dispatch]);
+  }, []);
 
   useEffect(() => {
     if (!cfg || !cfg.action || cfg.isDashboard) return;
@@ -51,7 +48,7 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
 
     isLoadingRef.current = true;
     dispatch(cfg.action(page)).finally(() => (isLoadingRef.current = false));
-  }, [page, activeTab, dispatch, cfg]);
+  }, [page, activeTab, dispatch]);
 
   const nextHandler = useCallback(() => {
     if (isLoadingRef.current || !cfg) return;
@@ -59,7 +56,6 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
     setPage((p) => p + 1);
   }, [cfg]);
 
-  // Клик по строке (Детали)
   const handleRowClick = useCallback(async (row) => {
     setDetailingItem(row);
     if (cfg.detailAction) {
@@ -82,7 +78,6 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
     }
   }, [cfg, dispatch, activeTab, subData]);
 
-  // Клик по редактированию (открытие модалки + подгрузка связей)
   const handleEditClick = useCallback(async (item) => {
     setDetailingItem(null);
     if (cfg.detailAction) {
@@ -99,7 +94,6 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
     }
   }, [cfg, dispatch, activeTab, subData]);
 
-  // Сохранение основной записи
   const handleSaveEdit = useCallback(async (e) => {
     e.preventDefault();
     if (!cfg?.updateAction) return alert("Не настроено");
@@ -113,7 +107,6 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
     refreshTable();
   }, [cfg, dispatch, editingItem, refreshTable]);
 
-  // Удаление основной записи
   const handleDelete = useCallback(async () => {
     if (!cfg?.deleteAction || !editingItem) return;
     if (window.confirm(`Вы уверены, что хотите удалить запись #${editingItem.id}?`)) {
@@ -124,7 +117,6 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
     }
   }, [cfg, editingItem, dispatch, refreshTable]);
 
-  // Добавление новой записи
   const handleAdd = useCallback(async (data) => {
     if (cfg?.addAction) {
       const result = await dispatch(cfg.addAction(data));

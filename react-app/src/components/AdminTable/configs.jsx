@@ -55,7 +55,6 @@ export const fieldsBills = [
     name: "issueDate",
     label: "Дата выставления",
     type: "datetime-local",
-    required: true,
   },
   {
     name: "amount",
@@ -103,7 +102,7 @@ export const fieldsBookings = [
     label: "Статус бронирования",
     type: "select",
     options: [
-      { value: "5", label: "Активно (В поездке)" },
+      { value: "5", label: "Активно" },
       { value: "6", label: "Завершено" },
       { value: "7", label: "Отменено" },
     ],
@@ -127,7 +126,6 @@ export const fieldsBookings = [
     name: "startTime",
     label: "Время начала",
     type: "datetime-local",
-    required: true,
   },
   {
     name: "endTime",
@@ -140,16 +138,18 @@ export const fieldsBookings = [
 export const columnsCars = [
   "id",
   "statusId",
-  "categoryId",
   "tariffId",
+  "categoryId",
+  "specificationId",
   "location",
   "fuelLevel",
 ];
 export const headTextCars = [
   "ID",
   "ID Статуса",
-  "ID Категории",
   "ID Тарифа",
+  "ID Категории",
+  "ID Характеристики",
   "Локация",
   "Топливо (%)",
 ];
@@ -181,8 +181,13 @@ export const fieldsCars = [
   {
     name: "transmission",
     label: "Коробка",
-    type: "text",
-    placeholder: "Automatic",
+    type: "select",
+    options: [
+      { value: "Автомат", label: "Автомат" },
+      { value: "Механика", label: "Механика" },
+      { value: "Робот", label: "Робот" },
+    ],
+    placeholder: "Коробка передач",
     required: true,
   },
   {
@@ -213,12 +218,19 @@ export const fieldsCars = [
     placeholder: "53.9, 27.5",
     required: true,
   },
-  
+
   {
     name: "fuelType",
     label: "Тип топлива",
-    type: "text",
-    placeholder: "Petrol",
+    type: "select",
+    options: [
+      { value: "Бензин", label: "Бензин" },
+      { value: "Дизель", label: "Дизель" },
+      { value: "Электро", label: "Электро" },
+      { value: "Гибрид", label: "Гибрид" },
+      { value: "Газ", label: "Газ" },
+    ],
+    placeholder: "Бензин",
     required: true,
   },
   {
@@ -265,7 +277,7 @@ export const fieldsCars = [
     type: "text",
     placeholder: "Базовый",
     required: true,
-    hideOnDetail: true 
+    hideOnDetail: true,
   },
   {
     name: "pricePerMinute",
@@ -290,39 +302,49 @@ export const fieldsCars = [
     name: "image",
     label: "Фото автомобиля",
     type: "file",
-    required: false
+    required: false,
   },
 ];
 
-export const columnsDocuments = ["id", "type", "number", "issueDate", "expiryDate"];
+export const columnsDocuments = [
+  "id",
+  "type",
+  "number",
+  "issueDate",
+  "expiryDate",
+];
 export const headTextDocuments = ["ID", "Тип", "Номер", "Выдан", "Истекает"];
 
 export const fieldsClientDocuments = [
   { name: "id", label: "ID", type: "text", readOnly: true, hideOnAdd: true },
-  { 
-    name: "type", 
-    label: "Тип документа", 
-    type: "text", 
-    placeholder: "Паспорт / ВУ", 
-    required: true 
+  {
+    name: "type",
+    label: "Тип документа",
+    type: "select",
+    options: [
+      { value: "Водительские права", label: "Водительские права" },
+      { value: "Паспорт", label: "Паспорт" },
+    ],
+    placeholder: "Паспорт / ВУ",
+    required: true,
   },
-  { 
-    name: "number", 
-    label: "Номер", 
-    type: "text", 
-    required: true 
+  {
+    name: "number",
+    label: "Номер",
+    type: "text",
+    required: true,
   },
-  { 
-    name: "issueDate", 
-    label: "Дата выдачи", 
-    type: "date", 
-    required: true 
+  {
+    name: "issueDate",
+    label: "Дата выдачи",
+    type: "date",
+    required: true,
   },
-  { 
-    name: "expiryDate", 
-    label: "Срок действия", 
-    type: "date", 
-    required: true 
+  {
+    name: "expiryDate",
+    label: "Срок действия",
+    type: "date",
+    required: true,
   },
   // { name: "filePath", label: "Файл", type: "file", hideOnEdit: true }
 ];
@@ -375,7 +397,7 @@ export const fieldsClients = [
     name: "phoneNumber",
     label: "Телефон",
     type: "text",
-    placeholder: "+375...",
+    placeholder: "+375(xx) xxx-xx-xx",
     required: true,
   },
   {
@@ -423,16 +445,27 @@ export const fieldsFines = [
     label: "Статус оплаты",
     type: "select",
     options: [
-      { value: "17", label: "Не оплачен" },
-      { value: "18", label: "Оплачен" },
-      { value: "19", label: "Оспаривается" },
+      { value: "17", label: "Начислен" },
+      { value: "18", label: "Ожидает оплаты" },
+      { value: "19", label: "Оплачен" },
     ],
     required: true,
   },
   {
     name: "type",
     label: "Тип нарушения",
-    type: "text", // Или select, если типы фиксированы
+    type: "select",
+    options: [
+      { value: "Превышение скорости", label: "Превышение скорости" },
+      {
+        value: "Нарушение правил парковки",
+        label: "Нарушение правил парковки",
+      },
+      { value: "Несчастный случай", label: "Несчастный случай" },
+      { value: "Позднее возвращение", label: "Позднее возвращение" },
+      { value: "Курение в машине", label: "Курение в машине" },
+      { value: "Другое", label: "Другое" },
+    ],
     placeholder: "Превышение скорости",
     required: true,
   },
@@ -494,16 +527,16 @@ export const fieldsInsurances = [
     label: "Статус полиса",
     type: "select",
     options: [
-      { value: "1", label: "Действующий" },
-      { value: "2", label: "Истек" },
-      { value: "3", label: "Аннулирован" },
+      { value: "23", label: "Активна" },
+      { value: "24", label: "Истекла" },
+      { value: "25", label: "Аннулирована" },
     ],
     required: true,
   },
   {
     name: "type",
     label: "Тип страховки",
-    type: "text",
+    type: "select",
     options: [
       { value: "ОСАГО", label: "ОСАГО" },
       { value: "КАСКО", label: "КАСКО" },
@@ -547,66 +580,74 @@ export const fieldsInsurances = [
 ];
 
 export const columnsMaintenances = [
-  "id", 
-  "carId", 
-  "workType", 
-  "cost", 
+  "id",
+  "carId",
+  "workType",
+  "description",
+  "cost",
   "date",
-  "description"
 ];
 
 export const headTextMaintenances = [
-  "ID", 
-  "ID Авто", 
-  "Тип работ", 
-  "Стоимость", 
+  "ID",
+  "ID Авто",
+  "Тип работ",
+  "Описание",
+  "Стоимость",
   "Дата",
-  "Описание"
 ];
 
 export const fieldsMaintenances = [
-  { 
-    name: "id", 
-    label: "ID", 
-    type: "text", 
-    readOnly: true, 
-    hideOnAdd: true 
+  {
+    name: "id",
+    label: "ID",
+    type: "text",
+    readOnly: true,
+    hideOnAdd: true,
   },
-  { 
-    name: "carId", 
-    label: "ID Автомобиля", 
-    type: "number", 
-    placeholder: "123", 
-    required: true 
+  {
+    name: "carId",
+    label: "ID Автомобиля",
+    type: "number",
+    placeholder: "123",
+    required: true,
   },
-  { 
-    name: "workType", 
-    label: "Тип работ", 
-    type: "text", 
-    placeholder: "Замена масла", 
-    required: true 
+  {
+    name: "workType",
+    label: "Тип работ",
+    type: "select",
+    options: [
+      { value: "Замена масла", label: "Замена масла" },
+      { value: "Замена шин", label: "Замена шин" },
+      { value: "Обслуживание тормозов", label: "Обслуживание тормозов" },
+      { value: "Осмотр", label: "Осмотр" },
+      { value: "Ремонт", label: "Ремонт" },
+      { value: "Чистка", label: "Чистка" },
+    ],
+    placeholder: "Тип работ",
+    required: true,
   },
-  { 
-    name: "description", 
-    label: "Описание", 
+  {
+    name: "description",
+    label: "Описание",
     type: "textarea",
-    placeholder: "Детали выполненных работ...", 
-    required: true 
+    placeholder: "Детали выполненных работ",
+    required: true,
   },
-  { 
-    name: "cost", 
-    label: "Стоимость (BYN)", 
-    type: "number", 
+  {
+    name: "cost",
+    label: "Стоимость (BYN)",
+    type: "number",
     step: "0.01",
-    placeholder: "150.00", 
-    required: true 
+    placeholder: "150.00",
+    required: true,
   },
-  { 
-    name: "date", 
-    label: "Дата проведения", 
+  {
+    name: "date",
+    label: "Дата проведения",
     type: "date",
-    required: true 
-  }
+    required: true,
+  },
 ];
 
 export const columnsPayments = ["id", "billId", "sum", "method", "date"];
@@ -690,9 +731,9 @@ export const fieldsPromocodes = [
     label: "Статус",
     type: "select",
     options: [
-      { value: "19", label: "Активен" },
-      { value: "20", label: "Неактивен" },
-      { value: "3", label: "Истек" },
+      { value: "20", label: "Активен" },
+      { value: "21", label: "Истёк" },
+      { value: "22", label: "Использован" },
     ],
     required: true,
   },
@@ -713,7 +754,7 @@ export const fieldsPromocodes = [
   {
     name: "startDate",
     label: "Дата начала",
-    type: "date", // Можно datetime-local, если важно время
+    type: "date",
     required: true,
   },
   {
@@ -745,9 +786,7 @@ export const headTextTrips = [
   "Дистанция (км)",
 ];
 
-// Поля Модалок
 export const fieldsTrips = [
-  // --- Основные поля (Trip) ---
   {
     name: "id",
     label: "ID",
@@ -764,14 +803,14 @@ export const fieldsTrips = [
   },
   {
     name: "statusId",
-    viewName: "statusName", 
+    viewName: "statusName",
     label: "Статус поездки",
     type: "select",
     options: [
-      { value: "8", label: "Ожидает начала" },
+      { value: "8", label: "Ожидание начала" },
       { value: "9", label: "В пути" },
       { value: "10", label: "Завершена" },
-      { value: "11", label: "Отменена" },
+      { value: "11", label: "Отменена системой" },
       { value: "12", label: "Требуется оплата" },
     ],
     required: true,
@@ -779,8 +818,13 @@ export const fieldsTrips = [
   {
     name: "tariffType",
     label: "Тип тарифа",
-    type: "text",
-    placeholder: "PerMinute / Daily",
+    type: "select",
+    options: [
+      { value: "per_minute", label: "За минуту" },
+      { value: "per_km", label: "За км" },
+      { value: "per_day", label: "За день" },
+    ],
+    placeholder: "Тип тарифа",
     required: true,
   },
   {
@@ -845,15 +889,15 @@ export const fieldsTrips = [
   },
   {
     name: "refueled",
-    label: "Заправлено (литров)", // Поменяли название и тип
+    label: "Заправлено (литров)",
     type: "number",
     placeholder: "0",
-    step: "0.01", // Разрешаем дробные
-    required: false, // Можно оставить пустым, если не заправлялся
+    step: "0.01",
+    required: false, 
   },
 ];
-export const columnsUsers = ["id", "roleId", "login", "password"];
-export const headTextUsers = ["ID", "ID Роли", "Логин", "Пароль"];
+export const columnsUsers = ["id", "roleId", "login"];
+export const headTextUsers = ["ID", "ID Роли", "Логин"];
 
 export const fieldsUsers = [
   {

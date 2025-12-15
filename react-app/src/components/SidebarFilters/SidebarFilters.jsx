@@ -1,17 +1,26 @@
 import "./SidebarFilters.css";
-import { useState } from 'react';
 
-export default function SidebarFilters() {
-  const [selectedTypes, setSelectedTypes] = useState([]); // массив
-  const [selectedCapacities, setSelectedCapacities] = useState([]); // массив
-  const [maxPrice, setMaxPrice] = useState(1000);
+export default function SidebarFilters({ filters, setFilters }) {
 
-  const toggleSelection = (value, selectedList, setSelectedList) => {
-    if (selectedList.includes(value)) {
-      setSelectedList(selectedList.filter((item) => item !== value)); // удалить
-    } else {
-      setSelectedList([...selectedList, value]); // добавить
-    }
+  const toggleSelection = (value, key) => {
+    const list = filters[key];
+    const newList = list.includes(value)
+      ? list.filter((item) => item !== value)
+      : [...list, value];
+
+    setFilters({ ...filters, [key]: newList });
+  };
+
+  const handlePriceChange = (e) => {
+      setFilters({ ...filters, maxPrice: Number(e.target.value) });
+  };
+
+  const clearFilters = () => {
+    setFilters({
+        types: [],
+        capacities: [],
+        maxPrice: 1000
+    });
   };
 
   const carTypes = [
@@ -20,41 +29,31 @@ export default function SidebarFilters() {
     { name: "Премиум", count: 16 },
     { name: "Спорткар", count: 20 },
     { name: "Внедорожник", count: 14 },
-    { name: "Грузовой", count: 14 }
+    { name: "Грузовой", count: 14 },
   ];
 
   const capacities = [
-    { name: "2 человека", count: 10 },
-    { name: "4 человека", count: 14 },
-    { name: "6 человек", count: 12 },
-    { name: "8 и более", count: 16 }
+    { name: "2 человека",  value: "2", count: 10 },
+    { name: "4 человека",  value: "4", count: 14 },
   ];
 
-  const clearFilters = () => {
-    setSelectedType([]);
-    setSelectedCapacity([]);
-    // setMaxPrice(1000);
-  };
   return (
-    <div className="sidebar">
+    <div className="sidebar-filters">
       <div className="sidebar-header">
         <h2>Фильтры</h2>
         <button className="clear-filters" onClick={clearFilters}>
           Очистить все
         </button>
       </div>
-
       <div className="filter-group">
         <h3>Тип машины</h3>
         <div className="filter-options">
-          {carTypes.map(type => (
+          {carTypes.map((type) => (
             <label key={type.name} className="filter-option">
               <input
                 type="checkbox"
-                name="type"
-                value={type.name}
-                checked={selectedTypes.includes(type.name)}
-                onChange={() => toggleSelection(type.name, selectedTypes, setSelectedTypes)}
+                checked={filters.types.includes(type.name)}
+                onChange={() => toggleSelection(type.name, "types")}
               />
               <span className="filter-label">
                 {type.name} <span className="filter-count">({type.count})</span>
@@ -63,47 +62,44 @@ export default function SidebarFilters() {
           ))}
         </div>
       </div>
-
       <div className="filter-group">
         <h3>Кол-во человек</h3>
         <div className="filter-options">
-          {capacities.map(capacity => (
+          {capacities.map((capacity) => (
             <label key={capacity.name} className="filter-option">
               <input
                 type="checkbox"
-                name="capacity"
-                value={capacity.name.split(' ')[0]}
-                checked={selectedCapacities.includes(capacity.name)}
-                onChange={() => toggleSelection(capacity.name, selectedCapacities, setSelectedCapacities)}
+                checked={filters.capacities.includes(capacity.value)}
+                onChange={() => toggleSelection(capacity.value, "capacities")}
               />
               <span className="filter-label">
-                {capacity.name} <span className="filter-count">({capacity.count})</span>
+                {capacity.name}
               </span>
             </label>
           ))}
         </div>
       </div>
-
-      {/* <div className="filter-group">
+      <div className="filter-group">
         <h3>Цена</h3>
         <div className="price-filter">
           <div className="price-header">
-            <span>Максимум <strong>{maxPrice.toFixed(2)} BYN</strong></span>
+            <span>Максимум <strong>{filters.maxPrice} BYN</strong></span>
           </div>
           <input
             type="range"
             min="0"
-            max="1000"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(Number(e.target.value))}
+            max="500"
+            step="10"
+            value={filters.maxPrice}
+            onChange={handlePriceChange}
             className="price-slider"
           />
           <div className="price-labels">
-            <span>0 BYN</span>
-            <span>1000 BYN</span>
+            <span>0</span>
+            <span>500</span>
           </div>
         </div>
-      </div> */}
+      </div>
     </div>
   );
 }

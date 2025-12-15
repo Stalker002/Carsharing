@@ -4,8 +4,11 @@ import UpdateModal from "../UpdateModal/UpdateModal";
 import AddModel from "../AddModel/AddModel";
 import DetailingModal from "../DetailModal/DetailModal";
 import CategoryManager from "../CategoryManager/CategoryManager";
-import { useAdminTableConfig, STATUS_FILTERS } from "./hooks/useAdminTableConfig";
-import { useSubData } from "./hooks/useSubData"; 
+import {
+  useAdminTableConfig,
+  STATUS_FILTERS,
+} from "./hooks/useAdminTableConfig";
+import { useSubData } from "./hooks/useSubData";
 import { useMainTableOperations } from "./hooks/useMainTableOperations";
 import { useSubItemOperations } from "./hooks/useSubItemOperations";
 import { useTabContent } from "./hooks/useTabContent";
@@ -14,28 +17,26 @@ import "./AdminTable.css";
 
 function AdminTable({ activeTab }) {
   const cfg = useAdminTableConfig(activeTab);
-  
-  // 1. Данные зависимых таблиц (страховки, клиенты и т.д.)
+
   const subData = useSubData(activeTab);
 
-  // 2. Логика главной таблицы (пагинация, crud главной сущности)
   const mainOps = useMainTableOperations(activeTab, cfg, subData);
 
-  // 3. Логика вложенных операций (добавить штраф, удалить страховку)
   const subOps = useSubItemOperations(activeTab, mainOps.editingItem, subData);
 
-  // UI стейты
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isCatOpen, setIsCatOpen] = useState(false);
 
-  // Динамические поля
   const dynamicFields = useMemo(() => {
     if (!cfg?.fields) return [];
     return cfg.fields.map((field) => {
       if (field.name === "categoryId" && activeTab === "cars") {
         return {
           ...field,
-          options: mainOps.categoriesList.map((c) => ({ value: c.id, label: c.name })),
+          options: mainOps.categoriesList.map((c) => ({
+            value: c.id,
+            label: c.name,
+          })),
         };
       }
       if (field.name === "statusId") {
@@ -51,36 +52,45 @@ function AdminTable({ activeTab }) {
     });
   }, [cfg, mainOps.categoriesList, mainOps.statusesList, activeTab]);
 
-  const addFields = useMemo(() => dynamicFields.filter((f) => !f.hideOnAdd), [dynamicFields]);
-  const editFields = useMemo(() => dynamicFields.filter((f) => !f.hideOnEdit), [dynamicFields]);
+  const addFields = useMemo(
+    () => dynamicFields.filter((f) => !f.hideOnAdd),
+    [dynamicFields]
+  );
+  const editFields = useMemo(
+    () => dynamicFields.filter((f) => !f.hideOnEdit),
+    [dynamicFields]
+  );
 
-  // Контент вкладок (генерируется хуком)
   const additionalTabs = useTabContent({
     activeTab,
     editingItem: mainOps.editingItem,
     detailingItem: mainOps.detailingItem,
     subData,
-    subOps
+    subOps,
   });
 
-  // Обработчик переключения вкладок внутри модалки
-  const handleTabChange = useCallback((tabIndex) => {
-    const item = mainOps.editingItem || mainOps.detailingItem;
-    if (!item) return;
+  const handleTabChange = useCallback(
+    (tabIndex) => {
+      const item = mainOps.editingItem || mainOps.detailingItem;
+      if (!item) return;
 
-    if (activeTab === "cars") {
-      if (tabIndex === 0) subData.fetchSubData(item.id, "insurance");
-      if (tabIndex === 1) subData.fetchSubData(item.id, "maintenance");
-    }
-    if (activeTab === "users") {
-      if (tabIndex === 0) subData.fetchClientProfile(item.id);
-      if (tabIndex === 1 && subData.clientProfile?.id) {
-        subData.fetchClientDocuments(subData.clientProfile.id);
+      if (activeTab === "cars") {
+        if (tabIndex === 0) subData.fetchSubData(item.id, "insurance");
+        if (tabIndex === 1) subData.fetchSubData(item.id, "maintenance");
       }
-    }
-    if (activeTab === "trips" && tabIndex === 0) subData.fetchSubData(item.id, "fine");
-    if (activeTab === "bills" && tabIndex === 0) subData.fetchSubData(item.id, "payment");
-  }, [activeTab, mainOps.editingItem, mainOps.detailingItem, subData]);
+      if (activeTab === "users") {
+        if (tabIndex === 0) subData.fetchClientProfile(item.id);
+        if (tabIndex === 1 && subData.clientProfile?.id) {
+          subData.fetchClientDocuments(subData.clientProfile.id);
+        }
+      }
+      if (activeTab === "trips" && tabIndex === 0)
+        subData.fetchSubData(item.id, "fine");
+      if (activeTab === "bills" && tabIndex === 0)
+        subData.fetchSubData(item.id, "payment");
+    },
+    [activeTab, mainOps.editingItem, mainOps.detailingItem, subData]
+  );
 
   if (activeTab === "Dashboard") return <div>Dashboard</div>;
   if (!cfg) return <div>Ошибка конфигурации</div>;
@@ -92,9 +102,16 @@ function AdminTable({ activeTab }) {
           <input className="search" placeholder="Поиск по таблице" />
           <div>
             {activeTab === "cars" && (
-              <button className="category-button" onClick={() => setIsCatOpen(true)}>Категории</button>
+              <button
+                className="category-button"
+                onClick={() => setIsCatOpen(true)}
+              >
+                Категории
+              </button>
             )}
-            <button className="add-button" onClick={() => setIsAddOpen(true)}>+ Добавить запись</button>
+            <button className="add-button" onClick={() => setIsAddOpen(true)}>
+              + Добавить запись
+            </button>
           </div>
         </div>
 
@@ -113,14 +130,20 @@ function AdminTable({ activeTab }) {
 
       {mainOps.editingItem && (
         <UpdateModal
-          title={`${cfg.editTitle || "Редактирование"} #${mainOps.editingItem.id}`}
+          title={`${cfg.editTitle || "Редактирование"} #${
+            mainOps.editingItem.id
+          }`}
           onClose={() => mainOps.setEditingItem(null)}
           formId="edit-form"
           additionalTabs={additionalTabs}
           onDelete={cfg.deleteAction ? mainOps.handleDelete : null}
           onTabChange={handleTabChange}
         >
-          <form id="edit-form" onSubmit={mainOps.handleSaveEdit} className="update-modal__form-grid">
+          <form
+            id="edit-form"
+            onSubmit={mainOps.handleSaveEdit}
+            className="update-modal__form-grid"
+          >
             {editFields.map((field) => {
               let val = mainOps.editingItem[field.name];
               if (field.type === "datetime-local") val = toLocalISOString(val);
@@ -128,16 +151,39 @@ function AdminTable({ activeTab }) {
                 <div className="update-group" key={field.name}>
                   <label>{field.label}</label>
                   {field.type === "select" ? (
-                    <select name={field.name} className="modal-input" defaultValue={val} disabled={field.readOnly}>
-                      <option value="" disabled>Выберите...</option>
+                    <select
+                      name={field.name}
+                      className="modal-input"
+                      defaultValue={val}
+                      disabled={field.readOnly}
+                    >
+                      <option value="" disabled>
+                        Выберите...
+                      </option>
                       {field.options?.map((opt) => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
                       ))}
                     </select>
                   ) : field.type === "file" ? (
-                    <div className="file-input-wrapper"><input type="file" className="modal-input" /></div>
+                    <div className="file-input-wrapper">
+                      <img
+                        src={`http://localhost:5078${val}`}
+                        alt={field.label}
+                        className="file-input-wrapper-img"
+                      />
+                      <input type="file" className="modal-input" />
+                    </div>
                   ) : (
-                    <input type={field.type} name={field.name} defaultValue={val} className="modal-input" readOnly={field.readOnly} step={field.step} />
+                    <input
+                      type={field.type}
+                      name={field.name}
+                      defaultValue={val}
+                      className="modal-input"
+                      readOnly={field.readOnly}
+                      step={field.step}
+                    />
                   )}
                 </div>
               );
@@ -153,26 +199,49 @@ function AdminTable({ activeTab }) {
           formId="sub-edit-form"
           onDelete={() => subOps.handleSubDelete(subOps.subEditingItem.id)}
         >
-          <form id="sub-edit-form" onSubmit={subOps.handleSubUpdateSave} className="update-modal__form-grid">
-            {subOps.subFields.filter((f) => !f.hideOnEdit).map((field) => {
-              let val = subOps.subEditingItem[field.name];
-              if (field.type === "datetime-local") val = toLocalISOString(val);
-              return (
-                <div className="update-group" key={field.name}>
-                  <label>{field.label}</label>
-                  {field.type === "select" ? (
-                    <select name={field.name} className="modal-input" defaultValue={val} disabled={field.readOnly}>
-                      <option value="" disabled>Выберите...</option>
-                      {field.options?.map((opt) => (
-                         <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input name={field.name} type={field.type} defaultValue={val} className="modal-input" readOnly={field.readOnly} step={field.step} />
-                  )}
-                </div>
-              );
-            })}
+          <form
+            id="sub-edit-form"
+            onSubmit={subOps.handleSubUpdateSave}
+            className="update-modal__form-grid"
+          >
+            {subOps.subFields
+              .filter((f) => !f.hideOnEdit)
+              .map((field) => {
+                let val = subOps.subEditingItem[field.name];
+                if (field.type === "datetime-local")
+                  val = toLocalISOString(val);
+                return (
+                  <div className="update-group" key={field.name}>
+                    <label>{field.label}</label>
+                    {field.type === "select" ? (
+                      <select
+                        name={field.name}
+                        className="modal-input"
+                        defaultValue={val}
+                        disabled={field.readOnly}
+                      >
+                        <option value="" disabled>
+                          Выберите...
+                        </option>
+                        {field.options?.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        name={field.name}
+                        type={field.type}
+                        defaultValue={val}
+                        className="modal-input"
+                        readOnly={field.readOnly}
+                        step={field.step}
+                      />
+                    )}
+                  </div>
+                );
+              })}
           </form>
         </UpdateModal>
       )}

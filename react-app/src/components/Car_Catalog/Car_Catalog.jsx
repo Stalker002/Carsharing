@@ -1,140 +1,179 @@
-import "./Car_Catalog.css";
-import { useCallback, useState } from 'react'
-import Like from "../../svg/Popular_Car/like.svg"
-import Liked from "../../svg/Popular_Car/liked.svg"
-import Fuel from "../../svg/Popular_Car/fuel.svg"
-import Transmission from "../../svg/Popular_Car/transmission.svg"
-import People from "../../svg/Popular_Car/people.svg"
-import car1 from "../../svg/Popular_Car/BMW_i8.png";
-import car2 from "../../svg/Popular_Car/Voyah_Free.png";
-import car3 from "../../svg/Popular_Car/BMW_X7.png";
-import car4 from "../../svg/Popular_Car/Tesla_S.png";
+import { useEffect, useCallback, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-function CarCatalog() {
+import { getCarsByCategory } from "../../redux/actions/cars";
+
+import Like from "../../svg/Popular_Car/like.svg";
+import Liked from "../../svg/Popular_Car/liked.svg";
+import Fuel from "../../svg/Popular_Car/fuel.svg";
+import Transmission from "../../svg/Popular_Car/transmission.svg";
+import People from "../../svg/Popular_Car/people.svg";
+import "./Car_Catalog.css";
+
+function CarCatalog({ filters }) {
+  const dispatch = useDispatch();
+
+  const cars = useSelector((state) => state.cars?.carsByCategory || []);
+  const isLoading = useSelector((state) => state.cars?.isCarsLoading);
+
+  useEffect(() => {
+    if (cars.length === 0) {
+      dispatch(getCarsByCategory());
+    }
+  }, [dispatch, cars.length]);
+
+  const getCapacity = (car) => {
+      if (car.capacity) return String(car.capacity);
+      if (["Спорткар", "Грузовой"].includes(car.categoryName)) return "2";
+      if (["Минивэн", "Внедорожник"].includes(car.categoryName)) return "6";
+      return "4";
+  };
+
+  const filteredCars = useMemo(() => {
+      return cars.filter((car) => {
+        if (filters.types.length > 0 && !filters.types.includes(car.categoryName)) {
+            return false;
+        }
+
+        const seats = getCapacity(car);
+        const hasLargeCapacity = filters.capacities.includes("8") && Number(seats) >= 8;
+        const hasExactCapacity = filters.capacities.includes(seats);
+        if (filters.capacities.length > 0 && !hasExactCapacity && !hasLargeCapacity) {
+            return false;
+        }
+
+        if (car.pricePerDay > filters.maxPrice) {
+            return false;
+        }
+        return true;
+      });
+  }, [cars, filters]);
 
   const toggleFavorite = useCallback((id) => {
-    setCars(prev => prev.map(car =>
-      car.id === id ? { ...car, favorite: !car.favorite } : car
-    ));
+    console.log("Toggle favorite:", id);
+    // Тут должен быть dispatch(addToFavorites(id))
   }, []);
 
-  const [cars, setCars] = useState([
-    {
-      id: 1,
-      name: "BMW i8",
-      type: "Спорт",
-      fuel: "90Л",
-      transmission: "Автомат",
-      capacity: "2 места",
-      price: 99,
-      oldPrice: null,
-      image: car1,
-      favorite: false,
-    },
-    {
-      id: 2,
-      name: "Voyah Free",
-      type: "Премиум",
-      fuel: "40Л",
-      transmission: "Автомат",
-      capacity: "4 места",
-      price: 80,
-      oldPrice: 100,
-      image: car2,
-      favorite: true,
-    },
-    {
-      id: 3,
-      name: "BMW X7 6 мест",
-      type: "Внедорожник",
-      fuel: "70Л",
-      transmission: "Автомат",
-      capacity: "6 мест",
-      price: 96,
-      oldPrice: null,
-      image: car3,
-      favorite: true,
-    },
-    {
-      id: 4,
-      name: "Tesla Model S Performance Ludicrous",
-      type: "Электро",
-      fuel: null,
-      transmission: "Автомат",
-      capacity: "4 места",
-      price: 80,
-      oldPrice: 100,
-      image: car4,
-      favorite: false,
-    },
-  ]);
+  const renderCard = (filteredCars) => {
+    const imageUrl = filteredCars.imagePath
+      ? `http://localhost:5078${filteredCars.imagePath}`
+      : "https://via.placeholder.com/300x200?text=No+Image";
 
-  const sections = [
-    { title: "Популярные автомобили", data: cars.slice(0) },
-    { title: "Рекомендуемые автомобили", data: cars.slice(0) },
-  ];
+       const seatsCount = getCapacity(filteredCars);
 
-  const renderCard = (car) => (
-    <div key={car.id} className="card-card">
-      <div className="card-header">
-        <div>
-          <h3>{car.name}</h3>
-          <p>{car.type}</p>
-        </div>
-        <img
-          src={car.favorite ? Liked : Like}
-          alt="like"
-          className={`heart ${car.favorite ? "active" : ""}`}
-          onClick={() => toggleFavorite(car.id)}
-        />
-      </div>
-
-      <div className="card-image">
-        <img src={car.image} alt={car.name} />
-      </div>
-
-      <div className="card-info">
-        {car.fuel && (
-          <div className="card-icon">
-            <img src={Fuel} alt="Топливо" /> {car.fuel}
+    return (
+      <div key={filteredCars.id} className="card-card">
+        <div className="card-header">
+          <div>
+            <h3>
+              {filteredCars.brand || ""}{" "}
+              {filteredCars.model || `Авто #${car.id}`}
+            </h3>
+            <p>{filteredCars.categoryName || "Стандарт"}</p>
           </div>
-        )}
-        <div className="card-icon">
-          <img src={Transmission} alt="Коробка передач" /> {car.transmission}
+          <img
+            src={filteredCars.isFavorite ? Liked : Like}
+            alt="like"
+            className={`heart ${filteredCars.isFavorite ? "active" : ""}`}
+            onClick={() => toggleFavorite(filteredCars.id)}
+          />
         </div>
-        <div className="card-icon">
-          <img src={People} alt="Мест" /> {car.capacity}
+
+        <div className="card-image">
+          <img src={imageUrl} alt={filteredCars.model} />
+        </div>
+
+        <div className="card-info">
+          <div className="card-icon">
+            <img src={Fuel} alt="Топливо" />
+            {filteredCars.maxFuel ? `${filteredCars.maxFuel}Л` : "60Л"}
+          </div>
+          <div className="card-icon">
+            <img src={Transmission} alt="Коробка" />
+            {filteredCars.transmission || "Автомат"}
+          </div>
+          <div className="card-icon">
+            <img src={People} alt="Мест" />
+            {seatsCount} места
+          </div>
+        </div>
+
+        <div className="card-footer">
+          <div className="price">
+            <h4>
+              {filteredCars.pricePerDay
+                ? filteredCars.pricePerDay.toFixed(2)
+                : "0.00"}{" "}
+              BYN
+              <span>/день</span>
+            </h4>
+            {filteredCars.oldPrice && (
+              <p className="old-price">{filteredCars.oldPrice} BYN</p>
+            )}
+          </div>
+          <Link to={`/car-catalog/${filteredCars.id}`}>
+            <button className="rent-btn">Арендовать</button>
+          </Link>
         </div>
       </div>
+    );
+  };
 
-      <div className="card-footer">
-        <div className="price">
-          <h4>
-            {car.price.toFixed(1)} BYN/<span>день</span>
-          </h4>
-          {car.oldPrice && (
-            <p className="old-price">{car.oldPrice.toFixed(1)} BYN</p>
-          )}
-        </div>
-        <Link to={`/car-catalog/${car.id}`}>
-          <button className="rent-btn">Арендовать</button>
-        </Link>
+  if (isLoading) {
+    return (
+      <div style={{ padding: "50px", textAlign: "center" }}>
+        Загрузка автомобилей...
       </div>
-    </div>
-  );
-
+    );
+  }
+  const isFiltering = filters.types.length > 0 
+                   || filters.capacities.length > 0 
+                   || filters.maxPrice < 500;
   return (
     <section className="catalog-page">
-      {sections.map(({ title, data }) => (
-        <div key={title}>
+      {isFiltering ? (
+        <div>
           <div className="popular-header">
-            <h2>{title}</h2>
+            <h2>Результаты поиска ({filteredCars.length})</h2>
           </div>
-          <div className="catalog-grid">{data.map(renderCard)}</div>
+
+          {filteredCars.length > 0 ? (
+            <div className="catalog-grid">{filteredCars.map(renderCard)}</div>
+          ) : (
+            <div
+              style={{ padding: "40px", textAlign: "center", color: "#888" }}
+            >
+              По вашему запросу ничего не найдено.
+            </div>
+          )}
         </div>
-      ))}
+      ) : (
+        <>
+          <div>
+            <div className="popular-header">
+              <h2>Популярные автомобили</h2>
+            </div>
+            <div className="catalog-grid">
+              {cars.slice(0, 4).map(renderCard)}
+            </div>
+          </div>
+          <div>
+            <div className="popular-header">
+              <h2>Рекомендуемые автомобили</h2>
+            </div>
+            <div className="catalog-grid">{cars.slice(4).map(renderCard)}</div>
+          </div>
+        </>
+      )}
+
+      {cars.length === 0 && !isLoading && (
+        <p style={{ textAlign: "center", fontSize: "18px" }}>
+          Нет доступных автомобилей.
+        </p>
+      )}
     </section>
   );
 }
+
 export default CarCatalog;
