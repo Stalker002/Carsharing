@@ -1,5 +1,6 @@
 ﻿using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -16,6 +17,7 @@ public class TariffController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<StatusResponse>>> GetTariffs()
     {
         var statuses = await _tariffsService.GetTariffs();
@@ -25,6 +27,7 @@ public class TariffController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<StatusResponse>>> GetTariffById(int id)
     {
         var statuses = await _tariffsService.GetTariffById(id);

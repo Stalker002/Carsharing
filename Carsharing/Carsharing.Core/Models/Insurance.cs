@@ -42,13 +42,13 @@ public class Insurance
     {
         var error = string.Empty;
         var allowedTypes = new[] { "ОСАГО", "КАСКО" };
+        var allowedStatusTypes = new[] { 23, 24, 25 };
 
         if (carId < 0)
             error = "Car Id must be positive";
 
-        if (statusId < 0)
-            error = "Status Id must be positive";
-        // Прописать определенные статусы
+        if (!allowedStatusTypes.Contains(statusId))
+            error = $"Invalid insurance type. Allowed: \"23. Активна\", \"24. Истекла\", \"25. Аннулирована\" ";
 
         if (string.IsNullOrWhiteSpace(type))
             error = "Type can't be empty";

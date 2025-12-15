@@ -2,6 +2,7 @@
 using Carsharing.Application.Services;
 using Carsharing.Contracts;
 using Carsharing.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -18,6 +19,7 @@ public class BookingsController : ControllerBase
     }
 
     [HttpGet("unpaged")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<BookingsResponse>>> GetBookings()
     {
         var bookings = await _bookingsService.GetBookings();
@@ -28,6 +30,7 @@ public class BookingsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<BookingsResponse>>> GetPagedBookings(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -44,6 +47,7 @@ public class BookingsController : ControllerBase
     }
 
     [HttpGet("byClient")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<BookingsResponse>>> GetBookingByClientId()
     {
         var userId = int.Parse(User.FindFirst("userId")!.Value);
@@ -56,6 +60,7 @@ public class BookingsController : ControllerBase
     }
 
     [HttpGet("pagedByClient")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<BookingsResponse>>> GetPagedBookingByClient(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -74,6 +79,7 @@ public class BookingsController : ControllerBase
     }
 
     [HttpGet("byCar/{carId:int}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<BookingsResponse>>> GetBookingByCarId(int carId)
     {
         var bookings = await _bookingsService.GetBookingsByCarId(carId);
@@ -84,6 +90,7 @@ public class BookingsController : ControllerBase
     }
 
     [HttpGet("withInfo/{id:int}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<BookingWithFullInfoDto>>> GetBookingsWithInfo(int id)
     {
         var response = await _bookingsService.GetBookingWithInfo(id);
@@ -91,6 +98,7 @@ public class BookingsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<int>> CreateBooking([FromBody] BookingsRequest request)
     {
         var (booking, error) = Booking.Create(
@@ -109,6 +117,7 @@ public class BookingsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> UpdateBooking(int id, [FromBody] BookingsRequest request)
     {
         var bookingId = await _bookingsService.UpdateBooking(id, request.StatusId, request.CarId, request.ClientId,
@@ -118,6 +127,7 @@ public class BookingsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeleteBooking(int id)
     {
         return Ok(await _bookingsService.DeleteBooking(id));

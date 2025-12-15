@@ -1,6 +1,7 @@
 ﻿using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -17,6 +18,7 @@ public class MaintenanceController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenances()
     {
         var maintenances = await _maintenancesService.GetMaintenances();
@@ -26,6 +28,7 @@ public class MaintenanceController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceById(int id)
     {
         var maintenances = await _maintenancesService.GetMaintenanceById(id);
@@ -35,6 +38,7 @@ public class MaintenanceController : ControllerBase
     }
 
     [HttpGet("byCar/{carId:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceByCarId(int carId)
     {
         var maintenances = await _maintenancesService.GetMaintenanceByCarId(carId);
@@ -44,6 +48,7 @@ public class MaintenanceController : ControllerBase
     }
 
     [HttpGet("byDate")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceByDateRange([FromQuery] DateOnly from,
         [FromQuery] DateOnly to)
     {
@@ -58,6 +63,7 @@ public class MaintenanceController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> CreateMaintenance([FromBody] MaintenanceRequest request)
     {
         var (maintenance, error) = Maintenance.Create(
@@ -76,6 +82,7 @@ public class MaintenanceController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> UpdateMaintenance(int id, [FromBody] MaintenanceRequest request)
     {
         var maintenanceId = await _maintenancesService.UpdateMaintenance(id, request.CarId, request.WorkType,
@@ -84,6 +91,7 @@ public class MaintenanceController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeleteMaintenance(int id)
     {
         return Ok(await _maintenancesService.DeleteMaintenance(id));

@@ -1,6 +1,7 @@
 ﻿using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -17,6 +18,7 @@ public class InsurancesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<InsurancesResponse>>> GetInsurances()
     {
         var insurances = await _insurancesService.GetInsurances();
@@ -27,6 +29,7 @@ public class InsurancesController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<InsurancesResponse>>> GetInsuranceById(int id)
     {
         var insurances = await _insurancesService.GetInsuranceById(id);
@@ -37,6 +40,7 @@ public class InsurancesController : ControllerBase
     }
 
     [HttpGet("byCarId/{carId:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<InsurancesResponse>>> GetInsuranceByCarId(int carId)
     {
         var insurances = await _insurancesService.GetInsuranceByCarId(carId);
@@ -47,6 +51,7 @@ public class InsurancesController : ControllerBase
     }
 
     [HttpGet("ActiveByCarId/{carId:int}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<InsurancesResponse>>> GetActiveInsuranceByCarId(int carId)
     {
         var insurances = await _insurancesService.GetActiveInsuranceByCarId(carId);
@@ -57,6 +62,7 @@ public class InsurancesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> CreateInsurance([FromBody] InsuranceRequest request)
     {
         var (insurance, error) = Insurance.Create(
@@ -78,6 +84,7 @@ public class InsurancesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> UpdateInsurance(int id, [FromBody] InsuranceRequest request)
     {
         var insuranceId = await _insurancesService.UpdateInsurance(id, request.CarId, request.StatusId, request.Type,
@@ -86,6 +93,7 @@ public class InsurancesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeleteInsurance(int id)
     {
         return Ok(await _insurancesService.DeleteInsurance(id));

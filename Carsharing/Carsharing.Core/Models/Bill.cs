@@ -26,7 +26,7 @@ public class Bill
         DateTime issueDate, decimal? amount, decimal? remainingAmount)
     {
         var error = string.Empty;
-        var allowedStatuses = new[] { 13, 14, 15 };
+        var allowedStatuses = new[] { 13, 14, 15, 16 };
 
         if (tripId < 0)
             error = "Trip Id must be positive";

@@ -22,6 +22,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpGet("unpaged")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<ClientsResponse>>> GetClients()
     {
         var clients = await _clientsService.GetClients();
@@ -31,6 +32,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<ClientsResponse>>> GetPagedClients(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -47,6 +49,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<ClientsResponse>>> GetClientById(int id)
     {
         var clients = await _clientsService.GetClientById(id);
@@ -57,7 +60,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpGet("ByUserId/{userId:int}")]
-    [Authorize]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<ClientsResponse>>> GetClientByUserId(int userId)
     {
         var clients = await _clientsService.GetClientByUserId(userId);
@@ -67,7 +70,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpGet("My")]
-    [Authorize]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<ClientsResponse>>> GetClientByUserId()
     {
         var userId = int.Parse(User.FindFirst("userId")!.Value);
@@ -82,6 +85,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpGet("MyDocuments")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<ClientsResponse>>> GetMyDocuments()
     {
         var userId = int.Parse(User.FindFirst("userId")!.Value);
@@ -93,6 +97,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpGet("Documents/{clientId:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<ClientsResponse>>> GetClientDocuments(int clientId)
     {
         var clients = await _clientsService.GetClientDocuments(clientId);
@@ -102,6 +107,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost("with-user")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<int>> CreateClient([FromBody] ClientRegistrationRequest request)
     {
         var userExists = await _usersService.GetUserByLogin(request.Login);
@@ -152,6 +158,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<int>> UpdateClient(int id, [FromBody] ClientsRequest request)
     {
         var clientId =
@@ -160,6 +167,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeleteClient(int id)
     {
         return Ok(await _clientsService.DeleteClient(id));

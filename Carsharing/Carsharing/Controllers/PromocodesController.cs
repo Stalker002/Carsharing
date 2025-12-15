@@ -1,6 +1,7 @@
 ﻿using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -17,6 +18,7 @@ public class PromocodesController : ControllerBase
     }
 
     [HttpGet("unpaged")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodes()
     {
         var promocodes = await _promocodesService.GetPromocodes();
@@ -28,6 +30,7 @@ public class PromocodesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<PromocodeResponse>>> GetPagedPromocodes(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -44,6 +47,7 @@ public class PromocodesController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodeById(int id)
     {
         var promocodes = await _promocodesService.GetPromocodeById(id);
@@ -55,6 +59,7 @@ public class PromocodesController : ControllerBase
     }
 
     [HttpGet("Active")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<PromocodeResponse>>> GetActivePromocodes()
     {
         var promocodes = await _promocodesService.GetActivePromocode();
@@ -66,6 +71,7 @@ public class PromocodesController : ControllerBase
     }
 
     [HttpGet("pagedActive")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<PromocodeResponse>>> GetPagedActivePromocodes(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -82,6 +88,7 @@ public class PromocodesController : ControllerBase
     }
 
     [HttpGet("byCode/{code}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodeByCode(string code)
     {
         var promocodes = await _promocodesService.GetPromocodeByCode(code);
@@ -93,6 +100,7 @@ public class PromocodesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> CreatePromocode([FromBody] PromocodeRequest request)
     {
         var (promocode, error) = Promocode.Create(
@@ -111,6 +119,7 @@ public class PromocodesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> UpdatePromocode(int id, [FromBody] PromocodeRequest request)
     {
         var promocodeId = await _promocodesService.UpdatePromocode(id, request.StatusId, request.Code, request.Discount,
@@ -120,6 +129,7 @@ public class PromocodesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeletePromocode(int id)
     {
         return Ok(await _promocodesService.DeletePromocode(id));

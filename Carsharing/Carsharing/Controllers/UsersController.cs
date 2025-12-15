@@ -1,5 +1,6 @@
 ﻿using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -35,6 +36,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("unpaged")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<UsersResponse>>> GetUsers()
     {
         var users = await _usersService.GetUsers();
@@ -44,6 +46,7 @@ public class UsersController : ControllerBase
 
 
     [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<UsersResponse>>> GetPagedUsers(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -60,6 +63,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<UsersResponse>>> GetUserById(int id)
     {
         var users = await _usersService.GetUserById(id);
@@ -68,6 +72,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("MyUser")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<UsersResponse>>> GetMyUser()
     {
         var userId = int.Parse(User.FindFirst("userId")!.Value);
@@ -79,6 +84,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> CreateUser([FromBody] UsersRequest request)
     {
         var (user, error) = Core.Models.User.Create(
@@ -95,6 +101,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> UpdateUser(int id, [FromBody] UsersRequest request)
     {
         var userId = await _usersService.UpdateUser(id, request.RoleId, request.Login, request.Password);
@@ -102,6 +109,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeleteUser(int id)
     {
         return Ok(await _usersService.DeleteUser(id));

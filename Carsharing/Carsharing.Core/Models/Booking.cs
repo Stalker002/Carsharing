@@ -4,12 +4,6 @@ namespace Carsharing.Core.Models;
 
 public class Booking
 {
-    private readonly IStatusRepository _statusRepository;
-
-    public Booking(IStatusRepository statusRepository)
-    {
-        _statusRepository = statusRepository;
-    }
     private Booking(int id, int statusId, int carId, int clientId,
         DateTime? startTime, DateTime? endTime)
     {

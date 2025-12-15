@@ -1,6 +1,7 @@
 ﻿using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -17,6 +18,7 @@ public class ClientDocumentsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<ClientDocumentsResponse>>> GetDocuments()
     {
         var documents = await _clientDocumentsService.GetClientDocuments();
@@ -26,6 +28,7 @@ public class ClientDocumentsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<int>> CreateClientDocument([FromBody] ClientDocumentsRequest request)
     {
         var (document, error) = ClientDocument.Create(
@@ -45,6 +48,7 @@ public class ClientDocumentsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> UpdateDocument(int id, [FromBody] ClientDocumentsRequest request)
     {
         var documentId = await _clientDocumentsService.UpdateClientDocument(id, request.ClientId, request.Type,
@@ -54,6 +58,7 @@ public class ClientDocumentsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<int>> DeleteDocument(int id)
     {
         return Ok(await _clientDocumentsService.DeleteClientDocument(id));

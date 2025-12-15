@@ -34,13 +34,13 @@ public class Fine
             "Превышение скорости", "Нарушение правил парковки", "Несчастный случай",
             "Позднее возвращение", "Курение в машине", "Другое"
         };
-        var allowedStatusTypes = new[] { 16, 17, 18 };
+        var allowedStatusTypes = new[] { 17, 18, 19 };
 
         if (tripId < 0)
             error = "Trip Id must be positive";
         
         if (!allowedStatusTypes.Contains(statusId))
-            error = $"Invalid insurance type. Allowed: \"16. Начислен\", \"17. Ожидает оплаты\", \"18. Оплачен\" ";
+            error = $"Invalid fine status type. Allowed: \"16. Начислен\", \"17. Ожидает оплаты\", \"18. Оплачен\" ";
 
         if (string.IsNullOrWhiteSpace(type))
             error = "Fine type can't be empty";

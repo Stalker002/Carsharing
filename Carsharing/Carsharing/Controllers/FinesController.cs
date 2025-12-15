@@ -1,6 +1,7 @@
 ﻿using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -17,6 +18,7 @@ public class FinesController : ControllerBase
     }
 
     [HttpGet("unpaged")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<FinesResponse>>> GetFines()
     {
         var fines = await _finesService.GetFines();
@@ -27,7 +29,8 @@ public class FinesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<FinesResponse>>> GetPagedReviews(
+    [Authorize(Policy = "AdminPolicy")]
+    public async Task<ActionResult<List<FinesResponse>>> GetPagedFine(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
     {
@@ -43,6 +46,7 @@ public class FinesController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<FinesResponse>>> GetFineById(int id)
     {
         var fines = await _finesService.GetFineById(id);
@@ -53,6 +57,7 @@ public class FinesController : ControllerBase
     }
 
     [HttpGet("byTrip/{tripId:int}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<FinesResponse>>> GetFinesByTripId(int tripId)
     {
         var fines = await _finesService.GetFinesByTripId(tripId);
@@ -63,6 +68,7 @@ public class FinesController : ControllerBase
     }
 
     [HttpGet("byStatus/{statusId:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<FinesResponse>>> GetFinesByStatusId(int statusId)
     {
         var fines = await _finesService.GetFinesByStatusId(statusId);
@@ -73,6 +79,7 @@ public class FinesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> CreateFine([FromBody] FinesRequest request)
     {
         var (fines, error) = Fine.Create(
@@ -91,6 +98,7 @@ public class FinesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> UpdateFine(int id, [FromBody] FinesRequest request)
     {
         var fineId = await _finesService.UpdateFine(id, request.TripId, request.StatusId, request.Type, request.Amount,
@@ -99,6 +107,7 @@ public class FinesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeleteFine(int id)
     {
         return Ok(await _finesService.DeleteFine(id));

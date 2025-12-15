@@ -19,7 +19,7 @@ public class BillsController : ControllerBase
     }
 
     [HttpGet("unpaged")]
-    // [Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<BillsResponse>>> GetBills()
     {
         var bills = await _billsService.GetBills();
@@ -36,6 +36,7 @@ public class BillsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<BillsResponse>>> GetPagedBills(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -58,6 +59,7 @@ public class BillsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<BillsResponse>>> GetBillById(int id)
     {
         var bills = await _billsService.GetBillById(id);
@@ -74,6 +76,7 @@ public class BillsController : ControllerBase
     }
 
     [HttpGet("pagedByUser")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<BillWithMinInfoDto>>> GetPagedBillWithMinInfoByUser(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -98,6 +101,7 @@ public class BillsController : ControllerBase
     }
 
     [HttpGet("info/{id:int}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<BillsResponse>>> GetBillWithInfoById(int id)
     {
         var bill = await _billsService.GetBillWithInfoById(id);
@@ -109,6 +113,7 @@ public class BillsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<int>> CreateBill([FromBody] BillsRequest request)
     {
         var (bill, error) = Bill.Create(
@@ -128,6 +133,7 @@ public class BillsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> UpdateBill(int id, [FromBody] BillsRequest request)
     {
         var billId = await _billsService.UpdateBill(
@@ -142,6 +148,7 @@ public class BillsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeleteBill(int id)
     {
         return Ok(await _billsService.DeleteBill(id));

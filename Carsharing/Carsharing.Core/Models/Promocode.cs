@@ -30,7 +30,7 @@ public class Promocode
         DateOnly startDate, DateOnly endDate)
     {
         var error = string.Empty;
-        var allowedStatuses = new[] { 19, 20, 21 };
+        var allowedStatuses = new[] { 20, 21, 22 };
 
         if (!allowedStatuses.Contains(statusId))
             error = $"Invalid insurance type. Allowed: \"19. Активен\", \"20. Истек\", \"21. Использован\" ";

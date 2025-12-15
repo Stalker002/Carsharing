@@ -4,7 +4,7 @@ namespace Carsharing.Application.DTOs;
 
 public record CarsCreateRequest(
     int StatusId,
-    string Name,
+    string TariffName,
     decimal PricePerMinute,
     decimal PricePerKm,
     decimal PricePerDay,

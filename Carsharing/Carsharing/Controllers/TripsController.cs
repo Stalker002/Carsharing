@@ -4,6 +4,7 @@ using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -24,6 +25,7 @@ public class TripsController : ControllerBase
     }
 
     [HttpGet("unpaged")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<TripResponse>>> GetTrips()
     {
         var trips = await _tripService.GetTrips();
@@ -35,6 +37,7 @@ public class TripsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<TripResponse>>> GetPagedTrips(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -52,6 +55,7 @@ public class TripsController : ControllerBase
     }
 
     [HttpGet("pagedByClient")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<TripWithMinInfoDto>>> GetPagedTripsByClient(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -71,6 +75,7 @@ public class TripsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<TripWithInfoDto>>> GetTripWithInfo(int id)
     {
         var tripWithInfo = await _tripService.GetTripWithInfo(id);
@@ -82,6 +87,7 @@ public class TripsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<int>> CreateTrip([FromBody] TripCreateRequest request)
     {
         await using var transaction = await _context.Database.BeginTransactionAsync();
@@ -135,6 +141,7 @@ public class TripsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> UpdateTrip(int id, [FromBody] TripRequest request)
     {
         var tripId = await _tripService.UpdateTrip(id, request.BookingId, request.StatusId, request.TariffType,
@@ -144,6 +151,7 @@ public class TripsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeleteTrip(int id)
     {
         return Ok(await _tripService.DeleteTrip(id));

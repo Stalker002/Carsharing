@@ -41,35 +41,22 @@ public class CarsService : ICarsService
 
     public async Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit)
     {
-        var car = await _carRepository.GetPaged(page, limit);
-        var tariffId = car.Select(ca => ca.TariffId).FirstOrDefault();
-        var statusId = car.Select(ca => ca.StatusId).FirstOrDefault();
-        var categoryId = car.Select(ca => ca.CategoryId).FirstOrDefault();
-        var specificationId = car.Select(c => c.SpecificationId).FirstOrDefault();
-
-        var tariff = await _tariffRepository.GetById(tariffId);
-
-        var status = await _statusRepository.GetById(statusId);
-
-        var category = await _categoryRepository.GetById(categoryId);
-
-        var specification = await _specificationCarRepository.GetById(specificationId);
-
-        var response = (from c in car
-                        join t in tariff on c.TariffId equals t.Id
-                        join st in status on c.StatusId equals st.Id
-                        join sp in specification on c.SpecificationId equals sp.Id
-                        join cat in category on c.CategoryId equals cat.Id
-                        select new CarWithMinInfoDto(
-                            c.Id,
-                            st.Name,
-                            t.PricePerDay,
-                            cat.Name,
-                            sp.FuelType,
-                            sp.Brand,
-                            sp.Model,
-                            sp.Transmission,
-                            c.ImagePath)).ToList();
+        var response = await _context.Car
+            .OrderBy(c => c.Id)
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .Select(c => new CarWithMinInfoDto(
+                c.Id,
+                c.Status!.Name,
+                c.Tariff!.PricePerDay,
+                c.Category!.Name,
+                c.SpecificationCar!.FuelType!,
+                c.SpecificationCar.Brand!,
+                c.SpecificationCar.Model!,
+                c.SpecificationCar.Transmission!,
+                c.ImagePath
+            ))
+            .ToListAsync();
 
         return response;
 
@@ -233,7 +220,7 @@ public class CarsService : ICarsService
         {
             var (tariff, errorTariff) = Tariff.Create(
                 0, 
-                request.Name, 
+                request.TariffName, 
                 request.PricePerMinute,
                 request.PricePerKm,
                 request.PricePerDay);

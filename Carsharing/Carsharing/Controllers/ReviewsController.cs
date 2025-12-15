@@ -3,6 +3,7 @@ using Carsharing.Application.DTOs;
 using Carsharing.Application.Services;
 using Carsharing.Contracts;
 using Carsharing.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -19,6 +20,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet("unpaged")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<ReviewResponse>>> GetReviews()
     {
         var reviews = await _reviewsService.GetReviews();
@@ -29,6 +31,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<ReviewResponse>>> GetPagedReviews(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -45,6 +48,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<ReviewResponse>>> GetReviewById(int id)
     {
         var reviews = await _reviewsService.GetReviewById(id);
@@ -55,6 +59,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet("byCar/{carId:int}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<ReviewWithClientInfo>>> GetReviewsByCar(int carId)
     {
         var reviews = await _reviewsService.GetReviewsByCarId(carId);
@@ -66,6 +71,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet("pagedByCar/{carId:int}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<ReviewWithClientInfo>>> GetPagedReviewsByCarId(
         int carId,
         [FromQuery(Name = "_page")] int page = 1,
@@ -83,6 +89,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<int>> CreateReview([FromBody] ReviewRequest request)
     {
         var (review, error) = Review.Create(
@@ -101,6 +108,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<int>> UpdateReview(int id, [FromBody] ReviewRequest request)
     {
         var reviewId = await _reviewsService.UpdateReview(id, request.ClientId, request.CarId, request.Rating,
@@ -109,6 +117,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeleteReview(int id)
     {
         return Ok(await _reviewsService.DeleteReview(id));

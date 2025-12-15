@@ -1,6 +1,7 @@
 ﻿using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -17,6 +18,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<CategoriesResponse>>> GetCategories()
     {
         var categories = await _categoriesService.GetCategories();
@@ -26,6 +28,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> CreateCategory([FromBody] CategoriesRequest request)
     {
         var (category, error) = Category.Create(
@@ -40,6 +43,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> UpdateCategory(int id, [FromBody] CategoriesRequest request)
     {
         var categoryId = await _categoriesService.UpdateCategory(id, request.Name);
@@ -48,7 +52,8 @@ public class CategoryController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult<int>> DeleteUser(int id)
+    [Authorize(Policy = "AdminPolicy")]
+    public async Task<ActionResult<int>> DeleteCategory(int id)
     {
         return Ok(await _categoriesService.DeleteCategory(id));
     }

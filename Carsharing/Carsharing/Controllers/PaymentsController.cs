@@ -1,6 +1,7 @@
 ﻿using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
@@ -17,6 +18,7 @@ public class PaymentsController : ControllerBase
     }
 
     [HttpGet("unpaged")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<PaymentResponse>>> GetPayments()
     {
         var payments = await _paymentService.GetPayments();
@@ -26,6 +28,7 @@ public class PaymentsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<PaymentResponse>>> GetPagedPayments(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -42,6 +45,7 @@ public class PaymentsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<PaymentResponse>>> GetPaymentById(int id)
     {
         var payments = await _paymentService.GetPaymentById(id);
@@ -51,6 +55,7 @@ public class PaymentsController : ControllerBase
     }
 
     [HttpGet("byBill/{billId:int}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<PaymentResponse>>> GetPaymentByBillId(int billId)
     {
         var payments = await _paymentService.GetPaymentByBillId(billId);
@@ -60,6 +65,7 @@ public class PaymentsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<int>> CreatePayment([FromBody] PaymentRequest request)
     {
         var (payment, error) = Payment.Create(
@@ -77,6 +83,7 @@ public class PaymentsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> UpdatePayment(int id, [FromBody] PaymentRequest request)
     {
         var paymentId =
@@ -85,6 +92,7 @@ public class PaymentsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeletePayment(int id)
     {
         return Ok(await _paymentService.DeletePayment(id));

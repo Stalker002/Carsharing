@@ -1,5 +1,6 @@
 ﻿using Carsharing.Application.DTOs;
 using Carsharing.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ICarsService = Carsharing.Application.Services.ICarsService;
 
@@ -17,6 +18,7 @@ public class CarsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<CarsResponse>>> GetPagedCars(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -33,6 +35,7 @@ public class CarsController : ControllerBase
     }
 
     [HttpGet("with-info/{id:int}")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<CarWithInfoDto>>> GetCarWithInfo(int id)
     {
         var carsWithInfo = await _carsService.GetCarWithInfo(id);
@@ -43,6 +46,7 @@ public class CarsController : ControllerBase
     }
 
     [HttpGet("with-info-admin/{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<CarWithInfoAdminDto>>> GetCarWithInfoAdmin(int id)
     {
         var carsWithInfo = await _carsService.GetCarWithInfoAdmin(id);
@@ -54,6 +58,7 @@ public class CarsController : ControllerBase
     }
 
     [HttpGet("pagedByCategory")]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<CarWithMinInfoDto>>> GetCarsByCategories([FromQuery] List<int>? ids,
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
@@ -86,6 +91,7 @@ public class CarsController : ControllerBase
 
     [HttpPost]
     [Consumes("multipart/form-data")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> CreateCar([FromForm] CarsCreateRequest request)
     {
         var (carId, error) = await _carsService.CreateCarFullAsync(request);
@@ -97,6 +103,7 @@ public class CarsController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Consumes("multipart/form-data")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> UpdateCar(int id, [FromForm] CarUpdateDto request)
     {
         if (!ModelState.IsValid)
@@ -110,6 +117,7 @@ public class CarsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeleteCar(int id)
     {
         return Ok(await _carsService.DeleteCar(id));
