@@ -38,7 +38,7 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
     } else {
       setPage(1);
     }
-  }, []);
+  }, [page, cfg, dispatch]);
 
   useEffect(() => {
     if (!cfg || !cfg.action || cfg.isDashboard) return;

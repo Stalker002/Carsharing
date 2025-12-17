@@ -6,6 +6,12 @@ import {
   deleteTripFailed,
   deleteTripStarted,
   deleteTripSuccess,
+  finishTripFailed,
+  finishTripStarted,
+  finishTripSuccess,
+  getActiveTripFailed,
+  getActiveTripStarted,
+  getActiveTripSuccess,
   getInfoTripFailed,
   getInfoTripStarted,
   getInfoTripSuccess,
@@ -116,6 +122,55 @@ export const getTripWithInfo = (id) => {
         "Неизвестная ошибка поездок";
 
       dispatch(getInfoTripFailed(error));
+
+      return { success: false, message: errorMessage };
+    }
+  };
+};
+
+export const getActiveTrip = () => {
+  return async (dispatch) => {
+    try {
+      dispatch(getActiveTripStarted());
+
+      const response = await api.trips.getActiveTrip();
+
+      const data = Array.isArray(response.data) && response.data.length > 0 
+          ? response.data[0] 
+          : response.data;
+
+      dispatch(getActiveTripSuccess(data));
+      return { success: true, data: data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка поездок";
+
+      dispatch(getActiveTripFailed(error));
+
+      return { success: false, message: errorMessage };
+    }
+  };
+};
+
+export const finishTrip = (data) => {
+  return async (dispatch) => {
+    try {
+      dispatch(finishTripStarted());
+
+      const response = await api.trips.finishTrip(data);
+
+
+      dispatch(finishTripSuccess(response.data));
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка поездок";
+
+      dispatch(finishTripFailed(error));
 
       return { success: false, message: errorMessage };
     }

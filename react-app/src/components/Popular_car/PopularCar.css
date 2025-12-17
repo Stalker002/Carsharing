@@ -20,7 +20,7 @@
   font-size: 1.125rem
 }
 
-.cars-grid {
+.popular-cars-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 25px;
@@ -32,6 +32,7 @@
   background: #ffffff;
   border-radius: 20px;
   padding: 20px;
+  cursor: pointer;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   transition: 0.3s ease;
   width: 300px
@@ -50,7 +51,7 @@
 
 .car-header h3 {
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #1b1b1b;
   width: 230px;
 }

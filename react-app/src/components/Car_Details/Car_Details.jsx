@@ -1,184 +1,289 @@
-import "./Car_Details.css";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getInfoCars, getCarsByCategory } from "../../redux/actions/cars";
 import Like from "../../svg/Popular_Car/like.svg";
-import Liked from "../../svg/Popular_Car/liked.svg";
-import car1 from "../../svg/Popular_Car/BMW_i8.png";
-import car2 from "../../svg/Popular_Car/Voyah_Free.png";
-import car3 from "../../svg/Popular_Car/BMW_X7.png";
-import car4 from "../../svg/Popular_Car/Tesla_S.png";
 
-import { useState } from "react";
+import "./Car_Details.css";
+import Fuel from "../../svg/Popular_Car/fuel.svg";
 import Transmission from "../../svg/Popular_Car/transmission.svg";
 import People from "../../svg/Popular_Car/people.svg";
-import Fuel from "../../svg/Popular_Car/fuel.svg";
+import { getReviewsByCar } from "../../redux/actions/reviews";
 
-export default function Car_Details() {
-    const cars = [
-        {
-            id: 1,
-            name: "BMW i8",
-            type: "Спорт",
-            fuel: "90Л",
-            transmission: "Автомат",
-            capacity: "2 места",
-            price: 99,
-            oldPrice: null,
-            image: car1,
-            description: "BMW i8 — гибридный спорткар с потрясающим дизайном и динамикой.",
-            rating: 4.7,
-            reviews: [
-                {
-                    id: 1,
-                    name: "Алексей Смирнов",
-                    position: "CEO at BMW Club",
-                    date: "21 июля 2024",
-                    text: "Отличная машина! Ездить — одно удовольствие.",
-                    rating: 5,
-                    avatar: "/avatars/alex.png"
-                },
-                {
-                    id: 2,
-                    name: "Ирина Ковалёва",
-                    position: "Маркетолог",
-                    date: "15 июня 2024",
-                    text: "Брала на выходные — комфорт, стиль и внимание на дороге гарантированы.",
-                    rating: 4,
-                    avatar: "/avatars/skylar.png"
-                }
-            ]
-        },
-        {
-            id: 2,
-            name: "Voyah Free",
-            type: "Премиум",
-            fuel: "40Л",
-            transmission: "Автомат",
-            capacity: "4 места",
-            price: 80,
-            oldPrice: 100,
-            image: car2,
-            description: "Voyah Free — премиум SUV с электрической силовой установкой и комфортом бизнес-класса.",
-            rating: 4.5,
-            reviews: []
-        },
-        {
-            id: 3,
-            name: "BMW X7 6 мест",
-            type: "Внедорожник",
-            fuel: "70Л",
-            transmission: "Автомат",
-            capacity: "6 мест",
-            price: 96,
-            oldPrice: null,
-            image: car3,
-            description: "Флагманский внедорожник BMW с мощным двигателем и роскошным интерьером.",
-            rating: 4.8,
-            reviews: []
-        },
-        {
-            id: 4,
-            name: "Tesla Model S Performance Ludicrous",
-            type: "Электро",
-            fuel: null,
-            transmission: "Автомат",
-            capacity: "4 места",
-            price: 80,
-            oldPrice: 100,
-            image: car4,
-            description: "Мощный электроседан Tesla с ускорением, достойным суперкара.",
-            rating: 4.9,
-            reviews: []
-        }
-    ];
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const [favorite, setFavorite] = useState(false);
+const CarDetails = () => {
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const car = cars.find((c) => c.id === Number(id));
+  const car = useSelector((state) => state.cars.infoCar?.[0]);
+  const isLoading = useSelector((state) => state.cars.isCarsInfoLoading);
+  const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
 
-    if (!car) {
-        return (
-            <div className="car-not-found">
-                <h2>Машина не найдена 😢</h2>
-                <button onClick={() => navigate("/")} className="rent-btn">Назад</button>
-            </div>
-        );
+  const cars = useSelector((state) => state.cars?.carsByCategory || []);
+  const isCarLoading = useSelector((state) => state.cars?.isCarsLoading);
+
+  const reviews = useSelector((state) => state.reviews.reviewsByCar);
+  const isReviewsLoading = useSelector((state) => state.reviews.isReviewsLoading);
+
+  const getCapacity = (car) => {
+    if (car.capacity) return String(car.capacity);
+    if (["Спорткар", "Грузовой"].includes(car.categoryName)) return "2";
+    if (["Минивэн", "Внедорожник"].includes(car.categoryName)) return "6";
+    return "4";
+  };
+
+  const handleBookingClick = () => {
+    if (!isLoggedIn) {
+      alert("Пожалуйста, войдите в систему, чтобы арендовать авто.");
+      return;
     }
 
+    if (car.statusId !== 1 && car.statusName !== 'Доступна') {
+       return alert("Эта машина сейчас недоступна");
+    }
+
+    navigate(`/booking/${id}`);
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    dispatch(getInfoCars(id));
+    dispatch(getReviewsByCar(id));
+
+    if (cars.length === 0) {
+      dispatch(getCarsByCategory());
+    }
+  }, [dispatch, cars.length, id]);
+
+  if (isLoading || !car) {
+    return <div className="details-loading">Загрузка автомобиля...</div>;
+  }
+
+  const formatDate = (dateString) => {
+      if (!dateString) return "";
+      return new Date(dateString).toLocaleDateString("en-US", {
+          day: 'numeric', month: 'long', year: 'numeric'
+      });
+  };
+
+  const renderCard = (cars) => {
+    const imageUrl = cars.imagePath
+      ? `http://localhost:5078${cars.imagePath}`
+      : "https://via.placeholder.com/300x200?text=No+Image";
+
+    const seatsCount = getCapacity(cars);
+
     return (
-        <section className="car-details">
-            <div className="car-top">
-                {/* Левая часть */}
-                <div className="car-gallery">
-                    <div className="car-main-image">
-                        <div className="car-banner">
-                            <h2>{car.name}</h2>
-                            <p>{car.description}</p>
-                            <img src={car.image} alt={car.name} />
-                        </div>
-                    </div>
-                </div>
+      <div
+        key={cars.id}
+        className="card-card"
+        onClick={() => navigate(`/car-catalog/${cars.id}`)}
+      >
+        <div className="card-header">
+          <div>
+            <h3>
+              {cars.brand || ""} {cars.model || `Авто #${cars.id}`}
+            </h3>
+            <p>{cars.categoryName || "Стандарт"}</p>
+          </div>
+          {/* <img
+              src={cars.isFavorite ? Liked : Like}
+              alt="like"
+              className={`heart ${cars.isFavorite ? "active" : ""}`}
+              onClick={() => toggleFavorite(cars.id)}
+            /> */}
+        </div>
 
-                {/* Правая часть */}
-                <div className="car-info-panel">
-                    <div className="car-info-header">
-                        <div>
-                            <h2>{car.name}</h2>
-                            <p className="rating">
-                                <span>★ {car.rating}</span> ({car.reviews.length} отзывов)
-                            </p>
-                        </div>
-                        <img
-                            src={favorite ? Liked : Like}
-                            alt="like"
-                            className="heart"
-                            onClick={() => setFavorite(!favorite)}
-                        />
-                    </div>
+        <div className="card-image">
+          <img src={imageUrl} alt={cars.model} />
+        </div>
 
-                    <p className="car-description">{car.description}</p>
+        <div className="card-info">
+          <div className="card-icon">
+            <img src={Fuel} alt="Топливо" />
+            {cars.maxFuel ? `${cars.maxFuel}Л` : "60Л"}
+          </div>
+          <div className="card-icon">
+            <img src={Transmission} alt="Коробка" />
+            {cars.transmission || "Автомат"}
+          </div>
+          <div className="card-icon">
+            <img src={People} alt="Мест" />
+            {seatsCount} места
+          </div>
+        </div>
 
-                    <div className="car-specs">
-                        <div><span>Тип</span><strong>{car.type}</strong></div>
-                        <div><img src={Transmission} /><strong>{car.transmission}</strong></div>
-                        <div><img src={People} /><strong>{car.capacity}</strong></div>
-                        <div><img src={Fuel} /><strong>{car.fuel || "Электро"}</strong></div>
-                    </div>
+        <div className="card-footer">
+          <div className="price">
+            <h4>
+              {cars.pricePerDay ? cars.pricePerDay.toFixed(2) : "0.00"} BYN
+              <span>/день</span>
+            </h4>
+            {cars.oldPrice && <p className="old-price">{cars.oldPrice} BYN</p>}
+          </div>
+          <Link to={`/car-catalog/${cars.id}`}>
+            <button className="rent-btn">Арендовать</button>
+          </Link>
+        </div>
+      </div>
+    );
+  };
 
-                    <div className="car-price">
-                        <h3>{car.price} BYN/<span>день</span></h3>
-                        {car.oldPrice && (
-                            <p className="old-price">{car.oldPrice} BYN</p>
-                        )}
-                    </div>
+  const imageUrl = car.imagePath
+    ? `http://localhost:5078${car.imagePath}`
+    : "https://via.placeholder.com/600x400";
 
-                    <button className="rent-btn">Арендовать</button>
-                </div>
+  return (
+    <div className="details-page">
+      <div className="details-content">
+        <div className="top-section">
+          <div className="gallery-container">
+            <div className="hero-banner">
+              <div className="hero-text-desc">
+                <h1>
+                  {car.brand} {car.model}
+                </h1>
+                <p>
+                  Автомобиль класса <strong>{car.categoryName}</strong>,
+                  расположенный в городе <strong>{car.location}</strong>
+                </p>
+              </div>
+              <img src={imageUrl} alt={car.model} className="hero-car-img" />
+            </div>
+          </div>
+
+          <div className="car-info-card">
+            <div className="info-header">
+              <div>
+                <h2>
+                  {car.brand} {car.model}
+                </h2>
+                <span
+                  className={`status ${
+                    car.statusName === "Доступна" ? "active" : "inactive"
+                  }`}
+                >
+                  {car.statusName}
+                </span>
+              </div>
+              <img src={Like} className="main-heart" alt="like" />
             </div>
 
-            {/* Отзывы */}
-            {car.reviews.length > 0 && (
-                <div className="car-reviews">
-                    <h3>Отзывы <span className="badge">{car.reviews.length}</span></h3>
+            <div className="specs-grid">
+              <div className="spec-row">
+                <span className="spec-label">Тип автомобиля</span>
+                <span className="spec-value">{car.categoryName}</span>
+              </div>
 
-                    {car.reviews.map((review) => (
-                        <div key={review.id} className="review">
-                            <img className="avatar" src={review.avatar} alt={review.name} />
-                            <div className="review-content">
-                                <div className="review-header">
-                                    <h4>{review.name}</h4>
-                                    <p>{review.position}</p>
-                                    <span className="review-date">{review.date}</span>
-                                </div>
-                                <p className="review-text">{review.text}</p>
-                                <div className="review-rating">{"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</div>
-                            </div>
-                        </div>
-                    ))}
+              <div className="spec-row">
+                <span className="spec-label">Топливо</span>
+                <span className="spec-value">{car.fuelType}</span>
+              </div>
 
-                    <button className="show-all">Показать все ⌄</button>
+              <div className="spec-row">
+                <span className="spec-label">Коробка передач</span>
+                <span className="spec-value">{car.transmission}</span>
+              </div>
+
+              <div className="spec-row">
+                <span className="spec-label">Год выпуска</span>
+                <span className="spec-value">{car.year}</span>
+              </div>
+
+              <div className="spec-row">
+                <span className="spec-label">Уровень топлива</span>
+                <span className="spec-value">{car.fuelLevel}%</span>
+              </div>
+
+              <div className="spec-row">
+                <span className="spec-label">Номер</span>
+                <span className="spec-value">{car.stateNumber}</span>
+              </div>
+            </div>
+
+            <div className="info-footer">
+              <div>
+                <span className="price-val">
+                  {car.pricePerDay.toFixed(2)} BYN
+                </span>
+                <span className="price-unit"> / день</span>
+                <div className="old-price">
+                  {car.pricePerMinute} BYN / мин · {car.pricePerKm} BYN / км
                 </div>
-            )}
-        </section>
-    );
-}
+              </div>
+
+              <button
+                className="rent-now-btn"
+                disabled={car.statusName !== "Доступна"}
+                onClick={handleBookingClick}
+              >
+                Арендовать
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="reviews-container">
+          <div className="reviews-header">
+            <h3>
+              Отзывов <span className="badge">{reviews.length}</span>
+            </h3>
+          </div>
+
+          {isReviewsLoading ? (
+            <p>Загрузка отзывов...</p>
+          ) : reviews.length === 0 ? (
+            <p style={{ color: "#90A3BF" }}>Нету отзывов на эту машину</p>
+          ) : (
+            reviews.map((review) => (
+              <div key={review.id} className="review-item">
+                <div className="user-avatar">
+                  <span>
+                    {review.name?.[0]}
+                    {review.surname?.[0]}
+                  </span>
+                </div>
+                <div className="review-content">
+                  <div className="review-top">
+                    <div>
+                      <h4>
+                        {review.clientName} {review.clientSurname}
+                      </h4>
+                      <span className="role">{review.role || "Client"}</span>
+                    </div>
+                    <div className="review-meta">
+                      <span className="date">{formatDate(review.date)}</span>
+                      <div className="stars">
+                        {[...Array(5)].map((_, i) => (
+                          <img
+                            key={i}
+                            src={Star}
+                            alt=""
+                            style={{ opacity: i < review.rating ? 1 : 0.3 }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  {/* Текст отзыва */}
+                  <p className="review-text">{review.comment}</p>
+                </div>
+              </div>
+            ))
+          )}
+
+          {reviews.length > 0 && <div className="show-all-btn">Show All ⌄</div>}
+        </div>
+        <div className="popular-header-detail">
+          <Link to={`/car-catalog/`}>
+            <p className="popular-header-detail">Популярные автомобили</p>
+          </Link>
+        </div>
+        <div className="cars-grid-detail">
+          {cars.slice(0, 4).map(renderCard)}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CarDetails;

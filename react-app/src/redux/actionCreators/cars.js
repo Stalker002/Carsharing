@@ -47,9 +47,9 @@ export const setCarsTotal = (total) => ({
 export const getInfoCarStarted = () => ({
     type: GET_INFO_CAR_STARTED
 });
-export const getInfoCarSuccess = (cars) => ({
+export const getInfoCarSuccess = (infoCar) => ({
     type: GET_INFO_CAR_SUCCESS,
-    payload: cars,
+    payload: infoCar,
 });
 export const getInfoCarFailed = (error) => ({
     type: GET_INFO_CAR_FAILED,
@@ -59,9 +59,9 @@ export const getInfoCarFailed = (error) => ({
 export const getInfoCarAdminStarted = () => ({
     type: GET_INFO_CAR_ADMIN_STARTED
 });
-export const getInfoCarAdminSuccess = (cars) => ({
+export const getInfoCarAdminSuccess = (infoCar) => ({
     type: GET_INFO_CAR_ADMIN_SUCCESS,
-    payload: cars,
+    payload: infoCar,
 });
 export const getInfoCarAdminFailed = (error) => ({
     type: GET_INFO_CAR_ADMIN_FAILED,

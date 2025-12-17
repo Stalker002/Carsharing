@@ -164,10 +164,14 @@ export const fieldsCars = [
   },
   {
     name: "statusId",
-    viewName: "statusName",
     label: "Статус",
     type: "select",
-    options: [],
+    options: [
+      { value: "1", label: "Доступна" },
+      { value: "2", label: "Недоступна" },
+      { value: "3", label: "На обслуживании" },
+      { value: "4", label: "В ремонте" },
+    ],
     required: true,
   },
   {
@@ -175,7 +179,14 @@ export const fieldsCars = [
     viewName: "categoryName",
     label: "Категория",
     type: "select",
-    options: [],
+    options: [
+      { value: "1", label: "Стандарт" },
+      { value: "2", label: "Кроссовер" },
+      { value: "3", label: "Премиум" },
+      { value: "4", label: "Спорткар" },
+      { value: "5", label: "Электро" },
+      { value: "6", label: "Грузовой" },
+    ],
     required: true,
   },
   {

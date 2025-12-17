@@ -11,6 +11,8 @@ import { store } from "./redux/store";
 import PersonalPage from "./pages/PersonalPage/PersonalPage";
 
 import { Navigate } from "react-router-dom";
+import PaymentPage from "./pages/PaymentPage/PaymentPage";
+import BookingPage from "./pages/BookingPage/BookingPage";
 
 function AdminRoute({ children }) {
   const myUser = useSelector((state) => state.users.myUser);
@@ -28,6 +30,8 @@ function App() {
         <Route path="/car-catalog" element={<Car_Rent />} />
         <Route path="/car-catalog/:id" element={<CarDetails />} />
         <Route path="/personal-page" element={<PersonalPage />} />
+        <Route path="/booking/:id" element={<BookingPage />} />
+        <Route path="/payment/:id" element={<PaymentPage />} />
         <Route
           path="/admin"
           element={

@@ -12,6 +12,20 @@
   padding: 35px 40px;
 }
 
+.user-avatar-profile {
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    background: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
 .profile-name {
   font-size: 32px;
   font-weight: 700;

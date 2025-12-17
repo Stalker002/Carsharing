@@ -6,6 +6,7 @@ const initialState = {
     infoCar: {},
     infoCarAdmin: {},
     isCarsLoading: false,
+    isCarsInfoLoading: false,
     isCreateCarLoading: false,
     isUpdateCarLoading: false,
     isDeleteCarLoading: false,
@@ -65,18 +66,18 @@ export const carsReducer = (state = initialState, action) => {
         case GET_INFO_CAR_STARTED:
             return {
                 ...state,
-                isCarsLoading: true,
+                isCarsInfoLoading: true,
             };
         case GET_INFO_CAR_SUCCESS:
             return {
                 ...state,
-                isCarsLoading: false,
+                isCarsInfoLoading: false,
                 infoCar: action.payload,
             };
         case GET_INFO_CAR_FAILED:
             return {
                 ...state,
-                iscarsLoading: false,
+                isCarsInfoLoading: false,
             };
 
         case GET_INFO_CAR_ADMIN_STARTED:

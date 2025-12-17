@@ -23,6 +23,20 @@ export const getTripWithInfo = (id, config) => makeRequest({
     ...config
 });
 
+export const getActiveTrip = (config) => makeRequest({
+    method: "GET",
+    url: `${URL}/current`,
+    withCredentials: true,
+    ...config
+});
+
+export const finishTrip = (data, config) => makeRequest({
+    method: "POST",
+    url: `${URL}/finish`,
+    withCredentials: true,
+    data, ...config
+});
+
 export const createTrip = (data) => makeRequest({
     method: "POST",
     url: URL,

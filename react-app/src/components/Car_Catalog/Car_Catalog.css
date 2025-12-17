@@ -2,13 +2,12 @@
   position: relative;
   background: #f8faff;
   padding: 0px 20px 40px;
-  /* overflow: hidden; */
   border-radius: 12px;
-  width: 100%
+  width: 100%;
 }
 
 .popular-header {
-  text-align:left;
+  text-align: left;
 }
 
 .popular-header h2 {
@@ -18,7 +17,6 @@
   margin: 40px 100px 0px;
 }
 
-/* Сетка карточек */
 .catalog-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -31,9 +29,10 @@
   background: #ffffff;
   border-radius: 20px;
   padding: 20px;
+  cursor: pointer;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   transition: 0.3s ease;
-  width: 300px
+  width: 300px;
 }
 
 .card-card:hover {
@@ -83,8 +82,8 @@
 
 .card-info {
   display: flex;
-  justify-content: center ;
-  gap: 20px;
+  justify-content: center;
+  gap: 16px;
   font-size: 0.85rem;
   color: #6c7a99;
   margin: 15px 0;
@@ -141,16 +140,15 @@
   background: #2748c7;
 }
 
-/* --- Мобильная адаптация --- */
-@media (max-width: 768px) {
-  .filter-toggle {
-    left: 20px;
-    top: 80px;
-    padding: 10px 16px;
-  }
-
-  .catalog-page {
-    flex-direction: column;
-    padding: 100px 20px 40px;
-  }
+.avtoriz-error-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 140px;
+  text-decoration: none;
 }

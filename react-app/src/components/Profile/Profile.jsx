@@ -53,6 +53,12 @@ function Profile() {
   return (
     <div className="profile-wrapper">
       <div className="profile-card">
+        <div className="user-avatar-profile">
+          <span>
+            {myClient.name?.[0]}
+            {myClient.surname?.[0]}
+          </span>
+        </div>
         <h1 className="profile-name">
           {myClient.name} {myClient.surname}
         </h1>
