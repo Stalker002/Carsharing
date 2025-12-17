@@ -149,6 +149,17 @@ public class BookingRepository : IBookingRepository
 
     public async Task<int> Create(Booking booking)
     {
+
+        var hasActiveBooking = await _context.Booking
+            .AnyAsync(b =>
+                b.ClientId == booking.ClientId &&
+                (b.StatusId == 4));
+
+        if (hasActiveBooking)
+        {
+            throw new ArgumentException("У вас уже есть активная аренда или бронь. Завершите текущую поездку, прежде чем брать новую машину.");
+        }
+
         var (_, error) = Booking.Create(
             0,
             booking.StatusId,

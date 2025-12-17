@@ -4,5 +4,5 @@ namespace Carsharing.Application.DTOs;
 
 public class UploadImageDto
 {
-    public IFormFile Image { get; set; }
+    public IFormFile? Image { get; set; }
 }

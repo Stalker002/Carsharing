@@ -2,8 +2,8 @@
 
 public record CarWithInfoAdminDto(
     int Id,
-    string StatusName,
-    string CategoryName,
+    int StatusId,
+    int CategoryId,
     string Transmission,
     string Brand,
     string Model,

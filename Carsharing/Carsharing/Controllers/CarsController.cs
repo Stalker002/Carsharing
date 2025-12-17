@@ -2,6 +2,7 @@
 using Carsharing.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using ICarsService = Carsharing.Application.Services.ICarsService;
 
 namespace Carsharing.Controllers;
@@ -50,7 +51,7 @@ public class CarsController : ControllerBase
     public async Task<ActionResult<List<CarWithInfoAdminDto>>> GetCarWithInfoAdmin(int id)
     {
         var carsWithInfo = await _carsService.GetCarWithInfoAdmin(id);
-        var response = carsWithInfo.Select(c => new CarWithInfoAdminDto(c.Id, c.StatusName, c.CategoryName,
+        var response = carsWithInfo.Select(c => new CarWithInfoAdminDto(c.Id, c.StatusId, c.CategoryId,
             c.Transmission, c.Brand, c.Model, c.Year, c.Location, c.VinNumber, c.StateNumber, c.FuelType, c.FuelLevel, c.MaxFuel,
             c.FuelPerKm, c.Mileage, c.TariffName, c.PricePerMinute, c.PricePerKm, c.PricePerDay, c.Image));
 
@@ -69,7 +70,7 @@ public class CarsController : ControllerBase
             var cars = await _carsService.GetPagedCarsByClients(page, limit);
 
             var response = cars
-                .Select(c => new CarWithMinInfoDto(c.Id, c.StatusName, c.PricePerDay, c.CategoryName, c.FuelType, c.Brand, c.Model, c.Transmission, c.ImagePath)).ToList();
+                .Select(c => new CarWithMinInfoDto(c.Id, c.StatusName, c.PricePerDay, c.CategoryName, c.FuelType, c.MaxFuel, c.Brand, c.Model, c.Transmission, c.ImagePath)).ToList();
 
             Response.Headers.Append("x-total-count", totalCount.ToString());
 
@@ -81,7 +82,7 @@ public class CarsController : ControllerBase
             var cars = await _carsService.GetCarWithMinInfoByCategoryIds(ids, page, limit);
 
             var response = cars.Select(c =>
-                new CarWithMinInfoDto(c.Id, c.StatusName, c.PricePerDay, c.CategoryName, c.FuelType, c.Brand, c.Model, c.Transmission, c.ImagePath));
+                new CarWithMinInfoDto(c.Id, c.StatusName, c.PricePerDay, c.CategoryName, c.FuelType, c.MaxFuel, c.Brand, c.Model, c.Transmission, c.ImagePath));
 
             Response.Headers.Append("x-total-count", totalCount.ToString());
 

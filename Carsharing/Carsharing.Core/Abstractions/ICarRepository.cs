@@ -17,5 +17,6 @@ public interface ICarRepository
     Task<int> Update(int id, int? statusId, int? tariffId, int? categoryId, int? specificationId,
         string? location, decimal? fuelLevel, string? imagePath);
 
+    Task UpdateStatus(int? carId, int statusId);
     Task<int> Delete(int id);
 }

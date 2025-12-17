@@ -18,5 +18,7 @@ public interface ICarsService
     Task<int> CreateCar(Car car);
     Task<(int? Id, string Error)> CreateCarFullAsync(CarsCreateRequest request);
     Task<(bool IsSuccess, string Error)> UpdateCarFullAsync(int id, CarUpdateDto request);
+    Task MarkCarAsUnavailableAsync(int? carId);
+    Task MarkCarAsAvailableAsync(int? carId);
     Task<int> DeleteCar(int id);
 }

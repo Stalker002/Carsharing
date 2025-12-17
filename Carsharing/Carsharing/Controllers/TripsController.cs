@@ -16,9 +16,11 @@ public class TripsController : ControllerBase
     private readonly ITripService _tripService;
     private readonly ITripDetailsService _tripDetailsService;
     private readonly CarsharingDbContext _context;
+    private readonly ICarsService _carsService;
 
-    public TripsController(ITripService tripService, ITripDetailsService tripDetailsService, CarsharingDbContext context)
+    public TripsController(ITripService tripService, ITripDetailsService tripDetailsService, ICarsService carsService, CarsharingDbContext context)
     {
+        _carsService = carsService;
         _context = context;
         _tripDetailsService = tripDetailsService;
         _tripService = tripService;
@@ -86,6 +88,35 @@ public class TripsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("current")]
+    [Authorize(Policy = "AdminClientPolicy")]
+    public async Task<ActionResult<CurrentTripDto>> GetCurrentTrip()
+    {
+        var userId = int.Parse(User.FindFirst("userId")!.Value);
+
+        var trip = await _tripService.GetActiveTripByClientId(userId);
+
+        if (trip == null)
+            return NotFound(new { message = "Активных поездок нет" });
+
+        return Ok(trip);
+    }
+
+    [HttpPost("finish")]
+    [Authorize(Policy = "AdminClientPolicy")]
+    public async Task<ActionResult<TripFinishResult>> FinishTrip([FromBody] FinishTripRequest request)
+    {
+        try
+        {
+            var result = await _tripService.FinishTripAsync(request);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<int>> CreateTrip([FromBody] TripCreateRequest request)
@@ -109,7 +140,7 @@ public class TripsController : ControllerBase
                 return BadRequest(error);
             }
 
-           
+
             var tripId = await _tripService.CreateTrip(trip);
 
             var (tripDetail, errorTripDetail) = TripDetail.Create(
@@ -129,6 +160,12 @@ public class TripsController : ControllerBase
 
             await _tripDetailsService.CreateTripDetail(tripDetail);
 
+            await _carsService.MarkCarAsUnavailableAsync(
+                request.CarId
+            );
+
+            await _context.SaveChangesAsync();
+
             await transaction.CommitAsync();
 
             return Ok(tripId);
@@ -147,6 +184,12 @@ public class TripsController : ControllerBase
         var tripId = await _tripService.UpdateTrip(id, request.BookingId, request.StatusId, request.TariffType,
             request.StartTime, request.EndTime, request.Duration, request.Distance);
 
+        if (request.EndTime != null)
+        {
+            await _carsService.MarkCarAsAvailableAsync(
+                request.CarId
+            );
+        }
         return Ok(tripId);
     }
 

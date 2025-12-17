@@ -16,6 +16,9 @@ public class CarsService : ICarsService
     private readonly IImageService _imageService;
     private readonly CarsharingDbContext _context;
 
+    private const int STATUS_AVAILABLE = 1;
+    private const int STATUS_RESERVED = 2;
+
     public CarsService(ICarRepository carRepository, ITariffRepository tariffRepository,
         ISpecificationCarRepository specificationCarRepository, IStatusRepository statusRepository,
         ICategoryRepository categoryRepository, CarsharingDbContext context, IImageService imageService)
@@ -51,6 +54,7 @@ public class CarsService : ICarsService
                 c.Tariff!.PricePerDay,
                 c.Category!.Name,
                 c.SpecificationCar!.FuelType!,
+                c.SpecificationCar.MaxFuel!,
                 c.SpecificationCar.Brand!,
                 c.SpecificationCar.Model!,
                 c.SpecificationCar.Transmission!,
@@ -137,8 +141,8 @@ public class CarsService : ICarsService
                         join cat in category on c.CategoryId equals cat.Id
                         select new CarWithInfoAdminDto(
                             c.Id,
-                            st.Name,
-                            cat.Name,
+                            st.Id,
+                            cat.Id,
                             sp.Transmission,
                             sp.Brand,
                             sp.Model,
@@ -188,6 +192,7 @@ public class CarsService : ICarsService
                             t.PricePerDay,
                             cat.Name,
                             sp.FuelType,
+                            sp.MaxFuel,
                             sp.Brand,
                             sp.Model,
                             sp.Transmission,
@@ -357,6 +362,16 @@ public class CarsService : ICarsService
 
             return ex is ArgumentException ? (false, ex.Message) : (false, $"Internal error: {ex.Message}");
         }
+    }
+
+    public async Task MarkCarAsUnavailableAsync(int? carId)
+    {
+        await _carRepository.UpdateStatus(carId, STATUS_RESERVED);
+    }
+
+    public async Task MarkCarAsAvailableAsync(int? carId)
+    {
+        await _carRepository.UpdateStatus(carId, STATUS_AVAILABLE);
     }
 
     public async Task<int> DeleteCar(int id)

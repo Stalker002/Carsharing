@@ -3,6 +3,7 @@
 public record TripCreateRequest(
     int BookingId,
     int StatusId,
+    int CarId,
     string StartLocation,
     string EndLocation,
     bool InsuranceActive,

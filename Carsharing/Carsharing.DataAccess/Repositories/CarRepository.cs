@@ -239,6 +239,17 @@ public class CarRepository : ICarRepository
         return car.Id;
     }
 
+    public async Task UpdateStatus(int? carId, int statusId)
+    {
+        var car = await _context.Car.FindAsync(carId);
+        if (car == null)
+            throw new Exception("Автомобиль не найден");
+
+        car.StatusId = statusId;
+        _context.Car.Update(car);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<int> Delete(int id)
     {
         var carEntity = await _context.Car

@@ -107,7 +107,6 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost("with-user")]
-    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<int>> CreateClient([FromBody] ClientRegistrationRequest request)
     {
         var userExists = await _usersService.GetUserByLogin(request.Login);
@@ -146,7 +145,7 @@ public class ClientsController : ControllerBase
             return Ok(new
             {
                 Message = "Registration successful",
-                UserId = client.UserId,
+                client.UserId,
                 ClientId = clientId
             });
         }

@@ -1,6 +1,7 @@
 ﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.Application.Services;
 
