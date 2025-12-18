@@ -246,6 +246,9 @@ BEGIN
         v_trip_cost := COALESCE(v_trip_distance, 0) * COALESCE(v_price_per_km, 0);
     ELSIF v_tariff_type = 'per_day' THEN
         v_trip_days := CEIL(COALESCE(v_trip_duration,0) / (60 * 24));
+        IF v_trip_days < 1 THEN
+            v_trip_days := 1;
+        END IF;
         v_trip_cost := v_trip_days * COALESCE(v_price_per_day, 0);
     END IF;
 
