@@ -61,9 +61,15 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
   padding: 4px;
   border-radius: 4px;
+  display: flex;
+  justify-content: center;
+}
+
+.icon-btn img {
+  height: 18px;
 }
 
 .edit-btn:hover {

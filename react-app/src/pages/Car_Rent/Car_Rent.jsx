@@ -10,7 +10,7 @@ function Car_Rent() {
   const [filters, setFilters] = useState({
     types: [],
     capacities: [],
-    maxPrice: 500
+    maxPrice: 300
   });
   return (
     <>

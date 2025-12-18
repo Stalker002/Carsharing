@@ -15,6 +15,7 @@ import { statusesReducer } from "./statusesReducer";
 import { reviewsReducer } from "./reviewsReducer";
 import { tariffsReducer } from "./tariffsReducer";
 import { tripsReducer } from "./tripsReducer";
+import { modalReducer } from "./modalReducer";
 
 export const rootReducer = combineReducers({
     bills: billsReducer,
@@ -26,6 +27,7 @@ export const rootReducer = combineReducers({
     fines: finesReducer,
     insurances: insurancesReducer,
     maintenances: maintenancesReducer,
+    modal: modalReducer,
     payments: paymentsReducer,
     promocodes: promocodesReducer,
     reviews: reviewsReducer,

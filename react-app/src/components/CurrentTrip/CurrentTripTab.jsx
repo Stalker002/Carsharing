@@ -4,170 +4,218 @@ import { useNavigate } from "react-router-dom";
 
 import "./CurrentTripTab.css";
 import { finishTrip, getActiveTrip } from "../../redux/actions/trips";
+import emptyTrip from "../../svg/Profile/emptyTrip.svg";
+import { openModal } from "../../redux/actions/modal";
 
 const CurrentTripTab = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Получаем данные из Redux
   const { activeTrip, isLoading } = useSelector((state) => state.trips);
-  
-  // Локальный стейт для формы завершения
+
   const [formData, setFormData] = useState({
     endLocation: "",
     fuelLevel: "",
+    distance: "",
   });
 
-  // Загружаем поездку при открытии вкладки
   useEffect(() => {
     dispatch(getActiveTrip());
   }, [dispatch]);
 
-  // Обработчик ввода
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Завершение поездки
   const handleFinish = async () => {
     if (!formData.endLocation || !formData.fuelLevel) {
-      return alert("Пожалуйста, укажите место парковки и уровень топлива.");
+      return dispatch(
+        openModal({
+          type: "error",
+          title: "Внимание",
+          message: "Пожалуйста, укажите место парковки и уровень топлива.",
+        })
+      );
     }
-
+    if (!formData.distance || Number(formData.distance) < 0) {
+      return dispatch(
+        openModal({
+          type: "error",
+          title: "Внимание",
+          message: "Пожалуйста, укажите корректный пробег за поездку.",
+        })
+      );
+    }
     if (formData.fuelLevel < 0 || formData.fuelLevel > 100) {
-        return alert("Уровень топлива должен быть от 0 до 100%");
+      return dispatch(
+        openModal({
+          type: "error",
+          title: "Внимание",
+          message: "Уровень топлива должен быть от 0 до 100%",
+        })
+      );
     }
 
-    // Формируем запрос для C# FinishTripRequest
     const payload = {
-      tripId: activeTrip.id, // или activeTrip.tripId, проверьте DTO
+      tripId: activeTrip.id,
       endLocation: formData.endLocation,
       fuelLevel: Number(formData.fuelLevel),
+      distance: Number(formData.distance),
     };
-    console.log("Завершение поездки с данными:", payload);
     try {
       const result = await dispatch(finishTrip(payload));
 
       if (result && result.success) {
-        // result.data - это объект TripFinishResult с бэкенда (там есть billAmount)
-        alert(`Поездка завершена!\nСумма к оплате: $${result.data.totalAmount}`);
-        
-        // Обновляем страницу (поездка пропадет, появится заглушка)
-        dispatch(getCurrentTrip());
-        // Или редирект на счета
-        // navigate("/profile/bills"); 
+        dispatch(
+          openModal({
+            type: "success",
+            title: "Поездка завершена!",
+            message: `Ваш итоговый счет: $${result.data.totalAmount}. Спасибо, что выбрали нас!`,
+          })
+        );
+
+        dispatch(getActiveTrip());
+        navigate("/profile/bills");
       } else {
-        alert("Ошибка: " + (result?.message || "Не удалось завершить поездку"));
+        dispatch(
+          openModal({
+            type: "error",
+            title: "Ошибка завершения",
+            message: result?.message,
+          })
+        );
       }
     } catch (error) {
-      console.error(error);
-      alert("Ошибка сети");
+      dispatch(
+        openModal({
+          type: "error",
+          title: "Сетевая ошибка",
+          message: "Не удалось соединиться с сервером",
+        })
+      );
     }
   };
 
-  // 1. Состояние загрузки
   if (isLoading) {
     return <div className="trip-loading">Загрузка информации о поездке...</div>;
   }
 
-  // 2. Состояние: НЕТ АКТИВНОЙ ПОЕЗДКИ
   if (!activeTrip) {
     return (
       <div className="empty-trip-container">
         <div className="empty-icon-circle">
-            {/* Если нет иконки, можно просто текст или emoji 🚗 */}
-            <span style={{fontSize: '40px'}}>🔑</span> 
+          <img src={emptyTrip} />
         </div>
         <h2>Активных поездок нет</h2>
-        <p>Вы еще не арендовали автомобиль. Перейдите в каталог, чтобы начать.</p>
-        <button className="btn-go-catalog" onClick={() => navigate("/dashboard")}>
+        <p>
+          Вы еще не арендовали автомобиль. Перейдите в каталог, чтобы начать.
+        </p>
+        <button
+          className="btn-go-catalog"
+          onClick={() => navigate("/car-catalog")}
+        >
           Выбрать автомобиль
         </button>
       </div>
     );
   }
 
-  // 3. Состояние: ЕСТЬ ПОЕЗДКА
-  const imageUrl = activeTrip.carImage 
-    ? `http://localhost:5078${activeTrip.carImage}` 
+  const imageUrl = activeTrip.carImage
+    ? `http://localhost:5078${activeTrip.carImage}`
     : "https://via.placeholder.com/300x200?text=No+Image";
 
   return (
     <div className="current-trip-wrapper">
       <div className="trip-card">
-        {/* Шапка карточки */}
         <div className="trip-header">
           <div>
             <span className="badge-live">LIVE</span>
-            <h2 className="car-title">{activeTrip.carBrand} {activeTrip.carModel}</h2>
+            <h2 className="car-title">
+              {activeTrip.carBrand} {activeTrip.carModel}
+            </h2>
           </div>
           <div className="trip-timer">
-            {/* Можно добавить таймер, если есть время начала */}
-            Начало: {new Date(activeTrip.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+            Начало:{" "}
+            {new Date(
+              new Date(activeTrip.startTime).getTime() + 3 * 60 * 60 * 1000
+            ).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              timeZone: "UTC",
+            })}
           </div>
         </div>
-
-        {/* Инфо о машине и тарифе */}
         <div className="trip-body">
-            <div className="car-image-box">
-                <img src={imageUrl} alt="Car" />
+          <div className="car-image-box">
+            <img src={imageUrl} alt="Car" />
+          </div>
+          <div className="trip-details-grid">
+            <div className="detail-item">
+              <label>Тариф</label>
+              <strong>
+                {activeTrip.tariffType === "per_minute" && "Поминутный"}
+                {activeTrip.tariffType === "per_day" && "Суточный"}
+                {activeTrip.tariffType === "per_km" && "За км"}
+              </strong>
             </div>
-            
-            <div className="trip-details-grid">
-                <div className="detail-item">
-                    <label>Тариф</label>
-                    <strong>
-                        {activeTrip.tariffType === 'per_minute' && 'Поминутный'}
-                        {activeTrip.tariffType === 'per_day' && 'Суточный'}
-                        {activeTrip.tariffType === 'per_km' && 'За км'}
-                    </strong>
-                </div>
-                <div className="detail-item">
-                    <label>Текущая цена</label>
-                    <strong>
-                        {activeTrip.tariffType === 'per_minute' && `$${activeTrip.pricePerMinute}/мин`}
-                        {activeTrip.tariffType === 'per_day' && `$${activeTrip.pricePerDay}/день`}
-                    </strong>
-                </div>
-                <div className="detail-item">
-                    <label>Старт</label>
-                    <strong>{activeTrip.carLocation}</strong>
-                </div>
+            <div className="detail-item">
+              <label>Текущая цена</label>
+              <strong>
+                {activeTrip.tariffType === "per_minute" &&
+                  `$${activeTrip.pricePerMinute}/мин`}
+                {activeTrip.tariffType === "per_day" &&
+                  `$${activeTrip.pricePerDay}/день`}
+                {activeTrip.tariffType === "per_km" &&
+                  `$${activeTrip.pricePerKm}/км`}
+              </strong>
             </div>
+            <div className="detail-item">
+              <label>Старт</label>
+              <strong>{activeTrip.carLocation}</strong>
+            </div>
+          </div>
         </div>
-
         <hr className="divider" />
-
-        {/* Форма завершения */}
         <div className="trip-finish-section">
-            <h3>Завершение аренды</h3>
-            <div className="finish-form-grid">
-                <div className="form-group">
-                    <label>Где вы оставили машину?</label>
-                    <input 
-                        type="text" 
-                        name="endLocation"
-                        placeholder="Адрес или точка на карте"
-                        value={formData.endLocation}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Топливо (%)</label>
-                    <input 
-                        type="number" 
-                        name="fuelLevel"
-                        placeholder="Например: 45"
-                        min="0" max="100"
-                        value={formData.fuelLevel}
-                        onChange={handleChange}
-                    />
-                </div>
+          <h3>Завершение аренды</h3>
+          <div className="finish-form-grid">
+            <div className="form-group">
+              <label>Где вы оставили машину?</label>
+              <input
+                type="text"
+                name="endLocation"
+                placeholder="Адрес или точка на карте"
+                value={formData.endLocation}
+                onChange={handleChange}
+              />
             </div>
-
-            <button className="btn-finish-trip" onClick={handleFinish}>
-                Завершить поездку
-            </button>
+            <div className="form-group">
+              <label>Топливо (%)</label>
+              <input
+                type="number"
+                name="fuelLevel"
+                placeholder="Например: 45"
+                min="0"
+                max="100"
+                value={formData.fuelLevel}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Пробег за поездку (км)</label>
+              <input
+                type="number"
+                name="distance"
+                placeholder="Например: 12"
+                min="0"
+                value={formData.distance}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+          <button className="btn-finish-trip" onClick={handleFinish}>
+            Завершить поездку
+          </button>
         </div>
       </div>
     </div>

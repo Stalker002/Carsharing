@@ -15,6 +15,7 @@ export const GET_INFO_TRIP_FAILED = "GET_INFO_TRIP_FAILED";
 export const GET_ACTIVE_TRIP_STARTED = "GET_ACTIVE_TRIP_STARTED";
 export const GET_ACTIVE_TRIP_SUCCESS = "GET_ACTIVE_TRIP_SUCCESS";
 export const GET_ACTIVE_TRIP_FAILED = "GET_ACTIVE_TRIP_FAILED";
+export const GET_ACTIVE_TRIP_EMPTY = "GET_ACTIVE_TRIP_EMPTY";
 
 export const FINISH_TRIP_STARTED = "FINISH_TRIP_STARTED";
 export const FINISH_TRIP_SUCCESS = "FINISH_TRIP_SUCCESS";
@@ -86,6 +87,9 @@ export const getActiveTripSuccess = (trips) => ({
 export const getActiveTripFailed = (error) => ({
     type: GET_ACTIVE_TRIP_FAILED,
     payload: error,
+});
+export const getActiveTripEmpty = () => ({
+    type: GET_ACTIVE_TRIP_EMPTY,
 });
 
 export const finishTripStarted = () => ({

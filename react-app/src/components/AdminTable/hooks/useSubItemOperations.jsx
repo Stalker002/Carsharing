@@ -9,6 +9,7 @@ import { updateClient } from "../../../redux/actions/clients";
 import {
   fieldsFines, fieldsInsurances, fieldsMaintenances, fieldsPayments, fieldsClientDocuments
 } from "../configs";
+import { openModal } from "../../../redux/actions/modal";
 
 export const useSubItemOperations = (activeTab, editingItem, subData) => {
   const dispatch = useDispatch();
@@ -27,23 +28,38 @@ export const useSubItemOperations = (activeTab, editingItem, subData) => {
   }, []);
 
   const handleSubDelete = useCallback(async (id) => {
-    if (!window.confirm("Удалить?")) return;
-    let result = { success: false };
-    
-    switch (subType) {
-      case "insurance": result = await dispatch(deleteInsurance(id)); break;
-      case "maintenance": result = await dispatch(deleteMaintenance(id)); break;
-      case "fine": result = await dispatch(deleteFine(id)); break;
-      case "payment": result = await dispatch(deletePayment(id)); break;
-      case "document": result = await dispatch(deleteClientDocument(id)); break;
-      default: break;
-    }
-
-    if (result.success) {
-      setSubEditingItem(null);
-      if (subType === "document") subData.fetchClientDocuments(subData.clientProfile?.id);
-      else if (editingItem) subData.fetchSubData(editingItem.id, subType);
-    }
+    dispatch(openModal({
+      title: "Удаление записи",
+      message: "Вы уверены, что хотите удалить эту запись?",
+      type: "confirm",
+      confirmText: "Удалить",
+      cancelText: "Отмена",
+      onConfirm: async () => {
+        let result = { success: false };
+        switch (subType) {
+          case "insurance": result = await dispatch(deleteInsurance(id)); break;
+          case "maintenance": result = await dispatch(deleteMaintenance(id)); break;
+          case "fine": result = await dispatch(deleteFine(id)); break;
+          case "payment": result = await dispatch(deletePayment(id)); break;
+          case "document": result = await dispatch(deleteClientDocument(id)); break;
+          default: break;
+        }
+        if (result.success) {
+          setSubEditingItem(null);
+          if (subType === "document") {
+             subData.fetchClientDocuments(subData.clientProfile?.id);
+          } else if (editingItem) {
+             subData.fetchSubData(editingItem.id, subType);
+          }
+        } else {
+          dispatch(openModal({
+            type: "error",
+            title: "Ошибка",
+            message: result.message || "Не удалось удалить запись"
+          }));
+        }
+      }
+    }));
   }, [subType, dispatch, editingItem, subData]);
 
   const handleSubAddSave = useCallback(async (data) => {
@@ -65,7 +81,13 @@ export const useSubItemOperations = (activeTab, editingItem, subData) => {
         break;
       case "document":
         if (!subData.clientProfile?.id) {
-          alert("Профиль клиента не найден");
+          dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: "Профиль клиента не найден",
+            })
+          );
           return false;
         }
         result = await dispatch(createClientDocument({ ...data, clientId: subData.clientProfile.id, filePath: "Нету" }));
@@ -77,7 +99,13 @@ export const useSubItemOperations = (activeTab, editingItem, subData) => {
       subData.fetchSubData(editingItem.id);
       return true;
     } else {
-      alert(result.message);
+      dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: result.message,
+            })
+          );
       return false;
     }
   }, [subType, editingItem, subData, dispatch]);
@@ -111,7 +139,13 @@ export const useSubItemOperations = (activeTab, editingItem, subData) => {
       setSubEditingItem(null);
       subData.fetchSubData(editingItem.id);
     } else {
-      alert(result.message);
+      dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: result.message,
+            })
+          );
     }
   }, [subType, subEditingItem, editingItem, subData, dispatch]);
 
@@ -119,10 +153,20 @@ export const useSubItemOperations = (activeTab, editingItem, subData) => {
     if (!subData.clientProfile?.id) return;
     const result = await dispatch(updateClient(subData.clientProfile.id, { userId: Number(editingItem.id), ...subData.clientProfile, ...formData }));
     if (result.success) {
-      alert("Данные клиента обновлены");
+      dispatch(openModal({
+                type: "success",
+                title: "Клиент обновлен!",
+                message: `Данные клиента обновлены`
+            }));
       subData.fetchClientProfile(editingItem.id);
     } else {
-      alert(result.message);
+      dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: result.message,
+            })
+          );
     }
   }, [subData, editingItem, dispatch]);
 

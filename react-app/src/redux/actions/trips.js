@@ -9,6 +9,7 @@ import {
   finishTripFailed,
   finishTripStarted,
   finishTripSuccess,
+  getActiveTripEmpty,
   getActiveTripFailed,
   getActiveTripStarted,
   getActiveTripSuccess,
@@ -109,8 +110,9 @@ export const getTripWithInfo = (id) => {
 
       const response = await api.trips.getTripWithInfo(id);
 
-      const data = Array.isArray(response.data) && response.data.length > 0 
-          ? response.data[0] 
+      const data =
+        Array.isArray(response.data) && response.data.length > 0
+          ? response.data[0]
           : response.data;
 
       dispatch(getInfoTripSuccess(data));
@@ -135,12 +137,8 @@ export const getActiveTrip = () => {
 
       const response = await api.trips.getActiveTrip();
 
-      const data = Array.isArray(response.data) && response.data.length > 0 
-          ? response.data[0] 
-          : response.data;
-
-      dispatch(getActiveTripSuccess(data));
-      return { success: true, data: data };
+      dispatch(getActiveTripSuccess(response.data));
+      return { success: true, data: response.data };
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
@@ -149,6 +147,11 @@ export const getActiveTrip = () => {
 
       dispatch(getActiveTripFailed(error));
 
+      if (error.response && error.response.status === 404) {
+        dispatch(getActiveTripSuccess(null));
+        return { success: true, data: null };
+      }
+        
       return { success: false, message: errorMessage };
     }
   };
@@ -160,7 +163,6 @@ export const finishTrip = (data) => {
       dispatch(finishTripStarted());
 
       const response = await api.trips.finishTrip(data);
-
 
       dispatch(finishTripSuccess(response.data));
       return { success: true, data: response.data };

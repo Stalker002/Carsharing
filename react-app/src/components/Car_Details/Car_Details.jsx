@@ -9,6 +9,7 @@ import Fuel from "../../svg/Popular_Car/fuel.svg";
 import Transmission from "../../svg/Popular_Car/transmission.svg";
 import People from "../../svg/Popular_Car/people.svg";
 import { getReviewsByCar } from "../../redux/actions/reviews";
+import { openModal } from "../../redux/actions/modal";
 
 const CarDetails = () => {
   const { id } = useParams();
@@ -34,12 +35,24 @@ const CarDetails = () => {
 
   const handleBookingClick = () => {
     if (!isLoggedIn) {
-      alert("Пожалуйста, войдите в систему, чтобы арендовать авто.");
+      dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: "Пожалуйста, войдите в систему, чтобы арендовать авто.",
+            })
+          );
       return;
     }
 
     if (car.statusId !== 1 && car.statusName !== 'Доступна') {
-       return alert("Эта машина сейчас недоступна");
+       return dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: "Эта машина сейчас недоступна",
+            })
+          );
     }
 
     navigate(`/booking/${id}`);

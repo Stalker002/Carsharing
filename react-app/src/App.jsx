@@ -13,6 +13,7 @@ import PersonalPage from "./pages/PersonalPage/PersonalPage";
 import { Navigate } from "react-router-dom";
 import PaymentPage from "./pages/PaymentPage/PaymentPage";
 import BookingPage from "./pages/BookingPage/BookingPage";
+import GlobalModal from "./components/GlobalModal/GlobalModal";
 
 function AdminRoute({ children }) {
   const myUser = useSelector((state) => state.users.myUser);
@@ -25,6 +26,7 @@ function AdminRoute({ children }) {
 function App() {
   return (
     <Provider store={store}>
+      <GlobalModal />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/car-catalog" element={<Car_Rent />} />

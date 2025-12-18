@@ -1,0 +1,89 @@
+.global-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.global-modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.global-modal-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  margin: 0 auto 20px;
+  color: white;
+}
+
+.global-modal-title {
+  margin: 0 0 10px 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.global-modal-text {
+  margin: 0 0 25px 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.global-modal-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.global-modal-btn:hover {
+  opacity: 0.9;
+}
+
+.modal-success .global-modal-icon {
+  background-color: #2ed573;
+  box-shadow: 0 4px 15px rgba(46, 213, 115, 0.4);
+}
+.modal-success .global-modal-btn {
+  background-color: #2ed573;
+  color: white;
+}
+
+.modal-error .global-modal-icon {
+  background-color: #ff4757;
+  box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+}
+.modal-error .global-modal-btn {
+  background-color: #ff4757;
+  color: white;
+}
+
+.modal-info .global-modal-icon {
+  background-color: #3742fa;
+  box-shadow: 0 4px 15px rgba(55, 66, 250, 0.4);
+}
+.modal-info .global-modal-btn {
+  background-color: #3742fa;
+  color: white;
+}

@@ -10,6 +10,7 @@ import Security from "../../svg/Payment/security.svg";
 
 import "./PaymentPage.css";
 import Header from "../../components/Header/Header";
+import { openModal } from "../../redux/actions/modal";
 
 const PaymentPage = () => {
   const { id } = useParams();
@@ -56,8 +57,21 @@ const PaymentPage = () => {
 
   const handleSubmit = async () => {
     if (!formData.agreeTerms)
-      return alert("Пожалуйста, примите условия соглашения");
-    if (!user?.id) return alert("Пожалуйста, авторизуйтесь");
+      return dispatch(
+        openModal({
+          type: "error",
+          title: "Внимание",
+          message: "Пожалуйста, примите условия соглашения",
+        })
+      );
+    if (!user?.id)
+      return dispatch(
+        openModal({
+          type: "success",
+          title: "Поездка началась!",
+          message: "Пожалуйста, авторизуйтесь",
+        })
+      );
 
     const startTime = new Date(
       formData.pickupDate + "T" + (formData.pickupTime || "12:00")
@@ -77,10 +91,22 @@ const PaymentPage = () => {
     const result = await dispatch(createBooking(bookingData));
 
     if (result && result.success) {
-      alert("Бронирование успешно создано!");
+      dispatch(
+        openModal({
+          type: "success",
+          title: "Поездка завершена!",
+          message: "Бронирование успешно создано!",
+        })
+      );
       navigate("/dashboard");
     } else {
-      alert("Ошибка бронирования");
+      dispatch(
+        openModal({
+          type: "success",
+          title: "Поездка началась!",
+          message: "Ошибка бронирования",
+        })
+      );
     }
   };
 

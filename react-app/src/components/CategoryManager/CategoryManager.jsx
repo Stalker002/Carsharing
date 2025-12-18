@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
+import deleteCat from "./../../svg/Category/delete.svg";
 import "./CategoryManager.css";
 import { createCategory, deleteCategory, getCategories, updateCategory } from "../../redux/actions/category";
+import { openModal } from "../../redux/actions/modal";
 
 const CategoryManager = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
@@ -31,10 +32,22 @@ const CategoryManager = ({ isOpen, onClose }) => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Удалить категорию?")) {
-      await dispatch(deleteCategory(id));
-      dispatch(getCategories());
-    }
+    dispatch(openModal({
+      title: "Удаление категории",
+      message: "Вы уверены, что хотите удалить эту категорию? Это действие необратимо.",
+      type: "confirm",
+      confirmText: "Удалить",
+      cancelText: "Отмена",
+      onConfirm: async () => {
+        await dispatch(deleteCategory(id));
+        dispatch(getCategories());
+        dispatch(openModal({
+            title: "Успешно",
+            message: "Категория удалена",
+            type: "success"
+        }));
+      }
+    }));
   };
 
   const startEdit = (cat) => {
@@ -86,15 +99,14 @@ const CategoryManager = ({ isOpen, onClose }) => {
                     />
                     <div className="item-actions">
                       <button className="icon-btn save-btn" onClick={saveEdit}>✔</button>
-                      <button className="icon-btn cancel-btn" onClick={() => setEditingId(null)}>✖</button>
-                    </div>
+                      <button className="icon-btn cancel-btn" onClick={() => setEditingId(null)}>✖</button>                    </div>
                   </>
                 ) : (
                   <>
                     <span className="cat-name">{cat.name}</span>
                     <div className="item-actions">
                       <button className="icon-btn edit-btn" onClick={() => startEdit(cat)}>✎</button>
-                      <button className="icon-btn del-btn" onClick={() => handleDelete(cat.id)}>🗑</button>
+                      <button className="icon-btn del-btn" onClick={() => handleDelete(cat.id)}><img src={deleteCat} /></button>
                     </div>
                   </>
                 )}

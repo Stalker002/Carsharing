@@ -25,6 +25,7 @@ import {
   FINISH_TRIP_STARTED,
   FINISH_TRIP_SUCCESS,
   FINISH_TRIP_FAILED,
+  GET_ACTIVE_TRIP_EMPTY,
 } from "../actionCreators/trips";
 
 const initialState = {
@@ -124,6 +125,13 @@ export const tripsReducer = (state = initialState, action) => {
       return {
         ...state,
         isTripLoading: false,
+      };
+    case GET_ACTIVE_TRIP_EMPTY:
+      return {
+        ...state,
+        isLoading: false,
+        activeTrip: null,
+        error: null
       };
 
     case FINISH_TRIP_STARTED:

@@ -19,7 +19,7 @@ export default function SidebarFilters({ filters, setFilters }) {
     setFilters({
         types: [],
         capacities: [],
-        maxPrice: 1000
+        maxPrice: 300
     });
   };
 
@@ -88,7 +88,7 @@ export default function SidebarFilters({ filters, setFilters }) {
           <input
             type="range"
             min="0"
-            max="500"
+            max="300"
             step="10"
             value={filters.maxPrice}
             onChange={handlePriceChange}
@@ -96,7 +96,7 @@ export default function SidebarFilters({ filters, setFilters }) {
           />
           <div className="price-labels">
             <span>0</span>
-            <span>500</span>
+            <span>300</span>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getStatuses } from "../../../redux/actions/statuses";
 import { getCategories } from "../../../redux/actions/category";
+import { openModal } from "../../../redux/actions/modal";
 
 export const useMainTableOperations = (activeTab, cfg, subData) => {
   const dispatch = useDispatch();
@@ -13,21 +14,33 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
   const [detailingItem, setDetailingItem] = useState(null);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
 
-  const categoriesList = useSelector((state) => state.categories?.categories || []);
+  const categoriesList = useSelector(
+    (state) => state.categories?.categories || []
+  );
   const statusesList = useSelector((state) => state.statuses?.statuses || []);
 
-//   useEffect(() => {
-//     isSwitchingTable.current = true;
-//     setPage(1);
-//     document.getElementById("container")?.scrollTo(0, 0);
-//   }, [activeTab]);
+  //   useEffect(() => {
+  //     isSwitchingTable.current = true;
+  //     setPage(1);
+  //     document.getElementById("container")?.scrollTo(0, 0);
+  //   }, [activeTab]);
 
   useEffect(() => {
-    const tabsWithStatuses = ["cars", "bookings", "bills", "promocodes", "trips", "fines", "insurances"];
+    const tabsWithStatuses = [
+      "cars",
+      "bookings",
+      "bills",
+      "promocodes",
+      "trips",
+      "fines",
+      "insurances",
+    ];
     const tabsWithCategories = ["cars"];
 
-    if (tabsWithStatuses.includes(activeTab) && statusesList.length === 0) dispatch(getStatuses());
-    if (tabsWithCategories.includes(activeTab) && categoriesList.length === 0) dispatch(getCategories());
+    if (tabsWithStatuses.includes(activeTab) && statusesList.length === 0)
+      dispatch(getStatuses());
+    if (tabsWithCategories.includes(activeTab) && categoriesList.length === 0)
+      dispatch(getCategories());
   }, [activeTab, categoriesList.length, statusesList.length]);
 
   const refreshTable = useCallback(() => {
@@ -56,86 +69,155 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
     setPage((p) => p + 1);
   }, [cfg]);
 
-  const handleRowClick = useCallback(async (row) => {
-    setDetailingItem(row);
-    if (cfg.detailAction) {
-      setIsDetailLoading(true);
-      const result = await dispatch(cfg.detailAction(row.id));
-      setIsDetailLoading(false);
-      if (result.success && result.data) {
-        setEditingItem(null);
-        setDetailingItem(result.data);
-        subData.clearSubData();
-      } else {
-        alert("Не удалось загрузить детали");
-      }
-    } else {
+  const handleRowClick = useCallback(
+    async (row) => {
       setDetailingItem(row);
-      if (activeTab === "users") {
-        subData.clearSubData();
-        if (row?.id) subData.fetchClientProfile(row.id);
-      }
-    }
-  }, [cfg, dispatch, activeTab, subData]);
-
-  const handleEditClick = useCallback(async (item) => {
-    setDetailingItem(null);
-    if (cfg.detailAction) {
-      const result = await dispatch(cfg.detailAction(item.id));
-      if (result.success && result.data) {
-        setEditingItem(result.data);
-        subData.fetchSubData(result.data.id);
+      if (cfg.detailAction) {
+        setIsDetailLoading(true);
+        const result = await dispatch(cfg.detailAction(row.id));
+        setIsDetailLoading(false);
+        if (result.success && result.data) {
+          setEditingItem(null);
+          setDetailingItem(result.data);
+          subData.clearSubData();
+        } else {
+          dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: "Не удалось загрузить детали",
+            })
+          );
+        }
       } else {
-        alert("Ошибка загрузки");
+        setDetailingItem(row);
+        if (activeTab === "users") {
+          subData.clearSubData();
+          if (row?.id) subData.fetchClientProfile(row.id);
+        }
       }
-    } else {
-      setEditingItem(item);
-      if (activeTab === "cars") subData.fetchSubData(item.id);
-    }
-  }, [cfg, dispatch, activeTab, subData]);
+    },
+    [cfg, dispatch, activeTab, subData]
+  );
 
-  const handleSaveEdit = useCallback(async (e) => {
-    e.preventDefault();
-    if (!cfg?.updateAction) return alert("Не настроено");
-    const formData = new FormData(e.target);
-    const finalData = { ...editingItem, ...Object.fromEntries(formData.entries()) };
+  const handleEditClick = useCallback(
+    async (item) => {
+      setDetailingItem(null);
+      if (cfg.detailAction) {
+        const result = await dispatch(cfg.detailAction(item.id));
+        if (result.success && result.data) {
+          setEditingItem(result.data);
+          subData.fetchSubData(result.data.id);
+        } else {
+          dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: "Ошибка загрузки",
+            })
+          );
+        }
+      } else {
+        setEditingItem(item);
+        if (activeTab === "cars") subData.fetchSubData(item.id);
+      }
+    },
+    [cfg, dispatch, activeTab, subData]
+  );
 
-    const result = await dispatch(cfg.updateAction(finalData.id, finalData));
-    if (!result.success) return alert(result.message);
-    
-    setEditingItem(null);
-    refreshTable();
-  }, [cfg, dispatch, editingItem, refreshTable]);
+  const handleSaveEdit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (!cfg?.updateAction) return 
+      dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: "Не настроено",
+            })
+          );
+      const formData = new FormData(e.target);
+      const finalData = {
+        ...editingItem,
+        ...Object.fromEntries(formData.entries()),
+      };
+
+      const result = await dispatch(cfg.updateAction(finalData.id, finalData));
+      if (!result.success) return 
+      dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: result.message,
+            })
+          );
+
+      setEditingItem(null);
+      refreshTable();
+    },
+    [cfg, dispatch, editingItem, refreshTable]
+  );
 
   const handleDelete = useCallback(async () => {
     if (!cfg?.deleteAction || !editingItem) return;
-    if (window.confirm(`Вы уверены, что хотите удалить запись #${editingItem.id}?`)) {
-      const result = await dispatch(cfg.deleteAction(editingItem.id));
-      if (result && !result.success) return alert(result.message || "Ошибка при удалении");
-      setEditingItem(null);
-      refreshTable();
-    }
+    dispatch(openModal({
+      title: "Удаление записи",
+      message: `Вы уверены, что хотите удалить запись #${editingItem.id}?`,
+      type: "confirm",
+      confirmText: "Удалить",
+      cancelText: "Отмена",
+      onConfirm: async () => {
+        const result = await dispatch(cfg.deleteAction(editingItem.id));
+        
+        if (result && !result.success) {
+          dispatch(openModal({
+            type: "error",
+            title: "Внимание",
+            message: result.message || "Ошибка при удалении",
+          }));
+        } else {
+          setEditingItem(null);
+          refreshTable();
+        }
+      }
+    }));
   }, [cfg, editingItem, dispatch, refreshTable]);
 
-  const handleAdd = useCallback(async (data) => {
-    if (cfg?.addAction) {
-      const result = await dispatch(cfg.addAction(data));
-      if (!result.success) {
-        alert(result.message);
-        return false;
+  const handleAdd = useCallback(
+    async (data) => {
+      if (cfg?.addAction) {
+        const result = await dispatch(cfg.addAction(data));
+        if (!result.success) {
+          dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: result.message,
+            })
+          );
+          return false;
+        }
+        refreshTable();
+        return true;
       }
-      refreshTable();
-      return true;
-    }
-    return false;
-  }, [cfg, dispatch, refreshTable]);
+      return false;
+    },
+    [cfg, dispatch, refreshTable]
+  );
 
   return {
-    editingItem, setEditingItem,
-    detailingItem, setDetailingItem,
+    editingItem,
+    setEditingItem,
+    detailingItem,
+    setDetailingItem,
     isDetailLoading,
-    categoriesList, statusesList,
-    nextHandler, handleRowClick, handleEditClick,
-    handleSaveEdit, handleDelete, handleAdd
+    categoriesList,
+    statusesList,
+    nextHandler,
+    handleRowClick,
+    handleEditClick,
+    handleSaveEdit,
+    handleDelete,
+    handleAdd,
   };
 };

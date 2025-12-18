@@ -9,6 +9,7 @@ import { createTrip } from "../../redux/actions/trips";
 import Security from "../../svg/Payment/security.svg";
 import "../PaymentPage/PaymentPage.css";
 import Header from "../../components/Header/Header";
+import { openModal } from "../../redux/actions/modal";
 
 const BookingPage = () => {
   const { id } = useParams();
@@ -57,12 +58,36 @@ const BookingPage = () => {
 
   const handleRentNow = async () => {
     if (!formData.agreeTerms)
-      return alert("Пожалуйста, примите условия соглашения");
-    if (!isLoggedIn) return alert("Пожалуйста, авторизуйтесь");
-    if (!car) return alert("Данные машины не загружены");
+      return dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: "Пожалуйста, примите условия соглашения",
+            })
+          );
+    if (!isLoggedIn) return dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: "Пожалуйста, авторизуйтесь",
+            })
+          );
+    if (!car) return dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: "Данные машины не загружены",
+            })
+          );
 
     if (!formData.dropoffDate || !formData.dropoffTime) {
-      return alert("Укажите дату и время возврата");
+      return dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: "Укажите дату и время возврата",
+            })
+          );
     }
 
     const startTimeISO = new Date().toISOString();
@@ -70,12 +95,24 @@ const BookingPage = () => {
     const plannedEndTime = new Date(plannedEndTimeString);
 
     if (isNaN(plannedEndTime.getTime())) {
-      return alert("Некорректная дата возврата");
+      return dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: "Некорректная дата возврата",
+            })
+          );
     }
 
     const now = new Date();
     if (plannedEndTime <= now) {
-      return alert("Время возврата должно быть в будущем!");
+      return dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: "Время возврата должно быть в будущем!",
+            })
+          );
     }
 
     const endTimeISO = plannedEndTime.toISOString();
@@ -98,7 +135,13 @@ const BookingPage = () => {
       }
 
       if (!bookingResult.success) {
-         return alert(bookingResult.message);
+        return dispatch(
+            openModal({
+              type: "error",
+              title: "Внимание",
+              message: bookingResult.message,
+            })
+          );
       }
 
       const newBookingId = bookingResult.data;
@@ -123,16 +166,36 @@ const BookingPage = () => {
       const tripResult = await dispatch(createTrip(tripPayload));
 
       if (tripResult && tripResult.success) {
-        alert("Поездка началась!");
+        await dispatch(
+          openModal({
+            type: "success",
+            title: "Поездка началась!",
+            message: "Счастливого пути. Переходим к управлению.",
+          })
+        );
         navigate("/profile/current-trip");
       } else {
-        console.warn("Trip creation failed. Rolling back booking:", newBookingId);
+        console.warn(
+          "Trip creation failed. Rolling back booking:",
+          newBookingId
+        );
         await dispatch(deleteBooking(newBookingId));
-        alert("Ошибка старта поездки: " + tripResult?.message);
+        dispatch(
+          openModal({
+            type: "success",
+            title: "Поездка началась!",
+            message: "Ошибка старта поездки: " + tripResult?.message,
+          })
+        );
       }
     } catch (error) {
-      console.error("Rental Error:", error);
-      alert("Ошибка: " + error.message);
+      dispatch(
+        openModal({
+          type: "error",
+          title: "Ошибка",
+          message: error.message || "Что-то пошло не так",
+        })
+      );
     }
   };
 
