@@ -205,7 +205,7 @@ public class TripService : ITripService
 
             if (car != null)
             {
-                car.StatusId = 1; // Свободна
+                car.StatusId = 1;
                 car.Location = request.EndLocation;
                 car.FuelLevel = request.FuelLevel;
             }

@@ -49,7 +49,7 @@ public class ClientDocumentsController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateDocument(int id, [FromBody] ClientDocumentsRequest request)
+    public async Task<ActionResult<int>> UpdateDocument(int id, [FromForm] ClientDocumentsRequest request)
     {
         var documentId = await _clientDocumentsService.UpdateClientDocument(id, request.ClientId, request.Type,
             request.Number, request.IssueDate, request.ExpiryDate, request.FilePath);

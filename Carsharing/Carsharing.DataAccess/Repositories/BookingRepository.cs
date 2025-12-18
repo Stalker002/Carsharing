@@ -171,40 +171,11 @@ public class BookingRepository : IBookingRepository
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception booking: {error}");
 
-        var overlapping = await _context.Booking.AnyAsync(b =>
-            b.CarId == booking.CarId &&
-            b.EndTime > booking.StartTime &&
-            b.StartTime < booking.EndTime
+        var overlapping = await _context.Car.AnyAsync(c =>
+            c.StatusId != 1
         );
         if (overlapping)
             throw new ArgumentException("Автомобиль недоступен на выбранное время");
-
-        var tripOverlapping = await _context.Trip.AnyAsync(t =>
-                t.BookingId == booking.Id &&
-                t.EndTime > booking.StartTime && 
-                t.StartTime < booking.EndTime
-        );
-
-        if (tripOverlapping)
-            throw new ArgumentException("Автомобиль находится в поездке в выбранное время");
-
-        var byAnother = await _context.Booking.AnyAsync(b =>
-            b.CarId == booking.CarId &&
-            b.ClientId != booking.ClientId &&
-            b.EndTime > booking.StartTime &&
-            b.StartTime < booking.EndTime
-        );
-        if (byAnother)
-            throw new ArgumentException("Автомобиль уже занят другим пользователем");
-
-        var bySameUser = await _context.Booking.AnyAsync(b =>
-            b.CarId == booking.CarId &&
-            b.ClientId == booking.ClientId &&
-            b.EndTime > booking.StartTime &&
-            b.StartTime < booking.EndTime
-        );
-        if (bySameUser)
-            throw new ArgumentException("У вас уже есть бронь на это время");
 
         var bookingEntities = new BookingEntity
         {
