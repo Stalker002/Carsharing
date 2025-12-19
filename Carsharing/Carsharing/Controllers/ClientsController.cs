@@ -92,7 +92,7 @@ public class ClientsController : ControllerBase
 
         var clients = await _clientsService.GetMyDocuments(userId);
         var response = clients.Select(d =>
-            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.Number, d.IssueDate, d.ExpiryDate, d.FilePath));
+            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.LicenseCategory, d.Number, d.IssueDate, d.ExpiryDate, d.FilePath));
         return Ok(response);
     }
 
@@ -102,7 +102,7 @@ public class ClientsController : ControllerBase
     {
         var clients = await _clientsService.GetClientDocuments(clientId);
         var response = clients.Select(d =>
-            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.Number, d.IssueDate, d.ExpiryDate, d.FilePath));
+            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.LicenseCategory, d.Number, d.IssueDate, d.ExpiryDate, d.FilePath));
         return Ok(response);
     }
 

@@ -16,15 +16,27 @@ public class ImageService : IImageService
 
     public async Task<string> SaveCarImageAsync(IFormFile file)
     {
+        return await SaveFileInternalAsync(file, "cars");
+    }
+
+    public async Task<string> SaveDocumentImageAsync(IFormFile file)
+    {
+        return await SaveFileInternalAsync(file, "documents");
+    }
+
+    private async Task<string> SaveFileInternalAsync(IFormFile file, string subFolder)
+    {
         var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
 
         if (!_allowedExtensions.Contains(ext))
-            throw new ArgumentException("Неподдерживаемый формат изображения");
+            throw new ArgumentException($"Неподдерживаемый формат файла. Разрешены: {string.Join(", ", _allowedExtensions)}");
 
         var fileName = $"{Guid.NewGuid()}{ext}";
 
         var rootPath = _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-        var folder = Path.Combine(rootPath, "images", "cars");
+
+        var folder = Path.Combine(rootPath, "images", subFolder);
+
         if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
 
         var fullPath = Path.Combine(folder, fileName);
@@ -34,7 +46,7 @@ public class ImageService : IImageService
             await file.CopyToAsync(stream);
         }
 
-        return $"/images/cars/{fileName}";
+        return $"/images/{subFolder}/{fileName}";
     }
 
     public void DeleteFile(string webPath)
@@ -42,13 +54,18 @@ public class ImageService : IImageService
         if (string.IsNullOrEmpty(webPath)) return;
 
         var rootPath = _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+
         var systemPath = Path.Combine(rootPath, webPath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
 
         if (!File.Exists(systemPath)) return;
-        try { File.Delete(systemPath); }
+
+        try
+        {
+            File.Delete(systemPath);
+        }
         catch
         {
-            // ignored
+            // Логирование ошибки удаления
         }
     }
 }

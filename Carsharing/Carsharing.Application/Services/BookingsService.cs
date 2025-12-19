@@ -1,7 +1,6 @@
 ﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.Application.Services;
 
@@ -12,13 +11,11 @@ public class BookingsService : IBookingsService
     private readonly ICarRepository _carRepository;
     private readonly IStatusRepository _statusRepository;
     private readonly ISpecificationCarRepository _specificationCarRepository;
-    private readonly ITripRepository _tripRepository;
 
     public BookingsService(IBookingRepository bookingRepository, IClientRepository clientRepository,
         ICarRepository carRepository, IStatusRepository statusRepository,
-        ISpecificationCarRepository specificationCarRepository, ITripRepository tripRepository)
+        ISpecificationCarRepository specificationCarRepository)
     {
-        _tripRepository = tripRepository;
         _specificationCarRepository = specificationCarRepository;
         _statusRepository = statusRepository;
         _carRepository = carRepository;

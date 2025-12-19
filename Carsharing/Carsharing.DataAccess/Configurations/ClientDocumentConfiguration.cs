@@ -28,6 +28,11 @@ public class ClientDocumentConfiguration : IEntityTypeConfiguration<ClientDocume
             .HasMaxLength(ClientDocument.MaxTypeLength)
             .IsRequired();
 
+        builder.Property(d => d.LicenseCategory)
+            .HasColumnName("document_license_category")
+            .HasMaxLength(ClientDocument.MaxLicenseCategoryLength)
+            .IsRequired();
+
         builder.Property(d => d.Number)
             .HasColumnName("document_number")
             .HasMaxLength(ClientDocument.MaxNumberLength)

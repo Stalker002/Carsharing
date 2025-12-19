@@ -9,19 +9,17 @@ namespace Carsharing.Application.Services;
 
 public class TripService : ITripService
 {
-    private readonly ITripRepository _tripRepository;
-    private readonly ITripDetailRepository _tripDetailRepository;
-    private readonly IStatusRepository _statusRepository;
-    private readonly IBookingRepository _bookingRepository;
     private readonly IClientRepository _clientRepository;
     private readonly CarsharingDbContext _context;
+    private readonly IStatusRepository _statusRepository;
+    private readonly ITripDetailRepository _tripDetailRepository;
+    private readonly ITripRepository _tripRepository;
 
     public TripService(ITripRepository tripRepository, ITripDetailRepository tripDetailRepository,
-        IStatusRepository statusRepository, IBookingRepository bookingRepository, IClientRepository clientRepository, CarsharingDbContext context)
+        IStatusRepository statusRepository, IClientRepository clientRepository, CarsharingDbContext context)
     {
         _context = context;
         _clientRepository = clientRepository;
-        _bookingRepository = bookingRepository;
         _statusRepository = statusRepository;
         _tripDetailRepository = tripDetailRepository;
         _tripRepository = tripRepository;
@@ -42,49 +40,54 @@ public class TripService : ITripService
         return await _tripRepository.GetCount();
     }
 
-    public async Task<List<TripWithMinInfoDto>> GetPagedTripWithMinInfoByUserId(int userId, int page, int limit)
+    public async Task<(List<TripHistoryDto> Items, int TotalCount)> GetPagedHistoryByClientId(int clientId, int page,
+        int limit)
     {
-        var client = await _clientRepository.GetClientByUserId(userId);
-        var clientId = client.Select(c => c.Id).FirstOrDefault();
+        var query = from t in _context.Trip
+            join b in _context.Booking on t.BookingId equals b.Id
+            join c in _context.Car on b.CarId equals c.Id
+            join s in _context.SpecificationCar on c.SpecificationId equals s.Id
+            join st in _context.Status on t.StatusId equals st.Id
+            join td in _context.TripDetail on t.Id equals td.TripId into details
+            from td in details.DefaultIfEmpty()
+            join bill in _context.Bill on t.Id equals bill.TripId into bills
+            from bill in bills.DefaultIfEmpty()
+            where b.ClientId == clientId && t.EndTime != null // Только завершенные
+            select new
+            {
+                t,
+                s,
+                c,
+                st,
+                bill,
+                td
+            };
 
-        if (clientId == 0) return [];
+        var totalCount = await query.CountAsync();
 
-        var bookings = await _bookingRepository.GetPagedByClientId(clientId, page, limit);
-        var bookingId = bookings.Select(c => c.Id).ToList();
+        var items = await query
+            .OrderByDescending(x => x.t.StartTime)
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .Select(x => new TripHistoryDto
+            (
+                x.t.Id,
+                x.s.Brand,
+                x.s.Model,
+                x.c.ImagePath,
+                x.bill != null && x.bill.StatusId == 7 ? "Оплачено" : x.st.Name,
+                x.t.StartTime,
+                x.t.EndTime,
+                (decimal)(x.bill != null ? x.bill.Amount : 0)!,
+                x.t.TariffType,
+                x.t.Duration,
+                x.t.Distance,
+                x.td != null ? x.td.StartLocation : "Неизвестно",
+                x.td != null ? x.td.EndLocation : "Неизвестно"
+            ))
+            .ToListAsync();
 
-        var trips = await _tripRepository.GetByBookingId(bookingId);
-        var tripId = trips.Select(tr => tr.Id).ToList();
-
-        var tripDetail = await _tripDetailRepository.GetByTripId(tripId);
-
-        var statuses = await _statusRepository.Get();
-
-        var response = (from tr in trips
-                        join d in tripDetail on tr.Id equals d.TripId
-                        join s in statuses on tr.StatusId equals s.Id
-                        select new TripWithMinInfoDto(
-                            tr.Id,
-                            tr.BookingId,
-                            s.Name,
-                            tr.TariffType,
-                            tr.StartTime,
-                            tr.EndTime,
-                            tr.Duration,
-                            tr.Distance
-                        )).ToList();
-
-        return response;
-    }
-
-    public async Task<int> GetCountPagedBillWithMinInfoByUser(int userId)
-    {
-        var client = await _clientRepository.GetClientByUserId(userId);
-        var clientId = client.Select(c => c.Id).FirstOrDefault();
-
-        var bookings = await _bookingRepository.GetByClientId(clientId);
-        var bookingId = bookings.Select(c => c.Id).ToList();
-
-        return await _tripRepository.GetCountByBooking(bookingId);
+        return (items, totalCount);
     }
 
     public async Task<List<TripWithInfoDto>> GetTripWithInfo(int id)
@@ -97,9 +100,9 @@ public class TripService : ITripService
         var statuses = await _statusRepository.Get();
 
         var response = (from d in tripDetail
-                        join tr in trip on d.TripId equals tr.Id
-                        join s in statuses on tr.StatusId equals s.Id
-                        select new TripWithInfoDto(
+            join tr in trip on d.TripId equals tr.Id
+            join s in statuses on tr.StatusId equals s.Id
+            select new TripWithInfoDto(
                 tr.Id,
                 tr.BookingId,
                 s.Name,
@@ -123,13 +126,13 @@ public class TripService : ITripService
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
         var tripEntity = await _context.Trip
-            .AsNoTracking() 
+            .AsNoTracking()
             .Include(t => t.Booking)
-                .ThenInclude(b => b!.Car)
-                    .ThenInclude(c => c!.SpecificationCar)
+            .ThenInclude(b => b!.Car)
+            .ThenInclude(c => c!.SpecificationCar)
             .Include(t => t.Booking)
-                .ThenInclude(b => b!.Car)
-                    .ThenInclude(c => c!.Tariff)
+            .ThenInclude(b => b!.Car)
+            .ThenInclude(c => c!.Tariff)
             .Where(t => t.Booking!.ClientId == clientId && t.EndTime == null)
             .FirstOrDefaultAsync();
 
@@ -161,7 +164,7 @@ public class TripService : ITripService
             var trip = await _context.Trip
                 .Include(t => t.Booking)
                 .ThenInclude(b => b!.Car)
-                .Include(t => t.Booking!.Car!.Tariff) 
+                .Include(t => t.Booking!.Car!.Tariff)
                 .FirstOrDefaultAsync(t => t.Id == request.TripId).ConfigureAwait(true);
 
             if (trip is not { EndTime: null })
@@ -216,10 +219,7 @@ public class TripService : ITripService
                 .AsNoTracking()
                 .FirstOrDefaultAsync(b => b.TripId == trip.Id);
 
-            if (bill == null)
-            {
-                throw new Exception("Ошибка системы: Счет не был сформирован базой данных.");
-            }
+            if (bill == null) throw new Exception("Ошибка системы: Счет не был сформирован базой данных.");
 
             await transaction.CommitAsync();
 

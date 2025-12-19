@@ -16,12 +16,14 @@ public class TripsController : ControllerBase
     private readonly ITripService _tripService;
     private readonly ITripDetailsService _tripDetailsService;
     private readonly CarsharingDbContext _context;
+    private readonly IClientsService _clientsService;
     private readonly ICarsService _carsService;
 
-    public TripsController(ITripService tripService, ITripDetailsService tripDetailsService, ICarsService carsService, CarsharingDbContext context)
+    public TripsController(ITripService tripService, ITripDetailsService tripDetailsService, ICarsService carsService, CarsharingDbContext context, IClientsService clientsService)
     {
         _carsService = carsService;
         _context = context;
+        _clientsService = clientsService;
         _tripDetailsService = tripDetailsService;
         _tripService = tripService;
     }
@@ -56,24 +58,22 @@ public class TripsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("pagedByClient")]
+    [HttpGet("history")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<TripWithMinInfoDto>>> GetPagedTripsByClient(
-        [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_limit")] int limit = 25)
+    public async Task<ActionResult<List<TripHistoryDto>>> GetMyHistory(
+        [FromQuery] int page = 1,
+        [FromQuery] int limit = 10)
     {
         var userId = int.Parse(User.FindFirst("userId")!.Value);
 
-        var totalCount = await _tripService.GetCountPagedBillWithMinInfoByUser(userId);
-        var trips = await _tripService.GetPagedTripWithMinInfoByUserId(userId, page, limit);
+        var clientClaim = await _clientsService.GetClientByUserId(userId);
+        var client = clientClaim.FirstOrDefault();
 
-        var response = trips
-            .Select(tr => new TripWithMinInfoDto(tr.Id, tr.BookingId, tr.StatusName, tr.TariffType, tr.StartTime,
-                tr.EndTime, tr.Duration, tr.Distance)).ToList();
+        var (items, totalCount) = await _tripService.GetPagedHistoryByClientId(client!.Id, page, limit);
 
         Response.Headers.Append("x-total-count", totalCount.ToString());
 
-        return Ok(response);
+        return Ok(items);
     }
 
     [HttpGet("{id:int}")]

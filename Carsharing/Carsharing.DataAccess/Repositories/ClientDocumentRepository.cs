@@ -25,6 +25,30 @@ public class ClientDocumentRepository : IClientDocumentRepository
                 c.Id,
                 c.ClientId,
                 c.Type,
+                c.LicenseCategory,
+                c.Number,
+                c.IssueDate,
+                c.ExpiryDate,
+                c.FilePath).clientDocument)
+            .ToList();
+
+        return documents;
+    }
+
+    public async Task<List<ClientDocument>> GetById(int id)
+    {
+        var clientDocumentEntities = await _context.ClientDocument
+            .Where(d => d.Id == id)
+            .OrderBy(cl => cl.Id)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var documents = clientDocumentEntities
+            .Select(c => ClientDocument.Create(
+                c.Id,
+                c.ClientId,
+                c.Type,
+                c.LicenseCategory,
                 c.Number,
                 c.IssueDate,
                 c.ExpiryDate,
@@ -47,6 +71,7 @@ public class ClientDocumentRepository : IClientDocumentRepository
                 c.Id,
                 c.ClientId,
                 c.Type,
+                c.LicenseCategory,
                 c.Number,
                 c.IssueDate,
                 c.ExpiryDate,
@@ -67,6 +92,7 @@ public class ClientDocumentRepository : IClientDocumentRepository
             0,
             document.ClientId,
             document.Type,
+            document.LicenseCategory,
             document.Number,
             document.IssueDate,
             document.ExpiryDate,
@@ -79,6 +105,7 @@ public class ClientDocumentRepository : IClientDocumentRepository
         {
             ClientId = document.ClientId,
             Type = document.Type,
+            LicenseCategory = document.LicenseCategory,
             Number = document.Number,
             IssueDate = document.IssueDate,
             ExpiryDate = document.ExpiryDate,
@@ -91,7 +118,7 @@ public class ClientDocumentRepository : IClientDocumentRepository
         return clientDocumentEntities.Id;
     }
 
-    public async Task<int> Update(int id, int? clientId, string? type, string? number,
+    public async Task<int> Update(int id, int? clientId, string? licenseCategory, string? type, string? number,
         DateOnly? issueDate, DateOnly? expiryDate, string? filePath)
     {
         var document = await _context.ClientDocument.FirstOrDefaultAsync(d => d.Id == id)
@@ -102,6 +129,9 @@ public class ClientDocumentRepository : IClientDocumentRepository
 
         if (!string.IsNullOrWhiteSpace(type))
             document.Type = type;
+
+        if (!string.IsNullOrWhiteSpace(licenseCategory))
+            document.LicenseCategory = licenseCategory;
 
         if (!string.IsNullOrWhiteSpace(number))
             document.Number = number;
@@ -119,6 +149,7 @@ public class ClientDocumentRepository : IClientDocumentRepository
             0,
             document.ClientId,
             document.Type,
+            document.LicenseCategory,
             document.Number,
             document.IssueDate,
             document.ExpiryDate,

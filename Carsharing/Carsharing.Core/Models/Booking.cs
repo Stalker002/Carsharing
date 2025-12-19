@@ -1,6 +1,4 @@
-﻿using Carsharing.Core.Abstractions;
-
-namespace Carsharing.Core.Models;
+﻿namespace Carsharing.Core.Models;
 
 public class Booking
 {

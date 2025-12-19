@@ -1,6 +1,6 @@
-﻿using Carsharing.Contracts;
-using Carsharing.Core.Abstractions;
-using Carsharing.Core.Models;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Application.Services;
+using Carsharing.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,44 +23,53 @@ public class ClientDocumentsController : ControllerBase
     {
         var documents = await _clientDocumentsService.GetClientDocuments();
         var response = documents.Select(d =>
-            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.Number, d.IssueDate, d.ExpiryDate, d.FilePath));
+            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.LicenseCategory, d.Number, d.IssueDate, d.ExpiryDate, d.FilePath));
         return Ok(response);
     }
 
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> CreateClientDocument([FromBody] ClientDocumentsRequest request)
+    public async Task<IActionResult> CreateClientDocument([FromForm] ClientDocumentsRequest request)
     {
-        var (document, error) = ClientDocument.Create(
-            0,
-            request.ClientId,
-            request.Type,
-            request.Number,
-            request.IssueDate,
-            request.ExpiryDate,
-            request.FilePath);
+        var (id, error) = await _clientDocumentsService.CreateClientDocumentAsync(request);
 
-        if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
+        if (!string.IsNullOrEmpty(error))
+        {
+            return BadRequest(new { message = error });
+        }
 
-        var documentId = await _clientDocumentsService.CreateClientDocument(document);
-
-        return Ok(documentId);
+        return Ok(id);
     }
 
     [HttpPut("{id:int}")]
-    [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateDocument(int id, [FromForm] ClientDocumentsRequest request)
+    [Authorize(Policy = "AdminClientPolicy")]
+    public async Task<IActionResult> UpdateClientDocument(int id, [FromForm] ClientDocumentsRequest request)
     {
-        var documentId = await _clientDocumentsService.UpdateClientDocument(id, request.ClientId, request.Type,
-            request.Number, request.IssueDate, request.ExpiryDate, request.FilePath);
+        var (isSuccess, error) = await _clientDocumentsService.UpdateClientDocumentAsync(id, request);
 
-        return Ok(documentId);
+        if (isSuccess) return Ok(new { message = "Документ успешно обновлен" });
+        if (error == "Document not found")
+        {
+            return NotFound(new { message = "Документ не найден" });
+        }
+
+        return BadRequest(new { message = error });
+
     }
 
+    // УДАЛЕНИЕ
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> DeleteDocument(int id)
+    public async Task<IActionResult> DeleteClientDocument(int id)
     {
-        return Ok(await _clientDocumentsService.DeleteClientDocument(id));
+        var (isSuccess, error) = await _clientDocumentsService.DeleteClientDocumentAsync(id);
+
+        if (isSuccess) return Ok(new { message = "Документ удален" });
+        if (error == "Document not found")
+        {
+            return NotFound(new { message = "Документ не найден" });
+        }
+        return BadRequest(new { message = error });
+
     }
 }

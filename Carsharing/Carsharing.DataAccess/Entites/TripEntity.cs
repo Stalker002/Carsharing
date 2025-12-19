@@ -8,7 +8,7 @@ public class TripEntity
 
     public int StatusId { get; set; }
 
-    public string TariffType { get; set; }
+    public string? TariffType { get; set; }
 
     public DateTime StartTime { get; set; }
 
