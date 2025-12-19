@@ -655,6 +655,7 @@ CREATE TABLE public.client_documents (
     document_id integer NOT NULL,
     document_client_id integer NOT NULL,
     document_type character varying(50) NOT NULL,
+    document_license_category character varying(20) NOT NULL,
     document_number character varying(50) NOT NULL,
     document_issue_date date NOT NULL,
     document_expiry_date date NOT NULL,
