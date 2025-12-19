@@ -73,7 +73,6 @@ const CurrentTripTab = () => {
             message: `Ваш итоговый счет: $${result.data.totalAmount}. Спасибо, что выбрали нас!`,
           })
         );
-
         dispatch(getActiveTrip());
         navigate("/profile/bills");
       } else {

@@ -1,0 +1,197 @@
+/* Общий контейнер */
+.history-wrapper {
+  max-width: 600px; /* Узкий контейнер как в мобильном приложении */
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+}
+
+/* --- Блок сводки (Сверху) --- */
+.history-stats {
+  display: flex;
+  justify-content: space-between;
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.stat-item h4 {
+  font-size: 14px;
+  color: #90a3bf; /* Серый текст заголовка */
+  margin: 0 0 8px 0;
+  font-weight: 500;
+}
+
+.stat-item p {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1b1b1b;
+  margin: 0;
+}
+
+/* --- Список поездок --- */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.history-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid transparent;
+}
+
+.history-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(53, 99, 233, 0.1);
+  border-color: #3563e9;
+}
+
+/* Левая часть: Иконка авто */
+.card-icon-box {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f7f9;
+  border-radius: 12px;
+  margin-right: 15px;
+  font-size: 24px;
+}
+
+.card-icon-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Центральная часть: Инфо */
+.card-main-info {
+  flex: 1;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 4px 0;
+}
+
+.card-dates {
+  font-size: 12px;
+  color: #90a3bf;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Правая часть: Цена */
+.card-price-block {
+  text-align: right;
+}
+
+.card-price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3563e9; /* Твой синий цвет */
+  margin-bottom: 4px;
+}
+
+.card-meta {
+  font-size: 11px;
+  color: #90a3bf;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* --- Детализация (Вторая страница) --- */
+.detail-page {
+  background: #fff;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-car-name {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.detail-label {
+  color: #596780;
+}
+
+.detail-val {
+  font-weight: 600;
+  color: #1a202c;
+}
+
+.detail-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 25px 0 15px;
+  color: #1a202c;
+}
+
+.bill-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px dashed #eee;
+}
+
+.bill-item:last-child {
+  border-bottom: none;
+}
+
+.bill-total {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #3563e9;
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: 800;
+  color: #3563e9;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #3563e9;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}

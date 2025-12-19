@@ -42,7 +42,7 @@ function Profile() {
   const myClient = useSelector((state) => state.clients.myClient);
   const myUser = useSelector((state) => state.users.myUser);
   const isMyUserLoading = useSelector((state) => state.users.isMyUserLoading);
-  
+
   const documents = useSelector((state) => state.clients.myDocument);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ function Profile() {
 
   useEffect(() => {
     if (myClient?.id) {
-        dispatch(getMyDocuments(myClient.id));
+      dispatch(getMyDocuments(myClient.id));
     }
   }, [dispatch, myClient]);
 
@@ -61,103 +61,184 @@ function Profile() {
   const isSpecialUser = userRoleId === 1;
 
   const handleDeleteDoc = (id) => {
-    dispatch(openModal({
+    dispatch(
+      openModal({
         title: "Удаление документа",
         message: "Вы уверены? Без действующих документов аренда невозможна.",
         type: "confirm",
         confirmText: "Удалить",
         onConfirm: async () => {
-            const res = await dispatch(deleteClientDocument(id));
-            if (res.success) {
-                dispatch(getMyDocuments(myClient.id));
-            } else {
-                dispatch(openModal({type: "error", title: "Ошибка", message: res.message}));
-            }
-        }
-    }));
+          const res = await dispatch(deleteClientDocument(id));
+          if (res.success) {
+            dispatch(getMyDocuments(myClient.id));
+          } else {
+            dispatch(
+              openModal({
+                type: "error",
+                title: "Ошибка",
+                message: res.message,
+              })
+            );
+          }
+        },
+      })
+    );
   };
 
   return (
     <div className="profile-wrapper">
       <div className="profile-column">
         <div className="profile-card">
-            <div className="user-avatar-profile">
+          <div className="user-avatar-profile">
             <span>
-                {myClient.name?.[0]}
-                {myClient.surname?.[0]}
+              {myClient.name?.[0]}
+              {myClient.surname?.[0]}
             </span>
-            </div>
-            <h1 className="profile-name">
+          </div>
+          <h1 className="profile-name">
             {myClient.name} {myClient.surname}
-            </h1>
-            <div className="profile-category">{profile.category}</div>
+          </h1>
+          <div className="profile-category">{profile.category}</div>
 
-            <div className="profile-grid">
+          <div className="profile-grid">
             <div className="profile-item">
-                <span className="item-label">Номер телефона</span>
-                <span className="item-value">
+              <span className="item-label">Номер телефона</span>
+              <span className="item-value">
                 {formatPhoneNumber(myClient.phoneNumber)}
-                </span>
+              </span>
             </div>
 
             <div className="profile-item">
-                <span className="item-label">Логин</span>
-                <span className="item-value">{myUser.login}</span>
+              <span className="item-label">Логин</span>
+              <span className="item-value">{myUser.login}</span>
             </div>
 
             <div className="profile-item">
-                <span className="item-label">Почта</span>
-                <span className="item-value">{myClient.email}</span>
+              <span className="item-label">Почта</span>
+              <span className="item-value">{myClient.email}</span>
             </div>
-            </div>
+          </div>
 
-            <div className="profile-actions">
-            <button className="profile-edit-btn" onClick={() => setIsEditOpen(true)}>
-                Редактировать
+          <div className="profile-actions">
+            <button
+              className="profile-edit-btn"
+              onClick={() => setIsEditOpen(true)}
+            >
+              Редактировать
             </button>
             {isSpecialUser && (
-                <button
+              <button
                 className="profile-edit-btn"
                 onClick={() => {
-                    navigate("/admin");
+                  navigate("/admin");
                 }}
-                >
+              >
                 Админ панель
-                </button>
+              </button>
             )}
-            </div>
+          </div>
         </div>
         <div className="docs-section">
-            <div className="docs-header">
-                <h2>Мои документы</h2>
-                <button className="add-doc-btn" onClick={() => setIsDocOpen(true)}>+ Добавить</button>
+          <div className="docs-header">
+            <h2>Мои документы</h2>
+            <button className="add-doc-btn" onClick={() => setIsDocOpen(true)}>
+              + Добавить
+            </button>
+          </div>
+
+          {documents.length > 0 ? (
+            <div className="docs-list">
+              {documents.map((doc) => {
+                const docImageUrl = doc.filePath
+                  ? `http://localhost:5078${doc.filePath}`
+                  : null;
+                const isPdf = doc.docImageUrl?.toLowerCase().endsWith(".pdf");
+                return (
+                  <div key={doc.id} className="doc-item">
+                    <div className="doc-icon">
+                      {docImageUrl ? (
+                        isPdf ? (
+                          <a
+                            href={docImageUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              textDecoration: "none",
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              color: "#e74c3c",
+                            }}
+                          >
+                            <span
+                              style={{ fontSize: "24px", fontWeight: "bold" }}
+                            >
+                              PDF
+                            </span>
+                            <span style={{ fontSize: "10px" }}>Открыть</span>
+                          </a>
+                        ) : (
+                          <img
+                            src={docImageUrl}
+                            alt="doc"
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              borderRadius: "8px",
+                            }}
+                          />
+                        )
+                      ) : (
+                        "📄"
+                      )}
+                    </div>
+                    <div className="doc-info">
+                      <h4>{doc.type}</h4>
+                      <p>№ {doc.number}</p>
+
+                      <span
+                        className={
+                          new Date(doc.expiryDate) < new Date()
+                            ? "doc-expired"
+                            : "doc-valid"
+                        }
+                      >
+                        До: {new Date(doc.expiryDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <button
+                      className="doc-delete-btn"
+                      onClick={() => handleDeleteDoc(doc.id)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                );
+              })}
             </div>
-            
-            {documents.length > 0 ? (
-                <div className="docs-list">
-                    {documents.map((doc) => (
-                        <div key={doc.id} className="doc-item">
-                            <div className="doc-icon">📄</div>
-                            <div className="doc-info">
-                                <h4>{doc.documentType}</h4>
-                                <p>№ {doc.documentNumber}</p>
-                                <span className={new Date(doc.documentExpiryDate) < new Date() ? "doc-expired" : "doc-valid"}>
-                                    До: {new Date(doc.documentExpiryDate).toLocaleDateString()}
-                                </span>
-                            </div>
-                            <button className="doc-delete-btn" onClick={() => handleDeleteDoc(doc.id)}>✕</button>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="no-docs-placeholder">
-                    <p>Загрузите водительское удостоверение и паспорт для начала аренды.</p>
-                </div>
-            )}
+          ) : (
+            <div className="no-docs-placeholder">
+              <p>
+                Загрузите водительское удостоверение и паспорт для начала
+                аренды.
+              </p>
+            </div>
+          )}
         </div>
       </div>
-      {isEditOpen && <EditProfileModal client={myClient} onClose={() => setIsEditOpen(false)} />}
-      {isDocOpen && <AddDocumentModal clientId={myClient.id} onClose={() => setIsDocOpen(false)} />}
+      {isEditOpen && (
+        <EditProfileModal
+          client={myClient}
+          onClose={() => setIsEditOpen(false)}
+        />
+      )}
+      {isDocOpen && (
+        <AddDocumentModal
+          clientId={myClient.id}
+          onClose={() => setIsDocOpen(false)}
+        />
+      )}
     </div>
   );
 }

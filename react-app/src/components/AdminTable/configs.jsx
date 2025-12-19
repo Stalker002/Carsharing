@@ -320,11 +320,21 @@ export const fieldsCars = [
 export const columnsDocuments = [
   "id",
   "type",
+  "licenseCategory",
   "number",
   "issueDate",
   "expiryDate",
+  "filePath",
 ];
-export const headTextDocuments = ["ID", "Тип", "Номер", "Выдан", "Истекает"];
+export const headTextDocuments = [
+  "ID",
+  "Тип",
+  "Категория",
+  "Номер",
+  "Выдан",
+  "Истекает",
+  "Скан",
+];
 
 export const fieldsClientDocuments = [
   { name: "id", label: "ID", type: "text", readOnly: true, hideOnAdd: true },
@@ -346,6 +356,13 @@ export const fieldsClientDocuments = [
     required: true,
   },
   {
+    name: "licenseCategory",
+    label: "Категория прав",
+    type: "text",
+    placeholder: "B (только для прав)",
+    required: false,
+  },
+  {
     name: "issueDate",
     label: "Дата выдачи",
     type: "date",
@@ -357,7 +374,12 @@ export const fieldsClientDocuments = [
     type: "date",
     required: true,
   },
-  // { name: "filePath", label: "Файл", type: "file", hideOnEdit: true }
+  {
+    name: "file",
+    label: "Загрузить файл",
+    type: "file",
+    required: false,
+  },
 ];
 
 export const columnsClients = [
@@ -904,7 +926,7 @@ export const fieldsTrips = [
     type: "number",
     placeholder: "0",
     step: "0.01",
-    required: false, 
+    required: false,
   },
 ];
 export const columnsUsers = ["id", "roleId", "login"];

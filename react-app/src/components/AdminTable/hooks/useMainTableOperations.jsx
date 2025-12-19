@@ -120,6 +120,9 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
       } else {
         setEditingItem(item);
         if (activeTab === "cars") subData.fetchSubData(item.id);
+        if (activeTab === "users") {
+          subData.fetchClientProfile(item.id);
+      }
       }
     },
     [cfg, dispatch, activeTab, subData]

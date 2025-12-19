@@ -2,7 +2,10 @@ import { useState, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { getInsuranceByCars } from "../../../redux/actions/insurance";
 import { getMaintenanceByCars } from "../../../redux/actions/maintenance";
-import { getClientByUser, getClientDocument } from "../../../redux/actions/clients";
+import {
+  getClientByUser,
+  getClientDocument,
+} from "../../../redux/actions/clients";
 import { getFinesByTrip } from "../../../redux/actions/fines";
 import { getPaymentByBill } from "../../../redux/actions/payments";
 
@@ -45,6 +48,12 @@ export const useSubData = (activeTab) => {
           console.error("Ошибка загрузки под-данных", e);
         }
       }
+      if (activeTab === "users") {
+        if (tabIndex === 0) subData.fetchClientProfile(item.id);
+        if (tabIndex === 1 && subData.clientProfile?.id) {
+          subData.fetchClientDocuments(subData.clientProfile.id);
+        }
+      }
       if (activeTab === "trips") {
         if (!type || type === "fine") {
           const res = await dispatch(getFinesByTrip(itemId));
@@ -53,15 +62,17 @@ export const useSubData = (activeTab) => {
       }
       if (activeTab === "bills") {
         try {
-            if (!type || type === 'payment') {
-                const res = await dispatch(getPaymentByBill(itemId));
-                const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
-                setBillPayments(list);
-            }
+          if (!type || type === "payment") {
+            const res = await dispatch(getPaymentByBill(itemId));
+            const list = Array.isArray(res.data)
+              ? res.data
+              : res.data?.data || [];
+            setBillPayments(list);
+          }
         } catch (e) {
-            console.error("Ошибка загрузки платежей", e);
+          console.error("Ошибка загрузки платежей", e);
         }
-    }
+      }
     },
     [activeTab, dispatch]
   );
@@ -75,8 +86,12 @@ export const useSubData = (activeTab) => {
         if (res.success && res.data) {
           const profile = Array.isArray(res.data) ? res.data[0] : res.data;
           setClientProfile(profile);
+          if (profile?.id) {
+            fetchClientDocuments(profile.id);
+          }
         } else {
           setClientProfile(null);
+          setClientDocuments([]);
         }
       } catch (e) {
         console.error(e);
@@ -88,14 +103,18 @@ export const useSubData = (activeTab) => {
     [dispatch]
   );
 
-  const fetchClientDocuments = useCallback(async (clientId) => {
+  const fetchClientDocuments = useCallback(
+    async (clientId) => {
+      if (!clientId) return;
       try {
-          const res = await dispatch(getClientDocument(clientId));
-          setClientDocuments(res.data || []); 
+        const res = await dispatch(getClientDocument(clientId));
+        setClientDocuments(res.data || []);
       } catch (e) {
-          console.error(e);
+        console.error(e);
       }
-  }, [dispatch]);
+    },
+    [dispatch]
+  );
 
   const clearSubData = useCallback(() => {
     setInsurances([]);

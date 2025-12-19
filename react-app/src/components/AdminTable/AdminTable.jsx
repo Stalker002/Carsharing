@@ -79,9 +79,15 @@ function AdminTable({ activeTab }) {
         if (tabIndex === 1) subData.fetchSubData(item.id, "maintenance");
       }
       if (activeTab === "users") {
-        if (tabIndex === 0) subData.fetchClientProfile(item.id);
-        if (tabIndex === 1 && subData.clientProfile?.id) {
-          subData.fetchClientDocuments(subData.clientProfile.id);
+        if (tabIndex === 0) {
+          if (!subData.clientProfile) subData.fetchClientProfile(item.id);
+        }
+        if (tabIndex === 1) {
+          if (subData.clientProfile?.id) {
+            subData.fetchClientDocuments(subData.clientProfile.id);
+          } else {
+            subData.fetchClientProfile(item.id);
+          }
         }
       }
       if (activeTab === "trips" && tabIndex === 0)
@@ -142,7 +148,7 @@ function AdminTable({ activeTab }) {
           <form
             id="edit-form"
             onSubmit={mainOps.handleSaveEdit}
-            className="update-modal__form-grid"
+            className="update-modal-form-grid"
           >
             {editFields.map((field) => {
               let val = mainOps.editingItem[field.name];
@@ -202,14 +208,15 @@ function AdminTable({ activeTab }) {
           <form
             id="sub-edit-form"
             onSubmit={subOps.handleSubUpdateSave}
-            className="update-modal__form-grid"
+            className="update-modal-form-grid"
           >
             {subOps.subFields
               .filter((f) => !f.hideOnEdit)
               .map((field) => {
                 let val = subOps.subEditingItem[field.name];
-                if (field.type === "datetime-local")
+                if (field.type === "datetime-local") {
                   val = toLocalISOString(val);
+                }
                 return (
                   <div className="update-group" key={field.name}>
                     <label>{field.label}</label>
@@ -229,10 +236,38 @@ function AdminTable({ activeTab }) {
                           </option>
                         ))}
                       </select>
+                    ) : field.type === "file" ? (
+                      <div className="file-input-wrapper">
+                        {(() => {
+                          const filePath =
+                            subOps.subEditingItem.filePath || val;
+
+                          if (filePath && typeof filePath === "string") {
+                            return (
+                              <img
+                                src={`http://localhost:5078${filePath}`}
+                                alt={field.label}
+                                className="file-input-wrapper-img"
+                                onError={(e) =>
+                                  (e.target.style.display = "none")
+                                }
+                              />
+                            );
+                          }
+                          return null;
+                        })()}
+
+                        <input
+                          type="file"
+                          name={field.name}
+                          className="modal-input"
+                          accept="image/*"
+                        />
+                      </div>
                     ) : (
                       <input
-                        name={field.name}
                         type={field.type}
+                        name={field.name}
                         defaultValue={val}
                         className="modal-input"
                         readOnly={field.readOnly}

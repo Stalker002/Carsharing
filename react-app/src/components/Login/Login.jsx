@@ -3,6 +3,7 @@ import "./Login.css";
 
 import { useEffect, useState } from "react";
 import { loginUser } from "../../redux/actions/users";
+import { getMyClient } from "../../redux/actions/clients";
 
 export default function Login({ isOpen, onClose, onRegisterClick }) {
     const dispatch = useDispatch();
@@ -62,6 +63,7 @@ export default function Login({ isOpen, onClose, onRegisterClick }) {
             return;
         }
 
+        dispatch(getMyClient());
         onClose();
     };
 

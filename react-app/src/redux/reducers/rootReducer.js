@@ -4,7 +4,6 @@ import { billsReducer } from "./billsReducer";
 import { bookingsReducer } from "./bookingsReducer";
 import { carsReducer } from "./carsReducer";
 import { categoriesReducer } from "./categoriesReducer";
-import { clientDocumentsReducer } from "./clientDocuments";
 import { clientsReducer } from "./clientsReducer";
 import { finesReducer } from "./finesReducer";
 import { insurancesReducer } from "./insurancesReducer";
@@ -16,6 +15,7 @@ import { reviewsReducer } from "./reviewsReducer";
 import { tariffsReducer } from "./tariffsReducer";
 import { tripsReducer } from "./tripsReducer";
 import { modalReducer } from "./modalReducer";
+import { clientDocumentsReducer } from "./clientDocumentsReducer";
 
 export const rootReducer = combineReducers({
     bills: billsReducer,

@@ -5,6 +5,7 @@ import SideBarPersonal from "../../components/SideBarPersonal/SideBarPersonal";
 import "./PersonalPage.css";
 import Profile from "../../components/Profile/Profile";
 import CurrentTripTab from "../../components/CurrentTrip/CurrentTripTab";
+import BookingHistoryTab from "../../components/TripHistory/BookingHistoryTab";
 
 function PersonalPage() {
   const [activePage, setActivePage] = useState("profile");
@@ -15,8 +16,8 @@ function PersonalPage() {
         return <Profile />;
       case "trip":
         return <CurrentTripTab />;
-      //   case "history":
-      //     return <History />;
+      case "history":
+        return <BookingHistoryTab />;
       //   case "help":
       //     return <Help />;
       default:

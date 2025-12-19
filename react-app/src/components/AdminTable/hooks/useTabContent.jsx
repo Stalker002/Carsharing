@@ -13,17 +13,18 @@ export const useTabContent = ({
 }) => {
   return useMemo(() => {
     const currentItem = editingItem || detailingItem;
+    
     if (!currentItem && !subData.isClientLoading) return [];
+    
     const isEditMode = !!editingItem;
 
     const createActions = (type, btnText) => {
       if (!isEditMode) return {};
+      
       return {
         onAdd: () => subOps.openSubAdd(type),
         onEdit: (item) => subOps.openSubEdit(item, type),
-        onDelete: (id) => {
-          subOps.handleSubDelete(id);
-        },
+        onDelete: (id) => subOps.handleSubDelete(id, type), 
         addButtonText: btnText,
       };
     };
@@ -56,18 +57,23 @@ export const useTabContent = ({
         },
       ];
     }
-
     if (activeTab === "users") {
       if (subData.isClientLoading)
         return [
           {
             title: "Клиент",
-            content: <div style={{ padding: 20 }}>Загрузка...</div>,
+            content: <div style={{ padding: 20 }}>Загрузка профиля...</div>,
           },
         ];
       if (!subData.clientProfile || !subData.clientProfile.id) {
-        return [];
+        return [
+            {
+                title: "Клиент",
+                content: <div style={{ padding: 20 }}>Профиль клиента отсутствует.</div>
+            }
+        ];
       }
+
       const clientContent = isEditMode ? (
         <TabForm
           initialData={subData.clientProfile || {}}
@@ -96,13 +102,12 @@ export const useTabContent = ({
               data={subData.clientDocuments}
               columns={columnsDocuments}
               headers={headTextDocuments}
-              {...createActions("document", "Документ")}
+              {...createActions("document", "Документ")} 
             />
           ),
         },
       ];
     }
-
     if (activeTab === "trips") {
       return [
         {
@@ -118,7 +123,6 @@ export const useTabContent = ({
         },
       ];
     }
-
     if (activeTab === "bills") {
       return [
         {

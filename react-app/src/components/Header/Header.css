@@ -25,10 +25,8 @@
 }
 
 .navigation {
-    position: absolute;
-    left: 40%;
-    top: 2.5%;
     display: flex;
+    margin-bottom: 5px;
     gap: 2rem;
     align-items: center;
 }
