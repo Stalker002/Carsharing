@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import "./CurrentTripTab.css";
-import { finishTrip, getActiveTrip } from "../../redux/actions/trips";
+import { cancelTrip, finishTrip, getActiveTrip } from "../../redux/actions/trips";
 import emptyTrip from "../../svg/Profile/emptyTrip.svg";
 import { openModal } from "../../redux/actions/modal";
 
@@ -25,6 +25,34 @@ const CurrentTripTab = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+   const handleCancel = () => {
+    dispatch(openModal({
+      title: "Отмена поездки",
+      message: "Вы уверены, что хотите отменить поездку? Деньги не будут списаны, а машина станет доступна для других.",
+      type: "confirm",
+      confirmText: "Да, отменить",
+      cancelText: "Нет",
+      onConfirm: async () => {
+        const result = await dispatch(cancelTrip(activeTrip.id));
+        
+        if (result.success) {
+           dispatch(openModal({
+             type: "success",
+             title: "Отменено",
+             message: "Поездка успешно отменена."
+           }));
+           dispatch(getActiveTrip());
+        } else {
+           dispatch(openModal({
+             type: "error",
+             title: "Ошибка",
+             message: result.message
+           }));
+        }
+      }
+    }));
   };
 
   const handleFinish = async () => {
@@ -212,9 +240,14 @@ const CurrentTripTab = () => {
               />
             </div>
           </div>
-          <button className="btn-finish-trip" onClick={handleFinish}>
-            Завершить поездку
-          </button>
+          <div className="trip-actions-row">
+            <button className="btn-finish-trip" onClick={handleFinish}>
+              Завершить поездку
+            </button>
+            <button className="btn-cancel-trip" onClick={handleCancel}>
+              Отменить поездку
+            </button>
+          </div>
         </div>
       </div>
     </div>

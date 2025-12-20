@@ -1,10 +1,29 @@
 // utils/formatters.js
 
-export const formatDate = (isoString) => {
-  if (!isoString) return "—";
-  const date = new Date(isoString);
-  // Формат: 02.08.2025 15:18
-  return date.toLocaleString("ru-RU", {
+// Форматирование цены (например: 150.00 BYN)
+export const formatCurrency = (amount) => {
+  if (amount === null || amount === undefined) return "0.00 BYN";
+  return new Intl.NumberFormat("ru-BY", {
+    style: "currency",
+    currency: "BYN",
+    minimumFractionDigits: 2,
+  }).format(amount);
+};
+
+// Короткая дата (19 дек.)
+export const formatDateShort = (dateString) => {
+  if (!dateString) return "—";
+  return new Date(dateString).toLocaleDateString("ru-RU", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+// Полная дата и время (19.12.2025, 14:30)
+export const formatDateTime = (dateString) => {
+  if (!dateString) return "—";
+  return new Date(dateString).toLocaleString("ru-RU", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -13,17 +32,11 @@ export const formatDate = (isoString) => {
   });
 };
 
+// Длительность (125 мин -> 2 ч 5 мин)
 export const formatDuration = (minutes) => {
-  if (!minutes) return "0 мин.";
+  if (!minutes) return "0 мин";
   const h = Math.floor(minutes / 60);
-  const m = Math.floor(minutes % 60);
-  if (h > 0) return `${h} ч. ${m} мин.`;
-  return `${m} мин.`;
-};
-
-export const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("ru-RU", {
-    style: "currency",
-    currency: "BYN",
-  }).format(amount);
+  const m = Math.round(minutes % 60);
+  if (h === 0) return `${m} мин`;
+  return `${h} ч ${m} мин`;
 };

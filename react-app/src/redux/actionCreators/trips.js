@@ -21,6 +21,10 @@ export const FINISH_TRIP_STARTED = "FINISH_TRIP_STARTED";
 export const FINISH_TRIP_SUCCESS = "FINISH_TRIP_SUCCESS";
 export const FINISH_TRIP_FAILED = "FINISH_TRIP_FAILED";
 
+export const CANCEL_TRIP_STARTED = "CANCEL_TRIP_STARTED";
+export const CANCEL_TRIP_SUCCESS = "CANCEL_TRIP_SUCCESS";
+export const CANCEL_TRIP_FAILED = "CANCEL_TRIP_FAILED";
+
 export const POST_TRIP_STARTED = "POST_TRIP_STARTED";
 export const POST_TRIP_SUCCESS = "POST_TRIP_SUCCESS";
 export const POST_TRIP_FAILED = "POST_TRIP_FAILED";
@@ -101,6 +105,18 @@ export const finishTripSuccess = (trips) => ({
 });
 export const finishTripFailed = (error) => ({
     type: FINISH_TRIP_FAILED,
+    payload: error,
+});
+
+export const CancelTripStarted = () => ({
+    type: CANCEL_TRIP_STARTED
+});
+export const CancelTripSuccess = (trips) => ({
+    type: CANCEL_TRIP_SUCCESS,
+    payload: trips,
+});
+export const CancelTripFailed = (error) => ({
+    type: CANCEL_TRIP_FAILED,
     payload: error,
 });
 

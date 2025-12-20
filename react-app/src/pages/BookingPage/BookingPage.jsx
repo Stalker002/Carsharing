@@ -147,14 +147,12 @@ const BookingPage = () => {
       const newBookingId = bookingResult.data;
       const tripPayload = {
         bookingId: newBookingId,
-        statusId: 8,
+        statusId: 9,
         tariffType: formData.tariffType,
-
         startTime: startTimeISO,
         endTime: null,
         duration: 0,
         distance: 0,
-
         startLocation: car.location || formData.pickupLocation,
         endLocation: formData.dropoffLocation,
         insuranceActive: formData.insuranceActive,

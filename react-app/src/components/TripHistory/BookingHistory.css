@@ -1,197 +1,209 @@
-/* Общий контейнер */
 .history-wrapper {
-  max-width: 600px; /* Узкий контейнер как в мобильном приложении */
+  max-width: 800px;
   margin: 0 auto;
-  font-family: 'Inter', sans-serif;
+  padding: 20px;
 }
 
-/* --- Блок сводки (Сверху) --- */
 .history-stats {
   display: flex;
   justify-content: space-between;
-  background: #fff;
+  background: #ffffff;
   padding: 20px;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  margin-bottom: 25px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+  border: 1px solid #f0f0f0;
+}
+
+.stat-item {
   text-align: center;
+  flex: 1;
+  position: relative;
+}
+
+.stat-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background-color: #f0f0f0;
 }
 
 .stat-item h4 {
-  font-size: 14px;
-  color: #90a3bf; /* Серый текст заголовка */
   margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #90a3bf;
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .stat-item p {
+  margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #1b1b1b;
-  margin: 0;
+  color: #1a202c;
 }
 
-/* --- Список поездок --- */
 .history-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 
 .history-card {
-  background: #fff;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 1px solid #f3f4f6;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
 }
 
 .history-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(53, 99, 233, 0.1);
+  box-shadow: 0 10px 25px rgba(53, 99, 233, 0.1);
   border-color: #3563e9;
 }
 
-/* Левая часть: Иконка авто */
 .card-icon-box {
-  width: 50px;
-  height: 50px;
+  width: 120px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-right: 16px;
+  background: #f8f9fa;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f6f7f9;
-  border-radius: 12px;
-  margin-right: 15px;
-  font-size: 24px;
+  flex-shrink: 0;
 }
 
 .card-icon-box img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
-/* Центральная часть: Инфо */
 .card-main-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .card-title {
-  font-size: 16px;
   font-weight: 700;
-  color: #1a202c;
-  margin: 0 0 4px 0;
+  font-size: 16px;
+  color: #111827;
 }
 
-.card-dates {
-  font-size: 12px;
+.card-subtitle {
+  font-size: 13px;
   color: #90a3bf;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
 }
 
-/* Правая часть: Цена */
+.dot {
+  margin: 0 6px;
+  color: #d1d5db;
+}
+
+.status-text {
+  font-weight: 600;
+  font-size: 12px;
+}
+.status-success {
+  color: #2ed573;
+}
+.status-warning {
+  color: #ffa502;
+}
+.status-default {
+  color: #90a3bf;
+}
+
 .card-price-block {
   text-align: right;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .card-price {
-  font-size: 16px;
   font-weight: 700;
-  color: #3563e9; /* Твой синий цвет */
-  margin-bottom: 4px;
+  color: #3563e9;
+  font-size: 16px;
 }
 
-.card-meta {
-  font-size: 11px;
+.card-arrow {
+  color: #d1d5db;
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.history-loader {
+  text-align: center;
+  padding: 24px;
   color: #90a3bf;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  font-size: 14px;
 }
 
-/* --- Детализация (Вторая страница) --- */
-.detail-page {
+.history-end {
+  text-align: center;
+  padding: 30px;
+  color: #d1d5db;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.empty-history {
+  text-align: center;
+  padding: 60px 20px;
   background: #fff;
   border-radius: 16px;
-  padding: 25px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-}
-
-.detail-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
-}
-
-.detail-car-name {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.detail-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  font-size: 14px;
-}
-
-.detail-label {
-  color: #596780;
-}
-
-.detail-val {
-  font-weight: 600;
-  color: #1a202c;
-}
-
-.detail-section-title {
-  font-size: 16px;
-  font-weight: 700;
-  margin: 25px 0 15px;
-  color: #1a202c;
-}
-
-.bill-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px dashed #eee;
-}
-
-.bill-item:last-child {
-  border-bottom: none;
-}
-
-.bill-total {
+  border: 1px dashed #e5e7eb;
   margin-top: 20px;
-  padding-top: 20px;
-  border-top: 2px solid #3563e9;
-  display: flex;
-  justify-content: space-between;
-  font-size: 18px;
-  font-weight: 800;
-  color: #3563e9;
 }
 
-.back-btn {
-  background: none;
-  border: none;
-  color: #3563e9;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.empty-history h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.empty-history p {
+  margin: 0;
+  color: #90a3bf;
+}
+
+@media (max-width: 600px) {
+  .history-stats {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .stat-item {
+    border-right: none;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 15px;
+  }
+  .stat-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .card-price {
+    font-size: 14px;
+  }
 }

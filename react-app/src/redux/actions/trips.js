@@ -1,5 +1,8 @@
 import { api } from "../../api";
 import {
+  CancelTripFailed,
+  CancelTripStarted,
+  CancelTripSuccess,
   createTripFailed,
   createTripStarted,
   createTripSuccess,
@@ -74,7 +77,7 @@ export const getMyTrips = (page = 1) => {
       const response = await api.trips.getMyTrips({
         params: {
           _page: page,
-          _limit: 25,
+          _limit: 10,
         },
       });
 
@@ -173,6 +176,28 @@ export const finishTrip = (data) => {
         "Неизвестная ошибка поездок";
 
       dispatch(finishTripFailed(error));
+
+      return { success: false, message: errorMessage };
+    }
+  };
+};
+
+export const cancelTrip = (tripId) => {
+  return async (dispatch) => {
+    try {
+      dispatch(CancelTripStarted());
+
+      const response = await api.trips.cancelTrip(tripId);
+
+      dispatch(CancelTripSuccess(response.data));
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка поездок";
+
+      dispatch(CancelTripFailed(error));
 
       return { success: false, message: errorMessage };
     }

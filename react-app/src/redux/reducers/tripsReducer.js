@@ -26,6 +26,9 @@ import {
   FINISH_TRIP_SUCCESS,
   FINISH_TRIP_FAILED,
   GET_ACTIVE_TRIP_EMPTY,
+  CANCEL_TRIP_STARTED,
+  CANCEL_TRIP_SUCCESS,
+  CANCEL_TRIP_FAILED,
 } from "../actionCreators/trips";
 
 const initialState = {
@@ -76,7 +79,7 @@ export const tripsReducer = (state = initialState, action) => {
     case GET_MY_TRIPS_SUCCESS:
       return {
         ...state,
-        my:
+        myTrips:
           action.payload.page === 1
             ? action.payload.data
             : [...state.myTrips, ...action.payload.data],
@@ -90,7 +93,7 @@ export const tripsReducer = (state = initialState, action) => {
     case SET_MY_TRIPS_TOTAL:
       return {
         ...state,
-        myTotal: action.payload,
+        myTripsTotal: action.payload,
       };
 
     case GET_INFO_TRIP_STARTED:
@@ -146,6 +149,23 @@ export const tripsReducer = (state = initialState, action) => {
         activeTrip: null,
       };
     case FINISH_TRIP_FAILED:
+      return {
+        ...state,
+        isTripLoading: false,
+      };
+
+    case CANCEL_TRIP_STARTED:
+      return {
+        ...state,
+        isTripLoading: true,
+      };
+    case CANCEL_TRIP_SUCCESS:
+      return {
+        ...state,
+        isTripLoading: false,
+        activeTrip: null,
+      };
+    case CANCEL_TRIP_FAILED:
       return {
         ...state,
         isTripLoading: false,

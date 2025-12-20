@@ -176,20 +176,45 @@
     font-size: 16px;
 }
 
-.btn-finish-trip {
-    width: 100%;
-    padding: 15px;
-    background: #3563e9;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(46, 213, 115, 0.3);
-    transition: 0.2s;
+.trip-actions-row {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
 }
 
-.btn-finish-trip:hover {
-    background: #2748c7;
+.btn-finish-trip {
+  flex: 2;
+  background: #2ed573;
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-cancel-trip {
+  flex: 1;
+  background: #fff0f0;
+  color: #ff4757;
+  border: 1px solid #ff4757;
+  padding: 15px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+.btn-cancel-trip:hover {
+  background: #ff4757;
+  color: white;
+}
+
+/* Адаптив для мобилок */
+@media (max-width: 600px) {
+  .trip-actions-row {
+    flex-direction: column;
+  }
 }
