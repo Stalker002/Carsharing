@@ -16,17 +16,23 @@ public class UsersService : IUsersService
         _jwtProvider = jwtProvider;
     }
 
-    public async Task<string> Login(string login, string password)
+    public async Task<(string? Token, string? Error)> Login(string login, string password)
     {
         var user = await _userRepository.GetByLogin(login);
+        if (user == null)
+        {
+            return (null, "Пользователь с таким логином не найден");
+        }
 
         var result = _passwordHasher.Verify(password, user.Password);
-
-        if (!result) throw new Exception("Failed to login");
+        if (!result)
+        {
+            return (null, "Неверный пароль");
+        }
 
         var token = _jwtProvider.GenerateToken(user);
 
-        return token;
+        return (token, null);
     }
 
     public async Task<List<User>> GetUsers()

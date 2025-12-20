@@ -133,7 +133,7 @@ public class TripService : ITripService
             .Include(t => t.Booking)
             .ThenInclude(b => b!.Car)
             .ThenInclude(c => c!.Tariff)
-            .Where(t => t.Booking!.ClientId == clientId && t.EndTime == null)
+            .Where(t => (t.Booking!.ClientId == clientId && t.EndTime == null && (t.StatusId == 8 || t.StatusId == 9)))
             .FirstOrDefaultAsync();
 
         if (tripEntity == null) return null;
@@ -178,6 +178,12 @@ public class TripService : ITripService
             trip.Duration = durationMinutes;
 
             trip.Distance = request.Distance;
+            trip.StatusId = 10;
+
+            if (trip.Booking != null)
+            {
+                trip.Booking.StatusId = 6;
+            }
 
             if (car != null)
             {
@@ -234,6 +240,36 @@ public class TripService : ITripService
             await transaction.RollbackAsync();
             throw;
         }
+    }
+
+    public async Task<bool> CancelTripAsync(int tripId)
+    {
+        // 1. Ищем поездку со всеми связями
+        var trip = await _context.Trip
+            .Include(t => t.Booking)
+            .ThenInclude(b => b!.Car)
+            .FirstOrDefaultAsync(t => t.Id == tripId);
+
+        if (trip is not {EndTime: null })
+            throw new Exception("Поездка не найдена или уже завершена.");
+
+        trip.StatusId = 11;
+
+        trip.Duration = 0; 
+        trip.Distance = 0;
+
+        if (trip.Booking != null)
+        {
+            trip.Booking.StatusId = 7;
+
+            if (trip.Booking.Car != null)
+            {
+                trip.Booking.Car.StatusId = 1;
+            }
+        }
+
+        await _context.SaveChangesAsync();
+        return true;
     }
 
     public async Task<int> CreateTrip(Trip trip)

@@ -13,6 +13,7 @@ public interface ITripService
     Task<CurrentTripDto?> GetActiveTripByClientId(int clientId);
     Task<int> CreateTrip(Trip trip);
     Task<TripFinishResult> FinishTripAsync(FinishTripRequest request);
+    Task<bool> CancelTripAsync(int tripId);
     Task<int> UpdateTrip(int id, int? bookingId, int? statusId, string? tariffType, DateTime? startTime,
         DateTime? endTime, decimal? duration, decimal? distance);
 

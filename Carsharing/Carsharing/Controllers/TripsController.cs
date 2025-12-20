@@ -177,6 +177,21 @@ public class TripsController : ControllerBase
         }
     }
 
+    [HttpPost("cancel/{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
+    public async Task<IActionResult> CancelTrip(int id)
+    {
+        try
+        {
+            await _tripService.CancelTripAsync(id);
+            return Ok(new { message = "Поездка отменена" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> UpdateTrip(int id, [FromBody] TripRequest request)

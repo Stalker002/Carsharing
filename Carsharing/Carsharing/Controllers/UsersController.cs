@@ -17,14 +17,17 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login([FromBody] LoginRequest loginRequest)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var token = await _usersService.Login(loginRequest.Login, loginRequest.Password);
+        var (token, error) = await _usersService.Login(request.Login, request.Password);
 
-        Response.Cookies.Append("tasty", token);
+        if (!string.IsNullOrEmpty(error))
+        {
+            return BadRequest(new { message = "Неверный логин или пароль" });
+        }
 
-        return Ok(new { Token = token, 
-            Message = "Logged in" });
+        Response.Cookies.Append("tasty", token ?? throw new InvalidOperationException());
+        return Ok(new { token });
     }
 
     [HttpPost("logout")]
