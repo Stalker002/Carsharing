@@ -11,7 +11,7 @@ export const getTrips = (config) => makeRequest({
 
 export const getMyTrips = (config) => makeRequest({
     method: "GET",
-    url: `${URL}/pagedByClient`,
+    url: `${URL}/history`,
     withCredentials: true,
     ...config,
 });
@@ -35,6 +35,13 @@ export const finishTrip = (data, config) => makeRequest({
     url: `${URL}/finish`,
     withCredentials: true,
     data, ...config
+});
+
+export const cancelTrip = (id, config) => makeRequest({
+    method: "POST",
+    url: `${URL}/cancel/${id}`,
+    withCredentials: true,
+    ...config
 });
 
 export const createTrip = (data) => makeRequest({

@@ -12,7 +12,7 @@ import { createPromocode, deletePromocode, getActivePromocodes, getPromocodes, u
 import { createReview, deleteReview, getReviews, getReviewsByCar, updateReview } from "./reviews";
 import { getStatuses } from "./statuses";
 import { getTariffs } from "./tariff";
-import { createTrip, deleteTrip, finishTrip, getActiveTrip, getMyTrips, getTrips, getTripWithInfo, updateTrip } from "./trips";
+import { cancelTrip, createTrip, deleteTrip, finishTrip, getActiveTrip, getMyTrips, getTrips, getTripWithInfo, updateTrip } from "./trips";
 import { createUser, deleteUser, getMyUser, getUsers, loginUser, logoutUser, updateUser } from "./users";
 
 export const api = {
@@ -119,6 +119,7 @@ export const api = {
         getTripWithInfo,
         getActiveTrip,
         finishTrip,
+        cancelTrip,
         createTrip,
         updateTrip,
         deleteTrip
