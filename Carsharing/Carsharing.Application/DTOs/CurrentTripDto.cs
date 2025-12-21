@@ -3,7 +3,7 @@
 public record CurrentTripDto(
     int Id,
     DateTime StartTime,
-    string TariffType,
+    string? TariffType,
     int CarId,
     string? CarBrand,
     string? CarModel,

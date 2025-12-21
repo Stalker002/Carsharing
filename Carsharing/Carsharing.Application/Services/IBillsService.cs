@@ -15,5 +15,6 @@ public interface IBillsService
     Task<int> CreateBill(Bill bill);
     Task<int> UpdateBill(int id, int? tripId, int? promocodeId, int? statusId, DateTime? issueDate,
         decimal? amount, decimal? remainingAmount);
+    Task ApplyPromocode(int billId, string code);
     Task<int> DeleteBill(int id);
 }

@@ -14,10 +14,12 @@ public class TripService : ITripService
     private readonly IStatusRepository _statusRepository;
     private readonly ITripDetailRepository _tripDetailRepository;
     private readonly ITripRepository _tripRepository;
+    private readonly ICarsService _carsService;
 
     public TripService(ITripRepository tripRepository, ITripDetailRepository tripDetailRepository,
-        IStatusRepository statusRepository, IClientRepository clientRepository, CarsharingDbContext context)
+        IStatusRepository statusRepository, IClientRepository clientRepository, CarsharingDbContext context, ICarsService carsService)
     {
+        _carsService = carsService;
         _context = context;
         _clientRepository = clientRepository;
         _statusRepository = statusRepository;
@@ -44,24 +46,24 @@ public class TripService : ITripService
         int limit)
     {
         var query = from t in _context.Trip
-            join b in _context.Booking on t.BookingId equals b.Id
-            join c in _context.Car on b.CarId equals c.Id
-            join s in _context.SpecificationCar on c.SpecificationId equals s.Id
-            join st in _context.Status on t.StatusId equals st.Id
-            join td in _context.TripDetail on t.Id equals td.TripId into details
-            from td in details.DefaultIfEmpty()
-            join bill in _context.Bill on t.Id equals bill.TripId into bills
-            from bill in bills.DefaultIfEmpty()
-            where b.ClientId == clientId && t.EndTime != null // Только завершенные
-            select new
-            {
-                t,
-                s,
-                c,
-                st,
-                bill,
-                td
-            };
+                    join b in _context.Booking on t.BookingId equals b.Id
+                    join c in _context.Car on b.CarId equals c.Id
+                    join s in _context.SpecificationCar on c.SpecificationId equals s.Id
+                    join st in _context.Status on t.StatusId equals st.Id
+                    join td in _context.TripDetail on t.Id equals td.TripId into details
+                    from td in details.DefaultIfEmpty()
+                    join bill in _context.Bill on t.Id equals bill.TripId into bills
+                    from bill in bills.DefaultIfEmpty()
+                    where b.ClientId == clientId && t.EndTime != null
+                    select new
+                    {
+                        t,
+                        s,
+                        c,
+                        st,
+                        bill,
+                        td
+                    };
 
         var totalCount = await query.CountAsync();
 
@@ -82,6 +84,9 @@ public class TripService : ITripService
                 x.t.TariffType,
                 x.t.Duration,
                 x.t.Distance,
+                x.td.InsuranceActive,
+                x.td.FuelUsed,
+                x.td.Refueled,
                 x.td != null ? x.td.StartLocation : "Неизвестно",
                 x.td != null ? x.td.EndLocation : "Неизвестно"
             ))
@@ -97,25 +102,22 @@ public class TripService : ITripService
 
         var tripDetail = await _tripDetailRepository.GetByTripId(tripId);
 
-        var statuses = await _statusRepository.Get();
-
         var response = (from d in tripDetail
-            join tr in trip on d.TripId equals tr.Id
-            join s in statuses on tr.StatusId equals s.Id
-            select new TripWithInfoDto(
-                tr.Id,
-                tr.BookingId,
-                s.Name,
-                d.StartLocation,
-                d.EndLocation,
-                d.InsuranceActive,
-                d.FuelUsed,
-                d.Refueled,
-                tr.TariffType,
-                tr.StartTime,
-                tr.EndTime,
-                tr.Duration,
-                tr.Distance)).ToList();
+                        join tr in trip on d.TripId equals tr.Id
+                        select new TripWithInfoDto(
+                            tr.Id,
+                            tr.BookingId,
+                            tr.StatusId,
+                            d.StartLocation,
+                            d.EndLocation,
+                            d.InsuranceActive,
+                            d.FuelUsed,
+                            d.Refueled,
+                            tr.TariffType,
+                            tr.StartTime,
+                            tr.EndTime,
+                            tr.Duration,
+                            tr.Distance)).ToList();
 
         return response;
     }
@@ -158,14 +160,13 @@ public class TripService : ITripService
 
     public async Task<TripFinishResult> FinishTripAsync(FinishTripRequest request)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(true);
+        await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
             var trip = await _context.Trip
                 .Include(t => t.Booking)
                 .ThenInclude(b => b!.Car)
-                .Include(t => t.Booking!.Car!.Tariff)
-                .FirstOrDefaultAsync(t => t.Id == request.TripId).ConfigureAwait(true);
+                .FirstOrDefaultAsync(t => t.Id == request.TripId);
 
             if (trip is not { EndTime: null })
                 throw new Exception("Поездка не найдена или уже завершена");
@@ -185,20 +186,21 @@ public class TripService : ITripService
                 trip.Booking.StatusId = 6;
             }
 
+            var tripDetail = await _context.TripDetail
+                                .FirstOrDefaultAsync(td => td.TripId == trip.Id);
+
+            if (tripDetail == null)
+            {
+                tripDetail = new TripDetailEntity { TripId = trip.Id, StartLocation = car?.Location ?? "Unknown" };
+                _context.TripDetail.Add(tripDetail);
+            }
+
+            tripDetail.EndLocation = request.EndLocation;
             if (car != null)
             {
                 var fuelDiff = car.FuelLevel - request.FuelLevel;
 
-                var tripDetail = await _context.TripDetail
-                    .FirstOrDefaultAsync(td => td.TripId == trip.Id).ConfigureAwait(false);
 
-                if (tripDetail == null)
-                {
-                    tripDetail = new TripDetailEntity { TripId = trip.Id, StartLocation = car.Location };
-                    _context.TripDetail.Add(tripDetail);
-                }
-
-                tripDetail.EndLocation = request.EndLocation;
 
                 if (fuelDiff >= 0)
                 {
@@ -210,10 +212,6 @@ public class TripService : ITripService
                     tripDetail.FuelUsed = 0;
                     tripDetail.Refueled = Math.Abs(fuelDiff);
                 }
-            }
-
-            if (car != null)
-            {
                 car.StatusId = 1;
                 car.Location = request.EndLocation;
                 car.FuelLevel = request.FuelLevel;
@@ -244,18 +242,17 @@ public class TripService : ITripService
 
     public async Task<bool> CancelTripAsync(int tripId)
     {
-        // 1. Ищем поездку со всеми связями
         var trip = await _context.Trip
             .Include(t => t.Booking)
             .ThenInclude(b => b!.Car)
             .FirstOrDefaultAsync(t => t.Id == tripId);
 
-        if (trip is not {EndTime: null })
+        if (trip is not { EndTime: null })
             throw new Exception("Поездка не найдена или уже завершена.");
 
         trip.StatusId = 11;
 
-        trip.Duration = 0; 
+        trip.Duration = 0;
         trip.Distance = 0;
 
         if (trip.Booking != null)
@@ -280,8 +277,7 @@ public class TripService : ITripService
     public async Task<int> UpdateTrip(int id, int? bookingId, int? statusId, string? tariffType, DateTime? startTime,
         DateTime? endTime, decimal? duration, decimal? distance)
     {
-        return await _tripRepository.Update(id, bookingId, statusId, tariffType, startTime, endTime, duration,
-            distance);
+        return await _tripRepository.Update(id, bookingId, statusId, tariffType, startTime, endTime, duration, distance);
     }
 
     public async Task<int> DeleteTrip(int id)

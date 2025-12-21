@@ -147,6 +147,21 @@ public class BillsController : ControllerBase
         return Ok(billId);
     }
 
+    [HttpPost("{id:int}/promocode")]
+    [Authorize]
+    public async Task<IActionResult> ApplyPromocode(int id, [FromBody] ApplyPromocodeRequest request)
+    {
+        try
+        {
+            await _billsService.ApplyPromocode(id, request.Code);
+            return Ok(new { message = "Промокод применен" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeleteBill(int id)

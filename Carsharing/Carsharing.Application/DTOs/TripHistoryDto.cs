@@ -9,10 +9,13 @@ public record TripHistoryDto
     string StatusName, 
     DateTime StartTime, 
     DateTime? EndTime, 
-    decimal TotalAmount, 
+    decimal TotalAmount,
     string? TariffType,
     decimal? Duration, 
-    decimal? Distance, 
+    decimal? Distance,
+    bool InsuranceActive,
+    decimal? FuelUsed,
+    decimal? Refueled,
     string StartLocation, 
     string EndLocation
 );

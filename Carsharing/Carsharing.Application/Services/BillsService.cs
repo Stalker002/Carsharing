@@ -1,6 +1,8 @@
 ﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Carsharing.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.Application.Services;
 
@@ -12,10 +14,13 @@ public class BillsService : IBillsService
     private readonly IStatusRepository _statusRepository;
     private readonly IClientRepository _clientRepository;
     private readonly IPromocodeRepository _promocodeRepository;
+    private readonly CarsharingDbContext _context;
 
     public BillsService(IBillRepository billRepository, IBookingRepository bookingRepository,
-        ITripRepository tripRepository, IStatusRepository statusRepository, IClientRepository clientRepository, IPromocodeRepository promocodeRepository)
+        ITripRepository tripRepository, IStatusRepository statusRepository, IClientRepository clientRepository,
+        IPromocodeRepository promocodeRepository, CarsharingDbContext context)
     {
+        _context = context;
         _promocodeRepository = promocodeRepository;
         _clientRepository = clientRepository;
         _statusRepository = statusRepository;
@@ -124,6 +129,23 @@ public class BillsService : IBillsService
     public async Task<int> CreateBill(Bill bill)
     {
         return await _billRepository.Create(bill);
+    }
+
+    public async Task ApplyPromocode(int billId, string code)
+    {
+        var promo = await _context.Promocode
+            .FirstOrDefaultAsync(p => p.Code == code &&
+                                      p.StartDate <= DateOnly.FromDateTime(DateTime.UtcNow) &&
+                                      p.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow));
+
+        if (promo == null) throw new Exception("Промокод не найден или истек");
+
+        var bill = await _context.Bill.FirstOrDefaultAsync(b => b.Id == billId);
+        if (bill == null) throw new Exception("Счет не найден");
+
+        bill.PromocodeId = promo.Id;
+
+        await _context.SaveChangesAsync();
     }
 
     public async Task<int> UpdateBill(int id, int? tripId, int? promocodeId, int? statusId, DateTime? issueDate,

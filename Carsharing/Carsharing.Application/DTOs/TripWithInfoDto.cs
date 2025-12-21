@@ -3,7 +3,7 @@
 public record TripWithInfoDto(
     int Id,
     int BookingId,
-    string StatusName,
+    int StatusId,
     string StartLocation,
     string EndLocation,
     bool InsuranceActive,

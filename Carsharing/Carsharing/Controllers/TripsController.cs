@@ -18,9 +18,12 @@ public class TripsController : ControllerBase
     private readonly CarsharingDbContext _context;
     private readonly IClientsService _clientsService;
     private readonly ICarsService _carsService;
+    private readonly IBookingsService _bookingsService;
 
-    public TripsController(ITripService tripService, ITripDetailsService tripDetailsService, ICarsService carsService, CarsharingDbContext context, IClientsService clientsService)
+    public TripsController(ITripService tripService, ITripDetailsService tripDetailsService, ICarsService carsService,
+        CarsharingDbContext context, IClientsService clientsService, IBookingsService bookingsService)
     {
+        _bookingsService = bookingsService;
         _carsService = carsService;
         _context = context;
         _clientsService = clientsService;
@@ -81,7 +84,7 @@ public class TripsController : ControllerBase
     public async Task<ActionResult<List<TripWithInfoDto>>> GetTripWithInfo(int id)
     {
         var tripWithInfo = await _tripService.GetTripWithInfo(id);
-        var response = tripWithInfo.Select(t => new TripWithInfoDto(t.Id, t.BookingId, t.StatusName, t.StartLocation,
+        var response = tripWithInfo.Select(t => new TripWithInfoDto(t.Id, t.BookingId, t.StatusId, t.StartLocation,
             t.EndLocation, t.InsuranceActive, t.FuelUsed, t.Refueled, t.TariffType, t.StartTime, t.EndTime, t.Duration,
             t.Distance));
 
@@ -199,12 +202,15 @@ public class TripsController : ControllerBase
         var tripId = await _tripService.UpdateTrip(id, request.BookingId, request.StatusId, request.TariffType,
             request.StartTime, request.EndTime, request.Duration, request.Distance);
 
-        if (request.EndTime != null)
-        {
-            await _carsService.MarkCarAsAvailableAsync(
-                request.CarId
-            );
-        }
+        if (request.EndTime == null && request.StatusId != 10 && request.StatusId != 11) 
+            return Ok(tripId);
+
+        var booking = await _bookingsService.GetBookingsById(request.BookingId);
+        var book = booking.FirstOrDefault();
+
+        await _carsService.MarkCarAsAvailableAsync(
+            book!.CarId
+        );
         return Ok(tripId);
     }
 

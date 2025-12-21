@@ -43,9 +43,6 @@ public class Booking
         if (startTime > DateTime.Now)
             error = "Start booking time can not be in the future";
 
-        if (endTime < DateTime.Now)
-            error = "End booking time can not be in the past";
-
         if (startTime > endTime)
             error = "Start time can not exceed end time ";
 
