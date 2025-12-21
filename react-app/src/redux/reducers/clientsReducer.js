@@ -5,7 +5,7 @@ const initialState = {
     clients: [],
     myClient: {},
     clientDocument: {},
-    myDocument: {},
+    myDocument: [],
     isClientsLoading: false,
     isUpdateClientLoading: false,
     isDeleteClientLoading: false,

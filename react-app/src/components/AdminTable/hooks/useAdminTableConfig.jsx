@@ -418,7 +418,7 @@ export const useAdminTableConfig = (activeTab) => {
           duration: data.duration,
           distance: Number(data.distance),
           startTime: new Date(data.startTime).toISOString(),
-          endTime: new Date(data.endTime).toISOString(),
+          endTime: data.endTime ? new Date(data.endTime).toISOString() : null,
         }),
       editTitle: "Редактирование поездки",
       deleteAction: (id) => deleteTrip(id),

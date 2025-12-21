@@ -16,6 +16,10 @@ export const POST_BILL_STARTED = "POST_BILL_STARTED";
 export const POST_BILL_SUCCESS = "POST_BILL_SUCCESS";
 export const POST_BILL_FAILED = "POST_BILL_FAILED";
 
+export const APPLY_PROMOCODE_STARTED = "APPLY_PROMOCODE_STARTED";
+export const APPLY_PROMOCODE_SUCCESS = "APPLY_PROMOCODE_SUCCESS";
+export const APPLY_PROMOCODE_FAILED = "APPLY_PROMOCODE_FAILED";
+
 export const PUT_BILL_STARTED = "PUT_BILL_STARTED";
 export const PUT_BILL_SUCCESS = "PUT_BILL_SUCCESS";
 export const PUT_BILL_FAILED = "PUT_BILL_FAILED";
@@ -77,6 +81,18 @@ export const createBillSuccess = (bill) => ({
 });
 export const createBillFailed = (error) => ({
     type: POST_BILL_FAILED,
+    payload: error,
+});
+
+export const applyPromocodeStarted = () => ({
+    type: APPLY_PROMOCODE_STARTED,
+});
+export const applyPromocodeSuccess = (bill) => ({
+    type: APPLY_PROMOCODE_SUCCESS,
+    payload: bill,
+});
+export const applyPromocodeFailed = (error) => ({
+    type: APPLY_PROMOCODE_FAILED,
     payload: error,
 });
 

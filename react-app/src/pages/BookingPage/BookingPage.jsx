@@ -1,42 +1,75 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getInfoCars } from "../../redux/actions/cars";
 import { createBooking, deleteBooking } from "../../redux/actions/bookings";
 import { createTrip } from "../../redux/actions/trips";
+import { openModal } from "../../redux/actions/modal";
 
 import Security from "../../svg/Payment/security.svg";
-import "../PaymentPage/PaymentPage.css";
+import "./BookingPage.css";
 import Header from "../../components/Header/Header";
-import { openModal } from "../../redux/actions/modal";
+
+const TariffOption = ({ id, label, price, unit, selected, onChange }) => (
+  <label className={`booking-method-item ${selected === id ? "active" : ""}`}>
+    <div className="booking-method-content">
+      <div className="radio-label">
+        <input
+          type="radio"
+          name="tariffType"
+          value={id}
+          checked={selected === id}
+          onChange={onChange}
+          className="booking-radio-input"
+        />
+        <span className="method-name">{label}</span>
+      </div>
+      <div className="method-price">${price}{unit}</div>
+    </div>
+  </label>
+);
+
+const CheckboxRow = ({ name, checked, onChange, title, desc, price, link }) => (
+  <label className={`booking-checkbox-row ${checked ? "checked" : ""}`}>
+    <div className="checkbox-content">
+      <input
+        type="checkbox"
+        name={name}
+        checked={checked}
+        onChange={onChange}
+        className="booking-checkbox-input"
+      />
+      <div>
+        <span className="checkbox-title">{title}</span>
+        {desc && <p className="checkbox-desc">{desc}</p>}
+      </div>
+    </div>
+    {price && <span className="checkbox-price">{price}</span>}
+  </label>
+);
 
 const BookingPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const car = useSelector(
-    (state) => state.cars.infoCar?.[0] || state.cars.currentCar
-  );
+  const car = useSelector((state) => state.cars.infoCar?.[0] || state.cars.currentCar);
   const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
   const myClient = useSelector((state) => state.clients.myClient);
 
-  const tomorrow = new Date();
+  // Даты
+  const today = new Date();
+  const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
   const [formData, setFormData] = useState({
     pickupLocation: "Minsk",
-    pickupTime: new Date().toLocaleTimeString("ru-RU", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-    pickupDate: new Date().toISOString().split("T")[0],
-
+    pickupTime: today.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
+    pickupDate: today.toISOString().split("T")[0],
     dropoffLocation: "Minsk",
     dropoffDate: tomorrow.toISOString().split("T")[0],
     dropoffTime: "12:00",
-
     tariffType: "per_minute",
     insuranceActive: false,
     agreeMarketing: false,
@@ -50,72 +83,27 @@ const BookingPage = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
   };
 
-  const handleRentNow = async () => {
-    if (!formData.agreeTerms)
-      return dispatch(
-            openModal({
-              type: "error",
-              title: "Внимание",
-              message: "Пожалуйста, примите условия соглашения",
-            })
-          );
-    if (!isLoggedIn) return dispatch(
-            openModal({
-              type: "error",
-              title: "Внимание",
-              message: "Пожалуйста, авторизуйтесь",
-            })
-          );
-    if (!car) return dispatch(
-            openModal({
-              type: "error",
-              title: "Внимание",
-              message: "Данные машины не загружены",
-            })
-          );
+  const tariffs = useMemo(() => [
+    { id: 'per_minute', label: 'Поминутный', price: car?.pricePerMinute, unit: '/мин' },
+    { id: 'per_km', label: 'За километраж', price: car?.pricePerKm, unit: '/км' },
+    { id: 'per_day', label: 'Суточный', price: car?.pricePerDay, unit: '/день' }
+  ], [car]);
 
-    if (!formData.dropoffDate || !formData.dropoffTime) {
-      return dispatch(
-            openModal({
-              type: "error",
-              title: "Внимание",
-              message: "Укажите дату и время возврата",
-            })
-          );
-    }
+  const handleRentNow = async () => {
+    if (!formData.agreeTerms) return dispatch(openModal({ type: "error", title: "Внимание", message: "Примите условия соглашения" }));
+    if (!isLoggedIn) return dispatch(openModal({ type: "error", title: "Внимание", message: "Авторизуйтесь" }));
+    if (!car) return dispatch(openModal({ type: "error", title: "Внимание", message: "Данные машины не загружены" }));
+    if (!formData.dropoffDate || !formData.dropoffTime) return dispatch(openModal({ type: "error", title: "Внимание", message: "Укажите дату возврата" }));
 
     const startTimeISO = new Date().toISOString();
     const plannedEndTimeString = `${formData.dropoffDate}T${formData.dropoffTime}`;
     const plannedEndTime = new Date(plannedEndTimeString);
 
-    if (isNaN(plannedEndTime.getTime())) {
-      return dispatch(
-            openModal({
-              type: "error",
-              title: "Внимание",
-              message: "Некорректная дата возврата",
-            })
-          );
-    }
-
-    const now = new Date();
-    if (plannedEndTime <= now) {
-      return dispatch(
-            openModal({
-              type: "error",
-              title: "Внимание",
-              message: "Время возврата должно быть в будущем!",
-            })
-          );
-    }
-
-    const endTimeISO = plannedEndTime.toISOString();
+    if (isNaN(plannedEndTime.getTime())) return dispatch(openModal({ type: "error", title: "Внимание", message: "Некорректная дата" }));
+    if (plannedEndTime <= new Date()) return dispatch(openModal({ type: "error", title: "Внимание", message: "Время возврата должно быть в будущем" }));
 
     try {
       const bookingPayload = {
@@ -123,28 +111,15 @@ const BookingPage = () => {
         carId: Number(id),
         clientId: myClient.id,
         startTime: startTimeISO,
-        endTime: endTimeISO,
+        endTime: plannedEndTime.toISOString(),
       };
 
       const bookingResult = await dispatch(createBooking(bookingPayload));
 
-      if (!bookingResult || !bookingResult.success) {
-        throw new Error(
-          bookingResult?.message || "Не удалось создать бронирование"
-        );
-      }
-
-      if (!bookingResult.success) {
-        return dispatch(
-            openModal({
-              type: "error",
-              title: "Внимание",
-              message: bookingResult.message,
-            })
-          );
-      }
+      if (!bookingResult?.success) throw new Error(bookingResult?.message || "Ошибка создания брони");
 
       const newBookingId = bookingResult.data;
+
       const tripPayload = {
         bookingId: newBookingId,
         statusId: 9,
@@ -163,378 +138,156 @@ const BookingPage = () => {
 
       const tripResult = await dispatch(createTrip(tripPayload));
 
-      if (tripResult && tripResult.success) {
-        await dispatch(
-          openModal({
-            type: "success",
-            title: "Поездка началась!",
-            message: "Счастливого пути. Переходим к управлению.",
-          })
-        );
-        navigate("/profile/current-trip");
+      if (tripResult?.success) {
+        await dispatch(openModal({ type: "success", title: "Поездка началась!", message: "Счастливого пути." }));
+        navigate("/personal-page/current-trip");
       } else {
-        console.warn(
-          "Trip creation failed. Rolling back booking:",
-          newBookingId
-        );
+        console.warn("Rolling back booking:", newBookingId);
         await dispatch(deleteBooking(newBookingId));
-        dispatch(
-          openModal({
-            type: "success",
-            title: "Поездка началась!",
-            message: "Ошибка старта поездки: " + tripResult?.message,
-          })
-        );
+        dispatch(openModal({ type: "error", title: "Ошибка", message: "Ошибка старта: " + tripResult?.message }));
       }
     } catch (error) {
-      dispatch(
-        openModal({
-          type: "error",
-          title: "Ошибка",
-          message: error.message || "Что-то пошло не так",
-        })
-      );
+      dispatch(openModal({ type: "error", title: "Ошибка", message: error.message || "Сбой системы" }));
     }
   };
 
-  if (!car) return <div className="payment-loading">Загрузка данных...</div>;
-
+  if (!car) return <div className="booking-loading">Загрузка...</div>;
   const imageUrl = car.imagePath ? `http://localhost:5078${car.imagePath}` : "";
+
+  const selectedTariff = tariffs.find(t => t.id === formData.tariffType) || tariffs[0];
 
   return (
     <>
       <Header />
-      <div className="payment-page">
-        <div className="payment-container">
-          <div className="payment-forms-col">
-            <div className="payment-card">
-              <div className="payment-card-header">
-                <div>
-                  <h3 className="payment-card-title">Информация об аренде</h3>
-                  <p className="payment-step-desc">Планирование времени</p>
-                </div>
-                <span className="payment-step-number">Шаг 1 из 3</span>
+      <div className="booking-page">
+        <div className="booking-container">
+          <div className="booking-forms-col">
+            <div className="booking-card">
+              <div className="booking-card-header">
+                <div><h3 className="booking-card-title">Детали аренды</h3><p className="booking-step-desc">Проверьте время</p></div>
+                <span className="booking-step-number">Шаг 1 из 3</span>
               </div>
-
-              <div className="payment-rental-section">
-                <div className="payment-radio-header">
-                  <input
-                    type="radio"
-                    checked
-                    readOnly
-                    className="payment-radio-input"
-                  />{" "}
-                  Старт (Сейчас)
-                </div>
-                <div className="payment-grid-3">
-                  <label className="payment-label">
-                    Локация
-                    <input
-                      type="text"
-                      className="payment-input"
-                      value={car.location || "Minsk"}
-                      readOnly
-                    />
-                  </label>
-                  <label className="payment-label">
-                    Дата
-                    <input
-                      type="date"
-                      className="payment-input"
-                      value={formData.pickupDate}
-                      readOnly
-                    />
-                  </label>
-                  <label className="payment-label">
-                    Время
-                    <input
-                      type="time"
-                      className="payment-input"
-                      value={formData.pickupTime}
-                      readOnly
-                    />
-                  </label>
+              <div className="booking-section">
+                <div className="booking-section-title"><span className="dot start"></span> Начало (Сейчас)</div>
+                <div className="booking-grid-3">
+                  <div className="form-group">
+                    <label>Локация</label>
+                    <input type="text" className="booking-input" value={car.location || "Minsk"} readOnly />
+                  </div>
+                  <div className="form-group">
+                    <label>Дата</label>
+                    <input type="date" className="booking-input" value={formData.pickupDate} readOnly />
+                  </div>
+                  <div className="form-group">
+                    <label>Время</label>
+                    <input type="time" className="booking-input" value={formData.pickupTime} readOnly />
+                  </div>
                 </div>
               </div>
-
-              <div className="payment-rental-section">
-                <div className="payment-radio-header">
-                  <input
-                    type="radio"
-                    checked
-                    readOnly
-                    className="payment-radio-input"
-                  />{" "}
-                  Планируемый возврат
-                </div>
-                <div className="payment-grid-3">
-                  <label className="payment-label">
-                    Локация
-                    <select
-                      name="dropoffLocation"
-                      className="payment-input"
-                      value={formData.dropoffLocation}
-                      onChange={handleChange}
-                    >
+              <div className="booking-section">
+                <div className="booking-section-title"><span className="dot end"></span> Возврат (План)</div>
+                <div className="booking-grid-3">
+                  <div className="form-group">
+                    <label>Локация</label>
+                    <select name="dropoffLocation" className="booking-input" value={formData.dropoffLocation} onChange={handleChange}>
                       <option value="Minsk">Минск</option>
                       <option value="Airport">Аэропорт</option>
                     </select>
-                  </label>
-                  <label className="payment-label">
-                    Дата
-                    <input
-                      type="date"
-                      name="dropoffDate"
-                      className="payment-input"
-                      value={formData.dropoffDate}
-                      onChange={handleChange}
-                    />
-                  </label>
-                  <label className="payment-label">
-                    Время
-                    <input
-                      type="time"
-                      name="dropoffTime"
-                      className="payment-input"
-                      value={formData.dropoffTime}
-                      onChange={handleChange}
-                    />
-                  </label>
+                  </div>
+                  <div className="form-group">
+                    <label>Дата</label>
+                    <input type="date" name="dropoffDate" className="booking-input" value={formData.dropoffDate} onChange={handleChange} />
+                  </div>
+                  <div className="form-group">
+                    <label>Время</label>
+                    <input type="time" name="dropoffTime" className="booking-input" value={formData.dropoffTime} onChange={handleChange} />
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="payment-card">
-              <div className="payment-card-header">
-                <div>
-                  <h3 className="payment-card-title">Выбор тарифа</h3>
-                  <p className="payment-step-desc">Как вы хотите платить?</p>
-                </div>
-                <span className="payment-step-number">Шаг 2 из 3</span>
+            <div className="booking-card">
+              <div className="booking-card-header">
+                <div><h3 className="booking-card-title">Тариф</h3><p className="booking-step-desc">Выберите план</p></div>
+                <span className="booking-step-number">Шаг 2 из 3</span>
               </div>
-
-              <div className="payment-methods-list">
-                <label
-                  className={`payment-method-item ${
-                    formData.tariffType === "per_minute" ? "active" : ""
-                  }`}
-                >
-                  <div className="payment-method-header">
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="tariffType"
-                        value="per_minute"
-                        checked={formData.tariffType === "per_minute"}
-                        onChange={handleChange}
-                        className="payment-radio-input"
-                      />
-                      <span>Поминутный</span>
-                    </div>
-                    <span style={{ fontWeight: "bold" }}>
-                      ${car.pricePerMinute}/мин
-                    </span>
-                  </div>
-                </label>
-                <label
-                  className={`payment-method-item ${
-                    formData.tariffType === "per_km" ? "active" : ""
-                  }`}
-                >
-                  <div className="payment-method-header">
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="tariffType"
-                        value="per_km"
-                        checked={formData.tariffType === "per_km"}
-                        onChange={handleChange}
-                        className="payment-radio-input"
-                      />
-                      <span>За километраж</span>
-                    </div>
-                    <span style={{ fontWeight: "bold" }}>
-                      ${car.pricePerKm}/км
-                    </span>
-                  </div>
-                </label>
-                <label
-                  className={`payment-method-item ${
-                    formData.tariffType === "per_day" ? "active" : ""
-                  }`}
-                >
-                  <div className="payment-method-header">
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="tariffType"
-                        value="per_day"
-                        checked={formData.tariffType === "per_day"}
-                        onChange={handleChange}
-                        className="payment-radio-input"
-                      />
-                      <span>Суточный</span>
-                    </div>
-                    <span style={{ fontWeight: "bold" }}>
-                      ${car.pricePerDay}/день
-                    </span>
-                  </div>
-                </label>
+              <div className="booking-methods-list">
+                {tariffs.map(t => (
+                  <TariffOption key={t.id} {...t} selected={formData.tariffType} onChange={handleChange} />
+                ))}
               </div>
             </div>
+            <div className="booking-card">
+              <div className="booking-card-header">
+                <div><h3 className="booking-card-title">Подтверждение</h3><p className="booking-step-desc">Финальный шаг</p></div>
+                <span className="booking-step-number">Шаг 3 из 3</span>
+              </div>
 
-            <div className="payment-card">
-              <div className="payment-card-header">
-                <div>
-                  <h3 className="payment-card-title">Подтверждение</h3>
-                  <p className="payment-step-desc">
-                    Начните свою поездку после клика!
-                  </p>
+              <div className="booking-checkbox-group">
+                <CheckboxRow 
+                    name="insuranceActive" 
+                    checked={formData.insuranceActive} 
+                    onChange={handleChange}
+                    title="Полная страховка" 
+                    desc="Покрытие ущерба при ДТП" 
+                    price="+$10%" 
+                />
+                <div className="agreements">
+                    <label className="simple-checkbox">
+                        <input type="checkbox" name="agreeMarketing" checked={formData.agreeMarketing} onChange={handleChange} />
+                        <span>Соглашаюсь на рассылку</span>
+                    </label>
+                    <label className="simple-checkbox">
+                        <input type="checkbox" name="agreeTerms" checked={formData.agreeTerms} onChange={handleChange} />
+                        <span>Принимаю <a href="#">условия</a></span>
+                    </label>
                 </div>
-                <span className="payment-step-number">Шаг 3 из 3</span>
               </div>
 
-              <div className="payment-checkbox-group">
-                <label className="payment-checkbox-row">
-                  <input
-                    type="checkbox"
-                    name="insuranceActive"
-                    checked={formData.insuranceActive}
-                    onChange={handleChange}
-                    className="payment-checkbox-input"
-                  />
-                  <span>
-                    <b>Добавить страховку (+10%)</b>. Полное покрытие ущерба.
-                  </span>
-                </label>
-                <label className="payment-checkbox-row">
-                  <input
-                    type="checkbox"
-                    name="agreeMarketing"
-                    onChange={handleChange}
-                    className="payment-checkbox-input"
-                  />
-                  <span>Я соглашаюсь с email рассылкой</span>
-                </label>
-                <label className="payment-checkbox-row">
-                  <input
-                    type="checkbox"
-                    name="agreeTerms"
-                    onChange={handleChange}
-                    className="payment-checkbox-input"
-                  />
-                  <span>Я принимаю правила и условия пользования</span>
-                </label>
-              </div>
+              <button className="booking-submit-btn" onClick={handleRentNow}>Начать аренду</button>
 
-              <button className="payment-submit-btn" onClick={handleRentNow}>
-                Начать аренду сейчас
-              </button>
-
-              <div className="payment-security">
+              <div className="booking-security">
                 <img src={Security} alt="Security" />
-                <div>
-                  <h4>Все данные защищены</h4>
-                  <p>Надежное хранение данных</p>
-                </div>
+                <div><h4>Безопасно</h4><p>SSL шифрование данных</p></div>
               </div>
             </div>
           </div>
-          <div className="payment-summary-col">
-            <div className="payment-summary-card">
-              <h3 className="payment-card-title">Сводка аренды</h3>
-              <p className="payment-summary-desc">
-                Итоговая цена будет рассчитана после завершения поездки.
-              </p>
+          <div className="booking-summary-col">
+            <div className="booking-summary-card">
+              <h3 className="booking-card-title">Сводка</h3>
+              <p className="booking-summary-desc">Оплата по факту</p>
 
-              <div className="payment-summary-car">
-                <div className="payment-car-img-box">
+              <div className="booking-summary-car">
+                <div className="booking-car-img-box">
                   <img src={imageUrl} alt={car.model} />
                 </div>
-                <div className="payment-car-info">
-                  <h2>
-                    {car.brand} {car.model}
-                  </h2>
+                <div className="booking-car-info">
+                  <h2>{car.brand} {car.model}</h2>
                 </div>
               </div>
 
-              <div className="payment-prices-list">
-                <div
-                  className={`payment-price-row ${
-                    formData.tariffType === "per_minute"
-                      ? "highlight-price"
-                      : ""
-                  }`}
-                >
-                  <span>Цена за минуту</span>
-                  <span className="payment-price-value">
-                    ${car.pricePerMinute || 0.5}
-                  </span>
-                </div>
-                <div
-                  className={`payment-price-row ${
-                    formData.tariffType === "per_km" ? "highlight-price" : ""
-                  }`}
-                >
-                  <span>Цена за км</span>
-                  <span className="payment-price-value">
-                    ${car.pricePerKm || 0.5}
-                  </span>
-                </div>
-                <div
-                  className={`payment-price-row ${
-                    formData.tariffType === "per_day" ? "highlight-price" : ""
-                  }`}
-                >
-                  <span>Цена за день</span>
-                  <span className="payment-price-value">
-                    ${car.pricePerDay}
-                  </span>
-                </div>
+              <div className="booking-prices-list">
+                {tariffs.map(t => (
+                    <div key={t.id} className={`booking-price-row ${formData.tariffType === t.id ? "highlight-price" : ""}`}>
+                        <span>{t.label}</span>
+                        <span className="booking-price-value">${t.price || 0.5}{t.unit}</span>
+                    </div>
+                ))}
 
                 {formData.insuranceActive && (
-                  <div className="payment-price-row highlight-option">
+                  <div className="booking-price-row highlight-option">
                     <span>Страховка</span>
-                    <span className="payment-price-value">+10%</span>
+                    <span className="booking-price-value">+10%</span>
                   </div>
                 )}
               </div>
 
-              <div className="payment-total-block">
-                <div>
-                  <h3>Выбран тариф</h3>
-                  <p>
-                    {formData.tariffType === "per_minute" && "Оплата за время"}
-                    {formData.tariffType === "per_km" && "Оплата за расстояние"}
-                    {formData.tariffType === "per_day" && "Фикс. цена за сутки"}
-                  </p>
-                </div>
-                <div className="payment-big-price">
-                  {formData.tariffType === "per_minute" &&
-                    `$${car.pricePerMinute}/мин`}
-                  {formData.tariffType === "per_km" && `$${car.pricePerKm}/км`}
-                  {formData.tariffType === "per_day" && `$${car.pricePerDay}/д`}
-                </div>
+              <div className="booking-total-block">
+                <div><h3>Выбрано</h3><p>{selectedTariff.label}</p></div>
+                <div className="booking-big-price">${selectedTariff.price}{selectedTariff.unit}</div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </>

@@ -105,9 +105,7 @@ function CarCatalog({ filters }) {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   useEffect(() => {
-    if (cars.length === 0) {
       dispatch(getCarsByCategory());
-    }
   }, [dispatch, cars.length]);
 
   const openLogin = () => {

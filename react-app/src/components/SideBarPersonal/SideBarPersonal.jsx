@@ -1,34 +1,47 @@
-import "./SideBarPersonal.css";
-import Exit from "./../../svg/Profile/exit.svg";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../../redux/actions/users";
-import { useNavigate } from "react-router-dom";
+import Exit from "./../../svg/Profile/exit.svg";
+import "./SideBarPersonal.css";
 
-function SideBarPersonal({ active, onChange }) {
+function SideBarPersonal() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const menu = [
-    { key: "profile", label: "Профиль пользователя", icon: "👤" },
-    { key: "trip", label: "Текущая поездка", icon: "🚗" },
-    { key: "history", label: "История поездок", icon: "📘" },
-    { key: "help", label: "Помощь", icon: "❓" },
+    { 
+      path: "/personal-page", 
+      label: "Профиль пользователя", 
+      icon: "👤", 
+      end: true
+    }, 
+    { 
+      path: "/personal-page/current-trip", 
+      label: "Текущая поездка", 
+      icon: "🚗" 
+    },
+    { 
+      path: "/personal-page/history", 
+      label: "История поездок", 
+      icon: "📘" 
+    },
   ];
 
   return (
     <div className="sidebar">
       <div className="sidebar-menu">
         {menu.map((item) => (
-          <button
-            key={item.key}
-            className={
-              active === item.key ? "sidebar-item active" : "sidebar-item"
+          <NavLink
+            key={item.path}
+            to={item.path}
+            end={item.end}
+            className={({ isActive }) => 
+              isActive ? "sidebar-item active" : "sidebar-item"
             }
-            onClick={() => onChange(item.key)}
           >
             <span className="sidebar-icon">{item.icon}</span>
             {item.label}
-          </button>
+          </NavLink>
         ))}
       </div>
       <button
@@ -38,7 +51,7 @@ function SideBarPersonal({ active, onChange }) {
           navigate("/");
         }}
       >
-        <img src={Exit} /> Выйти из аккаунта
+        <img src={Exit} alt="Exit" /> Выйти из аккаунта
       </button>
     </div>
   );

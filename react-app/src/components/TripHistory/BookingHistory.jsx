@@ -14,7 +14,7 @@ import {
 
 import "./BookingHistory.css";
 
-const BookingHistoryTab = () => {
+const BookingHistory = () => {
   const dispatch = useDispatch();
 
   const myTrips = useSelector((state) => state.trips.myTrips);
@@ -141,4 +141,4 @@ const BookingHistoryTab = () => {
   );
 };
 
-export default BookingHistoryTab;
+export default BookingHistory;

@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import "./CurrentTripTab.css";
+import "./CurrentTrip.css";
 import { cancelTrip, finishTrip, getActiveTrip } from "../../redux/actions/trips";
 import emptyTrip from "../../svg/Profile/emptyTrip.svg";
 import { openModal } from "../../redux/actions/modal";
 
-const CurrentTripTab = () => {
+const CurrentTrip = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -94,15 +94,18 @@ const CurrentTripTab = () => {
       const result = await dispatch(finishTrip(payload));
 
       if (result && result.success) {
+        const billId = result.data.billId; 
         dispatch(
           openModal({
             type: "success",
             title: "Поездка завершена!",
-            message: `Ваш итоговый счет: $${result.data.totalAmount}. Спасибо, что выбрали нас!`,
+            message: `Сумма к оплате: ${result.data.totalAmount} BYN. Переходим к оплате...`,
           })
         );
         dispatch(getActiveTrip());
-        navigate("/profile/bills");
+        setTimeout(() => {
+            navigate(`/payment/${billId}`);
+        }, 3000);
       } else {
         dispatch(
           openModal({
@@ -254,4 +257,4 @@ const CurrentTripTab = () => {
   );
 };
 
-export default CurrentTripTab;
+export default CurrentTrip;

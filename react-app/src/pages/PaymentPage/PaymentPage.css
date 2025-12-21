@@ -1,366 +1,257 @@
 .payment-page {
   background-color: #f6f7f9;
-  min-height: 100vh;
-  padding: 32px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  color: #1A202C;
+  min-height: calc(100vh - 80px);
+  padding: 40px 20px;
 }
 
 .payment-container {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
   display: flex;
   gap: 32px;
-  flex-wrap: wrap;
+  align-items: flex-start;
 }
 
-/* --- ЛЕВАЯ КОЛОНКА --- */
+.payment-loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+  color: #596780;
+}
+
 .payment-forms-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  min-width: 600px;
+  flex: 2;
 }
 
-/* Карточка формы */
-.payment-card {
-  background: white;
+.payment-summary-col {
+  flex: 1;
+}
+
+.payment-card, .payment-summary-card {
+  background: #ffffff;
   border-radius: 10px;
   padding: 24px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
 }
 
 .payment-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-start;
   margin-bottom: 24px;
 }
 
 .payment-card-title {
   font-size: 20px;
   font-weight: 700;
+  color: #1a202c;
   margin: 0 0 4px 0;
 }
 
-.payment-step-desc {
-  color: #90A3BF;
+.payment-step-desc, .payment-summary-desc {
   font-size: 14px;
+  color: #90a3bf;
   margin: 0;
 }
 
-.payment-step-number {
-  color: #90A3BF;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/* Сетки для полей */
 .payment-grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.payment-grid-3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
-  margin-top: 16px;
 }
 
-/* Инпуты и лейблы */
-.payment-label {
+.form-group {
   display: flex;
   flex-direction: column;
-  font-weight: 600;
-  font-size: 16px;
-  color: #1A202C;
   gap: 8px;
-  margin-bottom: 0; /* Сброс глобальных стилей */
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+.payment-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a202c;
 }
 
 .payment-input {
   background: #f6f7f9;
-  border: none;
-  border-radius: 10px;
-  padding: 16px 24px;
+  border: 1px solid #c3d4e9;
+  border-radius: 8px;
+  padding: 12px 16px;
   font-size: 14px;
-  color: #596780;
+  color: #1a202c;
   outline: none;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.payment-input::placeholder {
-  color: #90A3BF;
+  transition: 0.2s;
 }
 
 .payment-input:focus {
-  box-shadow: 0 0 0 2px rgba(53, 99, 233, 0.2);
+  border-color: #3563e9;
+  background: #fff;
 }
 
-/* Секция аренды (Rental Info) */
-.payment-rental-section {
+.payment-security {
+  margin-top: 24px;
   margin-bottom: 24px;
-}
-
-.payment-radio-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 16px;
-}
-
-.payment-radio-input {
-  accent-color: #3563E9;
-  width: 16px;
-  height: 16px;
-}
-
-/* Методы оплаты */
-.payment-methods-list {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.payment-method-item {
-  background: #f6f7f9;
-  border-radius: 10px;
-  padding: 24px;
-  border: 1px solid transparent;
-  transition: background 0.2s;
-}
-
-.payment-method-item.active {
-  background: #f6f7f9;
-  border: 1px solid #f6f7f9;
-}
-
-.payment-method-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.payment-method-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* Чекбоксы подтверждения */
-.payment-checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-bottom: 32px;
-}
-
-.payment-checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-weight: 500;
-  font-size: 14px;
-  color: #1f2544;
   background: #f6f7f9;
   padding: 16px;
   border-radius: 10px;
-  cursor: pointer;
-}
-
-.payment-checkbox-input {
-  width: 20px;
-  height: 20px;
-  accent-color: #3563E9;
-}
-
-/* Кнопка отправки */
-.payment-submit-btn {
-  background: #3563E9;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 16px 32px;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-bottom: 32px;
-  width: fit-content;
-  transition: background 0.2s;
-}
-
-.payment-submit-btn:hover {
-  background: #264ac6;
-}
-
-/* Блок безопасности */
-.payment-security {
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.payment-security img{
-  width: 40px;
+  align-items: center;
+  gap: 12px;
 }
 
 .payment-security h4 {
-  margin: 0 0 4px 0;
-  font-size: 16px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .payment-security p {
-  margin: 0;
+  margin: 2px 0 0 0;
   font-size: 12px;
-  color: #90A3BF;
+  color: #90a3bf;
 }
 
-/* --- ПРАВАЯ КОЛОНКА (SUMMARY) --- */
-.payment-summary-col {
-  width: 400px;
+.payment-security img {
+  height: 40px;
 }
 
-.payment-summary-card {
-  background: white;
+.payment-submit-btn {
+  width: 100%;
+  background: #3563e9;
+  color: white;
+  border: none;
   border-radius: 10px;
-  padding: 24px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.payment-summary-desc {
-  color: #90A3BF;
-  font-size: 14px;
-  line-height: 1.5;
-  margin-bottom: 32px;
+.payment-submit-btn:hover {
+  background: #2748c7;
 }
 
-.payment-summary-car {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #C3D4E9;
+.payment-promo-block {
+  margin-top: 10px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed #e0e0e0;
 }
 
-.payment-car-img-box {
-  width: 116px;
-  height: 80px;
-  background: #3563E9;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.payment-car-img-box img {
-  width: 90%;
-  object-fit: contain;
-}
-
-.payment-car-info h2 {
-  font-size: 20px;
-  margin: 0 0 8px 0;
-}
-
-.payment-rating {
-  color: #FBAD39;
+.promo-label {
   font-size: 12px;
-  font-weight: 500;
+  color: #90a3bf;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.promo-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.promo-input-group input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.promo-input-group button {
+  padding: 10px 16px;
+  background-color: #3563e9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.promo-input-group button:disabled {
+  background-color: #a0bbf5;
+  cursor: wait;
+}
+
+.active-promo-badge {
+  margin-top: 10px;
+  background-color: #e6f9ed;
+  color: #2ed573;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: center;
 }
 
 .payment-prices-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .payment-price-row {
   display: flex;
   justify-content: space-between;
-  color: #90A3BF;
-  font-size: 16px;
+  font-size: 14px;
+  color: #90a3bf;
 }
 
 .payment-price-value {
-  color: #1A202C;
+  color: #1a202c;
   font-weight: 600;
-}
-
-.payment-promo {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 32px;
-  background: #f6f7f9;
-  padding: 10px 16px;
-  border-radius: 10px;
-  align-items: center;
-}
-
-.payment-promo input {
-  background: transparent;
-  border: none;
-  outline: none;
-  flex: 1;
-  font-size: 14px;
-  color: #1A202C;
-}
-
-.payment-promo button {
-  background: none;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 14px;
-  color: #1A202C;
 }
 
 .payment-total-block {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .payment-total-block h3 {
-  margin: 0 0 4px 0;
-  font-size: 20px;
+  margin: 0;
+  font-size: 18px;
+  color: #1a202c;
 }
 
 .payment-total-block p {
-  margin: 0;
-  font-size: 14px;
-  color: #90A3BF;
+  margin: 2px 0 0 0;
+  font-size: 12px;
+  color: #90a3bf;
 }
 
 .payment-big-price {
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 700;
+  color: #1a202c;
 }
 
-/* Адаптив */
-@media (max-width: 1100px) {
+@media (max-width: 900px) {
   .payment-container {
-    flex-direction: column-reverse;
+    flex-direction: column;
   }
-  .payment-summary-col {
+  
+  .payment-forms-col, .payment-summary-col {
     width: 100%;
   }
-  .payment-forms-col {
-    min-width: auto;
+  
+  .payment-summary-col {
+    order: -1; 
   }
 }
 
 @media (max-width: 600px) {
-  .payment-grid-2, .payment-grid-3 {
+  .payment-grid-2 {
     grid-template-columns: 1fr;
+  }
+  
+  .full-width {
+    grid-column: span 1;
   }
 }

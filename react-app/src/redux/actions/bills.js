@@ -96,15 +96,16 @@ export const getMyBills = (page = 1) => {
   };
 };
 
-export const getInfoBills = (id) => {
+export const getInfoBill = (id) => {
   return async (dispatch) => {
     try {
       dispatch(getInfoBillStarted());
 
       const response = await api.bills.getInfoBill(id);
+      const billData = Array.isArray(response.data) ? response.data[0] : response.data;
 
-      dispatch(getInfoBillSuccess(response.data));
-      return { success: true, data: response.data };
+      dispatch(getInfoBillSuccess(billData));
+      return { success: true, data: billData };
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
@@ -138,6 +139,26 @@ export const createBill = (data) => {
       return { success: false, message: errorMessage };
     }
   };
+};
+
+export const applyPromocode = (billId, code) => async (dispatch) => {
+  try {
+    const res = await api.bills.applyPromocode(billId, code);
+
+    dispatch(
+      openModal({
+        type: "success",
+        title: "Успешно",
+        message: "Промокод применен! Сумма пересчитана.",
+      })
+    );
+
+    return { success: true };
+  } catch (err) {
+    const msg = err.response?.data?.message || "Неверный промокод";
+    dispatch(openModal({ type: "error", title: "Ошибка", message: msg }));
+    return { success: false };
+  }
 };
 
 export const updateBill = (id, data) => {

@@ -105,7 +105,7 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
       setDetailingItem(null);
       if (cfg.detailAction) {
         const result = await dispatch(cfg.detailAction(item.id));
-        if (result.success && result.data) {
+        if (result.success || result.data) {
           setEditingItem(result.data);
           subData.fetchSubData(result.data.id);
         } else {
@@ -131,29 +131,39 @@ export const useMainTableOperations = (activeTab, cfg, subData) => {
   const handleSaveEdit = useCallback(
     async (e) => {
       e.preventDefault();
-      if (!cfg?.updateAction) return 
-      dispatch(
-            openModal({
-              type: "error",
-              title: "Внимание",
-              message: "Не настроено",
-            })
-          );
+      if (!cfg?.updateAction) {
+        return dispatch(
+          openModal({
+            type: "error",
+            title: "Внимание",
+            message: "Действие редактирования не настроено",
+          })
+        );
+      }
+
       const formData = new FormData(e.target);
+      const formJson = Object.fromEntries(formData.entries());
+
       const finalData = {
         ...editingItem,
-        ...Object.fromEntries(formData.entries()),
+        ...formJson,
+        id: Number(editingItem.id),
+        statusId: formJson.statusId ? Number(formJson.statusId) : editingItem.statusId,
+        categoryId: formJson.categoryId ? Number(formJson.categoryId) : editingItem.categoryId,
+        tariffId: formJson.tariffId ? Number(formJson.tariffId) : (editingItem.tariffId || null),
       };
 
       const result = await dispatch(cfg.updateAction(finalData.id, finalData));
-      if (!result.success) return 
-      dispatch(
-            openModal({
-              type: "error",
-              title: "Внимание",
-              message: result.message,
-            })
-          );
+      
+      if (!result.success) {
+        return dispatch(
+          openModal({
+            type: "error",
+            title: "Внимание",
+            message: result.message || "Ошибка сохранения",
+          })
+        );
+      }
 
       setEditingItem(null);
       refreshTable();

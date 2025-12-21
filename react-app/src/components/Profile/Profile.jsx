@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import "./Profile.css";
-// Добавь импорт CSS для модалок, если они не глобальные, или используй Profile.css
 import { useDispatch, useSelector } from "react-redux";
 import { getMyUser } from "../../redux/actions/users";
-import { getMyDocuments } from "../../redux/actions/clients"; // Импортируй свои новые экшены
-import { openModal } from "../../redux/actions/modal"; // Глобальная модалка подтверждения
+import { getMyDocuments } from "../../redux/actions/clients";
+import { openModal } from "../../redux/actions/modal";
 import { useNavigate } from "react-router-dom";
 import EditProfileModal from "../EditProfileModal/EditProfileModal";
 import AddDocumentModal from "../AddDocumentModal/AddDocumentModal";
@@ -16,10 +15,6 @@ function Profile() {
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDocOpen, setIsDocOpen] = useState(false);
-
-  const [profile] = useState({
-    category: "Категория B", // Можно брать из документов позже
-  });
 
   const formatPhoneNumber = (rawNumber) => {
     if (!rawNumber) return "";
@@ -60,6 +55,13 @@ function Profile() {
   const userRoleId = myUser.roleId;
   const isSpecialUser = userRoleId === 1;
 
+  const licenseDoc = documents.find(doc => 
+      doc.type?.toLowerCase().includes("права") || 
+      doc.type?.toLowerCase().includes("удостоверение")
+  );
+
+  const category = licenseDoc?.licenseCategory;
+
   const handleDeleteDoc = (id) => {
     dispatch(
       openModal({
@@ -98,7 +100,11 @@ function Profile() {
           <h1 className="profile-name">
             {myClient.name} {myClient.surname}
           </h1>
-          <div className="profile-category">{profile.category}</div>
+          <div className="profile-category">
+            {category
+              ? `Водительские права: Категория ${category}`
+              : "Водительские права не загружены"}
+          </div>
 
           <div className="profile-grid">
             <div className="profile-item">

@@ -2,29 +2,21 @@
   display: flex;
   justify-content: center;
   padding: 40px;
-}
-
-.profile-card {
-  background: #fff;
-  width: 100%;
-  max-width: 850px;
-  border-radius: 16px;
-  padding: 35px 40px;
-  box-shadow: 0 4px 12px #0000001a;
+  width: 90%;
 }
 
 .user-avatar-profile {
-    width: 10rem;
-    height: 10rem;
-    border-radius: 50%;
-    background: #2563eb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 4rem;
-    margin-bottom: 20px;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 50%;
+  background: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 4rem;
+  margin-bottom: 20px;
 }
 
 .profile-name {
@@ -91,20 +83,12 @@
   background: #1e3fae;
 }
 
-/* Изменили flex на column для вертикального расположения карточек */
-.profile-wrapper {
-  display: flex;
-  justify-content: center;
-  padding: 40px;
-}
-
 .profile-column {
-    display: flex;
-    gap: 30px; /* Отступ между профилем и документами */
-    width: 100%;
+  display: flex;
+  gap: 30px; 
+  width: 100%;
 }
 
-/* Старый стиль profile-card оставляем как есть, но убираем max-width так как он теперь в column */
 .profile-card {
   background: #fff;
   width: 100%;
@@ -113,182 +97,187 @@
   box-shadow: 0 4px 12px #0000001a;
 }
 
-/* --- Стили для документов --- */
 .docs-section {
-    background: #fff;
-    border-radius: 16px;
-    padding: 30px 40px;
-    box-shadow: 0 4px 12px #0000001a;
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px 40px;
+  box-shadow: 0 4px 12px #0000001a;
 }
 
 .docs-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
 }
 
 .docs-header h2 {
-    font-size: 22px;
-    font-weight: 700;
-    margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
 }
 
 .add-doc-btn {
-    background: #eef2ff;
-    color: #2563eb;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
+  background: #eef2ff;
+  color: #2563eb;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .add-doc-btn:hover {
-    background: #e0e7ff;
+  background: #e0e7ff;
 }
 
 .docs-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
 }
 
 .doc-item {
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 15px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    position: relative;
-    transition: 0.2s;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: relative;
+  transition: 0.2s;
 }
 
 .doc-item:hover {
-    border-color: #2563eb;
+  border-color: #2563eb;
 }
 
 .doc-icon {
-    font-size: 28px;
-    background: #f3f4f6;
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  font-size: 28px;
+  background: #f3f4f6;
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .doc-info h4 {
-    margin: 0 0 4px 0;
-    font-size: 15px;
-    font-weight: 600;
+  margin: 0 0 4px 0;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .doc-info p {
-    margin: 0;
-    font-size: 13px;
-    color: #6b7280;
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
 }
 
-.doc-valid { color: #16a34a; font-size: 12px; font-weight: 500; }
-.doc-expired { color: #dc2626; font-size: 12px; font-weight: 500; }
+.doc-valid {
+  color: #16a34a;
+  font-size: 12px;
+  font-weight: 500;
+}
+.doc-expired {
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 500;
+}
 
 .doc-delete-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    color: #9ca3af;
-    cursor: pointer;
-    font-size: 18px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 18px;
 }
 
 .doc-delete-btn:hover {
-    color: #dc2626;
+  color: #dc2626;
 }
 
 .no-docs-placeholder {
-    text-align: center;
-    color: #6b7280;
-    padding: 20px;
-    background: #f9fafb;
-    border-radius: 12px;
+  text-align: center;
+  color: #6b7280;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 12px;
 }
 
-/* --- Стили для модальных окон (ProfileModals.css) --- */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 .modal-content {
-    background: white;
-    padding: 30px;
-    border-radius: 16px;
-    width: 400px;
-    max-width: 90%;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  width: 400px;
+  max-width: 90%;
 }
 
 .modal-content h3 {
-    margin-top: 0;
-    margin-bottom: 20px;
+  margin-top: 0;
+  margin-bottom: 20px;
 }
 
 .modal-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .modal-form label {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    font-size: 14px;
-    font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.modal-form input, .modal-form select {
-    padding: 10px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 15px;
+.modal-form input,
+.modal-form select {
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
 }
 
 .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .btn-secondary {
-    background: transparent;
-    border: 1px solid #d1d5db;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
+  background: transparent;
+  border: 1px solid #d1d5db;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 .btn-primary {
-    background: #2563eb;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
 }
-
-/* Оставь свои старые стили ниже, если что-то не переопределилось */

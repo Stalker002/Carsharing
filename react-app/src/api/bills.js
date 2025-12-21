@@ -30,6 +30,13 @@ export const createBill = (data) => makeRequest({
     data,
 });
 
+export const applyPromocode = (id, data) => makeRequest({
+    method: "POST",
+    url: `${URL}/${id}/promocode`,
+    withCredentials: true,
+    data,
+});
+
 export const updateBill = (id, data) => makeRequest({
     method: "PUT",
     url: `${URL}/${id}`,
