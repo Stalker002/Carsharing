@@ -348,8 +348,10 @@ CREATE FUNCTION public.create_bill_after_trip() RETURNS trigger
     AS $$
 BEGIN
     IF NEW.trip_end_time IS NOT NULL THEN
-        INSERT INTO bills (bill_trip_id, bill_status_id)
-        VALUES (NEW.trip_id, (SELECT status_id FROM status WHERE lower(status_name)='не оплачен'));
+        IF NOT EXISTS (SELECT 1 FROM bills WHERE bill_trip_id = NEW.trip_id) THEN
+            INSERT INTO bills (bill_trip_id, bill_status_id, bill_issue_date)
+            VALUES (NEW.trip_id, (SELECT status_id FROM status WHERE lower(status_name)='не оплачен'), NOW());
+        END IF;
     END IF;
     RETURN NEW;
 END;
