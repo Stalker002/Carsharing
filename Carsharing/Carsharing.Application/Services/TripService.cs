@@ -75,6 +75,7 @@ public class TripService : ITripService
             (
                 x.t.Id,
                 x.s.Brand,
+                x.c.Id,
                 x.s.Model,
                 x.c.ImagePath,
                 x.bill != null && x.bill.StatusId == 7 ? "Оплачено" : x.st.Name,

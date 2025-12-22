@@ -4,6 +4,7 @@ public record TripHistoryDto
 (
     int Id,
     string? CarBrand,
+    int CarId,
     string? CarModel, 
     string? CarImage, 
     string StatusName, 

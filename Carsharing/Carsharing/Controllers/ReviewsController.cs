@@ -75,7 +75,7 @@ public class ReviewsController : ControllerBase
     public async Task<ActionResult<List<ReviewWithClientInfo>>> GetPagedReviewsByCarId(
         int carId,
         [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_limit")] int limit = 25)
+        [FromQuery(Name = "_limit")] int limit = 5)
     {
         var totalCount = await _reviewsService.GetReviewsCountsByCarId(carId);
         var reviews = await _reviewsService.GetPagedReviewsByCarId(carId, page, limit);
