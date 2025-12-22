@@ -197,6 +197,8 @@ CREATE FUNCTION public.calculate_bill_total() RETURNS trigger
     v_fine_total NUMERIC(10,2) := 0;
     v_discount NUMERIC(5,2) := 0;
     v_trip_distance NUMERIC(10,2);
+    v_start_time TIMESTAMP;
+    v_end_time TIMESTAMP;
     v_trip_duration NUMERIC(10,2);
     v_trip_days NUMERIC(10,2);
     v_refueled NUMERIC(10,2) := 0;
@@ -213,14 +215,16 @@ BEGIN
         t.tariff_price_per_km,
         t.tariff_price_per_day,
         tr.trip_distance_km,
-        tr.trip_duration
+        tr.trip_start_time,
+        tr.trip_end_time
     INTO 
         v_tariff_type,
         v_price_per_minute,
         v_price_per_km,
         v_price_per_day,
         v_trip_distance,
-        v_trip_duration
+        v_start_time, 
+        v_end_time 
     FROM trips tr
     JOIN bookings b ON tr.trip_booking_id = b.booking_id
     JOIN cars c ON b.booking_car_id = c.car_id
@@ -232,6 +236,16 @@ BEGIN
     IF NOT FOUND THEN
         NEW.bill_amount := 0;
         RETURN NEW;
+    END IF;
+
+    IF v_end_time IS NULL THEN
+        v_end_time := now();
+    END IF;
+
+    v_trip_duration := EXTRACT(EPOCH FROM (v_end_time - v_start_time)) / 60;
+
+    IF v_trip_duration IS NULL OR v_trip_duration < 0 THEN
+        v_trip_duration := 0;
     END IF;
 
     -- Получаем сумму заправленного топлива по детали поездки (если есть несколько detail — суммируем)
