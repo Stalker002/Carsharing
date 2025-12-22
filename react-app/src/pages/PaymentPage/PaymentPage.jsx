@@ -10,6 +10,7 @@ import Header from "../../components/Header/Header";
 import Visa from "../../svg/Payment/visa.svg";
 import Security from "../../svg/Payment/security.svg";
 import "./PaymentPage.css";
+import ReviewModal from "../../components/ReviewModal/ReviewModal";
 
 const PaymentPage = () => {
   const { id } = useParams();
@@ -24,6 +25,7 @@ const PaymentPage = () => {
   });
 
   const [isFetching, setIsFetching] = useState(!billFromStore);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   const [promoCode, setPromoCode] = useState("");
   const [isApplyingPromo, setIsApplyingPromo] = useState(false);
@@ -58,7 +60,31 @@ const PaymentPage = () => {
   const bill = billFromStore;
 
   const handleCardChange = (e) => {
-    setCardData({ ...cardData, [e.target.name]: e.target.value });
+    let { name, value } = e.target;
+    if (name === "number") {
+      const rawValue = value.replace(/\D/g, "");
+      value = rawValue.match(/.{1,4}/g)?.join(" ") || "";
+      if (value.length > 19) return;
+    }
+
+    if (name === "expiry") {
+      const rawValue = value.replace(/\D/g, "");
+      
+      if (rawValue.length >= 2) {
+         value = rawValue.substring(0, 2) + "/" + rawValue.substring(2, 4);
+      } else {
+         value = rawValue;
+      }
+      if (value.length > 5) return;
+    }
+    if (name === "cvc") {
+        value = value.replace(/\D/g, "");
+        if (value.length > 3) return;
+    }
+    if (name === "holder") {
+        value = value.toUpperCase().replace(/[^A-Z\s]/g, "");
+    }
+    setCardData({ ...cardData, [name]: value });
   };
 
   const handleApplyPromo = async () => {
@@ -100,10 +126,13 @@ const PaymentPage = () => {
     );
 
     if (result.success) {
-      setTimeout(() => {
-        navigate("/personal-page/history");
-      }, 1500);
+      setShowReviewModal(true);
     }
+  };
+
+  const handleReviewClose = () => {
+      setShowReviewModal(false);
+      navigate("/personal-page/history");
   };
 
   if (!bill) {
@@ -255,6 +284,12 @@ const PaymentPage = () => {
           </div>
         </div>
       </div>
+      {showReviewModal && (
+        <ReviewModal
+            carId={bill.carId}
+            onClose={handleReviewClose} 
+        />
+      )}
     </>
   );
 };

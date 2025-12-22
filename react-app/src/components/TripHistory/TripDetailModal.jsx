@@ -1,8 +1,11 @@
 import { useEffect } from "react";
 import "./TripDetailModal.css";
 import { formatCurrency, formatDateTime, formatDuration } from "./utils";
+import { useNavigate } from "react-router-dom";
 
 const TripDetailModal = ({ trip, onClose }) => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -30,6 +33,10 @@ const TripDetailModal = ({ trip, onClose }) => {
     return "Без изменений";
   };
 
+  const handleClick = () => {
+    navigate(`/car-catalog/${trip.carId}`);
+  };
+
   return (
     <div className="trip-modal-overlay" onClick={onClose}>
       <div className="trip-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -46,11 +53,11 @@ const TripDetailModal = ({ trip, onClose }) => {
         </div>
         <div className="trip-modal-body">
           <div className="trip-car-section">
-            <div className="trip-car-img">
+            <div className="trip-car-img" onClick={handleClick}>
               {imageUrl ? <img src={imageUrl} alt={trip.carModel} /> : null}
             </div>
             <div className="trip-car-info">
-              <h2>
+              <h2 onClick={handleClick}>
                 {trip.carBrand} {trip.carModel}
               </h2>
               <span
@@ -117,6 +124,7 @@ const TripDetailModal = ({ trip, onClose }) => {
               </p>
             </div>
           </div>
+          <hr className="modal-divider" />
         </div>
         <div className="trip-modal-footer">
           <div className="footer-total">

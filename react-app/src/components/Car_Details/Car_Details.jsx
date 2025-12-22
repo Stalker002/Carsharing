@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getInfoCars, getCarsByCategory } from "../../redux/actions/cars";
@@ -10,6 +10,7 @@ import Transmission from "../../svg/Popular_Car/transmission.svg";
 import People from "../../svg/Popular_Car/people.svg";
 import { getReviewsByCar } from "../../redux/actions/reviews";
 import { openModal } from "../../redux/actions/modal";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const CarDetails = () => {
   const { id } = useParams();
@@ -23,8 +24,22 @@ const CarDetails = () => {
   const cars = useSelector((state) => state.cars?.carsByCategory || []);
   const isCarLoading = useSelector((state) => state.cars?.isCarsLoading);
 
-  const reviews = useSelector((state) => state.reviews.reviewsByCar);
-  const isReviewsLoading = useSelector((state) => state.reviews.isReviewsLoading);
+  const { reviewsByCar: reviews, reviewsByCarTotal, isReviewsLoading } = useSelector((state) => state.reviews);
+  
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    setPage(1);
+    dispatch(getReviewsByCar(id, 1));
+  }, [dispatch, id]);
+
+  const fetchMoreReviews = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    dispatch(getReviewsByCar(id, nextPage));
+  };
+
+  const hasMore = reviews.length < reviewsByCarTotal;
 
   const getCapacity = (car) => {
     if (car.capacity) return String(car.capacity);
@@ -36,23 +51,23 @@ const CarDetails = () => {
   const handleBookingClick = () => {
     if (!isLoggedIn) {
       dispatch(
-            openModal({
-              type: "error",
-              title: "Внимание",
-              message: "Пожалуйста, войдите в систему, чтобы арендовать авто.",
-            })
-          );
+        openModal({
+          type: "error",
+          title: "Внимание",
+          message: "Пожалуйста, войдите в систему, чтобы арендовать авто.",
+        })
+      );
       return;
     }
 
-    if (car.statusId !== 1 && car.statusName !== 'Доступна') {
-       return dispatch(
-            openModal({
-              type: "error",
-              title: "Внимание",
-              message: "Эта машина сейчас недоступна",
-            })
-          );
+    if (car.statusId !== 1 && car.statusName !== "Доступна") {
+      return dispatch(
+        openModal({
+          type: "error",
+          title: "Внимание",
+          message: "Эта машина сейчас недоступна",
+        })
+      );
     }
 
     navigate(`/booking/${id}`);
@@ -73,10 +88,12 @@ const CarDetails = () => {
   }
 
   const formatDate = (dateString) => {
-      if (!dateString) return "";
-      return new Date(dateString).toLocaleDateString("en-US", {
-          day: 'numeric', month: 'long', year: 'numeric'
-      });
+    if (!dateString) return "";
+    return new Date(dateString).toLocaleDateString("ru-RU", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
   };
 
   const renderCard = (cars) => {
@@ -149,6 +166,27 @@ const CarDetails = () => {
   return (
     <div className="details-page">
       <div className="details-content">
+        <div className="navigation-header">
+          <button className="back-btn" onClick={() => navigate(-1)}>
+            <svg 
+              width="24" 
+              height="24" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path 
+                d="M15 19.9201L8.47997 13.4001C7.70997 12.6301 7.70997 11.3701 8.47997 10.6001L15 4.08008" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeMiterlimit="10" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+            </svg>
+            Назад
+          </button>
+        </div>
         <div className="top-section">
           <div className="gallery-container">
             <div className="hero-banner">
@@ -238,53 +276,58 @@ const CarDetails = () => {
         <div className="reviews-container">
           <div className="reviews-header">
             <h3>
-              Отзывов <span className="badge">{reviews.length}</span>
+              Отзывов <span className="badge">{reviewsByCarTotal}</span>
             </h3>
           </div>
 
-          {isReviewsLoading ? (
-            <p>Загрузка отзывов...</p>
-          ) : reviews.length === 0 ? (
-            <p style={{ color: "#90A3BF" }}>Нету отзывов на эту машину</p>
-          ) : (
-            reviews.map((review) => (
-              <div key={review.id} className="review-item">
-                <div className="user-avatar">
-                  <span>
-                    {review.name?.[0]}
-                    {review.surname?.[0]}
-                  </span>
-                </div>
-                <div className="review-content">
-                  <div className="review-top">
-                    <div>
-                      <h4>
-                        {review.clientName} {review.clientSurname}
-                      </h4>
-                      <span className="role">{review.role || "Client"}</span>
-                    </div>
-                    <div className="review-meta">
-                      <span className="date">{formatDate(review.date)}</span>
-                      <div className="stars">
-                        {[...Array(5)].map((_, i) => (
-                          <img
-                            key={i}
-                            src={Star}
-                            alt=""
-                            style={{ opacity: i < review.rating ? 1 : 0.3 }}
-                          />
-                        ))}
+          <InfiniteScroll
+            dataLength={reviews.length}
+            next={fetchMoreReviews}
+            hasMore={hasMore}
+            loader={<p style={{textAlign: 'center', color: '#90A3BF', marginTop: '20px'}}>Загрузка еще...</p>}
+          >
+            {reviews.length === 0 && !isReviewsLoading ? (
+               <p style={{ color: "#90A3BF" }}>Нет отзывов на эту машину</p>
+            ) : (
+               reviews.map((review) => (
+                <div key={review.id} className="review-item">
+                  <div className="user-avatar">
+                    <span>
+                      {review.name?.[0]}
+                      {review.surname?.[0]}
+                    </span>
+                  </div>
+                  <div className="review-content">
+                    <div className="review-top">
+                      <div>
+                        <h4>
+                          {review.name} {review.surname}
+                        </h4>
+                        <span className="role">{review.role || "Client"}</span>
+                      </div>
+                      <div className="review-meta">
+                        <span className="date">{formatDate(review.date)}</span>
+                        <div className="stars">
+                          {[...Array(5)].map((_, i) => (
+                            <span
+                              key={i}
+                              style={{
+                                color: i < review.rating ? "#FBAD39" : "#e0e0e0",
+                                fontSize: "18px",
+                              }}
+                            >
+                              ★
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
+                    <p className="review-text">{review.comment}</p>
                   </div>
-                  {/* Текст отзыва */}
-                  <p className="review-text">{review.comment}</p>
                 </div>
-              </div>
-            ))
-          )}
-
-          {reviews.length > 0 && <div className="show-all-btn">Show All ⌄</div>}
+              ))
+            )}
+          </InfiniteScroll>         
         </div>
         <div className="popular-header-detail">
           <Link to={`/car-catalog/`}>

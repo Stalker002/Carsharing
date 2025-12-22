@@ -2,6 +2,7 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  overflow-y: hidden;
 }
 
 .history-stats {
@@ -47,10 +48,29 @@
   color: #1a202c;
 }
 
+.infinite-scroll-component::-webkit-scrollbar {
+  width: 6px;
+}
+
+.infinite-scroll-component::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.infinite-scroll-component::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 20px;
+}
+
+.infinite-scroll-component::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+
 .history-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 2px;
+  padding-bottom: 20px;
 }
 
 .history-card {

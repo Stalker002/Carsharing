@@ -3,12 +3,12 @@
     height: 50vw;
     box-sizing: border-box;
     position: relative;
-    /* z-index: 0; */
+    z-index: 0;
     display: flex;
     justify-content: center;
     padding: 0px 5px;
     background: radial-gradient(79.18% 59.18% at 50% 23.34%, #7697F0 0%, #FFFFFF 100%);
-    /* overflow: hidden; */
+    overflow: hidden;
 }
 
 .hero-logo {
@@ -78,8 +78,8 @@
     justify-content: center;
     width: 150px;
     height: 140px;
-    top: 230px;
-    right: 500px;
+    top: 22%;
+    right: 31%;
 }
 
 .car-box h2 {

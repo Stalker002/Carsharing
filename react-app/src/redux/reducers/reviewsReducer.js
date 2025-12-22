@@ -45,7 +45,7 @@ export const reviewsReducer = (state = initialState, action) => {
         case GET_REVIEWS_BY_CAR_SUCCESS:
             return {
                 ...state,
-                my: action.payload.page === 1
+                reviewsByCar: action.payload.page === 1
                     ? action.payload.data
                     : [...state.reviewsByCar, ...action.payload.data],
                 isReviewsLoading: false,

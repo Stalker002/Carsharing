@@ -5,6 +5,7 @@ import PopularCar from '../../components/Popular_car/PopularCar';
 import FactsInNumbers from '../../components/FactsInNumbers/FactsInNumbers';
 import Header from './../../components/Header/Header';
 import Footer from './../../components/Footer/Footer';
+import FAQ from '../../components/FAQ/FAQ';
 
 function Home() {
   return (
@@ -14,7 +15,7 @@ function Home() {
       <Features />
       <Steps />
       <PopularCar />
-      <FactsInNumbers />
+      <FAQ />
       <Footer />
     </>
   )

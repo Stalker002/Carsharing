@@ -84,6 +84,7 @@
   overflow: hidden;
   background-color: #f8f9fa;
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .trip-car-img img {
@@ -96,6 +97,7 @@
   margin: 0 0 8px 0;
   font-size: 1.4rem;
   color: #1a202c;
+  cursor: pointer;
 }
 
 .modal-status-badge {
@@ -130,7 +132,6 @@
 .grid-full-row {
   display: flex;
   flex-direction: column;
-  gap: 20px;
 }
 
 .location-row {
@@ -161,11 +162,10 @@
 
 .loc-line {
   width: 2px;
-  position: absolute;
   height: 90px;
   background-color: #e0e0e0;
   margin-left: 5px;
-  margin-top: 5px;
+  margin-top: -50px;
   margin-bottom: -5px;
 }
 

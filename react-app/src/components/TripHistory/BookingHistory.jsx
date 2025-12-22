@@ -83,7 +83,7 @@ const BookingHistory = () => {
             </div>
           )
         }
-        style={{ overflow: 'visible' }}
+        height="calc(100vh - 300px)"
       >
         <div className="history-list">
           {myTrips.map((trip) => {

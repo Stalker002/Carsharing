@@ -105,7 +105,8 @@ function AdminTable({ activeTab }) {
     <>
       <div className="admin-body">
         <div className="table-top">
-          <input className="search" placeholder="Поиск по таблице" />
+          {/*<input className="search" placeholder="Поиск по таблице" /> */}
+          <div></div>
           <div>
             {activeTab === "cars" && (
               <button

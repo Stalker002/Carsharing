@@ -26,7 +26,7 @@ function Header() {
         </div>
         {isHomePage && (
           <nav className="navigation">
-            <a href="#home" className="nav-link active">
+            {/* <a href="#home" className="nav-link active">
               Главная
             </a>
             <Link to="/car-catalog" className="nav-link">
@@ -34,12 +34,12 @@ function Header() {
             </Link>
             <a href="#about" className="nav-link">
               Про нас
-            </a>
+            </a> */}
           </nav>
         )}
         {isCatalog && (
           <nav className="navigation">
-            <a href="#home" className="nav-link">
+            {/* <a href="#home" className="nav-link">
               Главная
             </a>
             <Link to="/car-catalog" className="nav-link active">
@@ -47,12 +47,12 @@ function Header() {
             </Link>
             <a href="#about" className="nav-link">
               Про нас
-            </a>
+            </a> */}
           </nav>
         )}
         {isPayment && (
           <nav className="navigation">
-            <a href="#home" className="nav-link">
+            {/* <a href="#home" className="nav-link">
               Главная
             </a>
             <Link to="/car-catalog" className="nav-link">
@@ -60,7 +60,7 @@ function Header() {
             </Link>
             <a href="#about" className="nav-link">
               Про нас
-            </a>
+            </a> */}
           </nav>
         )}
         {/* {isCatalog && (
