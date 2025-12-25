@@ -10,6 +10,7 @@ import { openModal } from "../../redux/actions/modal";
 import Security from "../../svg/Payment/security.svg";
 import "./BookingPage.css";
 import Header from "../../components/Header/Header";
+import { getMyDocuments } from "../../redux/actions/clients";
 
 const TariffOption = ({ id, label, price, unit, selected, onChange }) => (
   <label className={`booking-method-item ${selected === id ? "active" : ""}`}>
@@ -57,8 +58,9 @@ const BookingPage = () => {
   const car = useSelector((state) => state.cars.infoCar?.[0] || state.cars.currentCar);
   const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
   const myClient = useSelector((state) => state.clients.myClient);
+  const documentsState = useSelector((state) => state.clients.myDocument);
+  const documents = Array.isArray(documentsState) ? documentsState : (documentsState ? [documentsState] : []);
 
-  // Даты
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -79,7 +81,11 @@ const BookingPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     if (id) dispatch(getInfoCars(id));
-  }, [dispatch, id]);
+
+    if (myClient?.id) {
+        dispatch(getMyDocuments(myClient.id));
+    }
+  }, [dispatch, id, myClient]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -104,6 +110,37 @@ const BookingPage = () => {
 
     if (isNaN(plannedEndTime.getTime())) return dispatch(openModal({ type: "error", title: "Внимание", message: "Некорректная дата" }));
     if (plannedEndTime <= new Date()) return dispatch(openModal({ type: "error", title: "Внимание", message: "Время возврата должно быть в будущем" }));
+
+    const hasLicense = documents.find(doc => 
+        doc.type === "Водительское удостоверение" || 
+        doc.type === "Водительские права"
+    );
+
+    if (!hasLicense) {
+       return dispatch(openModal({
+            type: "confirm",
+            title: "Документы не найдены",
+            message: "Для аренды автомобиля необходимо загрузить водительское удостоверение. Хотите перейти в профиль для загрузки?",
+            confirmText: "Перейти в профиль", 
+            cancelText: "Отмена",
+            onConfirm: () => {
+                navigate("/personal-page"); 
+            }
+        }));
+    }
+
+    if (new Date(hasLicense.expiryDate) < new Date()) {
+      return dispatch(openModal({
+            type: "confirm",
+            title: "Документ просрочен",
+            message: "Срок действия вашего водительского удостоверения истек. Хотите перейти в профиль для загрузки?",
+            confirmText: "Перейти в профиль", 
+            cancelText: "Отмена",
+            onConfirm: () => {
+                navigate("/personal-page"); 
+            }
+        }));
+    }
 
     try {
       const bookingPayload = {

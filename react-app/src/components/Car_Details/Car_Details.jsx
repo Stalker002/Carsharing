@@ -217,7 +217,7 @@ const CarDetails = () => {
                   {car.statusName}
                 </span>
               </div>
-              <img src={Like} className="main-heart" alt="like" />
+              {/* <img src={Like} className="main-heart" alt="like" /> */}
             </div>
 
             <div className="specs-grid">
