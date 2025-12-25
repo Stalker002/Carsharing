@@ -39,7 +39,8 @@ public class BookingRepository : IBookingRepository
             .AsNoTracking()
             .Skip((page - 1) * limit)
             .Take(limit)
-            .OrderBy(b => b.Id)
+            .OrderByDescending(b => b.StartTime)
+            .ThenByDescending(b => b.Id)
             .ToListAsync();
 
         var bookings = bookingEntity
@@ -104,6 +105,8 @@ public class BookingRepository : IBookingRepository
     {
         var bookingEntity = await _context.Booking
             .Where(b => b.ClientId == clientId)
+            .OrderByDescending(b => b.StartTime)
+            .ThenByDescending(b => b.Id)
             .Skip((page - 1) * limit)
             .Take(limit)
             .AsNoTracking()

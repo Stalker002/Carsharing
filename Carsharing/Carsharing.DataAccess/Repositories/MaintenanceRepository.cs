@@ -57,6 +57,8 @@ public class MaintenanceRepository : IMaintenanceRepository
     {
         var maintenanceEntity = await _context.Maintenance
             .Where(m => m.CarId == carId)
+            .OrderByDescending(m => m.Date)
+            .ThenByDescending(m => m.Id)
             .AsNoTracking()
             .ToListAsync();
 
