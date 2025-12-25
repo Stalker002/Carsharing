@@ -37,7 +37,8 @@ public class PromocodeRepository : IPromocodeRepository
     {
         var promocodeEntities = await _context.Promocode
             .AsNoTracking()
-            .OrderBy(pr => pr.Id)
+            .OrderByDescending(p => p.StartDate)
+            .ThenByDescending(p => p.Id)
             .Skip((page - 1) * limit)
             .Take(limit)
             .ToListAsync();
