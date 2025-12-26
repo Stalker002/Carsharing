@@ -176,6 +176,7 @@ public class BookingRepository : IBookingRepository
 
         var overlapping = await _context.Car.AnyAsync(c =>
             c.StatusId != 1
+            && c.Id == booking.CarId
         );
         if (overlapping)
             throw new ArgumentException("Автомобиль недоступен на выбранное время");

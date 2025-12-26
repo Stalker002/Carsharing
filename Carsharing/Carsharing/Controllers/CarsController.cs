@@ -58,7 +58,6 @@ public class CarsController : ControllerBase
     }
 
     [HttpGet("pagedByCategory")]
-    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<CarWithMinInfoDto>>> GetCarsByCategories([FromQuery] List<int>? ids,
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)

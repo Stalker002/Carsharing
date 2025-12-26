@@ -1,5 +1,8 @@
 import { api } from "../../api";
 import {
+  applyPromocodeFailed,
+  applyPromocodeStarted,
+  applyPromocodeSuccess,
   createBillFailed,
   createBillStarted,
   createBillSuccess,
@@ -21,6 +24,7 @@ import {
   updateBillStarted,
   updateBillSuccess,
 } from "../actionCreators/bills";
+import { openModal } from "./modal";
 
 export const getBills = (page = 1) => {
   return async (dispatch) => {
@@ -143,7 +147,8 @@ export const createBill = (data) => {
 
 export const applyPromocode = (billId, code) => async (dispatch) => {
   try {
-    const res = await api.bills.applyPromocode(billId, code);
+    dispatch(applyPromocodeStarted());
+     const res = await api.bills.applyPromocode(billId, { code }); 
 
     dispatch(
       openModal({
@@ -153,11 +158,16 @@ export const applyPromocode = (billId, code) => async (dispatch) => {
       })
     );
 
+    dispatch(applyPromocodeSuccess(res.data));
     return { success: true };
-  } catch (err) {
-    const msg = err.response?.data?.message || "Неверный промокод";
-    dispatch(openModal({ type: "error", title: "Ошибка", message: msg }));
-    return { success: false };
+  } catch (error) {
+    const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Неизвестная ошибка счета";
+
+    dispatch(applyPromocodeFailed(error));
+    return { success: false, message: errorMessage };
   }
 };
 

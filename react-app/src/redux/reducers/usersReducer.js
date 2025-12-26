@@ -63,6 +63,7 @@ export const userReducer = (state = initialState, action) => {
         ...state,
         isLoggedIn: false,
         isUsersLoading: false,
+        initialState
       };
     case LOGOUT_USER_FAILED:
       return {
@@ -140,7 +141,7 @@ export const userReducer = (state = initialState, action) => {
         ...state,
         users: state.users.map((user) =>
           user.id === action.payload.id
-            ? { ...user, ...action.payload } // <--- исправление
+            ? { ...user, ...action.payload }
             : user
         ),
         isUpdateUserLoading: false,

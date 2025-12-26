@@ -46,6 +46,9 @@ function Account() {
   if (!isLoggedIn) {
     return (
       <>
+        <p className="client-name" onClick={openLogin}>
+          Войдите или зарегестрируйтесь
+        </p>
         <button className="user-button" onClick={openLogin}>
           <div className="user-avatar">
             <img src={Exit} alt="Войти" />
@@ -76,7 +79,7 @@ function Account() {
   return (
     <>
       <p className="client-name" onClick={() => navigate("/personal-page")}>
-        {myClient.name} {myClient.surname}
+        {myClient.surname} {myClient.name}
       </p>
       <button
         className="user-button"
@@ -84,8 +87,8 @@ function Account() {
       >
         <div className="user-avatar">
           <span>
-            {myClient.name?.[0]}
             {myClient.surname?.[0]}
+            {myClient.name?.[0]}
           </span>
         </div>
       </button>

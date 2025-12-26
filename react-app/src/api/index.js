@@ -1,4 +1,4 @@
-import { createBill, deleteBill, getBills, getInfoBill, getMyBills, updateBill } from "./bills";
+import { applyPromocode, createBill, deleteBill, getBills, getInfoBill, getMyBills, updateBill } from "./bills";
 import { createBooking, deleteBooking, getBookingInfo, getBookings, getMyBookings, updateBooking } from "./bookings";
 import { createCar, deleteCar, getCarByCategory, getCarInfo, getCarInfoAdmin, getCars, updateCar } from "./cars";
 import { createCategory, deleteCategory, getCategory, updateCategory } from "./category";
@@ -20,6 +20,7 @@ export const api = {
         getBills,
         getMyBills,
         getInfoBill,
+        applyPromocode,
         createBill,
         updateBill,
         deleteBill

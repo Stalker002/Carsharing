@@ -17,7 +17,7 @@ import { tripsReducer } from "./tripsReducer";
 import { modalReducer } from "./modalReducer";
 import { clientDocumentsReducer } from "./clientDocumentsReducer";
 
-export const rootReducer = combineReducers({
+const appReducer = combineReducers({
     bills: billsReducer,
     bookings: bookingsReducer,
     cars: carsReducer,
@@ -35,4 +35,12 @@ export const rootReducer = combineReducers({
     tariffs: tariffsReducer,
     trips: tripsReducer,
     users: userReducer
-})
+});
+
+export const rootReducer = (state, action) => {
+    if (action.type === 'LOGOUT_SUCCESS' || action.type === 'LOGOUT_USER_SUCCESS') {
+        return appReducer(undefined, action);
+    }
+
+    return appReducer(state, action);
+};

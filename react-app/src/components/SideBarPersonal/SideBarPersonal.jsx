@@ -9,32 +9,49 @@ import History from "./../../svg/Profile/History.svg";
 import WHistory from "./../../svg/Profile/WhiteHistory.svg";
 import Exit from "./../../svg/Profile/exit.svg";
 import "./SideBarPersonal.css";
+import { openModal } from "../../redux/actions/modal";
 
 function SideBarPersonal() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const menu = [
-    { 
-      path: "/personal-page", 
-      label: "Профиль пользователя", 
+    {
+      path: "/personal-page",
+      label: "Профиль пользователя",
       icon: Profile,
       whiteIcon: WProfile,
-      end: true
-    }, 
-    { 
-      path: "/personal-page/current-trip", 
-      label: "Текущая поездка", 
-      icon: Current,
-      whiteIcon: WCurrent
+      end: true,
     },
-    { 
-      path: "/personal-page/history", 
-      label: "История поездок", 
+    {
+      path: "/personal-page/current-trip",
+      label: "Текущая поездка",
+      icon: Current,
+      whiteIcon: WCurrent,
+    },
+    {
+      path: "/personal-page/history",
+      label: "История поездок",
       icon: History,
-      whiteIcon: WHistory
+      whiteIcon: WHistory,
     },
   ];
+
+  const handleLogout = () => {
+    dispatch(
+      openModal({
+        title: "Выход из аккаунта",
+        message: "Вы действительно хотите выйти?",
+        type: "confirm",
+        confirmText: "Выйти",
+        cancelText: "Отмена",
+        onConfirm: () => {
+          dispatch(logoutUser());
+          navigate("/");
+        },
+      })
+    );
+  };
 
   return (
     <div className="sidebar">
@@ -44,15 +61,15 @@ function SideBarPersonal() {
             key={item.path}
             to={item.path}
             end={item.end}
-            className={({ isActive }) => 
+            className={({ isActive }) =>
               isActive ? "sidebar-item active" : "sidebar-item"
             }
           >
             {({ isActive }) => (
               <>
-                <img 
-                  src={isActive ? item.whiteIcon : item.icon} 
-                  className="sidebar-icon" 
+                <img
+                  src={isActive ? item.whiteIcon : item.icon}
+                  className="sidebar-icon"
                   alt={item.label}
                 />
                 {item.label}
@@ -61,13 +78,7 @@ function SideBarPersonal() {
           </NavLink>
         ))}
       </div>
-      <button
-        className="sidebar-logout"
-        onClick={() => {
-          dispatch(logoutUser());
-          navigate("/");
-        }}
-      >
+      <button className="sidebar-logout" onClick={handleLogout}>
         <img src={Exit} alt="Exit" /> Выйти из аккаунта
       </button>
     </div>

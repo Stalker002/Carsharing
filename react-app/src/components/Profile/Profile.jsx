@@ -36,15 +36,15 @@ function Profile() {
 
   const myClient = useSelector((state) => state.clients.myClient);
   const myUser = useSelector((state) => state.users.myUser);
-  const isMyUserLoading = useSelector((state) => state.users.isMyUserLoading);
+  const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
 
   const documents = useSelector((state) => state.clients.myDocument);
 
   useEffect(() => {
-    if (Object.keys(myUser).length === 0 && !isMyUserLoading) {
+    if (isLoggedIn) {
       dispatch(getMyUser());
     }
-  }, [isMyUserLoading, dispatch, myUser]);
+  }, [isLoggedIn, dispatch, myClient]);
 
   useEffect(() => {
     if (myClient?.id) {
@@ -55,8 +55,9 @@ function Profile() {
   const userRoleId = myUser.roleId;
   const isSpecialUser = userRoleId === 1;
 
-  const licenseDoc = documents.find(doc => 
-      doc.type?.toLowerCase().includes("права") || 
+  const licenseDoc = documents.find(
+    (doc) =>
+      doc.type?.toLowerCase().includes("права") ||
       doc.type?.toLowerCase().includes("удостоверение")
   );
 
@@ -93,12 +94,12 @@ function Profile() {
         <div className="profile-card">
           <div className="user-avatar-profile">
             <span>
-              {myClient.name?.[0]}
               {myClient.surname?.[0]}
+              {myClient.name?.[0]}
             </span>
           </div>
           <h1 className="profile-name">
-            {myClient.name} {myClient.surname}
+            {myClient.surname} {myClient.name}
           </h1>
           <div className="profile-category">
             {category

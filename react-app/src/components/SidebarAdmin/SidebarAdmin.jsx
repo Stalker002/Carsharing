@@ -6,7 +6,7 @@ function SidebarAdmin({ activeTab, setActiveTab }) {
   const navigate = useNavigate();
 
   const menuItems = [
-    { id: "Dashboard", label: "Статистика" },
+    // { id: "Dashboard", label: "Статистика" },
     { id: "cars", label: "Машины" },
     { id: "users", label: "Пользователи" },
     { id: "bookings", label: "Бронирования" },

@@ -3,7 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import "./CurrentTrip.css";
-import { cancelTrip, finishTrip, getActiveTrip } from "../../redux/actions/trips";
+import {
+  cancelTrip,
+  finishTrip,
+  getActiveTrip,
+} from "../../redux/actions/trips";
 import emptyTrip from "../../svg/Profile/emptyTrip.svg";
 import { openModal } from "../../redux/actions/modal";
 
@@ -27,32 +31,39 @@ const CurrentTrip = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-   const handleCancel = () => {
-    dispatch(openModal({
-      title: "Отмена поездки",
-      message: "Вы уверены, что хотите отменить поездку? Деньги не будут списаны, а машина станет доступна для других.",
-      type: "confirm",
-      confirmText: "Да, отменить",
-      cancelText: "Нет",
-      onConfirm: async () => {
-        const result = await dispatch(cancelTrip(activeTrip.id));
-        
-        if (result.success) {
-           dispatch(openModal({
-             type: "success",
-             title: "Отменено",
-             message: "Поездка успешно отменена."
-           }));
-           dispatch(getActiveTrip());
-        } else {
-           dispatch(openModal({
-             type: "error",
-             title: "Ошибка",
-             message: result.message
-           }));
-        }
-      }
-    }));
+  const handleCancel = () => {
+    dispatch(
+      openModal({
+        title: "Отмена поездки",
+        message:
+          "Вы уверены, что хотите отменить поездку? Деньги не будут списаны, а машина станет доступна для других.",
+        type: "confirm",
+        confirmText: "Да, отменить",
+        cancelText: "Нет",
+        onConfirm: async () => {
+          const result = await dispatch(cancelTrip(activeTrip.id));
+
+          if (result.success) {
+            dispatch(
+              openModal({
+                type: "success",
+                title: "Отменено",
+                message: "Поездка успешно отменена.",
+              })
+            );
+            dispatch(getActiveTrip());
+          } else {
+            dispatch(
+              openModal({
+                type: "error",
+                title: "Ошибка",
+                message: result.message,
+              })
+            );
+          }
+        },
+      })
+    );
   };
 
   const handleFinish = async () => {
@@ -94,7 +105,7 @@ const CurrentTrip = () => {
       const result = await dispatch(finishTrip(payload));
 
       if (result && result.success) {
-        const billId = result.data.billId; 
+        const billId = result.data.billId;
         dispatch(
           openModal({
             type: "success",
@@ -104,7 +115,7 @@ const CurrentTrip = () => {
         );
         dispatch(getActiveTrip());
         setTimeout(() => {
-            navigate(`/payment/${billId}`);
+          navigate(`/payment/${billId}`);
         }, 3000);
       } else {
         dispatch(
@@ -166,13 +177,19 @@ const CurrentTrip = () => {
           </div>
           <div className="trip-timer">
             Начало:{" "}
-            {new Date(
-              new Date(activeTrip.startTime).getTime() + 3 * 60 * 60 * 1000
-            ).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              timeZone: "UTC",
-            })}
+            {activeTrip.startTime ? (
+              new Date(
+                activeTrip.startTime.endsWith("Z")
+                  ? activeTrip.startTime
+                  : activeTrip.startTime + "Z"
+              ).toLocaleTimeString("ru-RU", {
+                hour: "2-digit",
+                minute: "2-digit",
+                timeZone: "Europe/Moscow",
+              })
+            ) : (
+              "..."
+            )}
           </div>
         </div>
         <div className="trip-body">
