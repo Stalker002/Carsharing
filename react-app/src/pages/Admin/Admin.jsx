@@ -5,7 +5,7 @@ import Header from './../../components/Header/Header';
 import { useState } from "react";
 
 function Admin() {
-    const [activeTab, setActiveTab] = useState("cars");
+    const [activeTab, setActiveTab] = useState("dashboard");
     return (
         <>
             <Header />

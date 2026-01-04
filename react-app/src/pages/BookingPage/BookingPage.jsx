@@ -306,7 +306,7 @@ const BookingPage = () => {
                 {tariffs.map(t => (
                     <div key={t.id} className={`booking-price-row ${formData.tariffType === t.id ? "highlight-price" : ""}`}>
                         <span>{t.label}</span>
-                        <span className="booking-price-value">${t.price || 0.5}{t.unit}</span>
+                        <span className="booking-price-value">{t.price || 0.5}BYN{t.unit}</span>
                     </div>
                 ))}
 
@@ -320,7 +320,7 @@ const BookingPage = () => {
 
               <div className="booking-total-block">
                 <div><h3>Выбрано</h3><p>{selectedTariff.label}</p></div>
-                <div className="booking-big-price">${selectedTariff.price}{selectedTariff.unit}</div>
+                <div className="booking-big-price">{selectedTariff.price}BYN{selectedTariff.unit}</div>
               </div>
             </div>
           </div>

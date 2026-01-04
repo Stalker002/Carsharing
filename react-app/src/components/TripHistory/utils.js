@@ -1,6 +1,4 @@
-// utils/formatters.js
 
-// Форматирование цены (например: 150.00 BYN)
 export const formatCurrency = (amount) => {
   if (amount === null || amount === undefined) return "0.00 BYN";
   return new Intl.NumberFormat("ru-BY", {
@@ -10,7 +8,6 @@ export const formatCurrency = (amount) => {
   }).format(amount);
 };
 
-// Короткая дата (19 дек.)
 export const formatDateShort = (dateString) => {
   if (!dateString) return "—";
   return new Date(dateString).toLocaleDateString("ru-RU", {
@@ -20,7 +17,6 @@ export const formatDateShort = (dateString) => {
   });
 };
 
-// Полная дата и время (19.12.2025, 14:30)
 export const formatDateTime = (dateString) => {
   if (!dateString) return "—";
   return new Date(dateString).toLocaleString("ru-RU", {
@@ -32,7 +28,6 @@ export const formatDateTime = (dateString) => {
   });
 };
 
-// Длительность (125 мин -> 2 ч 5 мин)
 export const formatDuration = (minutes) => {
   if (!minutes) return "0 мин";
   const h = Math.floor(minutes / 60);

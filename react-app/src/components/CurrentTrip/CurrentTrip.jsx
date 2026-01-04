@@ -163,7 +163,7 @@ const CurrentTrip = () => {
 
   const imageUrl = activeTrip.carImage
     ? `http://localhost:5078${activeTrip.carImage}`
-    : "https://via.placeholder.com/300x200?text=No+Image";
+    : null;
 
   return (
     <div className="current-trip-wrapper">
@@ -209,11 +209,11 @@ const CurrentTrip = () => {
               <label>Текущая цена</label>
               <strong>
                 {activeTrip.tariffType === "per_minute" &&
-                  `$${activeTrip.pricePerMinute}/мин`}
+                  `${activeTrip.pricePerMinute}BYN/мин`}
                 {activeTrip.tariffType === "per_day" &&
-                  `$${activeTrip.pricePerDay}/день`}
+                  `${activeTrip.pricePerDay}BYN/день`}
                 {activeTrip.tariffType === "per_km" &&
-                  `$${activeTrip.pricePerKm}/км`}
+                  `${activeTrip.pricePerKm}BYN/км`}
               </strong>
             </div>
             <div className="detail-item">

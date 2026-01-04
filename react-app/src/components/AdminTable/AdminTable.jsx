@@ -98,7 +98,7 @@ function AdminTable({ activeTab }) {
     [activeTab, mainOps.editingItem, mainOps.detailingItem, subData]
   );
 
-  if (activeTab === "Dashboard") return <div>Dashboard</div>;
+  if (activeTab === "dashboard") return <div>Dashboard</div>;
   if (!cfg) return <div>Ошибка конфигурации</div>;
 
   return (
