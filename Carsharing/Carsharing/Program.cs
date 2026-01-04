@@ -1,3 +1,4 @@
+using Amazon.S3;
 using Carsharing.Application.Extensions;
 using Carsharing.Application.Services;
 using Carsharing.Core.Abstractions;
@@ -14,6 +15,8 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        var minioConfig = builder.Configuration.GetSection("Minio");
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
@@ -37,6 +40,22 @@ public class Program
                           .WithExposedHeaders("x-total-count");
                 });
         });
+        
+        builder.Services.AddSingleton<IAmazonS3>(sp =>
+        {
+            var config = new AmazonS3Config
+            {
+                ServiceURL = minioConfig["ServiceURL"],
+                ForcePathStyle = true
+            };
+
+            return new AmazonS3Client(
+                minioConfig["AccessKey"],
+                minioConfig["SecretKey"],
+                config
+            );
+        });
+
         builder.Services.AddOpenApi();
 
         builder.Services.AddDbContext<CarsharingDbContext>();
@@ -92,6 +111,7 @@ public class Program
         builder.Services.AddDataProtection()
             .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"));
 
+        
         var app = builder.Build();
 
         using (var scope = app.Services.CreateScope())
