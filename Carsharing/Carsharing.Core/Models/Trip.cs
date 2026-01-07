@@ -1,8 +1,10 @@
-﻿namespace Carsharing.Core.Models;
+﻿using Carsharing.Core.Enum;
+
+namespace Carsharing.Core.Models;
 
 public class Trip
 {
-    private Trip(int id, int bookingId, int statusId, string tariffType, DateTime startTime,
+    private Trip(int id, int bookingId, int statusId, string? tariffType, DateTime startTime,
         DateTime? endTime, decimal? duration, decimal? distance)
     {
         Id = id;
@@ -16,32 +18,24 @@ public class Trip
     }
 
     public int Id { get; }
-
     public int BookingId { get; }
-
     public int StatusId { get; }
-
-    public string TariffType { get; }
-
+    public string? TariffType { get; }
     public DateTime StartTime { get; }
-
     public DateTime? EndTime { get; }
-
     public decimal? Duration { get; }
-
     public decimal? Distance { get; }
 
-    public static (Trip trip, string error) Create(int id, int bookingId, int statusId, string tariffType,
+    public static (Trip trip, string error) Create(int id, int bookingId, int statusId, string? tariffType,
         DateTime startTime, DateTime? endTime, decimal? duration, decimal? distance)
     {
         var error = string.Empty;
         var allowedTariffTypes = new[] { "per_minute", "per_km", "per_day" };
-        var allowedTypes = new[] { 8, 9, 10, 11, 12 };
 
         if (bookingId < 0)
             error = "Booking Id must be positive";
 
-        if (!allowedTypes.Contains(statusId))
+        if (!System.Enum.IsDefined(typeof(TripStatusEnum), statusId))
             error = $"Invalid insurance type. Allowed: \"8. Ожидание начала\", \"9. В пути\", \"10. Завершена\", \"11. Отменена\", \"12. Требуется оплата\" ";
 
         if (string.IsNullOrWhiteSpace(tariffType))

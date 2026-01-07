@@ -2,6 +2,7 @@
 using Carsharing.Application.Services;
 using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
+using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess;
 using Microsoft.AspNetCore.Authorization;
@@ -202,7 +203,7 @@ public class TripsController : ControllerBase
         var tripId = await _tripService.UpdateTrip(id, request.BookingId, request.StatusId, request.TariffType,
             request.StartTime, request.EndTime, request.Duration, request.Distance);
 
-        if (request.EndTime == null && request.StatusId != 10 && request.StatusId != 11) 
+        if (request.EndTime == null && request.StatusId != (int)TripStatusEnum.Finished && request.StatusId != (int)TripStatusEnum.Cancelled) 
             return Ok(tripId);
 
         var booking = await _bookingsService.GetBookingsById(request.BookingId);

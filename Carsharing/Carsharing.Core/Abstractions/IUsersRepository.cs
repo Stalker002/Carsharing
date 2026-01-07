@@ -4,7 +4,7 @@ namespace Carsharing.Core.Abstractions;
 
 public interface IUsersRepository
 {
-    Task<User> GetByLogin(string login);
+    Task<User?> GetByLogin(string login);
     Task<List<User>> GetUser();
     Task<List<User>> GetPagedUser(int page, int limit);
     Task<int> GetCount();

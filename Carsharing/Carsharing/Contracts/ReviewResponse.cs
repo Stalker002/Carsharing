@@ -5,5 +5,5 @@ public record ReviewResponse(
     int ClientId, 
     int CarId, 
     short Rating, 
-    string Comment, 
+    string? Comment, 
     DateTime Date);

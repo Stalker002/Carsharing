@@ -8,7 +8,7 @@ public class PaymentEntity
 
     public decimal Sum { get; set; }
 
-    public string Method { get; set; }
+    public string? Method { get; set; }
 
     public DateTime Date { get; set; }
 

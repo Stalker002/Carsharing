@@ -4,5 +4,5 @@ public record PaymentResponse(
     int Id, 
     int BillId, 
     decimal Sum, 
-    string Method, 
+    string? Method, 
     DateTime Date);

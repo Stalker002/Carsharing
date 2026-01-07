@@ -1,11 +1,13 @@
-﻿namespace Carsharing.Core.Models;
+﻿using Carsharing.Core.Enum;
+
+namespace Carsharing.Core.Models;
 
 public class Insurance
 {
     public const int MaxCompanyLength = 100;
     public const int MaxPolicyNumberLength = 100;
 
-    private Insurance(int id, int carId, int statusId, string type, string company, string policyNumber,
+    private Insurance(int id, int carId, int statusId, string? type, string? company, string? policyNumber,
         DateOnly startDate, DateOnly endDate, decimal cost)
     {
         Id = id;
@@ -25,11 +27,11 @@ public class Insurance
 
     public int StatusId { get; }
 
-    public string Type { get; }
+    public string? Type { get; }
 
-    public string Company { get; }
+    public string? Company { get; }
 
-    public string PolicyNumber { get; }
+    public string? PolicyNumber { get; }
 
     public DateOnly StartDate { get; }
 
@@ -37,18 +39,17 @@ public class Insurance
 
     public decimal Cost { get; }
 
-    public static (Insurance insurance, string error) Create(int id, int carId, int statusId, string type,
-        string company, string policyNumber, DateOnly startDate, DateOnly endDate, decimal cost)
+    public static (Insurance insurance, string error) Create(int id, int carId, int statusId, string? type,
+        string? company, string? policyNumber, DateOnly startDate, DateOnly endDate, decimal cost)
     {
         var error = string.Empty;
         var allowedTypes = new[] { "ОСАГО", "КАСКО" };
-        var allowedStatusTypes = new[] { 23, 24, 25 };
 
         if (carId < 0)
             error = "Car Id must be positive";
 
-        if (!allowedStatusTypes.Contains(statusId))
-            error = $"Invalid insurance type. Allowed: \"23. Активна\", \"24. Истекла\", \"25. Аннулирована\" ";
+        if (!System.Enum.IsDefined(typeof(InsuranceStatusEnum), statusId))
+            error = "Invalid insurance type. Allowed: \"23. Активна\", \"24. Истекла\", \"25. Аннулирована\" ";
 
         if (string.IsNullOrWhiteSpace(type))
             error = "Type can't be empty";
@@ -57,12 +58,12 @@ public class Insurance
 
         if (string.IsNullOrWhiteSpace(company))
             error = "Company name can't be empty";
-        if (company.Length > MaxCompanyLength)
+        if (company is { Length: > MaxCompanyLength })
             error = $"Company name can't be longer than {MaxCompanyLength} symbols";
 
         if (string.IsNullOrWhiteSpace(policyNumber))
             error = "Policy number can't be empty";
-        if (policyNumber.Length > MaxPolicyNumberLength)
+        if (policyNumber is { Length: > MaxPolicyNumberLength })
             error = $"Policy number can't be longer than {MaxPolicyNumberLength} symbols";
 
         if (startDate > DateOnly.FromDateTime(DateTime.Now))

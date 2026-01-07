@@ -1,10 +1,12 @@
-﻿namespace Carsharing.Core.Models;
+﻿using Carsharing.Core.Enum;
+
+namespace Carsharing.Core.Models;
 
 public class Promocode
 {
     public const int MaxCodeLength = 50;
 
-    private Promocode(int id, int statusId, string code, decimal discount, DateOnly startDate, DateOnly endDate)
+    private Promocode(int id, int statusId, string? code, decimal discount, DateOnly startDate, DateOnly endDate)
     {
         Id = id;
         StatusId = statusId;
@@ -18,7 +20,7 @@ public class Promocode
 
     public int StatusId { get; }
 
-    public string Code { get; }
+    public string? Code { get; }
 
     public decimal Discount { get; }
 
@@ -26,18 +28,17 @@ public class Promocode
 
     public DateOnly EndDate { get; }
 
-    public static (Promocode promocode, string error) Create(int id, int statusId, string code, decimal discount,
+    public static (Promocode promocode, string error) Create(int id, int statusId, string? code, decimal discount,
         DateOnly startDate, DateOnly endDate)
     {
         var error = string.Empty;
-        var allowedStatuses = new[] { 20, 21, 22 };
 
-        if (!allowedStatuses.Contains(statusId))
-            error = $"Invalid insurance type. Allowed: \"19. Активен\", \"20. Истек\", \"21. Использован\" ";
+        if (!System.Enum.IsDefined(typeof(PromocodeStatusEnum), statusId))
+            error = "Invalid insurance type. Allowed: \"20. Активен\", \"21. Истек\", \"22. Использован\" ";
 
         if (string.IsNullOrWhiteSpace(code))
             error = "Code can't be empty";
-        if (code.Length > MaxCodeLength)
+        if (code is { Length: > MaxCodeLength })
             error = $"Code can't be longer than {MaxCodeLength} symbols";
 
         if (discount < 0)

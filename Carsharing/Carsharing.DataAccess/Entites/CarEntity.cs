@@ -12,7 +12,7 @@ public class CarEntity
 
     public int SpecificationId { get; set; }
 
-    public string Location { get; set; }
+    public string? Location { get; set; }
 
     public decimal FuelLevel { get; set; }
 

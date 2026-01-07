@@ -4,7 +4,7 @@ public record TripResponse(
     int Id, 
     int BookingId, 
     int StatusId, 
-    string TariffType, 
+    string? TariffType, 
     DateTime StartTime,
     DateTime? EndTime, 
     decimal? Duration, 

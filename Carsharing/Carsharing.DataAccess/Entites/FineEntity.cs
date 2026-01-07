@@ -8,7 +8,7 @@ public class FineEntity
 
     public int StatusId { get; set; }
 
-    public string Type { get; set; }
+    public string? Type { get; set; }
 
     public decimal Amount { get; set; }
 

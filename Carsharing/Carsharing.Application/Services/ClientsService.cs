@@ -1,5 +1,6 @@
 ﻿using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Carsharing.DataAccess;
 
 namespace Carsharing.Application.Services;
 
@@ -8,9 +9,11 @@ public class ClientsService : IClientsService
     private readonly IClientRepository _clientRepository;
     private readonly IClientDocumentRepository _clientDocumentRepository;
     private readonly IUsersRepository _usersRepository;
+    private readonly CarsharingDbContext _context;
 
-    public ClientsService(IClientRepository clientRepository, IClientDocumentRepository clientDocumentRepository, IUsersRepository usersRepository)
+    public ClientsService(IClientRepository clientRepository, IClientDocumentRepository clientDocumentRepository, IUsersRepository usersRepository, CarsharingDbContext context)
     {
+        _context = context;
         _usersRepository = usersRepository;
         _clientDocumentRepository = clientDocumentRepository;
         _clientRepository = clientRepository;
@@ -57,6 +60,30 @@ public class ClientsService : IClientsService
     public async Task<int> CreateClient(Client client)
     {
         return await _clientRepository.Create(client);
+    }
+
+    public async Task<int> CreateClientWithUser(Client client, User user)
+    {
+        var userExists = await _usersRepository.GetByLogin(user.Login);
+        if (userExists != null)
+            throw new Exception($"Пользователь с таким логином уже существует");
+
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+
+        try
+        {
+            client.UserId = await _usersRepository.CreateUser(user);
+            var clientId = await _clientRepository.Create(client);
+
+            await transaction.CommitAsync();
+            return await _clientRepository.Create(client);
+
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            throw new Exception($"Пользователь с таким логином уже существует");
+        }
     }
 
     public async Task<int> UpdateClient(int id, int userId, string? name, string? surname, string? phoneNumber, string? email)

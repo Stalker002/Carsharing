@@ -12,7 +12,7 @@ namespace Carsharing.Controllers;
 public class BookingsController : ControllerBase
 {
     private readonly IBookingsService _bookingsService;
-    private readonly ICarsService _carsService;
+    private readonly ICarsService? _carsService;
 
     public BookingsController(IBookingsService bookingsService, ICarsService? carsService)
     {
@@ -115,9 +115,9 @@ public class BookingsController : ControllerBase
 
         var bookingId = await _bookingsService.CreateBooking(booking);
 
-        await _carsService.MarkCarAsUnavailableAsync(
+        await _carsService?.MarkCarAsUnavailableAsync(
             request.CarId
-        );
+        )!;
 
         return Ok(bookingId);
     }

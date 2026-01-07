@@ -6,6 +6,6 @@ public record CarsResponse(
     int TariffId,
     int CategoryId,
     int SpecificationId,
-    string Location,
+    string? Location,
     decimal FuelLevel,
     string? ImagePath);

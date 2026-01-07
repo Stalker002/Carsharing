@@ -1,4 +1,5 @@
 ﻿using Carsharing.Core.Abstractions;
+using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -111,7 +112,7 @@ public class CarRepository : ICarRepository
     public async Task<List<Car>> GetPagedByCategoryId(List<int> categoryIds, int page, int limit)
     {
         var carEntities = await _context.Car
-            .Where(c => categoryIds.Contains(c.CategoryId) && c.StatusId == 1)
+            .Where(c => categoryIds.Contains(c.CategoryId) && c.StatusId == (int)CarStatusEnum.Available)
             .AsNoTracking()
             .Skip((page - 1) * limit)
             .Take(limit)

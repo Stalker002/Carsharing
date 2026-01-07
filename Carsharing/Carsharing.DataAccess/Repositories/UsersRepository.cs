@@ -16,18 +16,15 @@ public class UsersRepository : IUsersRepository
         _myPasswordHasher = myPasswordHasher;
     }
 
-    public async Task<User> GetByLogin(string login)
+    public async Task<User?> GetByLogin(string login)
     {
         var userEntity = await _context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Login == login);
 
-        if (userEntity == null)
-        {
-            return null;
-        }
+        if (userEntity == null) return null;
 
-        var (user, error) = Core.Models.User.Create(
+        var (user, error) = User.Create(
             userEntity.Id,
             userEntity.RoleId,
             userEntity.Login,
@@ -62,9 +59,9 @@ public class UsersRepository : IUsersRepository
 
         var users = userEntities
             .Select(u => User.Create(
-                u.Id, 
-                u.RoleId, 
-                u.Login, 
+                u.Id,
+                u.RoleId,
+                u.Login,
                 u.Password).user)
             .ToList();
 

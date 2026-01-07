@@ -10,5 +10,5 @@ public record BillWithInfoDto(
     int CarId,
     decimal? Duration,
     decimal? Distance,
-    string TariffType
+    string? TariffType
     );

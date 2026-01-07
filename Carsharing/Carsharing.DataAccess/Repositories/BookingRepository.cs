@@ -1,4 +1,5 @@
 ﻿using Carsharing.Core.Abstractions;
+using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -152,16 +153,14 @@ public class BookingRepository : IBookingRepository
 
     public async Task<int> Create(Booking booking)
     {
-
         var hasActiveBooking = await _context.Booking
             .AnyAsync(b =>
                 b.ClientId == booking.ClientId &&
-                (b.StatusId == 4));
+                b.StatusId == (int)BookingStatusEnum.Active);
 
         if (hasActiveBooking)
-        {
-            throw new ArgumentException("У вас уже есть активная аренда или бронь. Завершите текущую поездку, прежде чем брать новую машину.");
-        }
+            throw new ArgumentException(
+                "У вас уже есть активная аренда или бронь. Завершите текущую поездку, прежде чем брать новую машину.");
 
         var (_, error) = Booking.Create(
             0,
@@ -175,7 +174,7 @@ public class BookingRepository : IBookingRepository
             throw new ArgumentException($"Create exception booking: {error}");
 
         var overlapping = await _context.Car.AnyAsync(c =>
-            c.StatusId != 1
+            c.StatusId != (int)CarStatusEnum.Available
             && c.Id == booking.CarId
         );
         if (overlapping)

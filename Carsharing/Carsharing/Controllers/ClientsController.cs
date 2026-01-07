@@ -1,23 +1,19 @@
 ﻿using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
-using Carsharing.DataAccess;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
+
 [ApiController]
 [Route("[controller]")]
 public class ClientsController : ControllerBase
 {
     private readonly IClientsService _clientsService;
-    private readonly IUsersService _usersService;
-    private readonly CarsharingDbContext _context;
 
-    public ClientsController(IClientsService clientsService, IUsersService usersService, CarsharingDbContext context)
+    public ClientsController(IClientsService clientsService)
     {
-        _context = context;
-        _usersService = usersService;
         _clientsService = clientsService;
     }
 
@@ -41,7 +37,8 @@ public class ClientsController : ControllerBase
         var clients = await _clientsService.GetPagedClients(page, limit);
 
         var response = clients
-            .Select(cl => new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email)).ToList();
+            .Select(cl => new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email))
+            .ToList();
 
         Response.Headers.Append("x-total-count", totalCount.ToString());
 
@@ -74,10 +71,6 @@ public class ClientsController : ControllerBase
     public async Task<ActionResult<List<ClientsResponse>>> GetClientByUserId()
     {
         var userId = int.Parse(User.FindFirst("userId")!.Value);
-        if (userId == null)
-        {
-            return Unauthorized("User ID claim not found");
-        }
         var clients = await _clientsService.GetClientByUserId(userId);
         var response = clients.Select(cl =>
             new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email));
@@ -92,7 +85,8 @@ public class ClientsController : ControllerBase
 
         var clients = await _clientsService.GetMyDocuments(userId);
         var response = clients.Select(d =>
-            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.LicenseCategory, d.Number, d.IssueDate, d.ExpiryDate, d.FilePath));
+            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.LicenseCategory, d.Number, d.IssueDate,
+                d.ExpiryDate, d.FilePath));
         return Ok(response);
     }
 
@@ -102,58 +96,56 @@ public class ClientsController : ControllerBase
     {
         var clients = await _clientsService.GetClientDocuments(clientId);
         var response = clients.Select(d =>
-            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.LicenseCategory, d.Number, d.IssueDate, d.ExpiryDate, d.FilePath));
+            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.LicenseCategory, d.Number, d.IssueDate,
+                d.ExpiryDate, d.FilePath));
         return Ok(response);
     }
 
-    [HttpPost("with-user")]
-    public async Task<ActionResult<int>> CreateClient([FromBody] ClientRegistrationRequest request)
+    [HttpPost]
+    public async Task<ActionResult<int>> CreateClient(ClientsRequest request)
     {
-        var userExists = await _usersService.GetUserByLogin(request.Login);
-        if (userExists != null)
-            return Conflict("Пользователь с таким логином уже существует");
+        var (client, clientError) = Client.Create(
+            0,
+            0,
+            request.Name,
+            request.Surname,
+            request.PhoneNumber,
+            request.Email);
 
-        await using var transaction = await _context.Database.BeginTransactionAsync();
+        if (clientError is { Length: > 0 })
+            return BadRequest(clientError);
 
-        try
-        {
-            var (user, userError) = Core.Models.User.Create(
-                0,
-                2,
-                request.Login,
-                request.Password);
+        var clientId = await _clientsService.CreateClient(client!);
 
-            if (userError is { Length: > 0 })
-                return BadRequest(userError);
+        return Ok(clientId);
+    }
 
-            var (client, clientError) = Client.Create(
-                0,
-                0,
-                request.Name,
-                request.Surname,
-                request.PhoneNumber,
-                request.Email);
+    [HttpPost("with-user")]
+    public async Task<ActionResult<int>> CreateClientWithUser([FromBody] ClientRegistrationRequest request)
+    {
+        var (user, userError) = Core.Models.User.Create(
+            0,
+            2,
+            request.Login,
+            request.Password);
 
-            if (clientError is { Length: > 0 })
-                return BadRequest(clientError);
+        if (userError is { Length: > 0 })
+            return BadRequest(userError);
 
-            client.UserId = await _usersService.CreateUser(user);
-            var clientId = await _clientsService.CreateClient(client);
+        var (client, clientError) = Client.Create(
+            0,
+            0,
+            request.Name,
+            request.Surname,
+            request.PhoneNumber,
+            request.Email);
 
-            await transaction.CommitAsync();
+        if (clientError is { Length: > 0 })
+            return BadRequest(clientError);
 
-            return Ok(new
-            {
-                Message = "Registration successful",
-                client.UserId,
-                ClientId = clientId
-            });
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            return StatusCode(500, $"Server error: {ex.Message}");
-        }
+        var clientId = await _clientsService.CreateClientWithUser(client!, user!);
+
+        return Ok(new { ClientId = clientId, Message = "Registration successful"});
     }
 
     [HttpPut("{id:int}")]
@@ -161,7 +153,8 @@ public class ClientsController : ControllerBase
     public async Task<ActionResult<int>> UpdateClient(int id, [FromBody] ClientsRequest request)
     {
         var clientId =
-            await _clientsService.UpdateClient(id, request.UserId, request.Name, request.Surname, request.PhoneNumber, request.Email);
+            await _clientsService.UpdateClient(id, request.UserId, request.Name, request.Surname, request.PhoneNumber,
+                request.Email);
         return Ok(clientId);
     }
 

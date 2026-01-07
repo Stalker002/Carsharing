@@ -8,7 +8,7 @@ public class BillEntity
 
     public int? PromocodeId { get; set; }
 
-    public int StatusId { get; set; } = 1;
+    public int StatusId { get; set; }
 
     public DateTime IssueDate { get; set; } = DateTime.UtcNow;
 

@@ -1,5 +1,6 @@
 ﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
+using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +16,6 @@ public class CarsService : ICarsService
     private readonly ICategoryRepository _categoryRepository;
     private readonly IImageService _imageService;
     private readonly CarsharingDbContext _context;
-
-    private const int STATUS_AVAILABLE = 1;
-    private const int STATUS_RESERVED = 2;
 
     public CarsService(ICarRepository carRepository, ITariffRepository tariffRepository,
         ISpecificationCarRepository specificationCarRepository, IStatusRepository statusRepository,
@@ -366,12 +364,12 @@ public class CarsService : ICarsService
 
     public async Task MarkCarAsUnavailableAsync(int? carId)
     {
-        await _carRepository.UpdateStatus(carId, STATUS_RESERVED);
+        await _carRepository.UpdateStatus(carId, (int)CarStatusEnum.Reserved);
     }
 
     public async Task MarkCarAsAvailableAsync(int? carId)
     {
-        await _carRepository.UpdateStatus(carId, STATUS_AVAILABLE);
+        await _carRepository.UpdateStatus(carId, (int)CarStatusEnum.Available);
     }
 
     public async Task<int> DeleteCar(int id)

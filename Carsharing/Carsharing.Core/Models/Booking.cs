@@ -1,4 +1,6 @@
-﻿namespace Carsharing.Core.Models;
+﻿using Carsharing.Core.Enum;
+
+namespace Carsharing.Core.Models;
 
 public class Booking
 {
@@ -29,10 +31,9 @@ public class Booking
         DateTime? startTime, DateTime? endTime)
     {
         var error = string.Empty;
-        var allowedStatuses = new[] { 5, 6, 7 };
 
-        if (!allowedStatuses.Contains(statusId))
-            error = $"Invalid insurance type. Allowed: \"5.Активно\", \"6. Завершено\", \"7. Отменено\" ";
+        if (!System.Enum.IsDefined(typeof(BookingStatusEnum), statusId))
+            error = "Invalid insurance type. Allowed: \"5.Активно\", \"6. Завершено\", \"7. Отменено\" ";
 
         if (carId < 0)
             error = "Car Id must be positive";

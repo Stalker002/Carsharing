@@ -6,9 +6,9 @@ public class TripDetailEntity
 
     public int TripId { get; set; }
 
-    public string StartLocation { get; set; }
+    public string? StartLocation { get; set; }
 
-    public string EndLocation { get; set; }
+    public string? EndLocation { get; set; }
 
     public bool InsuranceActive { get; set; } = false;
 

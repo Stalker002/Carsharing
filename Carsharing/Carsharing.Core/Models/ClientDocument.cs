@@ -9,9 +9,9 @@ public class ClientDocument
     public const int MaxNumberLength = 50;
     public const int MaxFilePathLength = 255;
 
-    private ClientDocument(int id, int clientId, string type, string? licenseCategory, string number,
+    private ClientDocument(int id, int clientId, string? type, string? licenseCategory, string? number,
         DateOnly issueDate, DateOnly expiryDate,
-        string filePath)
+        string? filePath)
     {
         Id = id;
         ClientId = clientId;
@@ -25,15 +25,15 @@ public class ClientDocument
 
     public int Id { get; }
     public int ClientId { get; }
-    public string Type { get; } = string.Empty;
+    public string? Type { get; } = string.Empty;
     public string? LicenseCategory { get; } = string.Empty;
-    public string Number { get; } = string.Empty;
+    public string? Number { get; } = string.Empty;
     public DateOnly IssueDate { get; }
     public DateOnly ExpiryDate { get; }
-    public string FilePath { get; } = string.Empty;
+    public string? FilePath { get; } = string.Empty;
 
-    public static (ClientDocument clientDocument, string error) Create(int id, int clientId, string type,
-        string? licenseCategory, string number, DateOnly issueDate, DateOnly expiryDate, string? filePath)
+    public static (ClientDocument clientDocument, string error) Create(int id, int clientId, string? type,
+        string? licenseCategory, string? number, DateOnly issueDate, DateOnly expiryDate, string? filePath)
     {
         var error = string.Empty;
         var allowedTypes = new[] { "Водительские права", "Паспорт" };
@@ -43,7 +43,7 @@ public class ClientDocument
 
         if (string.IsNullOrWhiteSpace(type))
             error = "Type can't be empty";
-        if (type.Length > MaxTypeLength)
+        if (type is { Length: > MaxTypeLength })
             error = $"Type can't be longer than {MaxTypeLength} symbols";
         if (!allowedTypes.Contains(type))
             error = $"Invalid insurance type. Allowed: {string.Join(", ", allowedTypes)}";
@@ -55,14 +55,14 @@ public class ClientDocument
 
         if (type == "Водительские права")
         {
-            var cleanNumber = number.Replace(" ", "").ToUpper();
-            if (!Regex.IsMatch(cleanNumber, @"^[A-ZА-Я]{2}\d{7}$"))
+            var cleanNumber = number?.Replace(" ", "").ToUpper();
+            if (cleanNumber != null && !Regex.IsMatch(cleanNumber, @"^[A-ZА-Я]{2}\d{7}$"))
                 error = "Неверный формат прав. Ожидается: AA 0000000 (2 буквы, 7 цифр)";
         }
 
         if (string.IsNullOrWhiteSpace(number))
             error = "Number can't be empty";
-        if (number.Length > MaxNumberLength)
+        if (number is { Length: > MaxNumberLength })
             error = $"Number can't be longer than {MaxNumberLength} symbols";
 
         if (issueDate > DateOnly.FromDateTime(DateTime.Now))
@@ -76,11 +76,11 @@ public class ClientDocument
 
         if (string.IsNullOrWhiteSpace(filePath))
             error = "File path can't be empty";
-        if (filePath.Length > MaxFilePathLength)
+        if (filePath is { Length: > MaxFilePathLength })
             error = $"Type can't be longer than {MaxFilePathLength} symbols";
 
         var clientDocument =
-            new ClientDocument(id, clientId, type, licenseCategory, number.ToUpper(), issueDate, expiryDate, filePath);
+            new ClientDocument(id, clientId, type, licenseCategory, number?.ToUpper(), issueDate, expiryDate, filePath);
 
         return (clientDocument, error);
     }

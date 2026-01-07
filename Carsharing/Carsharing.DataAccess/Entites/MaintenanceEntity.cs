@@ -6,9 +6,9 @@ public class MaintenanceEntity
 
     public int CarId { get; set; }
 
-    public string WorkType { get; set; }
+    public string? WorkType { get; set; }
 
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     public decimal Cost { get; set; }
 

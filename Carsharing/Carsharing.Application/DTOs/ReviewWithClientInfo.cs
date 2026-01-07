@@ -2,8 +2,8 @@
 
 public record ReviewWithClientInfo(
     int Id,
-    string Name,
-    string Surname,
+    string? Name,
+    string? Surname,
     short Rating,
-    string Comment,
+    string? Comment,
     DateTime Date);

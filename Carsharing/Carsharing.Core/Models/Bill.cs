@@ -1,4 +1,6 @@
-﻿namespace Carsharing.Core.Models;
+﻿using Carsharing.Core.Enum;
+
+namespace Carsharing.Core.Models;
 
 public class Bill
 {
@@ -26,7 +28,6 @@ public class Bill
         DateTime issueDate, decimal? amount, decimal? remainingAmount)
     {
         var error = string.Empty;
-        var allowedStatuses = new[] { 13, 14, 15, 16 };
 
         if (tripId < 0)
             error = "Trip Id must be positive";
@@ -34,8 +35,8 @@ public class Bill
         if (promocodeId < 0)
             error = "Promo code Id must be positive";
 
-        if (!allowedStatuses.Contains(statusId))
-            error = $"Invalid insurance type. Allowed: \"13. Не оплачен\", \"14. Оплачен\", \"15. Отменён\" ";
+        if (!System.Enum.IsDefined(typeof(BillStatusEnum), statusId))
+            error = "Invalid insurance type. Allowed: \"13. Не оплачен\", \"14. Частично оплачен\", \"15. Оплачен\", \"16. Отменён\" ";
 
         if (issueDate < DateTime.Now)
             error = "End bill date can not be in the past";

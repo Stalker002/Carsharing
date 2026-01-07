@@ -2,7 +2,7 @@
 
 public class Maintenance
 {
-    private Maintenance(int id, int carId, string workType, string description, decimal cost, DateOnly date)
+    private Maintenance(int id, int carId, string? workType, string? description, decimal cost, DateOnly date)
     {
         Id = id;
         CarId = carId;
@@ -16,15 +16,15 @@ public class Maintenance
 
     public int CarId { get; }
 
-    public string WorkType { get; }
+    public string? WorkType { get; }
 
-    public string Description { get; } = string.Empty;
+    public string? Description { get; }
 
     public decimal Cost { get; }
 
     public DateOnly Date { get; }
 
-    public static (Maintenance maintenance, string error) Create(int id, int carId, string workType, string description,
+    public static (Maintenance maintenance, string error) Create(int id, int carId, string? workType, string? description,
         decimal cost, DateOnly date)
     {
         var error = string.Empty;

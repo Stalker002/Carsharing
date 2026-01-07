@@ -39,7 +39,8 @@ public class PromocodesController : ControllerBase
         var promocodes = await _promocodesService.GetPagedPromocodes(page, limit);
 
         var response = promocodes
-            .Select(pr => new PromocodeResponse(pr.Id, pr.StatusId, pr.Code, pr.Discount, pr.StartDate, pr.EndDate)).ToList();
+            .Select(pr => new PromocodeResponse(pr.Id, pr.StatusId, pr.Code, pr.Discount, pr.StartDate, pr.EndDate))
+            .ToList();
 
         Response.Headers.Append("x-total-count", totalCount.ToString());
 
@@ -80,7 +81,8 @@ public class PromocodesController : ControllerBase
         var promocodes = await _promocodesService.GetPagedActivePromocodes(page, limit);
 
         var response = promocodes
-            .Select(pr => new PromocodeResponse(pr.Id, pr.StatusId, pr.Code, pr.Discount, pr.StartDate, pr.EndDate)).ToList();
+            .Select(pr => new PromocodeResponse(pr.Id, pr.StatusId, pr.Code, pr.Discount, pr.StartDate, pr.EndDate))
+            .ToList();
 
         Response.Headers.Append("x-total-count", totalCount.ToString());
 

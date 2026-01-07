@@ -2,7 +2,7 @@
 
 public class Payment
 {
-    private Payment(int id, int billId, decimal sum, string method, DateTime date)
+    private Payment(int id, int billId, decimal sum, string? method, DateTime date)
     {
         Id = id;
         BillId = billId;
@@ -17,11 +17,11 @@ public class Payment
 
     public decimal Sum { get; }
 
-    public string Method { get; }
+    public string? Method { get; }
 
     public DateTime Date { get; }
 
-    public static (Payment payment, string error) Create(int id, int billId, decimal sum, string method, DateTime date)
+    public static (Payment payment, string error) Create(int id, int billId, decimal sum, string? method, DateTime date)
     {
         var error = string.Empty;
         var allowedMethod = new[] { "Картой", "Наличными", "ЕРИП", "Другое" };

@@ -4,7 +4,7 @@ public class Status
 {
     public const int MaxNameLength = 50;
 
-    private Status(int id, string name, string description)
+    private Status(int id, string name, string? description)
     {
         Id = id;
         Name = name;
@@ -13,11 +13,11 @@ public class Status
 
     public int Id { get; }
 
-    public string Name { get; } = string.Empty;
+    public string Name { get; }
 
-    public string Description { get; } = string.Empty;
+    public string? Description { get; }
 
-    public static (Status status, string error) Create(int id, string name, string description)
+    public static (Status status, string error) Create(int id, string name, string? description)
     {
         var error = string.Empty;
 

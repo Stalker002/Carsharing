@@ -1,4 +1,6 @@
-﻿namespace Carsharing.Core.Models;
+﻿using Carsharing.Core.Enum;
+
+namespace Carsharing.Core.Models;
 
 public class Car
 {
@@ -7,7 +9,7 @@ public class Car
     public const int MaxFuelLevelLength = 200;
 
     private Car(int id, int statusId, int tariffId, int categoryId, int specificationId,
-        string location, decimal fuelLevel, string? imagePath)
+        string? location, decimal fuelLevel, string? imagePath)
     {
         Id = id;
         Location = location;
@@ -29,20 +31,19 @@ public class Car
 
     public int SpecificationId { get; }
 
-    public string Location { get; }
+    public string? Location { get; }
 
     public decimal FuelLevel { get; }
 
     public string? ImagePath { get; }
 
     public static (Car car, string error) Create(int id, int statusId, int tariffId,
-        int categoryId, int specificationId, string location, decimal fuelLevel, string? imagePath)
+        int categoryId, int specificationId, string? location, decimal fuelLevel, string? imagePath)
     {
         var error = string.Empty;
-        var allowedStatuses = new[] { 1, 2, 3, 4 };
 
-        if (!allowedStatuses.Contains(statusId))
-            error = $"Invalid insurance type. Allowed: \"1.Доступен\", \"2. Недоступен\", \"3. На обслуживании\", \"3. В ремонте\"";
+        if (!System.Enum.IsDefined(typeof(CarStatusEnum), statusId))
+            error = "Invalid insurance type. Allowed: \"1.Доступен\", \"2. Недоступен\", \"3. На обслуживании\", \"4. В ремонте\"";
 
         if (tariffId < 0)
             error = "Tariff Id must be positive";
@@ -55,7 +56,7 @@ public class Car
 
         if (string.IsNullOrWhiteSpace(location))
             error = "Car location can't be empty";
-        if (location.Length > MaxLocationLength)
+        if (location is { Length: > MaxLocationLength })
             error = $"Car location can't be longer than {MaxLocationLength} symbols";
 
         error = fuelLevel switch

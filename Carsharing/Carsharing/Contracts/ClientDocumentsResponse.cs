@@ -3,9 +3,9 @@
 public record ClientDocumentsResponse(
     int Id,
     int ClientId,
-    string Type,
+    string? Type,
     string? LicenseCategory,
-    string Number,
+    string? Number,
     DateOnly IssueDate,
     DateOnly ExpiryDate,
-    string FilePath);
+    string? FilePath);

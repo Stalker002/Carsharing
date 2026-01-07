@@ -21,10 +21,7 @@ public class UsersController : ControllerBase
     {
         var (token, error) = await _usersService.Login(request.Login, request.Password);
 
-        if (!string.IsNullOrEmpty(error))
-        {
-            return BadRequest(new { message = "Неверный логин или пароль" });
-        }
+        if (!string.IsNullOrEmpty(error)) return BadRequest(new { message = "Неверный логин или пароль" });
 
         Response.Cookies.Append("tasty", token ?? throw new InvalidOperationException());
         return Ok(new { token });

@@ -6,5 +6,5 @@ public record BillWithMinInfoDto(
     DateTime IssueDate,
     decimal? Amount,
     decimal? RemainingAmount,
-    string TariffType
+    string? TariffType
 );

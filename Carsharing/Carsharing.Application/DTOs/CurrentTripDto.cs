@@ -8,7 +8,7 @@ public record CurrentTripDto(
     string? CarBrand,
     string? CarModel,
     string? CarImage,
-    string CarLocation,
+    string? CarLocation,
     decimal PricePerMinute,
     decimal PricePerKm,
     decimal PricePerDay

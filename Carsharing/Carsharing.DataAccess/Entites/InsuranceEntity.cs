@@ -8,11 +8,11 @@ public class InsuranceEntity
 
     public int StatusId { get; set; }
 
-    public string Type { get; set; }
+    public string? Type { get; set; }
 
-    public string Company { get; set; }
+    public string? Company { get; set; }
 
-    public string PolicyNumber { get; set; }
+    public string? PolicyNumber { get; set; }
 
     public DateOnly StartDate { get; set; }
 

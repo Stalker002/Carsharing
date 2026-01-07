@@ -6,7 +6,7 @@ public class PromocodeEntity
 
     public int StatusId { get; set; }
 
-    public string Code { get; set; }
+    public string? Code { get; set; }
 
     public decimal Discount { get; set; }
 

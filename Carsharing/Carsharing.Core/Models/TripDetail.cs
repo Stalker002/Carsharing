@@ -4,7 +4,7 @@ public class TripDetail
 {
     private const int MaxLocationLength = 50;
 
-    private TripDetail(int id, int tripId, string startLocation, string endLocation, bool insuranceActive,
+    private TripDetail(int id, int tripId, string? startLocation, string? endLocation, bool insuranceActive,
         decimal? fuelUsed, decimal? refueled)
     {
         Id = id;
@@ -20,9 +20,9 @@ public class TripDetail
 
     public int TripId { get; }
 
-    public string StartLocation { get; }
+    public string? StartLocation { get; }
 
-    public string EndLocation { get; }
+    public string? EndLocation { get; }
 
     public bool InsuranceActive { get; }
 
@@ -30,8 +30,8 @@ public class TripDetail
 
     public decimal? Refueled { get; }
 
-    public static (TripDetail tripDetail, string error) Create(int id, int tripId, string startLocation,
-        string endLocation, bool insuranceActive, decimal? fuelUsed, decimal? refueled)
+    public static (TripDetail tripDetail, string error) Create(int id, int tripId, string? startLocation,
+        string? endLocation, bool insuranceActive, decimal? fuelUsed, decimal? refueled)
     {
         var error = string.Empty;
 
@@ -40,12 +40,12 @@ public class TripDetail
 
         if (string.IsNullOrWhiteSpace(startLocation))
             error = "Start location can't be empty";
-        if (startLocation.Length > MaxLocationLength)
+        if (startLocation is { Length: > MaxLocationLength })
             error = $"Start location can't be longer than {MaxLocationLength} symbols";
 
         if (string.IsNullOrWhiteSpace(endLocation))
             error = "End location can't be empty";
-        if (endLocation.Length > MaxLocationLength)
+        if (endLocation is { Length: > MaxLocationLength })
             error = $"End location can't be longer than {MaxLocationLength} symbols";
 
         if (fuelUsed < 0)

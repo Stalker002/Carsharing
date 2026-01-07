@@ -17,6 +17,6 @@ public record TripHistoryDto
     bool InsuranceActive,
     decimal? FuelUsed,
     decimal? Refueled,
-    string StartLocation, 
-    string EndLocation
+    string? StartLocation, 
+    string? EndLocation
 );

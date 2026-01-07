@@ -2,7 +2,7 @@
 
 public record TariffResponse(
     int Id, 
-    string Name, 
+    string? Name, 
     decimal PricePerMinute, 
     decimal PricePerKm,
     decimal PricePerDay);

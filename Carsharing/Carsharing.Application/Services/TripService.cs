@@ -1,5 +1,6 @@
 ﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
+using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess;
 using Carsharing.DataAccess.Entites;
@@ -78,7 +79,7 @@ public class TripService : ITripService
                 x.c.Id,
                 x.s.Model,
                 x.c.ImagePath,
-                x.bill != null && x.bill.StatusId == 7 ? "Оплачено" : x.st.Name,
+                x.bill != null && x.bill.StatusId == (int)BillStatusEnum.Paid ? "Оплачено" : x.st.Name,
                 x.t.StartTime,
                 x.t.EndTime,
                 (decimal)(x.bill != null ? x.bill.Amount : 0)!,
@@ -136,7 +137,7 @@ public class TripService : ITripService
             .Include(t => t.Booking)
             .ThenInclude(b => b!.Car)
             .ThenInclude(c => c!.Tariff)
-            .Where(t => (t.Booking!.ClientId == clientId && t.EndTime == null && (t.StatusId == 8 || t.StatusId == 9)))
+            .Where(t => (t.Booking!.ClientId == clientId && t.EndTime == null && (t.StatusId == (int)TripStatusEnum.WaitingStart || t.StatusId == (int)TripStatusEnum.EnRoute)))
             .FirstOrDefaultAsync();
 
         if (tripEntity == null) return null;
@@ -180,11 +181,11 @@ public class TripService : ITripService
             trip.Duration = durationMinutes;
 
             trip.Distance = request.Distance;
-            trip.StatusId = 10;
+            trip.StatusId = (int)TripStatusEnum.Finished;
 
             if (trip.Booking != null)
             {
-                trip.Booking.StatusId = 6;
+                trip.Booking.StatusId = (int)BookingStatusEnum.Completed;
             }
 
             var tripDetail = await _context.TripDetail
@@ -213,7 +214,7 @@ public class TripService : ITripService
                     tripDetail.FuelUsed = 0;
                     tripDetail.Refueled = Math.Abs(fuelDiff);
                 }
-                car.StatusId = 1;
+                car.StatusId = (int)CarStatusEnum.Available;
                 car.Location = request.EndLocation;
                 car.FuelLevel = request.FuelLevel;
             }
@@ -251,18 +252,18 @@ public class TripService : ITripService
         if (trip is not { EndTime: null })
             throw new Exception("Поездка не найдена или уже завершена.");
 
-        trip.StatusId = 11;
+        trip.StatusId = (int)TripStatusEnum.Cancelled;
 
         trip.Duration = 0;
         trip.Distance = 0;
 
         if (trip.Booking != null)
         {
-            trip.Booking.StatusId = 7;
+            trip.Booking.StatusId = (int)BookingStatusEnum.Cancelled;
 
             if (trip.Booking.Car != null)
             {
-                trip.Booking.Car.StatusId = 1;
+                trip.Booking.Car.StatusId = (int)CarStatusEnum.Available;
             }
         }
 

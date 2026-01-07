@@ -2,4 +2,4 @@
 
 public record CategoriesResponse(
     int Id,
-    string Name);
+    string? Name);

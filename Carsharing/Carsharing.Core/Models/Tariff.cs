@@ -4,7 +4,7 @@ public class Tariff
 {
     public const int MaxNameLength = 100;
 
-    private Tariff(int id, string name, decimal pricePerMinute, decimal pricePerKm,
+    private Tariff(int id, string? name, decimal pricePerMinute, decimal pricePerKm,
         decimal pricePerDay)
     {
         Id = id;
@@ -16,7 +16,7 @@ public class Tariff
 
     public int Id { get; }
 
-    public string Name { get; }
+    public string? Name { get; }
 
     public decimal PricePerMinute { get; }
 
@@ -24,14 +24,14 @@ public class Tariff
 
     public decimal PricePerDay { get; }
 
-    public static (Tariff tariff, string error) Create(int id, string name, decimal pricePerMinute, decimal pricePerKm,
+    public static (Tariff tariff, string error) Create(int id, string? name, decimal pricePerMinute, decimal pricePerKm,
         decimal pricePerDay)
     {
         var error = string.Empty;
 
         if (string.IsNullOrWhiteSpace(name))
             error = "Name can't be empty";
-        if (name.Length > MaxNameLength)
+        if (name is { Length: > MaxNameLength })
             error = $"Type can't be longer than {MaxNameLength} symbols";
 
         if (pricePerMinute <= 0)

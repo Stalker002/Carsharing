@@ -21,7 +21,8 @@ public class TariffController : ControllerBase
     public async Task<ActionResult<List<StatusResponse>>> GetTariffs()
     {
         var statuses = await _tariffsService.GetTariffs();
-        var response = statuses.Select(t => new TariffResponse(t.Id, t.Name, t.PricePerMinute, t.PricePerKm, t.PricePerDay));
+        var response = statuses.Select(t =>
+            new TariffResponse(t.Id, t.Name, t.PricePerMinute, t.PricePerKm, t.PricePerDay));
 
         return Ok(response);
     }
@@ -31,7 +32,8 @@ public class TariffController : ControllerBase
     public async Task<ActionResult<List<StatusResponse>>> GetTariffById(int id)
     {
         var statuses = await _tariffsService.GetTariffById(id);
-        var response = statuses.Select(t => new TariffResponse(t.Id, t.Name, t.PricePerMinute, t.PricePerKm, t.PricePerDay));
+        var response = statuses.Select(t =>
+            new TariffResponse(t.Id, t.Name, t.PricePerMinute, t.PricePerKm, t.PricePerDay));
 
         return Ok(response);
     }

@@ -9,8 +9,8 @@ public class SpecificationCar
     public const int MaxVinNumberLength = 17;
     public const int MaxStateNumberLength = 15;
 
-    private SpecificationCar(int id, string fuelType, string brand, string model, string transmission, int year,
-        string vinNumber, string stateNumber, int mileage, decimal maxFuel, decimal fuelPerKm)
+    private SpecificationCar(int id, string? fuelType, string? brand, string? model, string? transmission, int year,
+        string? vinNumber, string stateNumber, int mileage, decimal maxFuel, decimal fuelPerKm)
     {
         Id = id;
         FuelType = fuelType;
@@ -27,17 +27,17 @@ public class SpecificationCar
 
     public int Id { get; }
 
-    public string FuelType { get; }
+    public string? FuelType { get; }
 
-    public string Brand { get; }
+    public string? Brand { get; }
 
-    public string Model { get; }
+    public string? Model { get; }
 
-    public string Transmission { get; }
+    public string? Transmission { get; }
 
     public int Year { get; }
 
-    public string VinNumber { get; }
+    public string? VinNumber { get; }
 
     public string StateNumber { get; }
 
@@ -47,8 +47,8 @@ public class SpecificationCar
 
     public decimal FuelPerKm { get; }
 
-    public static (SpecificationCar specificationCar, string error) Create(int id, string fuelType, string brand,
-        string model, string transmission, int year, string vinNumber, string stateNumber, int mileage,
+    public static (SpecificationCar specificationCar, string error) Create(int id, string? fuelType, string? brand,
+        string? model, string? transmission, int year, string? vinNumber, string? stateNumber, int mileage,
         decimal maxFuel, decimal fuelPerKm)
     {
         var error = string.Empty;
@@ -62,12 +62,12 @@ public class SpecificationCar
 
         if (string.IsNullOrWhiteSpace(brand))
             error = "Brand can't be empty";
-        if (brand.Length > MaxBrandLength)
+        if (brand is { Length: > MaxBrandLength })
             error = $"Brand name can't be longer than {MaxBrandLength} symbols";
 
         if (string.IsNullOrWhiteSpace(model))
             error = "Model can't be empty";
-        if (model.Length > MaxModelLength)
+        if (model is { Length: > MaxModelLength })
             error = $"Model name can't be longer than {MaxModelLength} symbols";
 
         if (string.IsNullOrWhiteSpace(transmission))
@@ -84,16 +84,16 @@ public class SpecificationCar
 
         if (string.IsNullOrWhiteSpace(vinNumber))
             error = "Vin Number can't be empty";
-        if (vinNumber.Length > MaxVinNumberLength)
+        if (vinNumber is { Length: > MaxVinNumberLength })
             error = $"Vin number name can't be longer than {MaxVinNumberLength} symbols";
         /*if (!Regex.IsMatch(vinNumber, @"^[A-HJ-NPR-Z0-9]{17}$"))
             error = "VIN number in invalid */
 
         if (string.IsNullOrWhiteSpace(stateNumber))
             error = "State Number can't be empty";
-        if (stateNumber.Length > MaxStateNumberLength)
+        if (stateNumber is { Length: > MaxStateNumberLength })
             error = $"State number name can't be longer than {MaxStateNumberLength} symbols";
-        if (!Regex.IsMatch(stateNumber,
+        if (!Regex.IsMatch(stateNumber ?? throw new ArgumentNullException(nameof(stateNumber)),
                 @"^(\d{4}\s?[ABEIKMHOPCTX]{2}-[1-7]|[ABEIKMHOPCTX]{2}\s?\d{4}-[1-7]|(TA|TT|TY)\d{4}|E\d{3}[ABEIKMHOPCTX]{2}[1-7])$"))
             error = "State number in invalid format";
 

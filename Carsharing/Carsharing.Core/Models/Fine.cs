@@ -1,8 +1,10 @@
-﻿namespace Carsharing.Core.Models;
+﻿using Carsharing.Core.Enum;
+
+namespace Carsharing.Core.Models;
 
 public class Fine
 {
-    private Fine(int id, int tripId, int statusId, string type, decimal amount,
+    private Fine(int id, int tripId, int statusId, string? type, decimal amount,
         DateTime date)
     {
         Id = id;
@@ -19,13 +21,13 @@ public class Fine
 
     public int StatusId { get; }
 
-    public string Type { get; }
+    public string? Type { get; }
 
     public decimal Amount { get; }
 
     public DateTime Date { get; }
 
-    public static (Fine fine, string error) Create(int id, int tripId, int statusId, string type, decimal amount,
+    public static (Fine fine, string error) Create(int id, int tripId, int statusId, string? type, decimal amount,
         DateTime date)
     {
         var error = string.Empty;
@@ -34,13 +36,12 @@ public class Fine
             "Превышение скорости", "Нарушение правил парковки", "Несчастный случай",
             "Позднее возвращение", "Курение в машине", "Другое"
         };
-        var allowedStatusTypes = new[] { 17, 18, 19 };
 
         if (tripId < 0)
             error = "Trip Id must be positive";
-        
-        if (!allowedStatusTypes.Contains(statusId))
-            error = $"Invalid fine status type. Allowed: \"16. Начислен\", \"17. Ожидает оплаты\", \"18. Оплачен\" ";
+
+        if (!System.Enum.IsDefined(typeof(FineStatusEnum), statusId))
+            error = "Invalid fine status type. Allowed: \"17. Начислен\", \"18. Ожидает оплаты\", \"19. Оплачен\" ";
 
         if (string.IsNullOrWhiteSpace(type))
             error = "Fine type can't be empty";

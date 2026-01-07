@@ -161,7 +161,7 @@ public class SpecificationCarRepository : ISpecificationCarRepository
 
     public async Task<int> Delete(int id)
     {
-        var specificationEntity = _context.SpecificationCar
+        var specificationEntity = await _context.SpecificationCar
             .Where(sp => sp.Id == id)
             .ExecuteDeleteAsync();
 
