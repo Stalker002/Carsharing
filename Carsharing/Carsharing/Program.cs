@@ -5,6 +5,7 @@ using Carsharing.Core.Abstractions;
 using Carsharing.DataAccess;
 using Carsharing.DataAccess.Repositories;
 using Carsharing.Extension;
+using Carsharing.Middleware;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.DataProtection;
 
@@ -102,6 +103,8 @@ public class Program
         builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
         builder.Services.AddScoped<IImageService, ImageService>();
 
+        builder.Services.AddProblemDetails();
+
         builder.Services.AddApiAuthentication(builder.Configuration);
 
         builder.Services.AddDataProtection()
@@ -138,6 +141,8 @@ public class Program
             HttpOnly = HttpOnlyPolicy.Always,
             Secure = CookieSecurePolicy.Always
         });
+
+        app.UseCustomException();
 
         app.UseHttpsRedirection();
 

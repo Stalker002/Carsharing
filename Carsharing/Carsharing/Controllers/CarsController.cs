@@ -27,7 +27,7 @@ public class CarsController : ControllerBase
         var cars = await _carsService.GetPagedCars(page, limit);
 
         var response = cars
-            .Select(c => new CarsResponse(c.Id, c.StatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location,
+            .Select(c => new CarsResponse(c.Id, c.CarStatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location,
                 c.FuelLevel, c.ImagePath)).ToList();
 
         Response.Headers.Append("x-total-count", totalCount.ToString());

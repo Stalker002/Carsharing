@@ -1,4 +1,5 @@
 ﻿using Carsharing.Core.Abstractions;
+using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess;
 
@@ -66,7 +67,7 @@ public class ClientsService : IClientsService
     {
         var userExists = await _usersRepository.GetByLogin(user.Login);
         if (userExists != null)
-            throw new Exception($"Пользователь с таким логином уже существует");
+            throw new ConflictException($"Пользователь с таким логином уже существует");
 
         await using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -82,7 +83,7 @@ public class ClientsService : IClientsService
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            throw new Exception($"Пользователь с таким логином уже существует");
+            throw new ConflictException($"Клиент не создан");
         }
     }
 

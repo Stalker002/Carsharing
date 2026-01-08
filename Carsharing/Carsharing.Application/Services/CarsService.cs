@@ -78,7 +78,7 @@ public class CarsService : ICarsService
     {
         var car = await _carRepository.GetById(id);
         var tariffId = car.Select(ca => ca.TariffId).FirstOrDefault();
-        var statusId = car.Select(ca => ca.StatusId).FirstOrDefault();
+        var statusId = car.Select(ca => ca.CarStatusId).FirstOrDefault();
         var categoryId = car.Select(ca => ca.CategoryId).FirstOrDefault();
         var specificationId = car.Select(c => c.SpecificationId).FirstOrDefault();
 
@@ -92,7 +92,7 @@ public class CarsService : ICarsService
 
         var response = (from c in car
                         join t in tariff on c.TariffId equals t.Id
-                        join st in status on c.StatusId equals st.Id
+                        join st in status on c.CarStatusId equals st.Id
                         join sp in specification on c.SpecificationId equals sp.Id
                         join cat in category on c.CategoryId equals cat.Id
                         select new CarWithInfoDto(
@@ -120,7 +120,7 @@ public class CarsService : ICarsService
     {
         var car = await _carRepository.GetById(id);
         var tariffId = car.Select(ca => ca.TariffId).FirstOrDefault();
-        var statusId = car.Select(ca => ca.StatusId).FirstOrDefault();
+        var statusId = car.Select(ca => ca.CarStatusId).FirstOrDefault();
         var categoryId = car.Select(ca => ca.CategoryId).FirstOrDefault();
         var specificationId = car.Select(c => c.SpecificationId).FirstOrDefault();
 
@@ -134,7 +134,7 @@ public class CarsService : ICarsService
 
         var response = (from c in car
                         join t in tariff on c.TariffId equals t.Id
-                        join st in status on c.StatusId equals st.Id
+                        join st in status on c.CarStatusId equals st.Id
                         join sp in specification on c.SpecificationId equals sp.Id
                         join cat in category on c.CategoryId equals cat.Id
                         select new CarWithInfoAdminDto(
@@ -167,7 +167,7 @@ public class CarsService : ICarsService
     {
         var car = await _carRepository.GetPagedByCategoryId(categoryIds, page, limit);
         var tariffId = car.Select(ca => ca.TariffId).FirstOrDefault();
-        var statusId = car.Select(ca => ca.StatusId).FirstOrDefault();
+        var statusId = car.Select(ca => ca.CarStatusId).FirstOrDefault();
         var categoryId = car.Select(ca => ca.CategoryId).FirstOrDefault();
         var specificationId = car.Select(c => c.SpecificationId).FirstOrDefault();
 
@@ -181,7 +181,7 @@ public class CarsService : ICarsService
 
         var response = (from c in car
                         join t in tariff on c.TariffId equals t.Id
-                        join st in status on c.StatusId equals st.Id
+                        join st in status on c.CarStatusId equals st.Id
                         join sp in specification on c.SpecificationId equals sp.Id
                         join cat in category on c.CategoryId equals cat.Id
                         select new CarWithMinInfoDto(

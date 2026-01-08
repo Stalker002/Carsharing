@@ -166,7 +166,7 @@ public class CarRepository : ICarRepository
     {
         var (_, error) = Car.Create(
             car.Id,
-            car.StatusId,
+            car.CarStatusId,
             car.TariffId,
             car.CategoryId,
             car.SpecificationId,
@@ -180,7 +180,7 @@ public class CarRepository : ICarRepository
         var carEntity = new CarEntity
         {
             Id = car.Id,
-            StatusId = car.StatusId,
+            StatusId = car.CarStatusId,
             TariffId = car.TariffId,
             CategoryId = car.CategoryId,
             SpecificationId = car.SpecificationId,
