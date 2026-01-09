@@ -16,5 +16,5 @@ public class PromocodeEntity
 
     public ICollection<BillEntity> Bill { get; set; } = new List<BillEntity>();
 
-    public StatusEntity? Status { get; set; }
+    public PromocodeStatusEntity? PromocodeStatus { get; set; }
 }

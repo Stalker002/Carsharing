@@ -1,4 +1,5 @@
-﻿using Carsharing.Application.DTOs;
+﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
@@ -12,13 +13,13 @@ public class CarsService : ICarsService
     private readonly ICarRepository _carRepository;
     private readonly ITariffRepository _tariffRepository;
     private readonly ISpecificationCarRepository _specificationCarRepository;
-    private readonly IStatusRepository _statusRepository;
+    private readonly ICarStatusRepository _statusRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly IImageService _imageService;
     private readonly CarsharingDbContext _context;
 
     public CarsService(ICarRepository carRepository, ITariffRepository tariffRepository,
-        ISpecificationCarRepository specificationCarRepository, IStatusRepository statusRepository,
+        ISpecificationCarRepository specificationCarRepository, ICarStatusRepository statusRepository,
         ICategoryRepository categoryRepository, CarsharingDbContext context, IImageService imageService)
     {
         _context = context;
@@ -48,7 +49,7 @@ public class CarsService : ICarsService
             .Take(limit)
             .Select(c => new CarWithMinInfoDto(
                 c.Id,
-                c.Status!.Name,
+                c.CarStatus!.Name,
                 c.Tariff!.PricePerDay,
                 c.Category!.Name,
                 c.SpecificationCar!.FuelType!,

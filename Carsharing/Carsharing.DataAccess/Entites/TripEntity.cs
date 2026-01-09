@@ -26,5 +26,5 @@ public class TripEntity
 
     public BookingEntity? Booking { get; set; }
 
-    public StatusEntity? Status { get; set; }
+    public TripStatusEntity? TripStatus { get; set; }
 }

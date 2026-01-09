@@ -1,5 +1,5 @@
-﻿using Carsharing.Contracts;
-using Carsharing.Core.Abstractions;
+﻿using Carsharing.Application.Abstractions;
+using Carsharing.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

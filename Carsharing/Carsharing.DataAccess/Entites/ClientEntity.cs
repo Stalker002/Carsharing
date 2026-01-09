@@ -14,6 +14,6 @@ public class ClientEntity
     public ICollection<ClientDocumentEntity> Documents { get; set; } = new List<ClientDocumentEntity>();
 
     public ICollection<ReviewEntity> Reviews { get; set; } = new List<ReviewEntity>();
-
+    public ICollection<FavoritesEntity> Favorites { get; set; } = new List<FavoritesEntity>();
     public ICollection<BookingEntity> Bookings { get; set; } = new List<BookingEntity>();
 }

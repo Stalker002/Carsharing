@@ -13,41 +13,28 @@ public class ClientDocumentConfiguration : IEntityTypeConfiguration<ClientDocume
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(d => d.Id)
-            .HasColumnName("document_id")
-            .UseIdentityAlwaysColumn()
-            .ValueGeneratedOnAdd()
-            .IsRequired();
-
         builder.Property(d => d.ClientId)
-            .HasColumnName("document_client_id")
             .IsRequired();
 
         builder.Property(d => d.Type)
-            .HasColumnName("document_type")
             .HasMaxLength(ClientDocument.MaxTypeLength)
             .IsRequired();
 
         builder.Property(d => d.LicenseCategory)
-            .HasColumnName("document_license_category")
             .HasMaxLength(ClientDocument.MaxLicenseCategoryLength)
             .IsRequired();
 
         builder.Property(d => d.Number)
-            .HasColumnName("document_number")
             .HasMaxLength(ClientDocument.MaxNumberLength)
             .IsRequired();
 
         builder.Property(d => d.IssueDate)
-            .HasColumnName("document_issue_date")
             .IsRequired();
 
         builder.Property(d => d.ExpiryDate)
-            .HasColumnName("document_expiry_date")
             .IsRequired();
 
         builder.Property(d => d.FilePath)
-            .HasColumnName("document_file_path")
             .HasMaxLength(ClientDocument.MaxFilePathLength)
             .IsRequired(false);
 

@@ -13,7 +13,7 @@ public class BookingEntity
 
     public TripEntity? Trip { get; set; }
 
-    public StatusEntity? Status { get; set; }
+    public BookingStatusEntity? BookingStatus { get; set; }
 
     public CarEntity? Car { get; set; }
 

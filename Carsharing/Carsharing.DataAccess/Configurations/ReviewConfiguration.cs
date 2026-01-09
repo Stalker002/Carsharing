@@ -12,30 +12,19 @@ public class ReviewConfiguration : IEntityTypeConfiguration<ReviewEntity>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(r => r.Id)
-            .HasColumnName("review_id")
-            .UseIdentityAlwaysColumn()
-            .ValueGeneratedOnAdd()
-            .IsRequired();
-
         builder.Property(r => r.ClientId)
-            .HasColumnName("review_client_id")
             .IsRequired();
 
         builder.Property(r => r.CarId)
-            .HasColumnName("review_car_id")
             .IsRequired();
 
         builder.Property(r => r.Rating)
-            .HasColumnName("review_rating")
             .IsRequired();
 
         builder.Property(r => r.Comment)
-            .HasColumnName("review_comment")
             .IsRequired();
 
         builder.Property(r => r.Date)
-            .HasColumnName("review_date")
             .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .IsRequired();
 

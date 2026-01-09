@@ -1,4 +1,5 @@
-﻿using Carsharing.Application.DTOs;
+﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess;
@@ -11,13 +12,13 @@ public class BillsService : IBillsService
     private readonly IBillRepository _billRepository;
     private readonly IBookingRepository _bookingRepository;
     private readonly ITripRepository _tripRepository;
-    private readonly IStatusRepository _statusRepository;
+    private readonly IBillStatusRepository _statusRepository;
     private readonly IClientRepository _clientRepository;
     private readonly IPromocodeRepository _promocodeRepository;
     private readonly CarsharingDbContext _context;
 
     public BillsService(IBillRepository billRepository, IBookingRepository bookingRepository,
-        ITripRepository tripRepository, IStatusRepository statusRepository, IClientRepository clientRepository,
+        ITripRepository tripRepository, IBillStatusRepository statusRepository, IClientRepository clientRepository,
         IPromocodeRepository promocodeRepository, CarsharingDbContext context)
     {
         _context = context;

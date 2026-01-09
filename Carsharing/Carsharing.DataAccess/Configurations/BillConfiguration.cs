@@ -12,32 +12,21 @@ public class BillConfiguration : IEntityTypeConfiguration<BillEntity>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(b => b.Id)
-            .HasColumnName("bill_id")
-            .UseIdentityAlwaysColumn()
-            .IsRequired()
-            .ValueGeneratedOnAdd();
-
         builder.Property(b => b.TripId)
-            .HasColumnName("bill_trip_id")
             .IsRequired();
 
         builder.Property(b => b.PromocodeId)
-            .HasColumnName("bill_promocode_id")
             .IsRequired(false);
 
         builder.Property(b => b.StatusId)
-            .HasColumnName("bill_status_id")
             .HasDefaultValue(1)
             .IsRequired();
 
         builder.Property(b => b.IssueDate)
-            .HasColumnName("bill_issue_date")
             .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .IsRequired();
 
         builder.Property(b => b.Amount)
-            .HasColumnName("bill_amount")
             .IsRequired(false)
             .ValueGeneratedOnAdd();
 
@@ -57,8 +46,7 @@ public class BillConfiguration : IEntityTypeConfiguration<BillEntity>
             .HasForeignKey<BillEntity>(b => b.TripId)
             .OnDelete(DeleteBehavior.Cascade);
 
-
-        builder.HasOne(b => b.Status)
+        builder.HasOne(b => b.BillStatus)
             .WithMany(s => s.Bills)
             .HasForeignKey(b => b.StatusId)
             .OnDelete(DeleteBehavior.SetNull);

@@ -8,12 +8,12 @@ public class Car
     public const int MinFuelLevelLength = 0;
     public const int MaxFuelLevelLength = 200;
 
-    private Car(int id, int statusId, int tariffId, int categoryId, int specificationId,
+    private Car(int id, int carStatusId, int tariffId, int categoryId, int specificationId,
         string? location, decimal fuelLevel, string? imagePath)
     {
         Id = id;
         Location = location;
-        StatusId = statusId;
+        CarStatusId = carStatusId;
         TariffId = tariffId;
         CategoryId = categoryId;
         SpecificationId = specificationId;
@@ -23,7 +23,7 @@ public class Car
 
     public int Id { get; }
 
-    public int StatusId { get; }
+    public int CarStatusId { get; }
 
     public int TariffId { get; }
 
@@ -37,12 +37,12 @@ public class Car
 
     public string? ImagePath { get; }
 
-    public static (Car car, string error) Create(int id, int statusId, int tariffId,
+    public static (Car car, string error) Create(int id, int carStatusId, int tariffId,
         int categoryId, int specificationId, string? location, decimal fuelLevel, string? imagePath)
     {
         var error = string.Empty;
 
-        if (!System.Enum.IsDefined(typeof(CarStatusEnum), statusId))
+        if (!System.Enum.IsDefined(typeof(CarStatusEnum), carStatusId))
             error = "Invalid insurance type. Allowed: \"1.Доступен\", \"2. Недоступен\", \"3. На обслуживании\", \"4. В ремонте\"";
 
         if (tariffId < 0)
@@ -66,7 +66,7 @@ public class Car
             _ => error
         };
 
-        var car = new Car(id, statusId, tariffId, categoryId, specificationId, location, fuelLevel, imagePath);
+        var car = new Car(id, carStatusId, tariffId, categoryId, specificationId, location, fuelLevel, imagePath);
 
         return (car, error);
     }

@@ -10,14 +10,9 @@ public class RoleConfiguration : IEntityTypeConfiguration<RoleEntity>
     {
         builder.ToTable("roles");
 
-        builder.Property(r => r.Id)
-            .HasColumnName("role_id")
-            .UseIdentityAlwaysColumn()
-            .IsRequired()
-            .ValueGeneratedOnAdd();
+        builder.HasKey(x => x.Id);
 
         builder.Property(r => r.Name)
-            .HasColumnName("role_name")
             .IsRequired();
 
         builder.HasMany(r => r.Users)

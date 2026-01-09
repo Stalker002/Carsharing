@@ -1,7 +1,6 @@
-﻿using Carsharing.Application.DTOs;
-using Carsharing.Application.Services;
+﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.DTOs;
 using Carsharing.Contracts;
-using Carsharing.Core.Abstractions;
 using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess;

@@ -1,4 +1,5 @@
-﻿using Carsharing.Core.Abstractions;
+﻿using Carsharing.Application.Abstractions;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;

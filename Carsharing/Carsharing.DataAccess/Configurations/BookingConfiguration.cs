@@ -12,32 +12,21 @@ public class BookingConfiguration : IEntityTypeConfiguration<BookingEntity>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(b => b.Id)
-            .HasColumnName("booking_id")
-            .UseIdentityAlwaysColumn()
-            .IsRequired()
-            .ValueGeneratedOnAdd();
-
         builder.Property(b => b.StatusId)
-            .HasColumnName("booking_status_id")
             .IsRequired();
 
         builder.Property(b => b.CarId)
-            .HasColumnName("booking_car_id")
             .IsRequired();
 
         builder.Property(b => b.ClientId)
-            .HasColumnName("booking_client_id")
             .IsRequired();
 
         builder.Property(b => b.StartTime)
-            .HasColumnName("booking_start_time")
             .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .IsRequired(false)
             .ValueGeneratedOnAdd();
 
         builder.Property(b => b.EndTime)
-            .HasColumnName("booking_end_time")
             .IsRequired(false);
 
         builder.HasOne(b => b.Client)
@@ -50,7 +39,7 @@ public class BookingConfiguration : IEntityTypeConfiguration<BookingEntity>
             .HasForeignKey(b => b.CarId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        builder.HasOne(b => b.Status)
+        builder.HasOne(b => b.BookingStatus)
             .WithMany(st => st.Bookings)
             .HasForeignKey(b => b.StatusId)
             .OnDelete(DeleteBehavior.SetNull);

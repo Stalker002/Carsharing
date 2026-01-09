@@ -1,4 +1,5 @@
-﻿using Carsharing.Application.DTOs;
+﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 

@@ -13,41 +13,28 @@ public class CarConfiguration : IEntityTypeConfiguration<CarEntity>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(c => c.Id)
-            .HasColumnName("car_id")
-            .ValueGeneratedOnAdd()
-            .UseIdentityAlwaysColumn()
-            .IsRequired();
-
         builder.Property(c => c.StatusId)
-            .HasColumnName("car_status_id")
             .IsRequired();
 
         builder.Property(c => c.TariffId)
-            .HasColumnName("car_tariff_id")
             .IsRequired();
 
         builder.Property(c => c.CategoryId)
-            .HasColumnName("car_category_id")
             .IsRequired();
 
         builder.Property(c => c.SpecificationId)
-            .HasColumnName("car_specification_id")
             .IsRequired();
 
         builder.Property(c => c.Location)
-            .HasColumnName("car_location")
             .IsRequired()
             .HasMaxLength(Car.MaxLocationLength);
 
         builder.Property(c => c.FuelLevel)
-            .HasColumnName("car_fuel_level")
             .IsRequired()
             .HasDefaultValue(0)
             .ValueGeneratedOnAdd();
 
         builder.Property(c => c.ImagePath)
-            .HasColumnName("car_image_path")
             .IsRequired(false);
 
         builder.HasIndex(c => c.SpecificationId)
@@ -80,7 +67,7 @@ public class CarConfiguration : IEntityTypeConfiguration<CarEntity>
             .HasForeignKey<CarEntity>(c => c.SpecificationId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        builder.HasOne(c => c.Status)
+        builder.HasOne(c => c.CarStatus)
             .WithMany(st => st.Cars)
             .HasForeignKey(c => c.StatusId)
             .OnDelete(DeleteBehavior.SetNull);

@@ -1,4 +1,4 @@
-﻿namespace Carsharing.Contracts;
+﻿namespace Carsharing.Application.DTOs;
 
 public record ReviewCreateRequest(
     int ClientId,

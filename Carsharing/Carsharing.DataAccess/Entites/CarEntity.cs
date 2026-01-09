@@ -19,6 +19,7 @@ public class CarEntity
     public string? ImagePath { get; set; }
 
     public ICollection<ReviewEntity> Reviews { get; set; } = new List<ReviewEntity>();
+    public ICollection<FavoritesEntity> Favorites { get; set; } = new List<FavoritesEntity>();
 
     public ICollection<MaintenanceEntity> Maintenance { get; set; } = new List<MaintenanceEntity>();
 
@@ -26,7 +27,7 @@ public class CarEntity
 
     public ICollection<InsuranceEntity> Insurance { get; set; } = new List<InsuranceEntity>();
 
-    public StatusEntity? Status { get; set; }
+    public CarStatusEntity? CarStatus { get; set; }
 
     public TariffEntity? Tariff { get; set; }
 

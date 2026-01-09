@@ -1,4 +1,5 @@
-﻿using Carsharing.Application.DTOs;
+﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 
@@ -9,11 +10,11 @@ public class BookingsService : IBookingsService
     private readonly IBookingRepository _bookingRepository;
     private readonly IClientRepository _clientRepository;
     private readonly ICarRepository _carRepository;
-    private readonly IStatusRepository _statusRepository;
+    private readonly IBookingStatusRepository _statusRepository;
     private readonly ISpecificationCarRepository _specificationCarRepository;
 
     public BookingsService(IBookingRepository bookingRepository, IClientRepository clientRepository,
-        ICarRepository carRepository, IStatusRepository statusRepository,
+        ICarRepository carRepository, IBookingStatusRepository statusRepository,
         ISpecificationCarRepository specificationCarRepository)
     {
         _specificationCarRepository = specificationCarRepository;

@@ -1,4 +1,5 @@
-﻿using Carsharing.Application.DTOs;
+﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
@@ -12,13 +13,13 @@ public class TripService : ITripService
 {
     private readonly IClientRepository _clientRepository;
     private readonly CarsharingDbContext _context;
-    private readonly IStatusRepository _statusRepository;
+    private readonly ITripStatusRepository _statusRepository;
     private readonly ITripDetailRepository _tripDetailRepository;
     private readonly ITripRepository _tripRepository;
     private readonly ICarsService _carsService;
 
     public TripService(ITripRepository tripRepository, ITripDetailRepository tripDetailRepository,
-        IStatusRepository statusRepository, IClientRepository clientRepository, CarsharingDbContext context, ICarsService carsService)
+        ITripStatusRepository statusRepository, IClientRepository clientRepository, CarsharingDbContext context, ICarsService carsService)
     {
         _carsService = carsService;
         _context = context;
@@ -50,7 +51,7 @@ public class TripService : ITripService
                     join b in _context.Booking on t.BookingId equals b.Id
                     join c in _context.Car on b.CarId equals c.Id
                     join s in _context.SpecificationCar on c.SpecificationId equals s.Id
-                    join st in _context.Status on t.StatusId equals st.Id
+                    join st in _context.TripStatus on t.StatusId equals st.Id
                     join td in _context.TripDetail on t.Id equals td.TripId into details
                     from td in details.DefaultIfEmpty()
                     join bill in _context.Bill on t.Id equals bill.TripId into bills

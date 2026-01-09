@@ -8,35 +8,24 @@ public class MaintenanceConfiguration : IEntityTypeConfiguration<MaintenanceEnti
 {
     public void Configure(EntityTypeBuilder<MaintenanceEntity> builder)
     {
-        builder.ToTable("maintenance");
+        builder.ToTable("maintenances");
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(m => m.Id)
-            .HasColumnName("maintenance_id")
-            .UseIdentityAlwaysColumn()
-            .ValueGeneratedOnAdd()
-            .IsRequired();
-
         builder.Property(m => m.CarId)
-            .HasColumnName("maintenance_car_id")
             .IsRequired();
 
         builder.Property(m => m.WorkType)
-            .HasColumnName("maintenance_work_type")
             .IsRequired();
         //Добавить enum
 
         builder.Property(m => m.Description)
-            .HasColumnName("maintenance_description")
             .IsRequired();
 
         builder.Property(m => m.Cost)
-            .HasColumnName("maintenance_cost")
             .IsRequired();
 
         builder.Property(m => m.Date)
-            .HasColumnName("maintenance_date")
             .IsRequired();
 
         builder.HasOne(m => m.Car)

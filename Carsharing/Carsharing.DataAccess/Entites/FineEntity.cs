@@ -16,5 +16,5 @@ public class FineEntity
 
     public TripEntity? Trip { get; set; }
 
-    public StatusEntity? Status { get; set; }
+    public FineStatusEntity? FineStatus { get; set; }
 }

@@ -13,24 +13,15 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(u => u.Id)
-            .HasColumnName("user_id")
-            .UseIdentityAlwaysColumn()
-            .ValueGeneratedOnAdd()
-            .IsRequired();
-
         builder.Property(u => u.RoleId)
             .HasDefaultValue(1)
-            .HasColumnName("user_role_id")
             .IsRequired();
 
         builder.Property(u => u.Login)
-            .HasColumnName("user_login")
             .HasMaxLength(User.MaxLoginLength)
             .IsRequired();
 
         builder.Property(u => u.Password)
-            .HasColumnName("user_password_hash")
             .HasMaxLength(User.MaxPasswordLength)
             .IsRequired();
 

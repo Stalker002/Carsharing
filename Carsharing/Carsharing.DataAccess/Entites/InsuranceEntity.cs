@@ -22,5 +22,5 @@ public class InsuranceEntity
 
     public CarEntity? Car { get; set; }
 
-    public StatusEntity? Status { get; set; }
+    public InsuranceStatusEntity? InsuranceStatus { get; set; }
 }

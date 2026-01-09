@@ -22,5 +22,5 @@ public class BillEntity
 
     public PromocodeEntity? Promocode { get; set; }
 
-    public StatusEntity? Status { get; set; }
+    public BillStatusEntity? BillStatus { get; set; }
 }
