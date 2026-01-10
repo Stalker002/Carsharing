@@ -1,6 +1,7 @@
 ﻿using Carsharing.Application.Abstractions;
 using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
+using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Services;
@@ -111,6 +112,10 @@ public class BookingsService : IBookingsService
 
     public async Task<int> CreateBooking(Booking booking)
     {
+        await _carRepository?.UpdateStatus(
+            booking.CarId, (int)CarStatusEnum.Reserved
+        )!;
+
         return await _bookingRepository.Create(booking);
     }
 
