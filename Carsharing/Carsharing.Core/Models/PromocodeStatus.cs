@@ -23,11 +23,11 @@ public class PromocodeStatus
             nameError = $"Status name can't be longer than {MaxStatusName} symbols";
         if (!string.IsNullOrEmpty(nameError)) errors.Add(nameError);
 
-        if (errors.Any())
-            return (null, errors);
+        if (errors.Count > 0)
+            return (null, errors)!;
 
         var promocodeStatus = new PromocodeStatus(id, name);
 
-        return (promocodeStatus, new List<string>());
+        return (promocodeStatus, []);
     }
 }

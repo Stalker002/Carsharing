@@ -142,7 +142,8 @@ public class TripRepository : ITripRepository
             .ToListAsync();
     }
 
-    public async Task<(List<TripHistoryDto> Items, int TotalCount)> GetHistoryByClientId(int clientId, int page, int limit)
+    public async Task<(List<TripHistoryDto> Items, int TotalCount)> GetHistoryByClientId(int clientId, int page,
+        int limit)
     {
         var query = _context.Trip
             .AsNoTracking()
@@ -160,11 +161,7 @@ public class TripRepository : ITripRepository
                 t.Booking.CarId,
                 t.Booking.Car.SpecificationCar.Model,
                 t.Booking.Car.ImagePath,
-
-                (t.Bill != null && t.Bill.StatusId == (int)BillStatusEnum.Paid)
-                    ? "Оплачено"
-                    : t.TripStatus!.Name,
-
+                t.Bill != null && t.Bill.StatusId == (int)BillStatusEnum.Paid ? "Оплачено" : t.TripStatus!.Name,
                 t.StartTime,
                 t.EndTime,
                 t.Bill != null ? t.Bill.Amount : 0,
@@ -184,7 +181,6 @@ public class TripRepository : ITripRepository
 
     public async Task<CurrentTripDto?> GetActiveTripDtoByClientId(int clientId)
     {
-        // Перенесли логику из сервиса GetActiveTripByClientId
         var tripEntity = await _context.Trip
             .AsNoTracking()
             .Include(t => t.Booking)
@@ -218,12 +214,93 @@ public class TripRepository : ITripRepository
         );
     }
 
-    public async Task<TripEntity?> GetByIdWithDetails(int id)
+    public async Task<int> FinishTripAsync(int tripId, decimal distance, string endLocation, decimal fuelLevel)
     {
-        return await _context.Trip
+        var trip = await _context.Trip
             .Include(t => t.Booking)
-            .ThenInclude(b => b!.Car)
-            .FirstOrDefaultAsync(t => t.Id == id);
+                .ThenInclude(b => b!.Car)
+            .FirstOrDefaultAsync(t => t.Id == tripId);
+
+        if (trip is not { EndTime: null })
+            throw new Exception("Поездка не найдена или уже завершена");
+
+        var now = DateTime.UtcNow;
+        var car = trip.Booking?.Car;
+
+        trip.EndTime = now;
+        trip.Duration = (decimal)(now - trip.StartTime).TotalMinutes;
+        trip.Distance = distance;
+        trip.StatusId = (int)TripStatusEnum.Finished;
+
+        if (trip.Booking != null)
+        {
+            trip.Booking.StatusId = (int)BookingStatusEnum.Completed;
+        }
+
+        var tripDetail = await _context.TripDetail.FirstOrDefaultAsync(td => td.TripId == trip.Id);
+
+        if (tripDetail == null)
+        {
+            tripDetail = new TripDetailEntity { TripId = trip.Id, StartLocation = car?.Location ?? "Unknown" };
+            _context.TripDetail.Add(tripDetail);
+        }
+
+        tripDetail.EndLocation = endLocation;
+
+        if (car != null)
+        {
+            var fuelDiff = car.FuelLevel - fuelLevel;
+            if (fuelDiff >= 0)
+            {
+                tripDetail.FuelUsed = fuelDiff;
+                tripDetail.Refueled = 0;
+            }
+            else
+            {
+                tripDetail.FuelUsed = 0;
+                tripDetail.Refueled = Math.Abs(fuelDiff);
+            }
+
+            car.StatusId = (int)CarStatusEnum.Available;
+            car.Location = endLocation;
+            car.FuelLevel = fuelLevel;
+        }
+
+        await _context.SaveChangesAsync();
+
+        // Пытаемся найти ID счета (для возврата), если он был создан триггером или другой логикой
+        var billId = await _context.Bill
+            .Where(b => b.TripId == trip.Id)
+            .Select(b => b.Id)
+            .FirstOrDefaultAsync();
+
+        return billId;
+    }
+
+    public async Task CancelTripAsync(int tripId)
+    {
+        var trip = await _context.Trip
+            .Include(t => t.Booking)
+                .ThenInclude(b => b!.Car)
+            .FirstOrDefaultAsync(t => t.Id == tripId);
+
+        if (trip == null || trip.EndTime != null)
+            throw new Exception("Поездка не найдена или уже завершена.");
+
+        trip.StatusId = (int)TripStatusEnum.Cancelled;
+        trip.Duration = 0;
+        trip.Distance = 0;
+
+        if (trip.Booking != null)
+        {
+            trip.Booking.StatusId = (int)BookingStatusEnum.Cancelled;
+            if (trip.Booking.Car != null)
+            {
+                trip.Booking.Car.StatusId = (int)CarStatusEnum.Available;
+            }
+        }
+
+        await _context.SaveChangesAsync();
     }
 
     public async Task<int> Create(Trip trip)

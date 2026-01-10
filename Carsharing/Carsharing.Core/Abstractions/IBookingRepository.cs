@@ -1,4 +1,5 @@
-﻿using Carsharing.Core.Models;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Core.Models;
 
 namespace Carsharing.Core.Abstractions;
 
@@ -12,6 +13,7 @@ public interface IBookingRepository
     Task<List<Booking>> GetPagedByClientId(int clientId, int page, int limit);
     Task<int> GetCountByClient(int clientId);
     Task<List<Booking>> GetByCarId(int carId);
+    Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int id);
     Task<int> Create(Booking booking);
 
     Task<int> Update(int id, int? statusId, int? carId, int? clientId,

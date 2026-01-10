@@ -1,4 +1,5 @@
-﻿using Carsharing.Core.Abstractions;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
@@ -149,6 +150,22 @@ public class BookingRepository : IBookingRepository
             .ToList();
 
         return bookings;
+    }
+
+    public async Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int id)
+    {
+        return await _context.Booking
+            .AsNoTracking()
+            .Where(b => b.Id == id)
+            .Select(b => new BookingWithFullInfoDto(
+                b.Id,
+                b.BookingStatus!.Name, 
+                $"{b.Client!.Name} {b.Client.Surname}",
+                $"{b.Car!.SpecificationCar!.Brand} {b.Car.SpecificationCar.Model} ({b.Car.SpecificationCar.StateNumber})",
+                b.StartTime,
+                b.EndTime
+            ))
+            .ToListAsync();
     }
 
     public async Task<int> Create(Booking booking)

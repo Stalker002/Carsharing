@@ -13,7 +13,6 @@ public interface ICarsService
     Task<List<CarWithInfoDto>> GetCarWithInfo(int id);
     Task<List<CarWithInfoAdminDto>> GetCarWithInfoAdmin(int id);
     Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit);
-    Task<List<Car>> GetPagedCarsByCategoryIds(List<int> categoryIds, int page, int limit);
     Task<int> GetCountByCategory(List<int> categoryIds);
     Task<int> CreateCar(Car car);
     Task<(int? Id, string Error)> CreateCarFullAsync(CarsCreateRequest request);

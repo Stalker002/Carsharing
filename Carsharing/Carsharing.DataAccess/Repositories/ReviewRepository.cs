@@ -1,4 +1,5 @@
-﻿using Carsharing.Core.Abstractions;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -61,46 +62,40 @@ public class ReviewRepository : IReviewRepository
         return await _context.Review.CountAsync();
     }
 
-    public async Task<List<Review>> GetByCarId(int carId)
+    public async Task<List<ReviewWithClientInfo>> GetByCarId(int carId)
     {
-        var reviewEntities = await _context.Review
-            .Where(r => r.CarId == carId)
+        return await _context.Review
             .AsNoTracking()
-            .ToListAsync();
-
-        var reviews = reviewEntities
-            .Select(r => Review.Create(
+            .Where(r => r.CarId == carId)
+            .OrderByDescending(r => r.Date) 
+            .Select(r => new ReviewWithClientInfo(
                 r.Id,
-                r.ClientId,
-                r.CarId,
+                r.Client!.Name,    
+                r.Client.Surname,
                 r.Rating,
                 r.Comment,
-                r.Date).review)
-            .ToList();
-
-        return reviews;
+                r.Date
+            ))
+            .ToListAsync();
     }
 
-    public async Task<List<Review>> GetPagedByCarId(int carId, int page, int limit)
+    public async Task<List<ReviewWithClientInfo>> GetPagedByCarId(int carId, int page, int limit)
     {
-        var reviewEntities = await _context.Review
+        return await _context.Review
             .AsNoTracking()
             .Where(r => r.CarId == carId)
+            .OrderByDescending(r => r.Date)
             .Skip((page - 1) * limit)
             .Take(limit)
-            .ToListAsync();
-
-        var reviews = reviewEntities
-            .Select(r => Review.Create(
+            .Select(r => new ReviewWithClientInfo(
                 r.Id,
-                r.ClientId,
-                r.CarId,
+                r.Client!.Name,
+                r.Client.Surname,
                 r.Rating,
                 r.Comment,
-                r.Date).review)
-            .ToList();
-
-        return reviews;
+                r.Date
+            ))
+            .ToListAsync();
     }
 
     public async Task<int> GetCountByCarId(int carId)

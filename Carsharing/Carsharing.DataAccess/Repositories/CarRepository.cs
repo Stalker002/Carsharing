@@ -1,4 +1,5 @@
-﻿using Carsharing.Core.Abstractions;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
@@ -138,6 +139,108 @@ public class CarRepository : ICarRepository
         return await _context.Car
             .Where(c => categoryIds.Contains(c.CategoryId))
             .CountAsync();
+    }
+
+    public async Task<List<CarWithInfoDto>> GetCarWithInfo(int id)
+    {
+        return await _context.Car
+            .AsNoTracking()
+            .Where(c => c.Id == id)
+            .Select(c => new CarWithInfoDto(
+                c.Id,
+                c.CarStatus!.Name,
+                c.Tariff!.PricePerMinute,
+                c.Tariff.PricePerKm,
+                c.Tariff.PricePerDay,
+                c.Category!.Name,
+                c.SpecificationCar!.FuelType!,
+                c.SpecificationCar.Brand!,
+                c.SpecificationCar.Model!,
+                c.SpecificationCar.Transmission!,
+                c.SpecificationCar.Year,
+                c.SpecificationCar.StateNumber!,
+                c.SpecificationCar.MaxFuel,
+                c.Location,
+                c.FuelLevel,
+                c.ImagePath
+            ))
+            .ToListAsync();
+    }
+
+    public async Task<List<CarWithInfoAdminDto>> GetCarWithInfoAdmin(int id)
+    {
+        return await _context.Car
+            .AsNoTracking()
+            .Where(c => c.Id == id)
+            .Select(c => new CarWithInfoAdminDto(
+                c.Id,
+                c.StatusId,
+                c.CategoryId,
+                c.SpecificationCar!.Transmission,
+                c.SpecificationCar.Brand,
+                c.SpecificationCar.Model,
+                c.SpecificationCar.Year,
+                c.Location,
+                c.SpecificationCar.VinNumber,
+                c.SpecificationCar.StateNumber!,
+                c.SpecificationCar.FuelType,
+                c.FuelLevel,
+                c.SpecificationCar.MaxFuel,
+                c.SpecificationCar.FuelPerKm,
+                c.SpecificationCar.Mileage,
+                c.Tariff!.Name,
+                c.Tariff.PricePerMinute,
+                c.Tariff.PricePerKm,
+                c.Tariff.PricePerDay,
+                c.ImagePath
+            ))
+            .ToListAsync();
+    }
+
+    public async Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit)
+    {
+        return await _context.Car
+            .AsNoTracking()
+            .OrderBy(c => c.Id)
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .Select(c => new CarWithMinInfoDto(
+                c.Id,
+                c.CarStatus!.Name,
+                c.Tariff!.PricePerDay,
+                c.Category!.Name,
+                c.SpecificationCar!.FuelType!,
+                c.SpecificationCar.MaxFuel,
+                c.SpecificationCar.Brand!,
+                c.SpecificationCar.Model!,
+                c.SpecificationCar.Transmission!,
+                c.ImagePath
+            ))
+            .ToListAsync();
+    }
+
+    public async Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit)
+    {
+        return await _context.Car
+            .AsNoTracking()
+            .Where(c => categoryIds.Contains(c.CategoryId))
+            .Where(c => c.StatusId == (int)CarStatusEnum.Available) 
+            .OrderBy(c => c.Id)
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .Select(c => new CarWithMinInfoDto(
+                c.Id,
+                c.CarStatus!.Name,
+                c.Tariff!.PricePerDay,
+                c.Category!.Name,
+                c.SpecificationCar!.FuelType!,
+                c.SpecificationCar.MaxFuel,
+                c.SpecificationCar.Brand!,
+                c.SpecificationCar.Model!,
+                c.SpecificationCar.Transmission!,
+                c.ImagePath
+            ))
+            .ToListAsync();
     }
 
     public async Task<List<Car>> GetByStatusId(int statusId)

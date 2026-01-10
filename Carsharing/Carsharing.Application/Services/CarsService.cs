@@ -4,7 +4,6 @@ using Carsharing.Core.Abstractions;
 using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess;
-using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.Application.Services;
 
@@ -13,19 +12,14 @@ public class CarsService : ICarsService
     private readonly ICarRepository _carRepository;
     private readonly ITariffRepository _tariffRepository;
     private readonly ISpecificationCarRepository _specificationCarRepository;
-    private readonly ICarStatusRepository _statusRepository;
-    private readonly ICategoryRepository _categoryRepository;
     private readonly IImageService _imageService;
     private readonly CarsharingDbContext _context;
 
     public CarsService(ICarRepository carRepository, ITariffRepository tariffRepository,
-        ISpecificationCarRepository specificationCarRepository, ICarStatusRepository statusRepository,
-        ICategoryRepository categoryRepository, CarsharingDbContext context, IImageService imageService)
+        ISpecificationCarRepository specificationCarRepository, CarsharingDbContext context, IImageService imageService)
     {
         _context = context;
         _imageService = imageService;
-        _categoryRepository = categoryRepository;
-        _statusRepository = statusRepository;
         _specificationCarRepository = specificationCarRepository;
         _tariffRepository = tariffRepository;
         _carRepository = carRepository;
@@ -43,26 +37,7 @@ public class CarsService : ICarsService
 
     public async Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit)
     {
-        var response = await _context.Car
-            .OrderBy(c => c.Id)
-            .Skip((page - 1) * limit)
-            .Take(limit)
-            .Select(c => new CarWithMinInfoDto(
-                c.Id,
-                c.CarStatus!.Name,
-                c.Tariff!.PricePerDay,
-                c.Category!.Name,
-                c.SpecificationCar!.FuelType!,
-                c.SpecificationCar.MaxFuel!,
-                c.SpecificationCar.Brand!,
-                c.SpecificationCar.Model!,
-                c.SpecificationCar.Transmission!,
-                c.ImagePath
-            ))
-            .ToListAsync();
-
-        return response;
-
+        return await _carRepository.GetPagedCarsByClients(page, limit);
     }
 
     public async Task<int> GetCount()
@@ -77,127 +52,17 @@ public class CarsService : ICarsService
 
     public async Task<List<CarWithInfoDto>> GetCarWithInfo(int id)
     {
-        var car = await _carRepository.GetById(id);
-        var tariffId = car.Select(ca => ca.TariffId).FirstOrDefault();
-        var statusId = car.Select(ca => ca.CarStatusId).FirstOrDefault();
-        var categoryId = car.Select(ca => ca.CategoryId).FirstOrDefault();
-        var specificationId = car.Select(c => c.SpecificationId).FirstOrDefault();
-
-        var tariff = await _tariffRepository.GetById(tariffId);
-
-        var status = await _statusRepository.GetById(statusId);
-
-        var category = await _categoryRepository.GetById(categoryId);
-
-        var specification = await _specificationCarRepository.GetById(specificationId);
-
-        var response = (from c in car
-                        join t in tariff on c.TariffId equals t.Id
-                        join st in status on c.CarStatusId equals st.Id
-                        join sp in specification on c.SpecificationId equals sp.Id
-                        join cat in category on c.CategoryId equals cat.Id
-                        select new CarWithInfoDto(
-                            c.Id,
-                            st.Name,
-                            t.PricePerMinute,
-                            t.PricePerKm,
-                            t.PricePerDay,
-                            cat.Name,
-                            sp.FuelType,
-                            sp.Brand,
-                            sp.Model,
-                            sp.Transmission,
-                            sp.Year,
-                            sp.StateNumber,
-                            sp.MaxFuel,
-                            c.Location,
-                            c.FuelLevel,
-                            c.ImagePath)).ToList();
-
-        return response;
+        return await _carRepository.GetCarWithInfo(id);
     }
 
     public async Task<List<CarWithInfoAdminDto>> GetCarWithInfoAdmin(int id)
     {
-        var car = await _carRepository.GetById(id);
-        var tariffId = car.Select(ca => ca.TariffId).FirstOrDefault();
-        var statusId = car.Select(ca => ca.CarStatusId).FirstOrDefault();
-        var categoryId = car.Select(ca => ca.CategoryId).FirstOrDefault();
-        var specificationId = car.Select(c => c.SpecificationId).FirstOrDefault();
-
-        var tariff = await _tariffRepository.GetById(tariffId);
-
-        var status = await _statusRepository.GetById(statusId);
-
-        var category = await _categoryRepository.GetById(categoryId);
-
-        var specification = await _specificationCarRepository.GetById(specificationId);
-
-        var response = (from c in car
-                        join t in tariff on c.TariffId equals t.Id
-                        join st in status on c.CarStatusId equals st.Id
-                        join sp in specification on c.SpecificationId equals sp.Id
-                        join cat in category on c.CategoryId equals cat.Id
-                        select new CarWithInfoAdminDto(
-                            c.Id,
-                            st.Id,
-                            cat.Id,
-                            sp.Transmission,
-                            sp.Brand,
-                            sp.Model,
-                            sp.Year,
-                            c.Location,
-                            sp.VinNumber,
-                            sp.StateNumber,
-                            sp.FuelType,
-                            c.FuelLevel,
-                            sp.MaxFuel,
-                            sp.FuelPerKm,
-                            sp.Mileage,
-                            t.Name,
-                            t.PricePerMinute,
-                            t.PricePerKm,
-                            t.PricePerDay,
-                            c.ImagePath
-                            )).ToList();
-
-        return response;
+        return await _carRepository.GetCarWithInfoAdmin(id);
     }
 
     public async Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit)
     {
-        var car = await _carRepository.GetPagedByCategoryId(categoryIds, page, limit);
-        var tariffId = car.Select(ca => ca.TariffId).FirstOrDefault();
-        var statusId = car.Select(ca => ca.CarStatusId).FirstOrDefault();
-        var categoryId = car.Select(ca => ca.CategoryId).FirstOrDefault();
-        var specificationId = car.Select(c => c.SpecificationId).FirstOrDefault();
-
-        var tariff = await _tariffRepository.GetById(tariffId);
-
-        var status = await _statusRepository.GetById(statusId);
-
-        var category = await _categoryRepository.GetById(categoryId);
-
-        var specification = await _specificationCarRepository.GetById(specificationId);
-
-        var response = (from c in car
-                        join t in tariff on c.TariffId equals t.Id
-                        join st in status on c.CarStatusId equals st.Id
-                        join sp in specification on c.SpecificationId equals sp.Id
-                        join cat in category on c.CategoryId equals cat.Id
-                        select new CarWithMinInfoDto(
-                            c.Id,
-                            st.Name,
-                            t.PricePerDay,
-                            cat.Name,
-                            sp.FuelType,
-                            sp.MaxFuel,
-                            sp.Brand,
-                            sp.Model,
-                            sp.Transmission,
-                            c.ImagePath)).ToList();
-
-        return response;
+        return await _carRepository.GetCarWithMinInfoByCategoryIds(categoryIds, page, limit);
     }
 
     public async Task<List<Car>> GetPagedCarsByCategoryIds(List<int> categoryIds, int page, int limit)

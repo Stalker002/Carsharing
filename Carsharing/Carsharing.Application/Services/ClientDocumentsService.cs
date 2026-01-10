@@ -52,7 +52,7 @@ public class ClientDocumentsService : IClientDocumentsService
 
             if (!string.IsNullOrEmpty(errorDocument))
             {
-                if (savedFilePath != null) _imageService.DeleteFile(savedFilePath);
+                _imageService.DeleteFile(savedFilePath);
                 return (null, errorDocument);
             }
 

@@ -13,7 +13,7 @@ public class ClientsService : IClientsService
     private readonly IUsersRepository _usersRepository;
     private readonly CarsharingDbContext _context;
 
-    public ClientsService(IClientRepository clientRepository, IClientDocumentRepository clientDocumentRepository, IUsersRepository usersRepository, CarsharingDbContext context)
+    private ClientsService(IClientRepository clientRepository, IClientDocumentRepository clientDocumentRepository, IUsersRepository usersRepository, CarsharingDbContext context)
     {
         _context = context;
         _usersRepository = usersRepository;
@@ -81,7 +81,7 @@ public class ClientsService : IClientsService
             return await _clientRepository.Create(client);
 
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await transaction.RollbackAsync();
             throw new ConflictException($"Клиент не создан");

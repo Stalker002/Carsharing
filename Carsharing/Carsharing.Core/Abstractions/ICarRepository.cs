@@ -1,4 +1,5 @@
-﻿using Carsharing.Core.Models;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Core.Models;
 
 namespace Carsharing.Core.Abstractions;
 
@@ -11,7 +12,10 @@ public interface ICarRepository
     Task<List<Car>> GetPagedByCategoryId(List<int> categoryIds, int page, int limit);
     Task<int> GetCountByCategory(List<int> categoryIds);
     Task<List<Car>> GetByStatusId(int statusId);
-
+    Task<List<CarWithInfoDto>> GetCarWithInfo(int id);
+    Task<List<CarWithInfoAdminDto>> GetCarWithInfoAdmin(int id);
+    Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit);
+    Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit);
     Task<int> GetCount();
     Task<int> Create(Car car);
     Task<int> Update(int id, int? statusId, int? tariffId, int? categoryId, int? specificationId,

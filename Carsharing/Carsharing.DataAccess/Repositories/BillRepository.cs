@@ -1,4 +1,5 @@
-﻿using Carsharing.Core.Abstractions;
+﻿using Carsharing.Application.DTOs;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -63,7 +64,7 @@ public class BillRepository : IBillRepository
         return await _context.Bill.CountAsync();
     }
 
-    public async Task<List<Bill>> GetById(int id)
+    public async Task<Bill?> GetById(int id)
     {
         var billEntities = await _context.Bill
             .Where(b => b.Id == id)
@@ -79,7 +80,7 @@ public class BillRepository : IBillRepository
                 b.IssueDate,
                 b.Amount,
                 b.RemainingAmount).bill)
-            .ToList();
+            .FirstOrDefault();
 
         return bills;
     }
@@ -103,6 +104,53 @@ public class BillRepository : IBillRepository
             .ToList();
 
         return bills;
+    }
+
+    public async Task<BillWithInfoDto?> GetInfoById(int id)
+    {
+        return await _context.Bill
+            .AsNoTracking()
+            .Where(b => b.Id == id)
+            .Select(b => new BillWithInfoDto(
+                b.Id,
+                b.BillStatus!.Name,
+                b.Promocode != null ? b.Promocode.Code : null,
+                b.IssueDate,
+                b.Amount,
+                b.RemainingAmount,
+                b.Trip!.Booking!.CarId,
+                b.Trip.Duration,
+                b.Trip.Distance,
+                b.Trip.TariffType
+            ))
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<List<BillWithMinInfoDto>> GetPagedMinInfoByUserId(int userId, int page, int limit)
+    {
+        return await _context.Bill
+            .AsNoTracking()
+            .Where(b => b.Trip!.Booking!.Client!.UserId == userId)
+            .OrderByDescending(b => b.IssueDate)
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .Select(b => new BillWithMinInfoDto(
+                b.Id,
+                b.BillStatus!.Name,
+                b.IssueDate,
+                b.Amount,
+                b.RemainingAmount,
+                b.Trip!.TariffType
+            ))
+            .ToListAsync();
+    }
+
+    public async Task<int> GetCountByUserId(int userId)
+    {
+        return await _context.Bill
+            .AsNoTracking()
+            .Where(b => b.Trip!.Booking!.Client!.UserId == userId)
+            .CountAsync();
     }
 
     public async Task<int> Create(Bill bill)

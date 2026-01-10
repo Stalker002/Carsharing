@@ -3,7 +3,8 @@
 public class BillStatus
 {
     private const int MaxStatusName = 64;
-    public BillStatus(int id, string name)
+
+    private BillStatus(int id, string name)
     {
         Id = id;
         Name = name;
@@ -22,11 +23,11 @@ public class BillStatus
             nameError = $"Status name can't be longer than {MaxStatusName} symbols";
         if (!string.IsNullOrEmpty(nameError)) errors.Add(nameError);
 
-        if (errors.Any())
-            return (null, errors);
+        if (errors.Count > 0)
+            return (null, errors)!;
 
         var billStatus = new BillStatus(id, name);
 
-        return (billStatus, new List<string>());
+        return (billStatus, []);
     }
 }

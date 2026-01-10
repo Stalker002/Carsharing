@@ -38,42 +38,12 @@ public class ReviewsService : IReviewsService
 
     public async Task<List<ReviewWithClientInfo>> GetReviewsByCarId(int carId)
     {
-        var review = await _reviewRepository.GetByCarId(carId);
-        var clientId = review.Select(r => r.ClientId).FirstOrDefault();
-
-        var client = await _clientRepository.GetById(clientId);
-
-        var response = (from r in review
-            join c in client on r.ClientId equals c.Id
-            select new ReviewWithClientInfo(
-                r.Id,
-                c.Name,
-                c.Surname,
-                r.Rating,
-                r.Comment,
-                r.Date)).ToList();
-
-        return response;
+        return await _reviewRepository.GetByCarId(carId);
     }
 
     public async Task<List<ReviewWithClientInfo>> GetPagedReviewsByCarId(int carId, int page, int limit)
     {
-        var review = await _reviewRepository.GetPagedByCarId(carId, page, limit);
-        var clientId = review.Select(r => r.ClientId).FirstOrDefault();
-
-        var client = await _clientRepository.GetById(clientId);
-
-        var response = (from r in review
-            join c in client on r.ClientId equals c.Id
-            select new ReviewWithClientInfo(
-                r.Id,
-                c.Name,
-                c.Surname,
-                r.Rating,
-                r.Comment,
-                r.Date)).ToList();
-
-        return response;
+        return await _reviewRepository.GetPagedByCarId(carId, page, limit);
     }
 
     public async Task<int> GetReviewsCountsByCarId(int carId)

@@ -35,26 +35,15 @@ public class TripDetailRepository : ITripDetailRepository
         return details;
     }
 
-    public async Task<List<TripDetail>> GetByTripId(List<int> tripIds)
+    public async Task<int> GetCarIdByTripId(int tripId)
     {
-        var detailEntities = await _context.TripDetail
+        var carId = await _context.Trip
             .AsNoTracking()
-            .OrderBy(tr => tr.Id)
-            .Where(tr => tripIds.Contains(tr.TripId))
-            .ToListAsync();
+            .Where(t => t.Id == tripId)
+            .Select(t => t.Booking!.CarId)
+            .FirstOrDefaultAsync();
 
-        var details = detailEntities
-            .Select(d => TripDetail.Create(
-                d.Id,
-                d.TripId,
-                d.StartLocation,
-                d.EndLocation,
-                d.InsuranceActive,
-                d.FuelUsed,
-                d.Refueled).tripDetail)
-            .ToList();
-
-        return details;
+        return carId;
     }
 
     public async Task<int> Create(TripDetail tripDetail)

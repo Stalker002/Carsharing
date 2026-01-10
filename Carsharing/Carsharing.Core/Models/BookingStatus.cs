@@ -23,11 +23,11 @@ public class BookingStatus
             nameError = $"Status name can't be longer than {MaxStatusName} symbols";
         if (!string.IsNullOrEmpty(nameError)) errors.Add(nameError);
 
-        if (errors.Any())
-            return (null, errors);
+        if (errors.Count > 0)
+            return (null, errors)!;
 
         var bookingStatus = new BookingStatus(id, name);
 
-        return (bookingStatus, new List<string>());
+        return (bookingStatus, []);
     }
 }

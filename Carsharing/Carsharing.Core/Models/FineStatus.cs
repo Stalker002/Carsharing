@@ -23,11 +23,11 @@ public class FineStatus
             nameError = $"Status name can't be longer than {MaxStatusName} symbols";
         if (!string.IsNullOrEmpty(nameError)) errors.Add(nameError);
 
-        if (errors.Any())
-            return (null, errors);
+        if (errors.Count > 0)
+            return (null, errors)!;
 
         var fineStatus = new FineStatus(id, name);
 
-        return (fineStatus, new List<string>());
+        return (fineStatus, []);
     }
 }

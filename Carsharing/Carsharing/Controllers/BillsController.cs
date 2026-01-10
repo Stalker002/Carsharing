@@ -63,14 +63,14 @@ public class BillsController : ControllerBase
     public async Task<ActionResult<List<BillsResponse>>> GetBillById(int id)
     {
         var bills = await _billsService.GetBillById(id);
-        var response = bills.Select(b => new BillsResponse(
-            b.Id,
-            b.TripId,
-            b.PromocodeId,
-            b.StatusId,
-            b.IssueDate,
-            b.Amount,
-            b.RemainingAmount));
+        var response = new BillsResponse(
+            bills!.Id,
+            bills.TripId,
+            bills.PromocodeId,
+            bills.StatusId,
+            bills.IssueDate,
+            bills.Amount,
+            bills.RemainingAmount);
 
         return Ok(response);
     }

@@ -1,5 +1,6 @@
 ﻿using Carsharing.Application.Abstractions;
 using Carsharing.Core.Abstractions;
+using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Services;
@@ -7,17 +8,11 @@ namespace Carsharing.Application.Services;
 public class TripDetailsService : ITripDetailsService
 {
     private readonly ITripDetailRepository _tripDetailRepository;
-    private readonly IBookingRepository _bookingRepository;
-    private readonly ICarRepository _carRepository;
     private readonly IInsuranceRepository _insuranceRepository;
-    private readonly ITripRepository _tripRepository;
 
-    public TripDetailsService(ITripDetailRepository tripDetailRepository, IBookingRepository bookingRepository, ICarRepository carRepository, IInsuranceRepository insuranceRepository, ITripRepository tripRepository)
+    public TripDetailsService(ITripDetailRepository tripDetailRepository, IInsuranceRepository insuranceRepository)
     {
-        _tripRepository = tripRepository;
         _insuranceRepository = insuranceRepository;
-        _carRepository = carRepository;
-        _bookingRepository = bookingRepository;
         _tripDetailRepository = tripDetailRepository;
     }
 
@@ -28,26 +23,18 @@ public class TripDetailsService : ITripDetailsService
 
     public async Task<int> CreateTripDetail(TripDetail tripDetail)
     {
-        var trip = await _tripRepository.GetById(tripDetail.TripId);
-        var bookingId = trip.Select(b => b.BookingId).FirstOrDefault();
+        var carId = await _tripDetailRepository.GetCarIdByTripId(tripDetail.TripId);
 
-        var booking = await _bookingRepository.GetById(bookingId);
-        if (booking == null)
-            throw new Exception("Бронирование не найдено");
-        var carId = booking.Select(b => b.CarId).FirstOrDefault();
+        if (carId == 0)
+            throw new NotFoundException($"Поездка с ID {tripDetail.TripId} или связанный автомобиль не найдены");
 
-        var car = await _carRepository.GetById(carId);
-        if (car == null)
-            throw new Exception("Автомобиль не найден");
+        if (!tripDetail.InsuranceActive) return await _tripDetailRepository.Create(tripDetail);
 
-        if (tripDetail.InsuranceActive)
-        {
-            var insurance = await _insuranceRepository.GetActiveByCarId(carId);
+        var insurances = await _insuranceRepository.GetActiveByCarId(carId);
 
-            if (insurance.Count == 0)
-                throw new Exception("Нельзя начать поездку: у автомобиля нет активной страховки");
-        }
-        
+        if (insurances.Count == 0)
+            throw new ConflictException("Нельзя начать поездку с опцией страховки: у автомобиля нет активного полиса");
+
         return await _tripDetailRepository.Create(tripDetail);
     }
 
