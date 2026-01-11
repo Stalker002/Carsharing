@@ -108,13 +108,13 @@ public class TripService : ITripService
         try
         {
             var (trip, error) = Trip.Create(
-                0, 
-                request.BookingId, 
-                request.StatusId, 
+                0,
+                request.BookingId,
+                request.StatusId,
                 request.TariffType,
-                request.StartTime, 
-                request.EndTime, 
-                request.Duration, 
+                request.StartTime,
+                request.EndTime,
+                request.Duration,
                 request.Distance);
 
             if (!string.IsNullOrWhiteSpace(error)) throw new ArgumentException(error);
@@ -122,11 +122,11 @@ public class TripService : ITripService
             var tripId = await _tripRepository.Create(trip);
 
             var (tripDetail, errorTripDetail) = TripDetail.Create(
-                0, tripId, 
+                0, tripId,
                 request.StartLocation,
                 request.EndLocation,
-                request.InsuranceActive, 
-                request.FuelUsed, 
+                request.InsuranceActive,
+                request.FuelUsed,
                 request.Refueled);
 
             if (!string.IsNullOrWhiteSpace(errorTripDetail)) throw new ArgumentException(errorTripDetail);
@@ -148,12 +148,12 @@ public class TripService : ITripService
     public async Task<int> UpdateTrip(int id, TripUpdateRequest request)
     {
         var tripId = await _tripRepository.Update(
-            id, 
-            request.BookingId, 
-            request.StatusId, 
+            id,
+            request.BookingId,
+            request.StatusId,
             request.TariffType,
-            request.StartTime, 
-            request.EndTime, 
+            request.StartTime,
+            request.EndTime,
             request.Duration,
             request.Distance);
 

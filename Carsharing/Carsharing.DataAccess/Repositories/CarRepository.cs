@@ -224,7 +224,7 @@ public class CarRepository : ICarRepository
         return await _context.Car
             .AsNoTracking()
             .Where(c => categoryIds.Contains(c.CategoryId))
-            .Where(c => c.StatusId == (int)CarStatusEnum.Available) 
+            .Where(c => c.StatusId == (int)CarStatusEnum.Available)
             .OrderBy(c => c.Id)
             .Skip((page - 1) * limit)
             .Take(limit)

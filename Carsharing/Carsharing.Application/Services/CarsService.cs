@@ -88,8 +88,8 @@ public class CarsService : ICarsService
         try
         {
             var (tariff, errorTariff) = Tariff.Create(
-                0, 
-                request.TariffName, 
+                0,
+                request.TariffName,
                 request.PricePerMinute,
                 request.PricePerKm,
                 request.PricePerDay);
@@ -98,16 +98,16 @@ public class CarsService : ICarsService
             var tariffId = await _tariffRepository.Create(tariff);
 
             var (spec, errorSpec) = SpecificationCar.Create(
-                0, 
-                request.FuelType, 
-                request.Brand, 
+                0,
+                request.FuelType,
+                request.Brand,
                 request.Model,
-                request.Transmission, 
-                request.Year, 
-                request.VinNumber, 
-                request.StateNumber, 
+                request.Transmission,
+                request.Year,
+                request.VinNumber,
+                request.StateNumber,
                 request.Mileage,
-                request.MaxFuel, 
+                request.MaxFuel,
                 request.FuelPerKm);
             if (!string.IsNullOrEmpty(errorSpec)) return (null, errorSpec);
 
@@ -119,13 +119,13 @@ public class CarsService : ICarsService
             }
 
             var (car, errorCar) = Car.Create(
-                0, 
-                request.StatusId, 
-                tariffId, 
-                request.CategoryId, 
+                0,
+                request.StatusId,
+                tariffId,
+                request.CategoryId,
                 specificationId,
                 request.Location,
-                request.FuelLevel, 
+                request.FuelLevel,
                 savedImagePath);
 
             if (!string.IsNullOrEmpty(errorCar))
@@ -197,13 +197,13 @@ public class CarsService : ICarsService
 
             await _carRepository.Update(
                 id: id,
-                statusId: request.StatusId,       
-                categoryId: request.CategoryId,   
-                tariffId: null,                  
-                specificationId: null,            
+                statusId: request.StatusId,
+                categoryId: request.CategoryId,
+                tariffId: null,
+                specificationId: null,
                 location: request.Location,
                 fuelLevel: request.FuelLevel,
-                imagePath: imagePathToUpdate     
+                imagePath: imagePathToUpdate
             );
 
             await transaction.CommitAsync();

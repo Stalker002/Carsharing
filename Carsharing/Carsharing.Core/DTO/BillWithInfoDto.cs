@@ -4,7 +4,7 @@ public record BillWithInfoDto(
     int Id,
     string StatusName,
     string? PromocodeName,
-    DateTime IssueDate, 
+    DateTime IssueDate,
     decimal? Amount,
     decimal? RemainingAmount,
     int CarId,

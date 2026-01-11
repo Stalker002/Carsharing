@@ -74,10 +74,10 @@ public class BillsService : IBillsService
             bill.Id,
             null,
             promo.Id,
-            null, 
             null,
             null,
-            null 
+            null,
+            null
         );
     }
 

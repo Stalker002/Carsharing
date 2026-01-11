@@ -67,10 +67,10 @@ public class ReviewRepository : IReviewRepository
         return await _context.Review
             .AsNoTracking()
             .Where(r => r.CarId == carId)
-            .OrderByDescending(r => r.Date) 
+            .OrderByDescending(r => r.Date)
             .Select(r => new ReviewWithClientInfo(
                 r.Id,
-                r.Client!.Name,    
+                r.Client!.Name,
                 r.Client.Surname,
                 r.Rating,
                 r.Comment,

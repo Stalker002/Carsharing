@@ -1,11 +1,11 @@
 ﻿namespace Carsharing.Contracts;
 
 public record TripResponse(
-    int Id, 
-    int BookingId, 
-    int StatusId, 
-    string? TariffType, 
+    int Id,
+    int BookingId,
+    int StatusId,
+    string? TariffType,
     DateTime StartTime,
-    DateTime? EndTime, 
-    decimal? Duration, 
+    DateTime? EndTime,
+    decimal? Duration,
     decimal? Distance);

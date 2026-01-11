@@ -1,10 +1,10 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Carsharing.Application.Extensions;
 

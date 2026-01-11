@@ -109,7 +109,7 @@ public class SpecificationCarRepository : ISpecificationCarRepository
         var specification = await _context.SpecificationCar.FirstOrDefaultAsync(sp => sp.Id == id)
                             ?? throw new Exception("Specification not found");
 
-            specification.FuelType = fuelType;
+        specification.FuelType = fuelType;
 
         if (!string.IsNullOrWhiteSpace(brand))
             specification.Brand = brand;

@@ -19,6 +19,6 @@ public record CarsCreateRequest(
     int Mileage,
     decimal MaxFuel,
     decimal FuelPerKm,
-    string Location, 
+    string Location,
     decimal FuelLevel,
     IFormFile Image);

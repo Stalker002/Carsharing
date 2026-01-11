@@ -159,7 +159,7 @@ public class BookingRepository : IBookingRepository
             .Where(b => b.Id == id)
             .Select(b => new BookingWithFullInfoDto(
                 b.Id,
-                b.BookingStatus!.Name, 
+                b.BookingStatus!.Name,
                 $"{b.Client!.Name} {b.Client.Surname}",
                 $"{b.Car!.SpecificationCar!.Brand} {b.Car.SpecificationCar.Model} ({b.Car.SpecificationCar.StateNumber})",
                 b.StartTime,

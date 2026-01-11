@@ -42,7 +42,7 @@ public class Program
                           .WithExposedHeaders("x-total-count");
                 });
         });
-        
+
         builder.Services.AddSingleton<IAmazonS3>(sp =>
         {
             var config = new AmazonS3Config
@@ -83,6 +83,8 @@ public class Program
         builder.Services.AddScoped<IClientDocumentsService, ClientDocumentsService>();
         builder.Services.AddScoped<IClientRepository, ClientRepository>();
         builder.Services.AddScoped<IClientsService, ClientsService>();
+        builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+        builder.Services.AddScoped<IFavoriteService, FavoriteService>();
         builder.Services.AddScoped<IFineRepository, FineRepository>();
         builder.Services.AddScoped<IFinesService, FinesService>();
         builder.Services.AddScoped<IFineStatusRepository, FineStatusRepository>();
@@ -127,7 +129,7 @@ public class Program
         builder.Services.AddDataProtection()
             .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"));
 
-        
+
         var app = builder.Build();
 
         using (var scope = app.Services.CreateScope())

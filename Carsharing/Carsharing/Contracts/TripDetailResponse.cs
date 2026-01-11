@@ -1,10 +1,10 @@
 ﻿namespace Carsharing.Contracts;
 
 public record TripDetailResponse(
-    int Id, 
-    int TripId, 
-    string StartLocation, 
-    string EndLocation, 
+    int Id,
+    int TripId,
+    string StartLocation,
+    string EndLocation,
     bool InsuranceActive,
-    decimal? FuelUsed, 
+    decimal? FuelUsed,
     decimal? Refueled);

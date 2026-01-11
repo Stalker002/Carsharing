@@ -145,7 +145,7 @@ public class ClientsController : ControllerBase
 
         var clientId = await _clientsService.CreateClientWithUser(client!, user!);
 
-        return Ok(new { ClientId = clientId, Message = "Registration successful"});
+        return Ok(new { ClientId = clientId, Message = "Registration successful" });
     }
 
     [HttpPut("{id:int}")]

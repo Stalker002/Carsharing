@@ -1,7 +1,7 @@
 ﻿namespace Carsharing.Contracts;
 
 public record BillsRequest(
-    int TripId, 
+    int TripId,
     int? PromocodeId,
     int StatusId,
     DateTime IssueDate,

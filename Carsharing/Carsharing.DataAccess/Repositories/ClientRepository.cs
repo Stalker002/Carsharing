@@ -56,7 +56,7 @@ public class ClientRepository : IClientRepository
 
         return clients;
     }
-    
+
     public async Task<int> GetCount()
     {
         return await _context.Client.CountAsync();
@@ -103,7 +103,7 @@ public class ClientRepository : IClientRepository
 
         return clients;
     }
-    
+
     public async Task<int> Create(Client client)
     {
         var (_, error) = Client.Create(
@@ -135,13 +135,13 @@ public class ClientRepository : IClientRepository
     public async Task<int> Update(int id, int? userId, string? name, string? surname,
         string? phoneNumber, string? email)
     {
-        
+
         var client = await _context.Client.FirstOrDefaultAsync(c => c.Id == id)
                      ?? throw new Exception("Client not found");
 
         if (userId.HasValue)
             client.UserId = userId.Value;
-        
+
         if (!string.IsNullOrWhiteSpace(name))
             client.Name = name;
 
