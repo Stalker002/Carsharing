@@ -36,7 +36,7 @@ public class FavoriteRepository : IFavoriteRepository
                 .ThenInclude(c => c!.SpecificationCar)
             .Include(f => f.Car)
                 .ThenInclude(c => c!.Category)
-            .OrderByDescending(f => f.Id) // Сначала новые лайки
+            .OrderByDescending(f => f.Id)
             .Skip((page - 1) * limit)
             .Take(limit)
             .Select(f => new CarWithMinInfoDto(

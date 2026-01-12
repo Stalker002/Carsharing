@@ -4,6 +4,7 @@ using Carsharing.Application.Extensions;
 using Carsharing.Application.Services;
 using Carsharing.Core.Abstractions;
 using Carsharing.DataAccess;
+using Carsharing.DataAccess.Extensions;
 using Carsharing.DataAccess.Repositories;
 using Carsharing.Extension;
 using Carsharing.Middleware;
@@ -117,6 +118,7 @@ public class Program
         builder.Services.AddScoped<IUsersRepository, UsersRepository>();
         builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
         builder.Services.AddScoped<IImageService, ImageService>();
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         builder.Services.AddProblemDetails();
 

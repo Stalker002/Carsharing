@@ -1,0 +1,72 @@
+﻿using Carsharing.Core.Abstractions;
+using Microsoft.EntityFrameworkCore.Storage;
+
+namespace Carsharing.DataAccess.Extensions;
+
+public class UnitOfWork : IUnitOfWork
+{
+    private readonly CarsharingDbContext _context;
+    private IDbContextTransaction? _currentTransaction;
+
+    public UnitOfWork(CarsharingDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task BeginTransactionAsync()
+    {
+        if (_currentTransaction != null)
+        {
+            return;
+        }
+
+        _currentTransaction = await _context.Database.BeginTransactionAsync();
+    }
+
+    public async Task CommitTransactionAsync()
+    {
+        try
+        {
+            await _context.SaveChangesAsync();
+
+            if (_currentTransaction != null)
+            {
+                await _currentTransaction.CommitAsync();
+            }
+        }
+        catch
+        {
+            await RollbackTransactionAsync();
+            throw;
+        }
+        finally
+        {
+            if (_currentTransaction != null)
+            {
+                await _currentTransaction.DisposeAsync();
+                _currentTransaction = null;
+            }
+        }
+    }
+
+    public async Task RollbackTransactionAsync()
+    {
+        if (_currentTransaction != null)
+        {
+            await _currentTransaction.RollbackAsync();
+            await _currentTransaction.DisposeAsync();
+            _currentTransaction = null;
+        }
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
+
+    public void Dispose()
+    {
+        _context.Dispose();
+        _currentTransaction?.Dispose();
+    }
+}

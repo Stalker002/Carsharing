@@ -12,15 +12,15 @@ public class CarsService : ICarsService
     private readonly ICarRepository _carRepository;
     private readonly ITariffRepository _tariffRepository;
     private readonly ISpecificationCarRepository _specificationCarRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IImageService _imageService;
-    private readonly CarsharingDbContext _context;
 
     public CarsService(ICarRepository carRepository, ITariffRepository tariffRepository,
-        ISpecificationCarRepository specificationCarRepository, CarsharingDbContext context, IImageService imageService)
+        ISpecificationCarRepository specificationCarRepository, IUnitOfWork unitOfWork, IImageService imageService)
     {
-        _context = context;
         _imageService = imageService;
         _specificationCarRepository = specificationCarRepository;
+        _unitOfWork = unitOfWork;
         _tariffRepository = tariffRepository;
         _carRepository = carRepository;
     }
@@ -82,7 +82,7 @@ public class CarsService : ICarsService
 
     public async Task<(int? Id, string Error)> CreateCarFullAsync(CarsCreateRequest request)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
+        await _unitOfWork.BeginTransactionAsync();
         string? savedImagePath = null;
 
         try
@@ -136,12 +136,12 @@ public class CarsService : ICarsService
 
             var carId = await _carRepository.Create(car);
 
-            await transaction.CommitAsync();
+            await _unitOfWork.CommitTransactionAsync();
             return (carId, null)!;
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync();
+            await _unitOfWork.RollbackTransactionAsync();
 
             if (savedImagePath != null) _imageService.DeleteFile(savedImagePath);
 
@@ -156,7 +156,7 @@ public class CarsService : ICarsService
 
     public async Task<(bool IsSuccess, string Error)> UpdateCarFullAsync(int id, CarUpdateDto request)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
+        await _unitOfWork.BeginTransactionAsync();
         string? newImagePathSystem = null;
 
         try
@@ -206,13 +206,13 @@ public class CarsService : ICarsService
                 imagePath: imagePathToUpdate
             );
 
-            await transaction.CommitAsync();
+            await _unitOfWork.CommitTransactionAsync();
 
             return (true, null)!;
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync();
+            await _unitOfWork.RollbackTransactionAsync();
 
             if (newImagePathSystem != null)
             {

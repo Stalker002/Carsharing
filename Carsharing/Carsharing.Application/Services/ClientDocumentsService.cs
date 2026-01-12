@@ -9,13 +9,13 @@ namespace Carsharing.Application.Services;
 public class ClientDocumentsService : IClientDocumentsService
 {
     private readonly IClientDocumentRepository _clientDocumentRepository;
-    private readonly CarsharingDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IImageService _imageService;
 
-    public ClientDocumentsService(IClientDocumentRepository clientDocumentRepository, CarsharingDbContext context, IImageService imageService)
+    public ClientDocumentsService(IClientDocumentRepository clientDocumentRepository, IUnitOfWork unitOfWork, IImageService imageService)
     {
         _clientDocumentRepository = clientDocumentRepository;
-        _context = context;
+        _unitOfWork = unitOfWork;
         _imageService = imageService;
     }
 
@@ -26,7 +26,7 @@ public class ClientDocumentsService : IClientDocumentsService
 
     public async Task<(int? Id, string Error)> CreateClientDocumentAsync(ClientDocumentsRequest request)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
+        await _unitOfWork.BeginTransactionAsync();
         string? savedFilePath = null;
 
         try
@@ -58,12 +58,12 @@ public class ClientDocumentsService : IClientDocumentsService
 
             var documentId = await _clientDocumentRepository.Create(document);
 
-            await transaction.CommitAsync();
+            await _unitOfWork.CommitTransactionAsync();
             return (documentId, null)!;
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync();
+            await _unitOfWork.RollbackTransactionAsync();
 
             if (savedFilePath != null) _imageService.DeleteFile(savedFilePath);
 
@@ -78,7 +78,7 @@ public class ClientDocumentsService : IClientDocumentsService
 
     public async Task<(bool IsSuccess, string Error)> UpdateClientDocumentAsync(int id, ClientDocumentsRequest request)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
+        await _unitOfWork.BeginTransactionAsync();
         string? newFilePathSystem = null;
 
         try
@@ -107,7 +107,7 @@ public class ClientDocumentsService : IClientDocumentsService
                 filePathToUpdate
             );
 
-            await transaction.CommitAsync();
+            await _unitOfWork.CommitTransactionAsync();
 
             if (newFilePathSystem != null && !string.IsNullOrEmpty(docEntity.FilePath))
             {
@@ -118,7 +118,7 @@ public class ClientDocumentsService : IClientDocumentsService
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync();
+            await _unitOfWork.RollbackTransactionAsync();
 
             if (newFilePathSystem != null)
             {

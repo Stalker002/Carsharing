@@ -15,18 +15,18 @@ public class TripService : ITripService
     private readonly IBookingRepository _bookingRepository;
     private readonly ICarsService _carsService;
     private readonly IClientRepository _clientRepository;
-    private readonly CarsharingDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ITripDetailRepository _tripDetailRepository;
     private readonly ITripRepository _tripRepository;
 
-    private TripService(ITripRepository tripRepository, ITripDetailRepository tripDetailRepository, IClientRepository clientRepository, CarsharingDbContext context,
+    public TripService(ITripRepository tripRepository, ITripDetailRepository tripDetailRepository, IClientRepository clientRepository, IUnitOfWork unitOfWork,
         ICarsService carsService, IBookingRepository bookingRepository, IBillRepository billRepository)
     {
         _billRepository = billRepository;
         _bookingRepository = bookingRepository;
         _carsService = carsService;
-        _context = context;
         _clientRepository = clientRepository;
+        _unitOfWork = unitOfWork;
         _tripDetailRepository = tripDetailRepository;
         _tripRepository = tripRepository;
     }
@@ -72,7 +72,7 @@ public class TripService : ITripService
 
     public async Task<TripFinishResult> FinishTripAsync(FinishTripRequest request)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
+        await _unitOfWork.BeginTransactionAsync();
         try
         {
             var billId = await _tripRepository.FinishTripAsync(
@@ -82,7 +82,7 @@ public class TripService : ITripService
                 request.FuelLevel
             );
 
-            await transaction.CommitAsync();
+            await _unitOfWork.CommitTransactionAsync();
 
             var bill = await _billRepository.GetById(billId);
 
@@ -90,7 +90,7 @@ public class TripService : ITripService
         }
         catch
         {
-            await transaction.RollbackAsync();
+           await _unitOfWork.RollbackTransactionAsync();
             throw;
         }
     }
@@ -103,8 +103,7 @@ public class TripService : ITripService
 
     public async Task<int> CreateTripAsync(TripCreateRequest request)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
-
+        await _unitOfWork.BeginTransactionAsync();
         try
         {
             var (trip, error) = Trip.Create(
@@ -134,13 +133,13 @@ public class TripService : ITripService
             await _tripDetailRepository.Create(tripDetail);
             await _carsService.MarkCarAsUnavailableAsync(request.CarId);
 
-            await transaction.CommitAsync();
+            await _unitOfWork.CommitTransactionAsync();
 
             return tripId;
         }
         catch
         {
-            await transaction.RollbackAsync();
+            await _unitOfWork.RollbackTransactionAsync();
             throw;
         }
     }

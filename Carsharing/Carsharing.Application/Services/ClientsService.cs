@@ -11,12 +11,13 @@ public class ClientsService : IClientsService
     private readonly IClientRepository _clientRepository;
     private readonly IClientDocumentRepository _clientDocumentRepository;
     private readonly IUsersRepository _usersRepository;
-    private readonly CarsharingDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
-    private ClientsService(IClientRepository clientRepository, IClientDocumentRepository clientDocumentRepository, IUsersRepository usersRepository, CarsharingDbContext context)
+    public ClientsService(IClientRepository clientRepository, IClientDocumentRepository clientDocumentRepository, 
+        IUsersRepository usersRepository, IUnitOfWork unitOfWork)
     {
-        _context = context;
         _usersRepository = usersRepository;
+        _unitOfWork = unitOfWork;
         _clientDocumentRepository = clientDocumentRepository;
         _clientRepository = clientRepository;
     }
@@ -70,21 +71,21 @@ public class ClientsService : IClientsService
         if (userExists != null)
             throw new ConflictException($"Пользователь с таким логином уже существует");
 
-        await using var transaction = await _context.Database.BeginTransactionAsync();
+        await _unitOfWork.BeginTransactionAsync();
 
         try
         {
             client.UserId = await _usersRepository.CreateUser(user);
             var clientId = await _clientRepository.Create(client);
 
-            await transaction.CommitAsync();
-            return await _clientRepository.Create(client);
+            await _unitOfWork.CommitTransactionAsync();
+            return clientId;
 
         }
         catch (Exception)
         {
-            await transaction.RollbackAsync();
-            throw new ConflictException($"Клиент не создан");
+            await _unitOfWork.RollbackTransactionAsync(); ;
+            throw;
         }
     }
 
