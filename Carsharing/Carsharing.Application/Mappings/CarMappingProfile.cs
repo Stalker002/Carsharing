@@ -1,7 +1,6 @@
-﻿
+﻿using AutoMapper;
 using Carsharing.Application.DTOs;
 using Carsharing.DataAccess.Entites;
-using AutoMapper;
 
 namespace Carsharing.Application.Mappings;
 

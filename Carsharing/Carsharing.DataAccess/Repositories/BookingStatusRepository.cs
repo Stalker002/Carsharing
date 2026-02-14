@@ -12,6 +12,7 @@ public class BookingStatusRepository : IBookingStatusRepository
     {
         _context = context;
     }
+
     public async Task<List<BookingStatus>> Get()
     {
         var bookingStatusEntities = await _context.BookingStatus

@@ -2,7 +2,6 @@
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
-using Carsharing.DataAccess;
 
 namespace Carsharing.Application.Services;
 
@@ -13,7 +12,7 @@ public class ClientsService : IClientsService
     private readonly IUsersRepository _usersRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ClientsService(IClientRepository clientRepository, IClientDocumentRepository clientDocumentRepository, 
+    public ClientsService(IClientRepository clientRepository, IClientDocumentRepository clientDocumentRepository,
         IUsersRepository usersRepository, IUnitOfWork unitOfWork)
     {
         _usersRepository = usersRepository;
@@ -80,7 +79,6 @@ public class ClientsService : IClientsService
 
             await _unitOfWork.CommitTransactionAsync();
             return clientId;
-
         }
         catch (Exception)
         {

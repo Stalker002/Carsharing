@@ -2,7 +2,6 @@
 using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
-using Carsharing.DataAccess;
 
 namespace Carsharing.Application.Services;
 

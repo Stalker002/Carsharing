@@ -1,9 +1,7 @@
-﻿using Carsharing.Application.Abstractions;
-using Carsharing.Core.Abstractions;
+﻿using Carsharing.Core.Abstractions;
 using Carsharing.DataAccess.Extensions;
 using Carsharing.DataAccess.Repositories;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace Carsharing.DataAccess;
 

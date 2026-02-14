@@ -75,3 +75,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Keys
+**/keys/

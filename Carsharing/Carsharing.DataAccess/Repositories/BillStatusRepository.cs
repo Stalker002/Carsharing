@@ -12,6 +12,7 @@ public class BillStatusRepository : IBillStatusRepository
     {
         _context = context;
     }
+
     public async Task<List<BillStatus>> Get()
     {
         var billStatusEntities = await _context.BillStatus

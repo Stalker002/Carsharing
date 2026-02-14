@@ -63,7 +63,6 @@ public class Client
         if (email != null && !Regex.IsMatch(email, @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"))
             error = "Invalid email format";
 
-
         var client = new Client(id, userId, name?.Trim(), surname?.Trim(), phoneNumber?.Trim(), email?.Trim());
 
         return (client, error);

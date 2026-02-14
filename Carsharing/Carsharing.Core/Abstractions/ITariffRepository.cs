@@ -5,7 +5,9 @@ namespace Carsharing.Core.Abstractions;
 public interface ITariffRepository
 {
     Task<List<Tariff>> Get();
+
     Task<List<Tariff>> GetById(int id);
+
     Task<int> Create(Tariff tariff);
 
     Task<int> Update(int id, string? name, decimal? pricePerMinute, decimal? pricePerKm,

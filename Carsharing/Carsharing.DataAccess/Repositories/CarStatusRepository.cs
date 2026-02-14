@@ -12,6 +12,7 @@ public class CarStatusRepository : ICarStatusRepository
     {
         _context = context;
     }
+
     public async Task<List<CarStatus>> Get()
     {
         var carStatusEntities = await _context.CarStatus

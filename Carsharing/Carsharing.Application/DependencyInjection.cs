@@ -42,4 +42,5 @@ public static class DependencyInjection
         services.AddScoped<IImageService, ImageService>();
 
         return services;
-    }}
+    }
+}

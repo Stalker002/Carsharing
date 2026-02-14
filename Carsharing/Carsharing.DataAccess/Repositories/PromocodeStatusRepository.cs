@@ -12,6 +12,7 @@ public class PromocodeStatusRepository : IPromocodeStatusRepository
     {
         _context = context;
     }
+
     public async Task<List<PromocodeStatus>> Get()
     {
         var promocodeStatusEntities = await _context.PromocodeStatus

@@ -135,7 +135,6 @@ public class ClientRepository : IClientRepository
     public async Task<int> Update(int id, int? userId, string? name, string? surname,
         string? phoneNumber, string? email)
     {
-
         var client = await _context.Client.FirstOrDefaultAsync(c => c.Id == id)
                      ?? throw new Exception("Client not found");
 

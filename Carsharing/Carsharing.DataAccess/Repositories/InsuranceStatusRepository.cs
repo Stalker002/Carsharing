@@ -12,6 +12,7 @@ public class InsuranceStatusRepository : IInsuranceStatusRepository
     {
         _context = context;
     }
+
     public async Task<List<InsuranceStatus>> Get()
     {
         var insuranceStatusEntities = await _context.InsuranceStatus

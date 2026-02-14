@@ -44,7 +44,6 @@ public class UsersController : ControllerBase
         return Ok(response);
     }
 
-
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<UsersResponse>>> GetPagedUsers(

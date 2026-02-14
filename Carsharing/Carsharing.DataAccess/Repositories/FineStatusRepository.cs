@@ -12,6 +12,7 @@ public class FineStatusRepository : IFineStatusRepository
     {
         _context = context;
     }
+
     public async Task<List<FineStatus>> Get()
     {
         var fineStatusEntities = await _context.FineStatus

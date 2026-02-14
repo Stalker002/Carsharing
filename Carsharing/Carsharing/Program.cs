@@ -2,11 +2,7 @@ using Amazon.S3;
 using Carsharing.Application;
 using Carsharing.Application.Abstractions;
 using Carsharing.Application.Extensions;
-using Carsharing.Application.Services;
-using Carsharing.Core.Abstractions;
 using Carsharing.DataAccess;
-using Carsharing.DataAccess.Extensions;
-using Carsharing.DataAccess.Repositories;
 using Carsharing.Extension;
 using Carsharing.Middleware;
 using Microsoft.AspNetCore.CookiePolicy;
@@ -78,10 +74,6 @@ public class Program
         builder.Services.AddDataProtection()
             .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"))
             .SetApplicationName("carsharing-app");
-
-        builder.Services.AddDataProtection()
-            .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"));
-
 
         var app = builder.Build();
 

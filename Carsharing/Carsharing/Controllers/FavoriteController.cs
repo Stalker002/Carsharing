@@ -1,6 +1,5 @@
 ﻿using Carsharing.Application.Abstractions;
 using Carsharing.Application.DTOs;
-using Carsharing.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;

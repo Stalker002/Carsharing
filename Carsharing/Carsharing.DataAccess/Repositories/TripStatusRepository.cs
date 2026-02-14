@@ -12,6 +12,7 @@ public class TripStatusRepository : ITripStatusRepository
     {
         _context = context;
     }
+
     public async Task<List<TripStatus>> Get()
     {
         var tripStatusEntities = await _context.TripStatus

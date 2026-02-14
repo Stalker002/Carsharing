@@ -5,7 +5,6 @@ using Carsharing.Core.Abstractions;
 using Carsharing.Core.Enum;
 using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
-using Carsharing.DataAccess;
 
 namespace Carsharing.Application.Services;
 
@@ -56,7 +55,6 @@ public class TripService : ITripService
         return await _tripRepository.GetHistoryByClientId(client.Id, page, limit);
     }
 
-
     public async Task<List<TripWithInfoDto>> GetTripWithInfo(int id)
     {
         return await _tripRepository.GetTripWithDetailsById(id);
@@ -90,7 +88,7 @@ public class TripService : ITripService
         }
         catch
         {
-           await _unitOfWork.RollbackTransactionAsync();
+            await _unitOfWork.RollbackTransactionAsync();
             throw;
         }
     }

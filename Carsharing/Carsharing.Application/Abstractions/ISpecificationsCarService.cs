@@ -5,6 +5,7 @@ namespace Carsharing.Application.Abstractions;
 public interface ISpecificationsCarService
 {
     Task<List<SpecificationCar>> GetSpecifications();
+
     Task<int> CreateSpecification(SpecificationCar specificationCar);
 
     Task<int> UpdateSpecification(int id, string? fuelType, string? brand, string? model,
