@@ -8,100 +8,88 @@ using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Services;
 
-public class TripService : ITripService
+public class TripService(
+    ITripRepository tripRepository,
+    ITripDetailRepository tripDetailRepository,
+    IClientRepository clientRepository,
+    IUnitOfWork unitOfWork,
+    ICarsService carsService,
+    IBookingRepository bookingRepository,
+    IBillRepository billRepository)
+    : ITripService
 {
-    private readonly IBillRepository _billRepository;
-    private readonly IBookingRepository _bookingRepository;
-    private readonly ICarsService _carsService;
-    private readonly IClientRepository _clientRepository;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ITripDetailRepository _tripDetailRepository;
-    private readonly ITripRepository _tripRepository;
-
-    public TripService(ITripRepository tripRepository, ITripDetailRepository tripDetailRepository, IClientRepository clientRepository, IUnitOfWork unitOfWork,
-        ICarsService carsService, IBookingRepository bookingRepository, IBillRepository billRepository)
-    {
-        _billRepository = billRepository;
-        _bookingRepository = bookingRepository;
-        _carsService = carsService;
-        _clientRepository = clientRepository;
-        _unitOfWork = unitOfWork;
-        _tripDetailRepository = tripDetailRepository;
-        _tripRepository = tripRepository;
-    }
-
     public async Task<List<Trip>> GetTrips()
     {
-        return await _tripRepository.Get();
+        return await tripRepository.Get();
     }
 
     public async Task<List<Trip>> GetPagedTrips(int page, int limit)
     {
-        return await _tripRepository.GetPaged(page, limit);
+        return await tripRepository.GetPaged(page, limit);
     }
 
     public async Task<int> GetCountTrips()
     {
-        return await _tripRepository.GetCount();
+        return await tripRepository.GetCount();
     }
 
     public async Task<(List<TripHistoryDto> Items, int TotalCount)> GetPagedHistoryByUserId(int userId, int page,
         int limit)
     {
-        var clients = await _clientRepository.GetClientByUserId(userId);
+        var clients = await clientRepository.GetClientByUserId(userId);
         var client = clients.FirstOrDefault();
         if (client == null) return ([], 0);
 
-        return await _tripRepository.GetHistoryByClientId(client.Id, page, limit);
+        return await tripRepository.GetHistoryByClientId(client.Id, page, limit);
     }
 
     public async Task<List<TripWithInfoDto>> GetTripWithInfo(int id)
     {
-        return await _tripRepository.GetTripWithDetailsById(id);
+        return await tripRepository.GetTripWithDetailsById(id);
     }
 
     public async Task<CurrentTripDto?> GetActiveTripByClientId(int userId)
     {
-        var client = await _clientRepository.GetClientByUserId(userId);
+        var client = await clientRepository.GetClientByUserId(userId);
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
-        return await _tripRepository.GetActiveTripDtoByClientId(clientId);
+        return await tripRepository.GetActiveTripDtoByClientId(clientId);
     }
 
     public async Task<TripFinishResult> FinishTripAsync(FinishTripRequest request)
     {
-        await _unitOfWork.BeginTransactionAsync();
+        await unitOfWork.BeginTransactionAsync();
         try
         {
-            var billId = await _tripRepository.FinishTripAsync(
+            var billId = await tripRepository.FinishTripAsync(
                 request.TripId,
                 request.Distance,
                 request.EndLocation,
                 request.FuelLevel
             );
 
-            await _unitOfWork.CommitTransactionAsync();
+            await unitOfWork.CommitTransactionAsync();
 
-            var bill = await _billRepository.GetById(billId);
+            var bill = await billRepository.GetById(billId);
 
             return new TripFinishResult(billId, bill?.Amount, "Поездка успешно завершена");
         }
         catch
         {
-            await _unitOfWork.RollbackTransactionAsync();
+            await unitOfWork.RollbackTransactionAsync();
             throw;
         }
     }
 
     public async Task<bool> CancelTripAsync(int tripId)
     {
-        await _tripRepository.CancelTripAsync(tripId);
+        await tripRepository.CancelTripAsync(tripId);
         return true;
     }
 
     public async Task<int> CreateTripAsync(TripCreateRequest request)
     {
-        await _unitOfWork.BeginTransactionAsync();
+        await unitOfWork.BeginTransactionAsync();
         try
         {
             var (trip, error) = Trip.Create(
@@ -116,7 +104,7 @@ public class TripService : ITripService
 
             if (!string.IsNullOrWhiteSpace(error)) throw new ArgumentException(error);
 
-            var tripId = await _tripRepository.Create(trip);
+            var tripId = await tripRepository.Create(trip);
 
             var (tripDetail, errorTripDetail) = TripDetail.Create(
                 0, tripId,
@@ -128,23 +116,23 @@ public class TripService : ITripService
 
             if (!string.IsNullOrWhiteSpace(errorTripDetail)) throw new ArgumentException(errorTripDetail);
 
-            await _tripDetailRepository.Create(tripDetail);
-            await _carsService.MarkCarAsUnavailableAsync(request.CarId);
+            await tripDetailRepository.Create(tripDetail);
+            await carsService.MarkCarAsUnavailableAsync(request.CarId);
 
-            await _unitOfWork.CommitTransactionAsync();
+            await unitOfWork.CommitTransactionAsync();
 
             return tripId;
         }
         catch
         {
-            await _unitOfWork.RollbackTransactionAsync();
+            await unitOfWork.RollbackTransactionAsync();
             throw;
         }
     }
 
     public async Task<int> UpdateTrip(int id, TripUpdateRequest request)
     {
-        var tripId = await _tripRepository.Update(
+        var tripId = await tripRepository.Update(
             id,
             request.BookingId,
             request.StatusId,
@@ -160,17 +148,17 @@ public class TripService : ITripService
         if (request.EndTime == null && !isFinished && !isCancelled)
             return tripId;
 
-        var bookings = await _bookingRepository.GetById(request.BookingId);
+        var bookings = await bookingRepository.GetById(request.BookingId);
         var booking = bookings.FirstOrDefault()
                       ?? throw new NotFoundException("Booking not found for this trip");
 
-        await _carsService.MarkCarAsAvailableAsync(booking.CarId);
+        await carsService.MarkCarAsAvailableAsync(booking.CarId);
 
         return tripId;
     }
 
     public async Task<int> DeleteTrip(int id)
     {
-        return await _tripRepository.Delete(id);
+        return await tripRepository.Delete(id);
     }
 }
