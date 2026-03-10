@@ -78,6 +78,11 @@ public class ClientDocument
             error = "File path can't be empty";
         if (filePath is { Length: > MaxFilePathLength })
             error = $"Type can't be longer than {MaxFilePathLength} symbols";
+        
+        if(error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var clientDocument =
             new ClientDocument(id, clientId, type, licenseCategory, number?.ToUpper(), issueDate, expiryDate, filePath);

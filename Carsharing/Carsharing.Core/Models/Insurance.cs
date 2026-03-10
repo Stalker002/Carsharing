@@ -77,6 +77,11 @@ public class Insurance
 
         if (cost < 0)
             error = "Cost must be positive";
+        
+        if(error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var insurance = new Insurance(id, carId, statusId, type, company, policyNumber, startDate, endDate, cost);
         return (insurance, error);

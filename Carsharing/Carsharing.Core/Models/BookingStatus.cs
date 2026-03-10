@@ -24,7 +24,9 @@ public class BookingStatus
         if (!string.IsNullOrEmpty(nameError)) errors.Add(nameError);
 
         if (errors.Count > 0)
+        {
             return (null, errors)!;
+        }
 
         var bookingStatus = new BookingStatus(id, name);
 

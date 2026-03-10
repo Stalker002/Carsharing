@@ -46,6 +46,11 @@ public class Bill
 
         if (remainingAmount < 0)
             error = "Remaining amount must be positive";
+        
+        if(error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var bill = new Bill(id, tripId, promocodeId, statusId, issueDate, amount, remainingAmount);
         return (bill, error);

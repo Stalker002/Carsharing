@@ -24,7 +24,9 @@ public class BillStatus
         if (!string.IsNullOrEmpty(nameError)) errors.Add(nameError);
 
         if (errors.Count > 0)
+        {
             return (null, errors)!;
+        }
 
         var billStatus = new BillStatus(id, name);
 

@@ -65,6 +65,11 @@ public class Car
             < MinFuelLevelLength => "The fuel in the car must be positive",
             _ => error
         };
+        
+        if(error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var car = new Car(id, carStatusId, tariffId, categoryId, specificationId, location, fuelLevel, imagePath);
 
