@@ -52,6 +52,11 @@ public class Promocode
 
         if (startDate > endDate)
             error = "Start date can not exceed end date ";
+        
+        if(error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var promocode = new Promocode(id, statusId, code, discount, startDate, endDate);
         return (promocode, error);

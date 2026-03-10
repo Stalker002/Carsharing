@@ -39,6 +39,11 @@ public class Maintenance
 
         if (cost < 0)
             error = "Cost must be positive";
+        
+        if(error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var maintenance = new Maintenance(id, carId, workType, description, cost, date);
 

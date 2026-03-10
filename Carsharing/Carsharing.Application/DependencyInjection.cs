@@ -1,7 +1,6 @@
 ﻿using Carsharing.Application.Abstractions;
 using Carsharing.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace Carsharing.Application;
 
@@ -9,10 +8,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
-        // 2. Сюда же можно перенести регистрацию Валидаторов (FluentValidation)
-        // services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        // services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
         services.AddScoped<IBillsService, BillsService>();
         services.AddScoped<IBillStatusesService, BillStatusesService>();

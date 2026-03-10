@@ -115,7 +115,7 @@ public class ClientsController : ControllerBase
         if (clientError is { Length: > 0 })
             return BadRequest(clientError);
 
-        var clientId = await _clientsService.CreateClient(client!);
+        var clientId = await _clientsService.CreateClient(client);
 
         return Ok(clientId);
     }
@@ -143,7 +143,7 @@ public class ClientsController : ControllerBase
         if (clientError is { Length: > 0 })
             return BadRequest(clientError);
 
-        var clientId = await _clientsService.CreateClientWithUser(client!, user!);
+        var clientId = await _clientsService.CreateClientWithUser(client, user);
 
         return Ok(new { ClientId = clientId, Message = "Registration successful" });
     }

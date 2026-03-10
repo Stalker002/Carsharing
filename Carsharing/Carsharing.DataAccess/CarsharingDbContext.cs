@@ -9,7 +9,8 @@ public class CarsharingDbContext : DbContext
 {
     private readonly IConfiguration _configuration;
 
-    public CarsharingDbContext(IConfiguration configuration)
+    public CarsharingDbContext(DbContextOptions<CarsharingDbContext> options, IConfiguration configuration) 
+        : base(options) 
     {
         _configuration = configuration;
     }
@@ -43,10 +44,13 @@ public class CarsharingDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder
-            .UseNpgsql(_configuration.GetConnectionString(nameof(CarsharingDbContext)))
-            .UseLoggerFactory(CreateLoggerFactory())
-            .EnableSensitiveDataLogging(false);
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder
+                .UseNpgsql(_configuration.GetConnectionString(nameof(CarsharingDbContext)))
+                .UseLoggerFactory(CreateLoggerFactory())
+                .EnableSensitiveDataLogging(false);
+        }
     }
 
     private static ILoggerFactory CreateLoggerFactory()

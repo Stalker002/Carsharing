@@ -8,10 +8,7 @@ public class BillStatusRepository : IBillStatusRepository
 {
     private readonly CarsharingDbContext _context;
 
-    public BillStatusRepository(CarsharingDbContext context)
-    {
-        _context = context;
-    }
+    public BillStatusRepository(CarsharingDbContext context) => _context = context;
 
     public async Task<List<BillStatus>> Get()
     {

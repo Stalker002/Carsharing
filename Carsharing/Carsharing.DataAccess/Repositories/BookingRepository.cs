@@ -7,18 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.DataAccess.Repositories;
 
-public class BookingRepository : IBookingRepository
+public class BookingRepository(CarsharingDbContext context) : IBookingRepository
 {
-    private readonly CarsharingDbContext _context;
-
-    public BookingRepository(CarsharingDbContext context)
-    {
-        _context = context;
-    }
-
     public async Task<List<Booking>> Get()
     {
-        var bookingEntity = await _context.Booking
+        var bookingEntity = await context.Booking
             .AsNoTracking()
             .ToListAsync();
 
@@ -37,7 +30,7 @@ public class BookingRepository : IBookingRepository
 
     public async Task<List<Booking>> GetPaged(int page, int limit)
     {
-        var bookingEntity = await _context.Booking
+        var bookingEntity = await context.Booking
             .AsNoTracking()
             .Skip((page - 1) * limit)
             .Take(limit)
@@ -60,12 +53,12 @@ public class BookingRepository : IBookingRepository
 
     public async Task<int> GetCount()
     {
-        return await _context.Booking.CountAsync();
+        return await context.Booking.CountAsync();
     }
 
     public async Task<List<Booking>> GetById(int id)
     {
-        var bookingEntity = await _context.Booking
+        var bookingEntity = await context.Booking
             .Where(b => b.Id == id)
             .AsNoTracking()
             .ToListAsync();
@@ -85,7 +78,7 @@ public class BookingRepository : IBookingRepository
 
     public async Task<List<Booking>> GetByClientId(int clientId)
     {
-        var bookingEntity = await _context.Booking
+        var bookingEntity = await context.Booking
             .Where(b => b.ClientId == clientId)
             .AsNoTracking()
             .ToListAsync();
@@ -105,7 +98,7 @@ public class BookingRepository : IBookingRepository
 
     public async Task<List<Booking>> GetPagedByClientId(int clientId, int page, int limit)
     {
-        var bookingEntity = await _context.Booking
+        var bookingEntity = await context.Booking
             .Where(b => b.ClientId == clientId)
             .OrderByDescending(b => b.StartTime)
             .ThenByDescending(b => b.Id)
@@ -129,12 +122,12 @@ public class BookingRepository : IBookingRepository
 
     public async Task<int> GetCountByClient(int clientId)
     {
-        return await _context.Booking.Where(b => b.ClientId == clientId).CountAsync();
+        return await context.Booking.Where(b => b.ClientId == clientId).CountAsync();
     }
 
     public async Task<List<Booking>> GetByCarId(int carId)
     {
-        var bookingEntity = await _context.Booking
+        var bookingEntity = await context.Booking
             .Where(b => b.CarId == carId)
             .AsNoTracking()
             .ToListAsync();
@@ -154,7 +147,7 @@ public class BookingRepository : IBookingRepository
 
     public async Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int id)
     {
-        return await _context.Booking
+        return await context.Booking
             .AsNoTracking()
             .Where(b => b.Id == id)
             .Select(b => new BookingWithFullInfoDto(
@@ -170,7 +163,7 @@ public class BookingRepository : IBookingRepository
 
     public async Task<int> Create(Booking booking)
     {
-        var hasActiveBooking = await _context.Booking
+        var hasActiveBooking = await context.Booking
             .AnyAsync(b =>
                 b.ClientId == booking.ClientId &&
                 b.StatusId == (int)BookingStatusEnum.Active);
@@ -190,13 +183,6 @@ public class BookingRepository : IBookingRepository
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception booking: {error}");
 
-        var overlapping = await _context.Car.AnyAsync(c =>
-            c.StatusId != (int)CarStatusEnum.Available
-            && c.Id == booking.CarId
-        );
-        if (overlapping)
-            throw new ArgumentException("Автомобиль недоступен на выбранное время");
-
         var bookingEntities = new BookingEntity
         {
             StatusId = booking.StatusId,
@@ -206,8 +192,8 @@ public class BookingRepository : IBookingRepository
             EndTime = booking.EndTime
         };
 
-        await _context.Booking.AddAsync(bookingEntities);
-        await _context.SaveChangesAsync();
+        await context.Booking.AddAsync(bookingEntities);
+        await context.SaveChangesAsync();
 
         return bookingEntities.Id;
     }
@@ -215,7 +201,7 @@ public class BookingRepository : IBookingRepository
     public async Task<int> Update(int id, int? statusId, int? carId, int? clientId,
         DateTime? startTime, DateTime? endTime)
     {
-        var booking = await _context.Booking.FirstOrDefaultAsync(b => b.Id == id)
+        var booking = await context.Booking.FirstOrDefaultAsync(b => b.Id == id)
                       ?? throw new Exception("Booking not found");
 
         if (statusId.HasValue)
@@ -244,14 +230,14 @@ public class BookingRepository : IBookingRepository
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception booking: {error}");
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
 
         return booking.Id;
     }
 
     public async Task<int> Delete(int id)
     {
-        var bookingEntity = await _context.Booking
+        var bookingEntity = await context.Booking
             .Where(b => b.Id == id)
             .ExecuteDeleteAsync();
 

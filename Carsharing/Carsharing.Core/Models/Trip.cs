@@ -51,6 +51,11 @@ public class Trip
 
         if (distance < 0)
             error = "Distance must be positive";
+        
+        if(error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var trip = new Trip(id, bookingId, statusId, tariffType, startTime, endTime, duration, distance);
         return (trip, error);

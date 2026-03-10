@@ -2,6 +2,7 @@
 using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Enum;
+using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Services;
@@ -76,11 +77,20 @@ public class BookingsService : IBookingsService
 
     public async Task<int> CreateBooking(Booking booking)
     {
-        await _carRepository?.UpdateStatus(
-            booking.CarId, (int)CarStatusEnum.Reserved
-        )!;
+        var cars = await _carRepository.GetById(booking.CarId);
+        var car = cars.FirstOrDefault();
+    
+        if (car == null)
+            throw new NotFoundException("Автомобиль не найден");
+        
+        if (car.CarStatusId != (int)CarStatusEnum.Available)
+            throw new ConflictException("Автомобиль недоступен на выбранное время");
 
-        return await _bookingRepository.Create(booking);
+        var bookingId = await _bookingRepository.Create(booking);
+
+        await _carRepository.UpdateStatus(booking.CarId, (int)CarStatusEnum.Reserved);
+
+        return bookingId;
     }
 
     public async Task<int> UpdateBooking(int id, int? statusId, int? carId, int? clientId,

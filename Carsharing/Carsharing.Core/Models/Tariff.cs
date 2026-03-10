@@ -42,6 +42,11 @@ public class Tariff
 
         if (pricePerDay <= 0)
             error = "Price per day must be positive";
+        
+        if(error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var tariff = new Tariff(id, name, pricePerMinute, pricePerKm, pricePerDay);
         return (tariff, error);

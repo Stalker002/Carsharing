@@ -23,6 +23,11 @@ public class Category
 
         if (name is { Length: > MaxNameLength })
             error = $"Name can't be longer than {MaxNameLength} symbols";
+        
+        if(error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var category = new Category(id, name);
         return (category, error);
