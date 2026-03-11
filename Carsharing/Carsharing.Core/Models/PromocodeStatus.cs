@@ -24,7 +24,9 @@ public class PromocodeStatus
         if (!string.IsNullOrEmpty(nameError)) errors.Add(nameError);
 
         if (errors.Count > 0)
+        {
             return (null, errors)!;
+        }
 
         var promocodeStatus = new PromocodeStatus(id, name);
 

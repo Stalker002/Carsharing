@@ -24,7 +24,9 @@ public class CarStatus
         if (!string.IsNullOrEmpty(nameError)) errors.Add(nameError);
 
         if (errors.Count > 0)
+        {
             return (null, errors)!;
+        }
 
         var carStatus = new CarStatus(id, name);
 

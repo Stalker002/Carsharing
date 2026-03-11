@@ -22,6 +22,11 @@ public class Favorites
 
         if (clientId < 0)
             error = "Client Id must be positive";
+        
+        if(error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var favorites = new Favorites(id, clientId, carId);
 

@@ -1,0 +1,72 @@
+using Carsharing.Application.Services;
+using Carsharing.Core.Abstractions;
+using Carsharing.Core.Exceptions;
+using Carsharing.Core.Models;
+using Moq;
+
+namespace Carsharing.Tests.Application;
+
+public class TripDetailsServiceTests
+{
+    private readonly Mock<ITripDetailRepository> _tripDetailRepoMock;
+    private readonly Mock<IInsuranceRepository> _insuranceRepoMock;
+    private readonly TripDetailsService _service;
+
+    public TripDetailsServiceTests()
+    {
+        _tripDetailRepoMock = new Mock<ITripDetailRepository>();
+        _insuranceRepoMock = new Mock<IInsuranceRepository>();
+
+        _service = new TripDetailsService(
+            _tripDetailRepoMock.Object, 
+            _insuranceRepoMock.Object);
+    }
+
+    [Fact]
+    public async Task CreateTripDetail_CarNotFound_ThrowsNotFoundException()
+    {
+        var tripDetail = TripDetail.Create(1, 10, "Point A", "Point B", false, 0, 0).tripDetail;
+
+        _tripDetailRepoMock.Setup(x => x.GetCarIdByTripId(tripDetail.TripId)).ReturnsAsync(0);
+
+        var ex = await Assert.ThrowsAsync<NotFoundException>(() => _service.CreateTripDetail(tripDetail));
+        Assert.Contains("или связанный автомобиль не найдены", ex.Message);
+
+        _tripDetailRepoMock.Verify(x => x.Create(It.IsAny<TripDetail>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task CreateTripDetail_WithInsuranceButNoActivePolicy_ThrowsConflictException()
+    {
+        const int carId = 5;
+        var tripDetail = TripDetail.Create(1, 10, "Point A", "Point B", true, 0, 0).tripDetail;
+
+        _tripDetailRepoMock.Setup(x => x.GetCarIdByTripId(tripDetail.TripId)).ReturnsAsync(carId);
+
+        _insuranceRepoMock.Setup(x => x.GetActiveByCarId(carId)).ReturnsAsync(new List<Insurance>());
+
+        var ex = await Assert.ThrowsAsync<ConflictException>(() => _service.CreateTripDetail(tripDetail));
+        Assert.Equal("Нельзя начать поездку с опцией страховки: у автомобиля нет активного полиса", ex.Message);
+
+        _tripDetailRepoMock.Verify(x => x.Create(It.IsAny<TripDetail>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task CreateTripDetail_ValidData_CallsRepositoryCreate()
+    {
+        const int carId = 5;
+        var tripDetail = TripDetail.Create(1, 10, "Point A", "Point B", false, 0, 0).tripDetail;
+
+        _tripDetailRepoMock.Setup(x => x.GetCarIdByTripId(tripDetail.TripId)).ReturnsAsync(carId);
+        
+        _tripDetailRepoMock.Setup(x => x.Create(tripDetail)).ReturnsAsync(99);
+
+        var resultId = await _service.CreateTripDetail(tripDetail);
+
+        Assert.Equal(99, resultId);
+        
+        _tripDetailRepoMock.Verify(x => x.Create(tripDetail), Times.Once);
+        
+        _insuranceRepoMock.Verify(x => x.GetActiveByCarId(It.IsAny<int>()), Times.Never);
+    }
+}

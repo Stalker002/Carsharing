@@ -58,7 +58,7 @@ public class Program
 
         builder.Services.AddOpenApi();
 
-        builder.Services.AddDbContext<CarsharingDbContext>();
+        builder.Services.AddDbContext<CarsharingDbContext>(_ => { });
 
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
         builder.Services.AddScoped<IJwtProvider, JwtProvider>();
