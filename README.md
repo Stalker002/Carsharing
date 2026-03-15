@@ -81,6 +81,5 @@ The relational database is highly normalized and includes the following main ent
 ## 👨‍💻 Author
 
 **<Твое Имя/Фамилия>**
-* LinkedIn: [Link to your LinkedIn](https://www.linkedin.com/in/michail-kolupaev/)
+* LinkedIn: [Link LinkedIn](https://www.linkedin.com/in/michail-kolupaev/)
 * Email: michael.kolupaev@gmail.com
-```
