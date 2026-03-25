@@ -113,7 +113,7 @@ public class BillRepository : IBillRepository
             .Where(b => b.Id == id)
             .Select(b => new BillWithInfoDto(
                 b.Id,
-                b.BillStatus!.Name,
+                b.BillStatus!.Name!,
                 b.Promocode != null ? b.Promocode.Code : null,
                 b.IssueDate,
                 b.Amount,
@@ -136,7 +136,7 @@ public class BillRepository : IBillRepository
             .Take(limit)
             .Select(b => new BillWithMinInfoDto(
                 b.Id,
-                b.BillStatus!.Name,
+                b.BillStatus!.Name!,
                 b.IssueDate,
                 b.Amount,
                 b.RemainingAmount,
@@ -226,7 +226,7 @@ public class BillRepository : IBillRepository
 
     public async Task<int> Delete(int id)
     {
-        var billEntity = await _context.Bill
+        await _context.Bill
             .Where(b => b.Id == id)
             .ExecuteDeleteAsync();
 

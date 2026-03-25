@@ -22,7 +22,7 @@ public class CarStatusRepository : ICarStatusRepository
         var carStatuses = carStatusEntities
             .Select(b => CarStatus.Create(
                 b.Id,
-                b.Name).carStatus)
+                b.Name!).carStatus)
             .ToList();
 
         return carStatuses;
@@ -38,7 +38,7 @@ public class CarStatusRepository : ICarStatusRepository
         var carStatuses = carStatusEntities
             .Select(b => CarStatus.Create(
                 b.Id,
-                b.Name).carStatus)
+                b.Name!).carStatus)
             .ToList();
 
         return carStatuses;

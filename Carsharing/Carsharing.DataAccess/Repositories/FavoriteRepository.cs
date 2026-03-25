@@ -41,9 +41,9 @@ public class FavoriteRepository : IFavoriteRepository
             .Take(limit)
             .Select(f => new CarWithMinInfoDto(
                 f.Car!.Id,
-                f.Car.CarStatus!.Name,
+                f.Car.CarStatus!.Name!,
                 f.Car.Tariff!.PricePerDay,
-                f.Car.Category!.Name,
+                f.Car.Category!.Name!,
                 f.Car.SpecificationCar!.FuelType!,
                 f.Car.SpecificationCar.MaxFuel,
                 f.Car.SpecificationCar.Brand!,

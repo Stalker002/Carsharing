@@ -136,7 +136,7 @@ public class CarsService : ICarsService
             var carId = await _carRepository.Create(car);
 
             await _unitOfWork.CommitTransactionAsync();
-            return (carId, null)!;
+            return (carId, string.Empty);
         }
         catch (Exception ex)
         {
@@ -207,7 +207,7 @@ public class CarsService : ICarsService
 
             await _unitOfWork.CommitTransactionAsync();
 
-            return (true, null)!;
+            return (true, string.Empty);
         }
         catch (Exception ex)
         {

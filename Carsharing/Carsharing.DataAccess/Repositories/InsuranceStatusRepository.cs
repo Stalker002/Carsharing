@@ -22,7 +22,7 @@ public class InsuranceStatusRepository : IInsuranceStatusRepository
         var insuranceStatuses = insuranceStatusEntities
             .Select(b => InsuranceStatus.Create(
                 b.Id,
-                b.Name).insuranceStatus)
+                b.Name!).insuranceStatus)
             .ToList();
 
         return insuranceStatuses;

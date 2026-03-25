@@ -22,7 +22,7 @@ public class FineStatusRepository : IFineStatusRepository
         var fineStatuses = fineStatusEntities
             .Select(b => FineStatus.Create(
                 b.Id,
-                b.Name).fineStatus)
+                b.Name!).fineStatus)
             .ToList();
 
         return fineStatuses;

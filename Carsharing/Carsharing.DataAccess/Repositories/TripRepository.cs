@@ -161,7 +161,7 @@ public class TripRepository : ITripRepository
                 t.Booking.CarId,
                 t.Booking.Car.SpecificationCar.Model,
                 t.Booking.Car.ImagePath,
-                t.Bill != null && t.Bill.StatusId == (int)BillStatusEnum.Paid ? "Оплачено" : t.TripStatus!.Name,
+                t.Bill != null && t.Bill.StatusId == (int)BillStatusEnum.Paid ? "Оплачено" : t.TripStatus!.Name!,
                 t.StartTime,
                 t.EndTime,
                 t.Bill != null ? t.Bill.Amount : 0,

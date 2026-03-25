@@ -22,7 +22,7 @@ public class BookingStatusRepository : IBookingStatusRepository
         var bookingStatuses = bookingStatusEntities
             .Select(b => BookingStatus.Create(
                 b.Id,
-                b.Name).bookingStatus)
+                b.Name!).bookingStatus)
             .ToList();
 
         return bookingStatuses;

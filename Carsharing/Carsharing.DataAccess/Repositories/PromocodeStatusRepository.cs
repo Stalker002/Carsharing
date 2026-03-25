@@ -22,7 +22,7 @@ public class PromocodeStatusRepository : IPromocodeStatusRepository
         var promocodeStatuses = promocodeStatusEntities
             .Select(b => PromocodeStatus.Create(
                 b.Id,
-                b.Name).promocodeStatus)
+                b.Name!).promocodeStatus)
             .ToList();
 
         return promocodeStatuses;

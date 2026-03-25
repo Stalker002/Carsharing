@@ -58,7 +58,7 @@ public class ClientDocumentsService : IClientDocumentsService
             var documentId = await _clientDocumentRepository.Create(document);
 
             await _unitOfWork.CommitTransactionAsync();
-            return (documentId, null)!;
+            return (documentId, string.Empty);
         }
         catch (Exception ex)
         {
@@ -113,7 +113,7 @@ public class ClientDocumentsService : IClientDocumentsService
                 _imageService.DeleteFile(docEntity.FilePath);
             }
 
-            return (true, null)!;
+            return (true, string.Empty);
         }
         catch (Exception ex)
         {
@@ -136,7 +136,7 @@ public class ClientDocumentsService : IClientDocumentsService
         {
             var documents = await _clientDocumentRepository.GetById(id);
             var doc = documents.FirstOrDefault();
-            if (doc == null) return (true, null)!;
+            if (doc == null) return (true, string.Empty);
             var filePath = doc.FilePath;
 
             await _clientDocumentRepository.Delete(id);
@@ -146,7 +146,7 @@ public class ClientDocumentsService : IClientDocumentsService
                 _imageService.DeleteFile(filePath);
             }
 
-            return (true, null)!;
+            return (true, string.Empty);
         }
         catch (Exception ex)
         {

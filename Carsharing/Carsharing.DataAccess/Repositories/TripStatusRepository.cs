@@ -22,7 +22,7 @@ public class TripStatusRepository : ITripStatusRepository
         var tripStatuses = tripStatusEntities
             .Select(b => TripStatus.Create(
                 b.Id,
-                b.Name).tripStatus)
+                b.Name!).tripStatus)
             .ToList();
 
         return tripStatuses;

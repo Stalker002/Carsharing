@@ -148,11 +148,11 @@ public class CarRepository : ICarRepository
             .Where(c => c.Id == id)
             .Select(c => new CarWithInfoDto(
                 c.Id,
-                c.CarStatus!.Name,
+                c.CarStatus!.Name!,
                 c.Tariff!.PricePerMinute,
                 c.Tariff.PricePerKm,
                 c.Tariff.PricePerDay,
-                c.Category!.Name,
+                c.Category!.Name!,
                 c.SpecificationCar!.FuelType!,
                 c.SpecificationCar.Brand!,
                 c.SpecificationCar.Model!,
@@ -206,9 +206,9 @@ public class CarRepository : ICarRepository
             .Take(limit)
             .Select(c => new CarWithMinInfoDto(
                 c.Id,
-                c.CarStatus!.Name,
+                c.CarStatus!.Name!,
                 c.Tariff!.PricePerDay,
-                c.Category!.Name,
+                c.Category!.Name!,
                 c.SpecificationCar!.FuelType!,
                 c.SpecificationCar.MaxFuel,
                 c.SpecificationCar.Brand!,
@@ -230,9 +230,9 @@ public class CarRepository : ICarRepository
             .Take(limit)
             .Select(c => new CarWithMinInfoDto(
                 c.Id,
-                c.CarStatus!.Name,
+                c.CarStatus!.Name!,
                 c.Tariff!.PricePerDay,
-                c.Category!.Name,
+                c.Category!.Name!,
                 c.SpecificationCar!.FuelType!,
                 c.SpecificationCar.MaxFuel,
                 c.SpecificationCar.Brand!,
@@ -356,7 +356,7 @@ public class CarRepository : ICarRepository
 
     public async Task<int> Delete(int id)
     {
-        var carEntity = await _context.Car
+        await _context.Car
             .Where(t => t.Id == id)
             .ExecuteDeleteAsync();
 

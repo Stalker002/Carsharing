@@ -152,7 +152,7 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
             .Where(b => b.Id == id)
             .Select(b => new BookingWithFullInfoDto(
                 b.Id,
-                b.BookingStatus!.Name,
+                b.BookingStatus!.Name!,
                 $"{b.Client!.Name} {b.Client.Surname}",
                 $"{b.Car!.SpecificationCar!.Brand} {b.Car.SpecificationCar.Model} ({b.Car.SpecificationCar.StateNumber})",
                 b.StartTime,
@@ -237,7 +237,7 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
 
     public async Task<int> Delete(int id)
     {
-        var bookingEntity = await context.Booking
+        await context.Booking
             .Where(b => b.Id == id)
             .ExecuteDeleteAsync();
 
