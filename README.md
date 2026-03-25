@@ -80,6 +80,6 @@ The relational database is highly normalized and includes the following main ent
 
 ## 👨‍💻 Author
 
-**<Твое Имя/Фамилия>**
+**Michael Kolupaev**
 * LinkedIn: [Link LinkedIn](https://www.linkedin.com/in/michail-kolupaev/)
 * Email: michael.kolupaev@gmail.com
