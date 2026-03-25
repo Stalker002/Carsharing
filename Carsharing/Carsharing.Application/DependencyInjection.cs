@@ -10,6 +10,9 @@ public static class DependencyInjection
     {
         // services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
+        // 2. Сюда же можно перенести регистрацию Валидаторов (FluentValidation)
+        // services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
         services.AddScoped<IBillsService, BillsService>();
         services.AddScoped<IBillStatusesService, BillStatusesService>();
         services.AddScoped<IBookingsService, BookingsService>();
