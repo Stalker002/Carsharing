@@ -1,5 +1,6 @@
-﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.Abstractions;
 using Carsharing.Contracts;
+using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -74,7 +75,7 @@ public class UsersController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<UsersResponse>>> GetMyUser()
     {
-        var userId = int.Parse(User.FindFirst("userId")!.Value);
+        var userId = User.GetRequiredUserId();
 
         var users = await _usersService.GetUserById(userId);
         var response = users.Select(u =>

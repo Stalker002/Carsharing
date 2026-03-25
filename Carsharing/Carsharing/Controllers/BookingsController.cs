@@ -1,7 +1,8 @@
-﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.Abstractions;
 using Carsharing.Application.DTOs;
 using Carsharing.Contracts;
 using Carsharing.Core.Models;
+using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,7 +51,7 @@ public class BookingsController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<BookingsResponse>>> GetBookingByClientId()
     {
-        var userId = int.Parse(User.FindFirst("userId")!.Value);
+        var userId = User.GetRequiredUserId();
 
         var bookings = await _bookingsService.GetBookingsByClient(userId);
         var response = bookings.Select(b =>
@@ -65,7 +66,7 @@ public class BookingsController : ControllerBase
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
     {
-        var userId = int.Parse(User.FindFirst("userId")!.Value);
+        var userId = User.GetRequiredUserId();
 
         var totalCount = await _bookingsService.GetCountBookingsByClient(userId);
         var bookings = await _bookingsService.GetPagedBookingsByClient(userId, page, limit);

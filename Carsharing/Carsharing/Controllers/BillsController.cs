@@ -1,7 +1,8 @@
-﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.Abstractions;
 using Carsharing.Application.DTOs;
 using Carsharing.Contracts;
 using Carsharing.Core.Models;
+using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -62,15 +63,18 @@ public class BillsController : ControllerBase
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<BillsResponse>>> GetBillById(int id)
     {
-        var bills = await _billsService.GetBillById(id);
+        var bill = await _billsService.GetBillById(id);
+        if (bill == null)
+            return NotFound("Счёт не найден");
+
         var response = new BillsResponse(
-            bills!.Id,
-            bills.TripId,
-            bills.PromocodeId,
-            bills.StatusId,
-            bills.IssueDate,
-            bills.Amount,
-            bills.RemainingAmount);
+            bill.Id,
+            bill.TripId,
+            bill.PromocodeId,
+            bill.StatusId,
+            bill.IssueDate,
+            bill.Amount,
+            bill.RemainingAmount);
 
         return Ok(response);
     }
@@ -81,7 +85,7 @@ public class BillsController : ControllerBase
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25)
     {
-        var userId = int.Parse(User.FindFirst("userId")!.Value);
+        var userId = User.GetRequiredUserId();
 
         var totalCount = await _billsService.GetCountPagedBillWithMinInfoByUser(userId);
         var bills = await _billsService.GetPagedBillWithMinInfoByUserId(userId, page, limit);

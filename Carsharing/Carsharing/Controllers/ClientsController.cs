@@ -1,6 +1,7 @@
-﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.Abstractions;
 using Carsharing.Contracts;
 using Carsharing.Core.Models;
+using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -70,7 +71,7 @@ public class ClientsController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<ClientsResponse>>> GetClientByUserId()
     {
-        var userId = int.Parse(User.FindFirst("userId")!.Value);
+        var userId = User.GetRequiredUserId();
         var clients = await _clientsService.GetClientByUserId(userId);
         var response = clients.Select(cl =>
             new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email));
@@ -81,7 +82,7 @@ public class ClientsController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<ClientsResponse>>> GetMyDocuments()
     {
-        var userId = int.Parse(User.FindFirst("userId")!.Value);
+        var userId = User.GetRequiredUserId();
 
         var clients = await _clientsService.GetMyDocuments(userId);
         var response = clients.Select(d =>

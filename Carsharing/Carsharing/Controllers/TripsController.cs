@@ -1,6 +1,7 @@
-﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.Abstractions;
 using Carsharing.Application.DTOs;
 using Carsharing.Contracts;
+using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -53,7 +54,7 @@ public class TripsController : ControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int limit = 10)
     {
-        var userId = int.Parse(User.FindFirst("userId")!.Value);
+        var userId = User.GetRequiredUserId();
 
         var (items, totalCount) = await _tripService.GetPagedHistoryByUserId(userId, page, limit);
 
@@ -78,7 +79,7 @@ public class TripsController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<CurrentTripDto>> GetCurrentTrip()
     {
-        var userId = int.Parse(User.FindFirst("userId")!.Value);
+        var userId = User.GetRequiredUserId();
 
         var trip = await _tripService.GetActiveTripByClientId(userId);
         if (trip == null)
