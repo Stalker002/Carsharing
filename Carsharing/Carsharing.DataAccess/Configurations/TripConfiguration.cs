@@ -12,27 +12,38 @@ public class TripConfiguration : IEntityTypeConfiguration<TripEntity>
 
         builder.HasKey(x => x.Id);
 
+        builder.Property(tr => tr.Id)
+            .HasColumnName("trip_id");
+
         builder.Property(tr => tr.BookingId)
+            .HasColumnName("trip_booking_id")
             .IsRequired();
 
         builder.Property(tr => tr.StatusId)
+            .HasColumnName("trip_status_id")
             .IsRequired();
 
         builder.Property(tr => tr.TariffType)
+            .HasColumnName("trip_tariff_type")
+            .HasMaxLength(20)
             .IsRequired();
 
         builder.Property(tr => tr.StartTime)
+            .HasColumnName("trip_start_time")
             .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .IsRequired();
 
         builder.Property(tr => tr.EndTime)
+            .HasColumnName("trip_end_time")
             .IsRequired(false);
 
         builder.Property(tr => tr.Duration)
+            .HasColumnName("trip_duration")
             .HasDefaultValue(0m)
             .IsRequired(false);
 
         builder.Property(tr => tr.Distance)
+            .HasColumnName("trip_distance_km")
             .HasDefaultValue(0m)
             .IsRequired(false);
 
@@ -56,9 +67,16 @@ public class TripConfiguration : IEntityTypeConfiguration<TripEntity>
         builder.HasOne(tr => tr.TripStatus)
             .WithMany(s => s.Trip)
             .HasForeignKey(tr => tr.StatusId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
 
-        //Чек на не негативные продолжительность и протяженность
-        //Чек на не startTime > endTime
+        builder.ToTable(t => t.HasCheckConstraint(
+            "chk_trip_duration_nonneg",
+            "trip_duration IS NULL OR trip_duration >= 0"));
+        builder.ToTable(t => t.HasCheckConstraint(
+            "chk_trip_distance_nonneg",
+            "trip_distance_km IS NULL OR trip_distance_km >= 0"));
+        builder.ToTable(t => t.HasCheckConstraint(
+            "chk_trip_times",
+            "trip_start_time IS NULL OR trip_end_time IS NULL OR trip_start_time <= trip_end_time"));
     }
 }

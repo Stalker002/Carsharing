@@ -37,7 +37,7 @@ public class TripStatusConfiguration : IEntityTypeConfiguration<TripStatusEntity
             new TripStatusEntity
             {
                 Id = (int)TripStatusEnum.Cancelled,
-                Name = "Отменена"
+                Name = "Отменена системой"
             },
             new TripStatusEntity
             {

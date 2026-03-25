@@ -22,7 +22,7 @@ public class CarStatusConfiguration : IEntityTypeConfiguration<CarStatusEntity>
             new CarStatusEntity
             {
                 Id = (int)CarStatusEnum.Available,
-                Name = "Доступен"
+                Name = "Доступна"
             },
             new CarStatusEntity
             {

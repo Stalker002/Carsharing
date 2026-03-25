@@ -12,19 +12,27 @@ public class ReviewConfiguration : IEntityTypeConfiguration<ReviewEntity>
 
         builder.HasKey(x => x.Id);
 
+        builder.Property(r => r.Id)
+            .HasColumnName("review_id");
+
         builder.Property(r => r.ClientId)
+            .HasColumnName("review_client_id")
             .IsRequired();
 
         builder.Property(r => r.CarId)
+            .HasColumnName("review_car_id")
             .IsRequired();
 
         builder.Property(r => r.Rating)
+            .HasColumnName("review_rating")
             .IsRequired();
 
         builder.Property(r => r.Comment)
+            .HasColumnName("review_comment")
             .IsRequired();
 
         builder.Property(r => r.Date)
+            .HasColumnName("review_date")
             .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .IsRequired();
 
@@ -38,6 +46,8 @@ public class ReviewConfiguration : IEntityTypeConfiguration<ReviewEntity>
             .HasForeignKey(r => r.CarId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        //Можно сделать чек на рейтинг от 1 до 5
+        builder.ToTable(t => t.HasCheckConstraint(
+            "reviews_review_rating_check",
+            "review_rating >= 1 AND review_rating <= 5"));
     }
 }

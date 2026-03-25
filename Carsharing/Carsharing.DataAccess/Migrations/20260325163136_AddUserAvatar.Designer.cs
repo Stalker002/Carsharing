@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Carsharing.DataAccess.Migrations
 {
     [DbContext(typeof(CarsharingDbContext))]
-    [Migration("20260109204117_InitMigration")]
-    partial class InitMigration
+    [Migration("20260325163136_AddUserAvatar")]
+    partial class AddUserAvatar
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,21 +29,25 @@ namespace Carsharing.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("bill_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<decimal?>("Amount")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasColumnName("bill_amount");
 
                     b.Property<DateTime>("IssueDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("bill_issue_date")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int?>("PromocodeId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("bill_promocode_id");
 
                     b.Property<decimal?>("RemainingAmount")
                         .ValueGeneratedOnAdd()
@@ -53,10 +57,12 @@ namespace Carsharing.DataAccess.Migrations
                     b.Property<int>("StatusId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasDefaultValue(1);
+                        .HasDefaultValue(1)
+                        .HasColumnName("bill_status_id");
 
                     b.Property<int>("TripId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("bill_trip_id");
 
                     b.HasKey("Id");
 
@@ -67,7 +73,12 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasIndex("TripId")
                         .IsUnique();
 
-                    b.ToTable("bills", (string)null);
+                    b.ToTable("bills", null, t =>
+                        {
+                            t.HasCheckConstraint("bills_bill_remaining_amount_check", "bill_remaining_amount >= 0");
+
+                            t.HasCheckConstraint("chk_bill_amount_nonneg", "bill_amount IS NULL OR bill_amount >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.BillStatusEntity", b =>
@@ -114,26 +125,32 @@ namespace Carsharing.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("booking_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CarId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("booking_car_id");
 
                     b.Property<int>("ClientId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("booking_client_id");
 
                     b.Property<DateTime?>("EndTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("booking_end_time");
 
                     b.Property<DateTime?>("StartTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("booking_start_time")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("StatusId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("booking_status_id");
 
                     b.HasKey("Id");
 
@@ -143,7 +160,10 @@ namespace Carsharing.DataAccess.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("bookings", (string)null);
+                    b.ToTable("bookings", null, t =>
+                        {
+                            t.HasCheckConstraint("chk_booking_times", "booking_start_time IS NULL OR booking_end_time IS NULL OR booking_start_time < booking_end_time");
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.BookingStatusEntity", b =>
@@ -185,34 +205,43 @@ namespace Carsharing.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("car_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CategoryId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("car_category_id");
 
                     b.Property<decimal>("FuelLevel")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("numeric")
-                        .HasDefaultValue(0m);
+                        .HasDefaultValue(0m)
+                        .HasColumnName("car_fuel_level");
 
                     b.Property<string>("ImagePath")
-                        .HasColumnType("text");
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("car_image_path");
 
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("car_location");
 
                     b.Property<int>("SpecificationId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("car_specification_id");
 
                     b.Property<int>("StatusId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("car_status_id");
 
                     b.Property<int>("TariffId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("car_tariff_id");
 
                     b.HasKey("Id");
 
@@ -225,7 +254,10 @@ namespace Carsharing.DataAccess.Migrations
 
                     b.HasIndex("TariffId");
 
-                    b.ToTable("cars", (string)null);
+                    b.ToTable("cars", null, t =>
+                        {
+                            t.HasCheckConstraint("chk_fuel_level", "car_fuel_level >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.CarStatusEntity", b =>
@@ -249,7 +281,7 @@ namespace Carsharing.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Доступен"
+                            Name = "Доступна"
                         },
                         new
                         {
@@ -272,14 +304,16 @@ namespace Carsharing.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("category_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("category_name");
 
                     b.HasKey("Id");
 
@@ -290,37 +324,45 @@ namespace Carsharing.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("document_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ClientId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("document_client_id");
 
                     b.Property<DateOnly>("ExpiryDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("document_expiry_date");
 
                     b.Property<string>("FilePath")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("document_file_path");
 
                     b.Property<DateOnly>("IssueDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("document_issue_date");
 
                     b.Property<string>("LicenseCategory")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("document_license_category");
 
                     b.Property<string>("Number")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("document_number");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("document_type");
 
                     b.HasKey("Id");
 
@@ -333,31 +375,37 @@ namespace Carsharing.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("client_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("client_email");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("client_name");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("client_phone_number");
 
                     b.Property<string>("Surname")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("client_surname");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("client_user_id");
 
                     b.HasKey("Id");
 
@@ -370,7 +418,10 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("clients", (string)null);
+                    b.ToTable("clients", null, t =>
+                        {
+                            t.HasCheckConstraint("chk_client_email_format", "client_email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'");
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.FavoritesEntity", b =>
@@ -400,27 +451,33 @@ namespace Carsharing.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("fine_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasColumnName("fine_amount");
 
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fine_date")
                         .HasDefaultValueSql("CURRENT_DATE");
 
                     b.Property<int>("StatusId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("fine_status_id");
 
                     b.Property<int>("TripId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("fine_trip_id");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("fine_type");
 
                     b.HasKey("Id");
 
@@ -428,7 +485,10 @@ namespace Carsharing.DataAccess.Migrations
 
                     b.HasIndex("TripId");
 
-                    b.ToTable("fines", (string)null);
+                    b.ToTable("fines", null, t =>
+                        {
+                            t.HasCheckConstraint("chk_fine_amount_nonneg", "fine_amount >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.FineStatusEntity", b =>
@@ -470,38 +530,48 @@ namespace Carsharing.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("insurance_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CarId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("insurance_car_id");
 
                     b.Property<string>("Company")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("insurance_company");
 
                     b.Property<decimal>("Cost")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasColumnName("insurance_cost");
 
                     b.Property<DateOnly>("EndDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("insurance_end_date");
 
                     b.Property<string>("PolicyNumber")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("insurance_policy_number");
 
                     b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("insurance_start_date");
 
                     b.Property<int>("StatusId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("insurance_status_id");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("insurance_type");
 
                     b.HasKey("Id");
 
@@ -512,7 +582,10 @@ namespace Carsharing.DataAccess.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("insurances", (string)null);
+                    b.ToTable("insurance", null, t =>
+                        {
+                            t.HasCheckConstraint("chk_insurance_dates", "insurance_start_date IS NULL OR insurance_end_date IS NULL OR insurance_start_date <= insurance_end_date");
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.InsuranceStatusEntity", b =>
@@ -554,58 +627,74 @@ namespace Carsharing.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("maintenance_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CarId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("maintenance_car_id");
 
                     b.Property<decimal>("Cost")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasColumnName("maintenance_cost");
 
                     b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("maintenance_date");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("maintenance_description");
 
                     b.Property<string>("WorkType")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("maintenance_work_type");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CarId");
 
-                    b.ToTable("maintenances", (string)null);
+                    b.ToTable("maintenance", null, t =>
+                        {
+                            t.HasCheckConstraint("chk_maintenance_cost_nonneg", "maintenance_cost IS NULL OR maintenance_cost >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.PaymentEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("payment_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BillId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("payment_bill_id");
 
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("payment_date")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Method")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("text")
-                        .HasDefaultValue("Картой");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Картой")
+                        .HasColumnName("payment_method");
 
                     b.Property<decimal>("Sum")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasColumnName("payment_sum");
 
                     b.HasKey("Id");
 
@@ -618,26 +707,32 @@ namespace Carsharing.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("promocode_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("promocode_code");
 
                     b.Property<decimal>("Discount")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasColumnName("promocode_discount");
 
                     b.Property<DateOnly>("EndDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("promocode_end_date");
 
                     b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
+                        .HasColumnType("date")
+                        .HasColumnName("promocode_start_date");
 
                     b.Property<int>("StatusId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("promocode_status_id");
 
                     b.HasKey("Id");
 
@@ -646,7 +741,10 @@ namespace Carsharing.DataAccess.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("promocodes", (string)null);
+                    b.ToTable("promocodes", null, t =>
+                        {
+                            t.HasCheckConstraint("chk_promocode_dates", "promocode_start_date IS NULL OR promocode_end_date IS NULL OR promocode_start_date <= promocode_end_date");
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.PromocodeStatusEntity", b =>
@@ -675,7 +773,7 @@ namespace Carsharing.DataAccess.Migrations
                         new
                         {
                             Id = 21,
-                            Name = "Истек"
+                            Name = "Истёк"
                         },
                         new
                         {
@@ -688,27 +786,33 @@ namespace Carsharing.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("review_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CarId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("review_car_id");
 
                     b.Property<int>("ClientId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("review_client_id");
 
                     b.Property<string>("Comment")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("review_comment");
 
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("review_date")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<short>("Rating")
-                        .HasColumnType("smallint");
+                        .HasColumnType("smallint")
+                        .HasColumnName("review_rating");
 
                     b.HasKey("Id");
 
@@ -716,77 +820,108 @@ namespace Carsharing.DataAccess.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("reviews", (string)null);
+                    b.ToTable("reviews", null, t =>
+                        {
+                            t.HasCheckConstraint("reviews_review_rating_check", "review_rating >= 1 AND review_rating <= 5");
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.RoleEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("role_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("role_name");
 
                     b.HasKey("Id");
 
                     b.ToTable("roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Администратор"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Клиент"
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.SpecificationCarEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("specification_car_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Brand")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("specification_car_brand");
 
                     b.Property<decimal>("FuelPerKm")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("numeric")
-                        .HasDefaultValue(0.08m);
+                        .HasDefaultValue(0.08m)
+                        .HasColumnName("specification_fuel_per_km");
 
                     b.Property<string>("FuelType")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("specification_car_fuel_type");
 
                     b.Property<decimal>("MaxFuel")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasColumnName("specification_car_max_fuel");
 
                     b.Property<int>("Mileage")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasDefaultValue(0);
+                        .HasDefaultValue(0)
+                        .HasColumnName("specification_car_mileage");
 
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("specification_car_model");
 
                     b.Property<string>("StateNumber")
                         .IsRequired()
                         .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
+                        .HasColumnType("character varying(15)")
+                        .HasColumnName("specification_car_state_number");
 
                     b.Property<string>("Transmission")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("specification_car_transmission");
 
                     b.Property<string>("VinNumber")
                         .IsRequired()
                         .HasMaxLength(17)
-                        .HasColumnType("character varying(17)");
+                        .HasColumnType("character varying(17)")
+                        .HasColumnName("specification_car_vin_number");
 
                     b.Property<int>("Year")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("specification_car_year");
 
                     b.HasKey("Id");
 
@@ -796,113 +931,153 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasIndex("VinNumber")
                         .IsUnique();
 
-                    b.ToTable("specifications_car", (string)null);
+                    b.ToTable("specifications_car", null, t =>
+                        {
+                            t.HasCheckConstraint("chk_specification_car_max_fuel_positive", "specification_car_max_fuel >= 0");
+
+                            t.HasCheckConstraint("chk_specification_car_mileage_non_negative", "specification_car_mileage >= 0");
+
+                            t.HasCheckConstraint("chk_specification_car_year_range", "specification_car_year >= 1900 AND specification_car_year <= EXTRACT(year FROM CURRENT_DATE) + 1");
+
+                            t.HasCheckConstraint("specifications_car_specification_fuel_per_km_check", "specification_fuel_per_km >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.TariffEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("tariff_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("tariff_name");
 
                     b.Property<decimal>("PricePerDay")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasColumnName("tariff_price_per_day");
 
                     b.Property<decimal>("PricePerKm")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasColumnName("tariff_price_per_km");
 
                     b.Property<decimal>("PricePerMinute")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasColumnName("tariff_price_per_minute");
 
                     b.HasKey("Id");
 
-                    b.ToTable("tariffs", (string)null);
+                    b.ToTable("tariffs", null, t =>
+                        {
+                            t.HasCheckConstraint("chk_tariff_prices_nonneg", "COALESCE(tariff_price_per_minute, 0) >= 0 AND COALESCE(tariff_price_per_km, 0) >= 0 AND COALESCE(tariff_price_per_day, 0) >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.TripDetailEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("trip_detail_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("EndLocation")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("trip_detail_end_location");
 
                     b.Property<decimal?>("FuelUsed")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("numeric")
-                        .HasDefaultValue(0m);
+                        .HasDefaultValue(0m)
+                        .HasColumnName("trip_detail_fuel_used");
 
                     b.Property<bool>("InsuranceActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasDefaultValue(false)
+                        .HasColumnName("trip_detail_insurance_active");
 
                     b.Property<decimal?>("Refueled")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("numeric")
-                        .HasDefaultValue(0m);
+                        .HasDefaultValue(0m)
+                        .HasColumnName("trip_detail_refueled");
 
                     b.Property<string>("StartLocation")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("trip_detail_start_location");
 
                     b.Property<int>("TripId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("trip_detail_trip_id");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TripId")
                         .IsUnique();
 
-                    b.ToTable("trip_details", (string)null);
+                    b.ToTable("trip_details", null, t =>
+                        {
+                            t.HasCheckConstraint("chk_trip_detail_fuel_used_nonneg", "trip_detail_fuel_used IS NULL OR trip_detail_fuel_used >= 0");
+
+                            t.HasCheckConstraint("chk_trip_detail_refueled_nonneg", "trip_detail_refueled IS NULL OR trip_detail_refueled >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.TripEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("trip_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BookingId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("trip_booking_id");
 
                     b.Property<decimal?>("Distance")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("numeric")
-                        .HasDefaultValue(0m);
+                        .HasDefaultValue(0m)
+                        .HasColumnName("trip_distance_km");
 
                     b.Property<decimal?>("Duration")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("numeric")
-                        .HasDefaultValue(0m);
+                        .HasDefaultValue(0m)
+                        .HasColumnName("trip_duration");
 
                     b.Property<DateTime?>("EndTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("trip_end_time");
 
                     b.Property<DateTime>("StartTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
+                        .HasColumnName("trip_start_time")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("StatusId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("trip_status_id");
 
                     b.Property<string>("TariffType")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("trip_tariff_type");
 
                     b.HasKey("Id");
 
@@ -911,7 +1086,14 @@ namespace Carsharing.DataAccess.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("trips", (string)null);
+                    b.ToTable("trips", null, t =>
+                        {
+                            t.HasCheckConstraint("chk_trip_distance_nonneg", "trip_distance_km IS NULL OR trip_distance_km >= 0");
+
+                            t.HasCheckConstraint("chk_trip_duration_nonneg", "trip_duration IS NULL OR trip_duration >= 0");
+
+                            t.HasCheckConstraint("chk_trip_times", "trip_start_time IS NULL OR trip_end_time IS NULL OR trip_start_time <= trip_end_time");
+                        });
                 });
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.TripStatusEntity", b =>
@@ -950,7 +1132,7 @@ namespace Carsharing.DataAccess.Migrations
                         new
                         {
                             Id = 11,
-                            Name = "Отменена"
+                            Name = "Отменена системой"
                         },
                         new
                         {
@@ -963,24 +1145,28 @@ namespace Carsharing.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("user_login");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("user_password_hash");
 
                     b.Property<int>("RoleId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasDefaultValue(1);
+                        .HasDefaultValue(1)
+                        .HasColumnName("user_role_id");
 
                     b.HasKey("Id");
 
@@ -1002,7 +1188,7 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasOne("Carsharing.DataAccess.Entites.BillStatusEntity", "BillStatus")
                         .WithMany("Bills")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Carsharing.DataAccess.Entites.TripEntity", "Trip")
@@ -1023,7 +1209,7 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasOne("Carsharing.DataAccess.Entites.CarEntity", "Car")
                         .WithMany("Booking")
                         .HasForeignKey("CarId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Carsharing.DataAccess.Entites.ClientEntity", "Client")
@@ -1035,7 +1221,7 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasOne("Carsharing.DataAccess.Entites.BookingStatusEntity", "BookingStatus")
                         .WithMany("Bookings")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("BookingStatus");
@@ -1050,7 +1236,7 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasOne("Carsharing.DataAccess.Entites.CategoryEntity", "Category")
                         .WithMany("Cars")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Carsharing.DataAccess.Entites.SpecificationCarEntity", "SpecificationCar")
@@ -1062,13 +1248,13 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasOne("Carsharing.DataAccess.Entites.CarStatusEntity", "CarStatus")
                         .WithMany("Cars")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Carsharing.DataAccess.Entites.TariffEntity", "Tariff")
                         .WithMany("Cars")
                         .HasForeignKey("TariffId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CarStatus");
@@ -1126,7 +1312,7 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasOne("Carsharing.DataAccess.Entites.FineStatusEntity", "FineStatus")
                         .WithMany("Fines")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Carsharing.DataAccess.Entites.TripEntity", "Trip")
@@ -1151,7 +1337,7 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasOne("Carsharing.DataAccess.Entites.InsuranceStatusEntity", "InsuranceStatus")
                         .WithMany("Insurances")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Car");
@@ -1186,7 +1372,7 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasOne("Carsharing.DataAccess.Entites.PromocodeStatusEntity", "PromocodeStatus")
                         .WithMany("Promocodes")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("PromocodeStatus");
@@ -1233,7 +1419,7 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasOne("Carsharing.DataAccess.Entites.TripStatusEntity", "TripStatus")
                         .WithMany("Trip")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Booking");
@@ -1246,7 +1432,7 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasOne("Carsharing.DataAccess.Entites.RoleEntity", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Role");

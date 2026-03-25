@@ -27,7 +27,7 @@ public class PromocodeStatusConfiguration : IEntityTypeConfiguration<PromocodeSt
             new PromocodeStatusEntity
             {
                 Id = (int)PromocodeStatusEnum.Expired,
-                Name = "Истек"
+                Name = "Истёк"
             },
             new PromocodeStatusEntity
             {
