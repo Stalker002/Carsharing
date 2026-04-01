@@ -28,7 +28,7 @@ public class FavoriteRepositoryTests
         const int clientId = 10;
         const int carId = 5;
 
-        await repository.AddAsync(clientId, carId);
+        await repository.AddAsync(clientId, carId, It.IsAny<CancellationToken>());
 
         var favoriteInDb = await context.Favorites.FirstOrDefaultAsync();
         

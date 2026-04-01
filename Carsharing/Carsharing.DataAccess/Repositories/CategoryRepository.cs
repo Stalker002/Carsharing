@@ -1,4 +1,4 @@
-﻿using Carsharing.Core.Abstractions;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -14,12 +14,12 @@ public class CategoryRepository : ICategoryRepository
         _context = context;
     }
 
-    public async Task<List<Category>> Get()
+    public async Task<List<Category>> Get(CancellationToken cancellationToken)
     {
         var categoryEntities = await _context.Category
             .AsNoTracking()
             .OrderBy(c => c.Id)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var categories = categoryEntities
             .Select(c => Category.Create(
@@ -30,12 +30,12 @@ public class CategoryRepository : ICategoryRepository
         return categories;
     }
 
-    public async Task<List<Category>> GetById(int id)
+    public async Task<List<Category>> GetById(int id, CancellationToken cancellationToken)
     {
         var categoryEntities = await _context.Category
             .Where(c => c.Id == id)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var categories = categoryEntities
             .Select(c => Category.Create(
@@ -46,7 +46,7 @@ public class CategoryRepository : ICategoryRepository
         return categories;
     }
 
-    public async Task<int> Create(Category category)
+    public async Task<int> Create(Category category, CancellationToken cancellationToken)
     {
         var (_, error) = Category.Create(
             category.Id,
@@ -67,7 +67,7 @@ public class CategoryRepository : ICategoryRepository
         return categoryEntity.Id;
     }
 
-    public async Task<int> Update(int id, string? name)
+    public async Task<int> Update(int id, string? name, CancellationToken cancellationToken)
     {
         var category = await _context.Category.FirstOrDefaultAsync(c => c.Id == id)
                        ?? throw new Exception("Category not found");
@@ -87,11 +87,11 @@ public class CategoryRepository : ICategoryRepository
         return category.Id;
     }
 
-    public async Task<int> Delete(int id)
+    public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
         var categoryEntity = await _context.Category
             .Where(c => c.Id == id)
-            .ExecuteDeleteAsync();
+            .ExecuteDeleteAsync(cancellationToken);
 
         return id;
     }

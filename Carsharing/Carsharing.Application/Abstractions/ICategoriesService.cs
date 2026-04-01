@@ -1,14 +1,14 @@
-﻿using Carsharing.Core.Models;
+using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Abstractions;
 
 public interface ICategoriesService
 {
-    Task<List<Category>> GetCategories();
+    Task<List<Category>> GetCategories(CancellationToken cancellationToken);
 
-    Task<int> CreateCategory(Category category);
+    Task<int> CreateCategory(Category category, CancellationToken cancellationToken);
 
-    Task<int> UpdateCategory(int id, string? name);
+    Task<int> UpdateCategory(int id, string? name, CancellationToken cancellationToken);
 
-    Task<int> DeleteCategory(int id);
+    Task<int> DeleteCategory(int id, CancellationToken cancellationToken);
 }

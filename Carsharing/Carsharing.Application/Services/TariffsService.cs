@@ -1,4 +1,4 @@
-﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.Abstractions;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 
@@ -13,29 +13,29 @@ public class TariffsService : ITariffsService
         _tariffRepository = tariffRepository;
     }
 
-    public async Task<List<Tariff>> GetTariffs()
+    public async Task<List<Tariff>> GetTariffs(CancellationToken cancellationToken)
     {
-        return await _tariffRepository.Get();
+        return await _tariffRepository.Get(cancellationToken);
     }
 
-    public async Task<List<Tariff>> GetTariffById(int id)
+    public async Task<List<Tariff>> GetTariffById(int id, CancellationToken cancellationToken)
     {
-        return await _tariffRepository.GetById(id);
+        return await _tariffRepository.GetById(id, cancellationToken);
     }
 
-    public async Task<int> CreateTariff(Tariff tariff)
+    public async Task<int> CreateTariff(Tariff tariff, CancellationToken cancellationToken)
     {
-        return await _tariffRepository.Create(tariff);
+        return await _tariffRepository.Create(tariff, cancellationToken);
     }
 
     public async Task<int> UpdateTariff(int id, string? name, decimal? pricePerMinute, decimal? pricePerKm,
-        decimal? pricePerDay)
+        decimal? pricePerDay, CancellationToken cancellationToken)
     {
-        return await _tariffRepository.Update(id, name, pricePerMinute, pricePerKm, pricePerDay);
+        return await _tariffRepository.Update(id, name, pricePerMinute, pricePerKm, pricePerDay, cancellationToken);
     }
 
-    public async Task<int> DeleteTariff(int id)
+    public async Task<int> DeleteTariff(int id, CancellationToken cancellationToken)
     {
-        return await _tariffRepository.Delete(id);
+        return await _tariffRepository.Delete(id, cancellationToken);
     }
 }

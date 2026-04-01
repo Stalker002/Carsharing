@@ -20,9 +20,9 @@ public class TripsController : ControllerBase
 
     [HttpGet("unpaged")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<TripResponse>>> GetTrips()
+    public async Task<ActionResult<List<TripResponse>>> GetTrips(CancellationToken cancellationToken)
     {
-        var trips = await _tripService.GetTrips();
+        var trips = await _tripService.GetTrips(cancellationToken);
 
         var response = trips.Select(tr => new TripResponse(tr.Id, tr.BookingId, tr.StatusId, tr.TariffType,
             tr.StartTime, tr.EndTime, tr.Duration, tr.Distance));
@@ -34,10 +34,10 @@ public class TripsController : ControllerBase
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<TripResponse>>> GetPagedTrips(
         [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_limit")] int limit = 25)
+        [FromQuery(Name = "_limit")] int limit = 25, CancellationToken cancellationToken = default)
     {
-        var totalCount = await _tripService.GetCountTrips();
-        var trips = await _tripService.GetPagedTrips(page, limit);
+        var totalCount = await _tripService.GetCountTrips(cancellationToken);
+        var trips = await _tripService.GetPagedTrips(page, limit, cancellationToken);
 
         var response = trips
             .Select(tr => new TripResponse(tr.Id, tr.BookingId, tr.StatusId, tr.TariffType,
@@ -52,11 +52,11 @@ public class TripsController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<TripHistoryDto>>> GetMyHistory(
         [FromQuery] int page = 1,
-        [FromQuery] int limit = 10)
+        [FromQuery] int limit = 10, CancellationToken cancellationToken = default)
     {
         var userId = User.GetRequiredUserId();
 
-        var (items, totalCount) = await _tripService.GetPagedHistoryByUserId(userId, page, limit);
+        var (items, totalCount) = await _tripService.GetPagedHistoryByUserId(userId, page, limit, cancellationToken);
 
         Response.Headers.Append("x-total-count", totalCount.ToString());
 
@@ -65,9 +65,9 @@ public class TripsController : ControllerBase
 
     [HttpGet("{id:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<TripWithInfoDto>>> GetTripWithInfo(int id)
+    public async Task<ActionResult<List<TripWithInfoDto>>> GetTripWithInfo(int id, CancellationToken cancellationToken)
     {
-        var tripWithInfo = await _tripService.GetTripWithInfo(id);
+        var tripWithInfo = await _tripService.GetTripWithInfo(id, cancellationToken);
         var response = tripWithInfo.Select(t => new TripWithInfoDto(t.Id, t.BookingId, t.StatusId, t.StartLocation,
             t.EndLocation, t.InsuranceActive, t.FuelUsed, t.Refueled, t.TariffType, t.StartTime, t.EndTime, t.Duration,
             t.Distance));
@@ -77,11 +77,11 @@ public class TripsController : ControllerBase
 
     [HttpGet("current")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<CurrentTripDto>> GetCurrentTrip()
+    public async Task<ActionResult<CurrentTripDto>> GetCurrentTrip(CancellationToken cancellationToken)
     {
         var userId = User.GetRequiredUserId();
 
-        var trip = await _tripService.GetActiveTripByClientId(userId);
+        var trip = await _tripService.GetActiveTripByClientId(userId, cancellationToken);
         if (trip == null)
             return NotFound(new { message = "Активных поездок нет" });
 
@@ -90,40 +90,42 @@ public class TripsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> CreateTrip([FromBody] TripCreateRequest request)
+    public async Task<ActionResult<int>> CreateTrip([FromBody] TripCreateRequest request, CancellationToken cancellationToken)
     {
-        var tripId = await _tripService.CreateTripAsync(request);
+        var userId = User.GetRequiredUserId();
+        var tripId = await _tripService.CreateTripAsync(userId, request, cancellationToken);
         return Ok(tripId);
     }
 
     [HttpPost("finish")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<TripFinishResult>> FinishTrip([FromBody] FinishTripRequest request)
+    public async Task<ActionResult<TripFinishResult>> FinishTrip([FromBody] FinishTripRequest request, CancellationToken cancellationToken)
     {
-        var result = await _tripService.FinishTripAsync(request);
+        var userId = User.GetRequiredUserId();
+        var result = await _tripService.FinishTripAsync(userId, request, cancellationToken);
         return Ok(result);
     }
 
     [HttpPost("cancel/{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<IActionResult> CancelTrip(int id)
+    public async Task<IActionResult> CancelTrip(int id, CancellationToken cancellationToken)
     {
-        await _tripService.CancelTripAsync(id);
+        await _tripService.CancelTripAsync(id, cancellationToken);
         return Ok(new { message = "Поездка отменена" });
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateTrip(int id, [FromBody] TripUpdateRequest request)
+    public async Task<ActionResult<int>> UpdateTrip(int id, [FromBody] TripUpdateRequest request, CancellationToken cancellationToken)
     {
-        var tripId = await _tripService.UpdateTrip(id, request);
+        var tripId = await _tripService.UpdateTrip(id, request, cancellationToken);
         return Ok(tripId);
     }
 
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> DeleteTrip(int id)
+    public async Task<ActionResult<int>> DeleteTrip(int id, CancellationToken cancellationToken)
     {
-        return Ok(await _tripService.DeleteTrip(id));
+        return Ok(await _tripService.DeleteTrip(id, cancellationToken));
     }
 }

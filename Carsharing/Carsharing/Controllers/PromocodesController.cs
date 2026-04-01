@@ -1,4 +1,4 @@
-﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.Abstractions;
 using Carsharing.Contracts;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -19,9 +19,9 @@ public class PromocodesController : ControllerBase
 
     [HttpGet("unpaged")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodes()
+    public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodes(CancellationToken cancellationToken)
     {
-        var promocodes = await _promocodesService.GetPromocodes();
+        var promocodes = await _promocodesService.GetPromocodes(cancellationToken);
 
         var response = promocodes.Select(pr =>
             new PromocodeResponse(pr.Id, pr.StatusId, pr.Code, pr.Discount, pr.StartDate, pr.EndDate));
@@ -33,10 +33,10 @@ public class PromocodesController : ControllerBase
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<PromocodeResponse>>> GetPagedPromocodes(
         [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_limit")] int limit = 25)
+        [FromQuery(Name = "_limit")] int limit = 25, CancellationToken cancellationToken = default)
     {
-        var totalCount = await _promocodesService.GetCountPromocodes();
-        var promocodes = await _promocodesService.GetPagedPromocodes(page, limit);
+        var totalCount = await _promocodesService.GetCountPromocodes(cancellationToken);
+        var promocodes = await _promocodesService.GetPagedPromocodes(page, limit, cancellationToken);
 
         var response = promocodes
             .Select(pr => new PromocodeResponse(pr.Id, pr.StatusId, pr.Code, pr.Discount, pr.StartDate, pr.EndDate))
@@ -49,9 +49,9 @@ public class PromocodesController : ControllerBase
 
     [HttpGet("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodeById(int id)
+    public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodeById(int id, CancellationToken cancellationToken)
     {
-        var promocodes = await _promocodesService.GetPromocodeById(id);
+        var promocodes = await _promocodesService.GetPromocodeById(id, cancellationToken);
 
         var response = promocodes.Select(pr =>
             new PromocodeResponse(pr.Id, pr.StatusId, pr.Code, pr.Discount, pr.StartDate, pr.EndDate));
@@ -61,9 +61,9 @@ public class PromocodesController : ControllerBase
 
     [HttpGet("Active")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<PromocodeResponse>>> GetActivePromocodes()
+    public async Task<ActionResult<List<PromocodeResponse>>> GetActivePromocodes(CancellationToken cancellationToken)
     {
-        var promocodes = await _promocodesService.GetActivePromocode();
+        var promocodes = await _promocodesService.GetActivePromocode(cancellationToken);
 
         var response = promocodes.Select(pr =>
             new PromocodeResponse(pr.Id, pr.StatusId, pr.Code, pr.Discount, pr.StartDate, pr.EndDate));
@@ -75,10 +75,10 @@ public class PromocodesController : ControllerBase
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<PromocodeResponse>>> GetPagedActivePromocodes(
         [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_limit")] int limit = 25)
+        [FromQuery(Name = "_limit")] int limit = 25, CancellationToken cancellationToken = default)
     {
-        var totalCount = await _promocodesService.GetCountActivePromocodes();
-        var promocodes = await _promocodesService.GetPagedActivePromocodes(page, limit);
+        var totalCount = await _promocodesService.GetCountActivePromocodes(cancellationToken);
+        var promocodes = await _promocodesService.GetPagedActivePromocodes(page, limit, cancellationToken);
 
         var response = promocodes
             .Select(pr => new PromocodeResponse(pr.Id, pr.StatusId, pr.Code, pr.Discount, pr.StartDate, pr.EndDate))
@@ -91,9 +91,9 @@ public class PromocodesController : ControllerBase
 
     [HttpGet("byCode/{code}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodeByCode(string code)
+    public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodeByCode(string code, CancellationToken cancellationToken)
     {
-        var promocodes = await _promocodesService.GetPromocodeByCode(code);
+        var promocodes = await _promocodesService.GetPromocodeByCode(code, cancellationToken);
 
         var response = promocodes.Select(pr =>
             new PromocodeResponse(pr.Id, pr.StatusId, pr.Code, pr.Discount, pr.StartDate, pr.EndDate));
@@ -103,7 +103,7 @@ public class PromocodesController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> CreatePromocode([FromBody] PromocodeRequest request)
+    public async Task<ActionResult<int>> CreatePromocode([FromBody] PromocodeRequest request, CancellationToken cancellationToken)
     {
         var (promocode, error) = Promocode.Create(
             0,
@@ -115,25 +115,25 @@ public class PromocodesController : ControllerBase
 
         if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
 
-        var promocodeId = await _promocodesService.CreatePromocode(promocode);
+        var promocodeId = await _promocodesService.CreatePromocode(promocode, cancellationToken);
 
         return Ok(promocodeId);
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdatePromocode(int id, [FromBody] PromocodeRequest request)
+    public async Task<ActionResult<int>> UpdatePromocode(int id, [FromBody] PromocodeRequest request, CancellationToken cancellationToken)
     {
         var promocodeId = await _promocodesService.UpdatePromocode(id, request.StatusId, request.Code, request.Discount,
-            request.StartDate, request.EndDate);
+            request.StartDate, request.EndDate, cancellationToken);
 
         return Ok(promocodeId);
     }
 
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> DeletePromocode(int id)
+    public async Task<ActionResult<int>> DeletePromocode(int id, CancellationToken cancellationToken)
     {
-        return Ok(await _promocodesService.DeletePromocode(id));
+        return Ok(await _promocodesService.DeletePromocode(id, cancellationToken));
     }
 }
