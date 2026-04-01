@@ -1,4 +1,4 @@
-﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.Abstractions;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 
@@ -13,59 +13,59 @@ public class PromocodesService : IPromocodesService
         _promocodeRepository = promocodeRepository;
     }
 
-    public async Task<List<Promocode>> GetPromocodes()
+    public async Task<List<Promocode>> GetPromocodes(CancellationToken cancellationToken)
     {
-        return await _promocodeRepository.Get();
+        return await _promocodeRepository.Get(cancellationToken);
     }
 
-    public async Task<List<Promocode>> GetPagedPromocodes(int page, int limit)
+    public async Task<List<Promocode>> GetPagedPromocodes(int page, int limit, CancellationToken cancellationToken)
     {
-        return await _promocodeRepository.GetPaged(page, limit);
+        return await _promocodeRepository.GetPaged(page, limit, cancellationToken);
     }
 
-    public async Task<int> GetCountPromocodes()
+    public async Task<int> GetCountPromocodes(CancellationToken cancellationToken)
     {
-        return await _promocodeRepository.GetCount();
+        return await _promocodeRepository.GetCount(cancellationToken);
     }
 
-    public async Task<List<Promocode>> GetPromocodeById(int id)
+    public async Task<List<Promocode>> GetPromocodeById(int id, CancellationToken cancellationToken)
     {
-        return await _promocodeRepository.GetById(id);
+        return await _promocodeRepository.GetById(id, cancellationToken);
     }
 
-    public async Task<List<Promocode>> GetActivePromocode()
+    public async Task<List<Promocode>> GetActivePromocode(CancellationToken cancellationToken)
     {
-        return await _promocodeRepository.GetActive();
+        return await _promocodeRepository.GetActive(cancellationToken);
     }
 
-    public async Task<List<Promocode>> GetPagedActivePromocodes(int page, int limit)
+    public async Task<List<Promocode>> GetPagedActivePromocodes(int page, int limit, CancellationToken cancellationToken)
     {
-        return await _promocodeRepository.GetPagedActive(page, limit);
+        return await _promocodeRepository.GetPagedActive(page, limit, cancellationToken);
     }
 
-    public async Task<int> GetCountActivePromocodes()
+    public async Task<int> GetCountActivePromocodes(CancellationToken cancellationToken)
     {
-        return await _promocodeRepository.GetCountActive();
+        return await _promocodeRepository.GetCountActive(cancellationToken);
     }
 
-    public async Task<List<Promocode>> GetPromocodeByCode(string code)
+    public async Task<List<Promocode>> GetPromocodeByCode(string code, CancellationToken cancellationToken)
     {
-        return await _promocodeRepository.GetByCode(code);
+        return await _promocodeRepository.GetByCode(code, cancellationToken);
     }
 
-    public async Task<int> CreatePromocode(Promocode promocode)
+    public async Task<int> CreatePromocode(Promocode promocode, CancellationToken cancellationToken)
     {
-        return await _promocodeRepository.Create(promocode);
+        return await _promocodeRepository.Create(promocode, cancellationToken);
     }
 
     public async Task<int> UpdatePromocode(int id, int? statusId, string? code, decimal? discount, DateOnly? startDate,
-        DateOnly? endDate)
+        DateOnly? endDate, CancellationToken cancellationToken)
     {
-        return await _promocodeRepository.Update(id, statusId, code, discount, startDate, endDate);
+        return await _promocodeRepository.Update(id, statusId, code, discount, startDate, endDate, cancellationToken);
     }
 
-    public async Task<int> DeletePromocode(int id)
+    public async Task<int> DeletePromocode(int id, CancellationToken cancellationToken)
     {
-        return await _promocodeRepository.Delete(id);
+        return await _promocodeRepository.Delete(id, cancellationToken);
     }
 }

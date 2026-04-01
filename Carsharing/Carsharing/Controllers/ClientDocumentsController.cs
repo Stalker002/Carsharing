@@ -1,6 +1,7 @@
-﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.Abstractions;
 using Carsharing.Application.DTOs;
 using Carsharing.Contracts;
+using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,20 +20,20 @@ public class ClientDocumentsController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<ClientDocumentsResponse>>> GetDocuments()
+    public async Task<ActionResult<List<ClientDocumentsResponse>>> GetDocuments(CancellationToken cancellationToken)
     {
-        var documents = await _clientDocumentsService.GetClientDocuments();
+        var documents = await _clientDocumentsService.GetClientDocuments(cancellationToken);
         var response = documents.Select(d =>
-            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.LicenseCategory, d.Number, d.IssueDate,
-                d.ExpiryDate, d.FilePath));
+            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.LicenseCategory, d.IssueDate, d.ExpiryDate));
         return Ok(response);
     }
 
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<IActionResult> CreateClientDocument([FromForm] ClientDocumentsRequest request)
+    public async Task<IActionResult> CreateClientDocument([FromForm] ClientDocumentsRequest request, CancellationToken cancellationToken)
     {
-        var (id, error) = await _clientDocumentsService.CreateClientDocumentAsync(request);
+        var userId = User.GetRequiredUserId();
+        var (id, error) = await _clientDocumentsService.CreateClientDocumentAsync(userId, request, cancellationToken);
 
         if (!string.IsNullOrEmpty(error)) return BadRequest(new { message = error });
 
@@ -41,9 +42,10 @@ public class ClientDocumentsController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<IActionResult> UpdateClientDocument(int id, [FromForm] ClientDocumentsRequest request)
+    public async Task<IActionResult> UpdateClientDocument(int id, [FromForm] ClientDocumentsRequest request, CancellationToken cancellationToken)
     {
-        var (isSuccess, error) = await _clientDocumentsService.UpdateClientDocumentAsync(id, request);
+        var userId = User.GetRequiredUserId();
+        var (isSuccess, error) = await _clientDocumentsService.UpdateClientDocumentAsync(userId, id, request, cancellationToken);
 
         if (isSuccess) return Ok(new { message = "Документ успешно обновлен" });
         if (error == "Document not found") return NotFound(new { message = "Документ не найден" });
@@ -53,9 +55,10 @@ public class ClientDocumentsController : ControllerBase
 
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<IActionResult> DeleteClientDocument(int id)
+    public async Task<IActionResult> DeleteClientDocument(int id, CancellationToken cancellationToken)
     {
-        var (isSuccess, error) = await _clientDocumentsService.DeleteClientDocumentAsync(id);
+        var userId = User.GetRequiredUserId();
+        var (isSuccess, error) = await _clientDocumentsService.DeleteClientDocumentAsync(userId, id, cancellationToken);
 
         if (isSuccess) return Ok(new { message = "Документ удален" });
         if (error == "Document not found") return NotFound(new { message = "Документ не найден" });

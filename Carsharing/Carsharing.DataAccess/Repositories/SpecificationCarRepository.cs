@@ -1,4 +1,4 @@
-﻿using Carsharing.Core.Abstractions;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -14,12 +14,12 @@ public class SpecificationCarRepository : ISpecificationCarRepository
         _context = context;
     }
 
-    public async Task<List<SpecificationCar>> Get()
+    public async Task<List<SpecificationCar>> Get(CancellationToken cancellationToken)
     {
         var specificationEntity = await _context.SpecificationCar
             .OrderBy(sp => sp.Id)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var specifications = specificationEntity
             .Select(sp => SpecificationCar.Create(
@@ -39,12 +39,12 @@ public class SpecificationCarRepository : ISpecificationCarRepository
         return specifications;
     }
 
-    public async Task<List<SpecificationCar>> GetById(int id)
+    public async Task<List<SpecificationCar>> GetById(int id, CancellationToken cancellationToken)
     {
         var specificationEntity = await _context.SpecificationCar
             .Where(sp => sp.Id == id)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var specifications = specificationEntity
             .Select(sp => SpecificationCar.Create(
@@ -64,7 +64,7 @@ public class SpecificationCarRepository : ISpecificationCarRepository
         return specifications;
     }
 
-    public async Task<int> Create(SpecificationCar specificationCar)
+    public async Task<int> Create(SpecificationCar specificationCar, CancellationToken cancellationToken)
     {
         var (_, error) = SpecificationCar.Create(
             specificationCar.Id,
@@ -104,7 +104,7 @@ public class SpecificationCarRepository : ISpecificationCarRepository
     }
 
     public async Task<int> Update(int id, string? fuelType, string? brand, string? model, string? transmission,
-        int? year, string? vinNumber, string? stateNumber, int? mileage, decimal? maxFuel, decimal? fuelPerKm)
+        int? year, string? vinNumber, string? stateNumber, int? mileage, decimal? maxFuel, decimal? fuelPerKm, CancellationToken cancellationToken)
     {
         var specification = await _context.SpecificationCar.FirstOrDefaultAsync(sp => sp.Id == id)
                             ?? throw new Exception("Specification not found");
@@ -159,11 +159,11 @@ public class SpecificationCarRepository : ISpecificationCarRepository
         return specification.Id;
     }
 
-    public async Task<int> Delete(int id)
+    public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
         var specificationEntity = await _context.SpecificationCar
             .Where(sp => sp.Id == id)
-            .ExecuteDeleteAsync();
+            .ExecuteDeleteAsync(cancellationToken);
 
         return id;
     }

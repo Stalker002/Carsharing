@@ -1,4 +1,4 @@
-﻿using Carsharing.Core.Abstractions;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -14,12 +14,12 @@ public class TripDetailRepository : ITripDetailRepository
         _context = context;
     }
 
-    public async Task<List<TripDetail>> Get()
+    public async Task<List<TripDetail>> Get(CancellationToken cancellationToken)
     {
         var detailEntities = await _context.TripDetail
             .OrderBy(tr => tr.Id)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var details = detailEntities
             .Select(d => TripDetail.Create(
@@ -35,18 +35,18 @@ public class TripDetailRepository : ITripDetailRepository
         return details;
     }
 
-    public async Task<int> GetCarIdByTripId(int tripId)
+    public async Task<int> GetCarIdByTripId(int tripId, CancellationToken cancellationToken)
     {
         var carId = await _context.Trip
             .AsNoTracking()
             .Where(t => t.Id == tripId)
             .Select(t => t.Booking!.CarId)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
 
         return carId;
     }
 
-    public async Task<int> Create(TripDetail tripDetail)
+    public async Task<int> Create(TripDetail tripDetail, CancellationToken cancellationToken)
     {
         var (_, error) = TripDetail.Create(
             tripDetail.Id,
@@ -78,7 +78,7 @@ public class TripDetailRepository : ITripDetailRepository
     }
 
     public async Task<int> Update(int id, int? tripId, string? startLocation, string? endLocation,
-        bool? insuranceActive, decimal? fuelUsed, decimal? refueled)
+        bool? insuranceActive, decimal? fuelUsed, decimal? refueled, CancellationToken cancellationToken)
     {
         var tripDetail = await _context.TripDetail.FirstOrDefaultAsync(d => d.Id == id)
                          ?? throw new Exception("Trip detail not found");
@@ -118,11 +118,11 @@ public class TripDetailRepository : ITripDetailRepository
         return tripDetail.Id;
     }
 
-    public async Task<int> Delete(int id)
+    public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
         var tripDetailEntity = await _context.TripDetail
             .Where(d => d.Id == id)
-            .ExecuteDeleteAsync();
+            .ExecuteDeleteAsync(cancellationToken);
 
         return id;
     }

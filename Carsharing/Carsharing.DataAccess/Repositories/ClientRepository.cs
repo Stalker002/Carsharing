@@ -1,4 +1,4 @@
-﻿using Carsharing.Core.Abstractions;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +14,11 @@ public class ClientRepository : IClientRepository
         _context = context;
     }
 
-    public async Task<List<Client>> Get()
+    public async Task<List<Client>> Get(CancellationToken cancellationToken)
     {
         var clientEntities = await _context.Client
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var clients = clientEntities
             .Select(c => Client.Create(
@@ -34,14 +34,14 @@ public class ClientRepository : IClientRepository
         return clients;
     }
 
-    public async Task<List<Client>> GetPaged(int page, int limit)
+    public async Task<List<Client>> GetPaged(int page, int limit, CancellationToken cancellationToken)
     {
         var clientEntities = await _context.Client
             .AsNoTracking()
             .Skip((page - 1) * limit)
             .OrderBy(cl => cl.Id)
             .Take(limit)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var clients = clientEntities
             .Select(c => Client.Create(
@@ -57,17 +57,17 @@ public class ClientRepository : IClientRepository
         return clients;
     }
 
-    public async Task<int> GetCount()
+    public async Task<int> GetCount(CancellationToken cancellationToken)
     {
-        return await _context.Client.CountAsync();
+        return await _context.Client.CountAsync(cancellationToken);
     }
 
-    public async Task<List<Client>> GetById(int id)
+    public async Task<List<Client>> GetById(int id, CancellationToken cancellationToken)
     {
         var clientEntities = await _context.Client
             .Where(c => c.Id == id)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var clients = clientEntities
             .Select(c => Client.Create(
@@ -83,12 +83,12 @@ public class ClientRepository : IClientRepository
         return clients;
     }
 
-    public async Task<List<Client>> GetClientByUserId(int userId)
+    public async Task<List<Client>> GetClientByUserId(int userId, CancellationToken cancellationToken)
     {
         var clientEntities = await _context.Client
             .Where(c => c.UserId == userId)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var clients = clientEntities
             .Select(c => Client.Create(
@@ -104,7 +104,7 @@ public class ClientRepository : IClientRepository
         return clients;
     }
 
-    public async Task<int> Create(Client client)
+    public async Task<int> Create(Client client, CancellationToken cancellationToken)
     {
         var (_, error) = Client.Create(
             0,
@@ -133,7 +133,7 @@ public class ClientRepository : IClientRepository
     }
 
     public async Task<int> Update(int id, int? userId, string? name, string? surname,
-        string? phoneNumber, string? email)
+        string? phoneNumber, string? email, CancellationToken cancellationToken)
     {
         var client = await _context.Client.FirstOrDefaultAsync(c => c.Id == id)
                      ?? throw new Exception("Client not found");
@@ -169,11 +169,11 @@ public class ClientRepository : IClientRepository
         return client.Id;
     }
 
-    public async Task<int> Delete(int id)
+    public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
         var clientEntity = await _context.Client
             .Where(c => c.Id == id)
-            .ExecuteDeleteAsync();
+            .ExecuteDeleteAsync(cancellationToken);
 
         return id;
     }

@@ -1,4 +1,4 @@
-﻿using Carsharing.Core.Abstractions;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +14,11 @@ public class PromocodeRepository : IPromocodeRepository
         _context = context;
     }
 
-    public async Task<List<Promocode>> Get()
+    public async Task<List<Promocode>> Get(CancellationToken cancellationToken)
     {
         var promocodeEntities = await _context.Promocode
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var promocodes = promocodeEntities
             .Select(pr => Promocode.Create(
@@ -33,7 +33,7 @@ public class PromocodeRepository : IPromocodeRepository
         return promocodes;
     }
 
-    public async Task<List<Promocode>> GetPaged(int page, int limit)
+    public async Task<List<Promocode>> GetPaged(int page, int limit, CancellationToken cancellationToken)
     {
         var promocodeEntities = await _context.Promocode
             .AsNoTracking()
@@ -41,7 +41,7 @@ public class PromocodeRepository : IPromocodeRepository
             .ThenByDescending(p => p.Id)
             .Skip((page - 1) * limit)
             .Take(limit)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var promocodes = promocodeEntities
             .Select(pr => Promocode.Create(
@@ -56,17 +56,17 @@ public class PromocodeRepository : IPromocodeRepository
         return promocodes;
     }
 
-    public async Task<int> GetCount()
+    public async Task<int> GetCount(CancellationToken cancellationToken)
     {
-        return await _context.Promocode.CountAsync();
+        return await _context.Promocode.CountAsync(cancellationToken);
     }
 
-    public async Task<List<Promocode>> GetById(int? id)
+    public async Task<List<Promocode>> GetById(int? id, CancellationToken cancellationToken)
     {
         var promocodeEntities = await _context.Promocode
             .Where(pr => pr.Id == id)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var promocodes = promocodeEntities
             .Select(pr => Promocode.Create(
@@ -81,12 +81,12 @@ public class PromocodeRepository : IPromocodeRepository
         return promocodes;
     }
 
-    public async Task<List<Promocode>> GetActive()
+    public async Task<List<Promocode>> GetActive(CancellationToken cancellationToken)
     {
         var promocodeEntities = await _context.Promocode
             .Where(pr => pr.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow))
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var promocodes = promocodeEntities
             .Select(pr => Promocode.Create(
@@ -101,7 +101,7 @@ public class PromocodeRepository : IPromocodeRepository
         return promocodes;
     }
 
-    public async Task<List<Promocode>> GetPagedActive(int page, int limit)
+    public async Task<List<Promocode>> GetPagedActive(int page, int limit, CancellationToken cancellationToken)
     {
         var promocodeEntities = await _context.Promocode
             .Where(pr => pr.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow))
@@ -109,7 +109,7 @@ public class PromocodeRepository : IPromocodeRepository
             .OrderBy(pr => pr.Id)
             .Skip((page - 1) * limit)
             .Take(limit)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var promocodes = promocodeEntities
             .Select(pr => Promocode.Create(
@@ -124,17 +124,17 @@ public class PromocodeRepository : IPromocodeRepository
         return promocodes;
     }
 
-    public async Task<int> GetCountActive()
+    public async Task<int> GetCountActive(CancellationToken cancellationToken)
     {
-        return await _context.Promocode.Where(pr => pr.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow)).CountAsync();
+        return await _context.Promocode.Where(pr => pr.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow)).CountAsync(cancellationToken);
     }
 
-    public async Task<List<Promocode>> GetByCode(string code)
+    public async Task<List<Promocode>> GetByCode(string code, CancellationToken cancellationToken)
     {
         var promocodeEntities = await _context.Promocode
             .Where(pr => pr.Code == code)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var promocodes = promocodeEntities
             .Select(pr => Promocode.Create(
@@ -149,7 +149,7 @@ public class PromocodeRepository : IPromocodeRepository
         return promocodes;
     }
 
-    public async Task<int> Create(Promocode promocode)
+    public async Task<int> Create(Promocode promocode, CancellationToken cancellationToken)
     {
         var (_, error) = Promocode.Create(
             promocode.Id,
@@ -179,7 +179,7 @@ public class PromocodeRepository : IPromocodeRepository
     }
 
     public async Task<int> Update(int id, int? statusId, string? code, decimal? discount, DateOnly? startDate,
-        DateOnly? endDate)
+        DateOnly? endDate, CancellationToken cancellationToken)
     {
         var promocode = await _context.Promocode.FirstOrDefaultAsync(pr => pr.Id == id)
                         ?? throw new Exception("Promocode not found");
@@ -215,11 +215,11 @@ public class PromocodeRepository : IPromocodeRepository
         return promocode.Id;
     }
 
-    public async Task<int> Delete(int id)
+    public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
         var promocodeEntity = await _context.Promocode
             .Where(pr => pr.Id == id)
-            .ExecuteDeleteAsync();
+            .ExecuteDeleteAsync(cancellationToken);
 
         return id;
     }
