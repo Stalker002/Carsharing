@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Enum;
@@ -24,64 +24,64 @@ public class CarsService : ICarsService
         _carRepository = carRepository;
     }
 
-    public async Task<List<Car>> GetCars(CancellationToken cancellationToken)
+    public async Task<List<Car>> GetCars()
     {
-        return await _carRepository.Get(cancellationToken);
+        return await _carRepository.Get();
     }
 
-    public async Task<List<Car>> GetPagedCars(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Car>> GetPagedCars(int page, int limit)
     {
-        return await _carRepository.GetPaged(page, limit, cancellationToken);
+        return await _carRepository.GetPaged(page, limit);
     }
 
-    public async Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit)
     {
-        return await _carRepository.GetPagedCarsByClients(page, limit, cancellationToken);
+        return await _carRepository.GetPagedCarsByClients(page, limit);
     }
 
-    public async Task<int> GetCount(CancellationToken cancellationToken)
+    public async Task<int> GetCount()
     {
-        return await _carRepository.GetCount(cancellationToken);
+        return await _carRepository.GetCount();
     }
 
-    public async Task<List<Car>> GetCarById(int id, CancellationToken cancellationToken)
+    public async Task<List<Car>> GetCarById(int id)
     {
-        return await _carRepository.GetById(id, cancellationToken);
+        return await _carRepository.GetById(id);
     }
 
-    public async Task<List<CarWithInfoDto>> GetCarWithInfo(int id, CancellationToken cancellationToken)
+    public async Task<List<CarWithInfoDto>> GetCarWithInfo(int id)
     {
-        return await _carRepository.GetCarWithInfo(id, cancellationToken);
+        return await _carRepository.GetCarWithInfo(id);
     }
 
-    public async Task<List<CarWithInfoAdminDto>> GetCarWithInfoAdmin(int id, CancellationToken cancellationToken)
+    public async Task<List<CarWithInfoAdminDto>> GetCarWithInfoAdmin(int id)
     {
-        return await _carRepository.GetCarWithInfoAdmin(id, cancellationToken);
+        return await _carRepository.GetCarWithInfoAdmin(id);
     }
 
-    public async Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit)
     {
-        return await _carRepository.GetCarWithMinInfoByCategoryIds(categoryIds, page, limit, cancellationToken);
+        return await _carRepository.GetCarWithMinInfoByCategoryIds(categoryIds, page, limit);
     }
 
-    public async Task<List<Car>> GetPagedCarsByCategoryIds(List<int> categoryIds, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Car>> GetPagedCarsByCategoryIds(List<int> categoryIds, int page, int limit)
     {
-        return await _carRepository.GetPagedByCategoryId(categoryIds, page, limit, cancellationToken);
+        return await _carRepository.GetPagedByCategoryId(categoryIds, page, limit);
     }
 
-    public async Task<int> GetCountByCategory(List<int> categoryIds, CancellationToken cancellationToken)
+    public async Task<int> GetCountByCategory(List<int> categoryIds)
     {
-        return await _carRepository.GetCountByCategory(categoryIds, cancellationToken);
+        return await _carRepository.GetCountByCategory(categoryIds);
     }
 
-    public async Task<int> CreateCar(Car car, CancellationToken cancellationToken)
+    public async Task<int> CreateCar(Car car)
     {
-        return await _carRepository.Create(car, cancellationToken);
+        return await _carRepository.Create(car);
     }
 
-    public async Task<(int? Id, string Error)> CreateCarFullAsync(CarsCreateRequest request, CancellationToken cancellationToken)
+    public async Task<(int? Id, string Error)> CreateCarFullAsync(CarsCreateRequest request)
     {
-        await _unitOfWork.BeginTransactionAsync(cancellationToken);
+        await _unitOfWork.BeginTransactionAsync();
         string? savedImagePath = null;
 
         try
@@ -94,7 +94,7 @@ public class CarsService : ICarsService
                 request.PricePerDay);
             if (!string.IsNullOrEmpty(errorTariff)) return (null, errorTariff);
 
-            var tariffId = await _tariffRepository.Create(tariff, cancellationToken);
+            var tariffId = await _tariffRepository.Create(tariff);
 
             var (spec, errorSpec) = SpecificationCar.Create(
                 0,
@@ -110,11 +110,11 @@ public class CarsService : ICarsService
                 request.FuelPerKm);
             if (!string.IsNullOrEmpty(errorSpec)) return (null, errorSpec);
 
-            var specificationId = await _specificationCarRepository.Create(spec, cancellationToken);
+            var specificationId = await _specificationCarRepository.Create(spec);
 
             if (request.Image is { Length: > 0 })
             {
-                savedImagePath = await _imageService.SaveCarImageAsync(request.Image, cancellationToken);
+                savedImagePath = await _imageService.SaveCarImageAsync(request.Image);
             }
 
             var (car, errorCar) = Car.Create(
@@ -129,20 +129,20 @@ public class CarsService : ICarsService
 
             if (!string.IsNullOrEmpty(errorCar))
             {
-                if (savedImagePath != null) _imageService.DeleteFile(savedImagePath, cancellationToken);
+                if (savedImagePath != null) _imageService.DeleteFile(savedImagePath);
                 return (null, errorCar);
             }
 
-            var carId = await _carRepository.Create(car, cancellationToken);
+            var carId = await _carRepository.Create(car);
 
-            await _unitOfWork.CommitTransactionAsync(cancellationToken);
+            await _unitOfWork.CommitTransactionAsync();
             return (carId, string.Empty);
         }
         catch (Exception ex)
         {
-            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+            await _unitOfWork.RollbackTransactionAsync();
 
-            if (savedImagePath != null) _imageService.DeleteFile(savedImagePath, cancellationToken);
+            if (savedImagePath != null) _imageService.DeleteFile(savedImagePath);
 
             if (ex.InnerException?.Message.Contains("23505") == true)
             {
@@ -153,14 +153,14 @@ public class CarsService : ICarsService
         }
     }
 
-    public async Task<(bool IsSuccess, string Error)> UpdateCarFullAsync(int id, CarUpdateDto request, CancellationToken cancellationToken)
+    public async Task<(bool IsSuccess, string Error)> UpdateCarFullAsync(int id, CarUpdateDto request)
     {
-        await _unitOfWork.BeginTransactionAsync(cancellationToken);
+        await _unitOfWork.BeginTransactionAsync();
         string? newImagePathSystem = null;
 
         try
         {
-            var carsCollection = await _carRepository.GetById(id, cancellationToken);
+            var carsCollection = await _carRepository.GetById(id);
             var car = carsCollection.FirstOrDefault();
 
             if (car == null) return (false, "Car not found");
@@ -170,8 +170,7 @@ public class CarsService : ICarsService
                 request.TariffName,
                 request.PricePerMinute,
                 request.PricePerKm,
-                request.PricePerDay,
-                cancellationToken
+                request.PricePerDay
             );
 
             await _specificationCarRepository.Update(
@@ -185,14 +184,13 @@ public class CarsService : ICarsService
                 request.StateNumber,
                 (int)request.Mileage,
                 request.MaxFuel,
-                request.FuelPerKm,
-                cancellationToken
+                request.FuelPerKm
             );
 
             string? imagePathToUpdate = null;
             if (request.Image is { Length: > 0 })
             {
-                imagePathToUpdate = await _imageService.SaveCarImageAsync(request.Image, cancellationToken);
+                imagePathToUpdate = await _imageService.SaveCarImageAsync(request.Image);
                 newImagePathSystem = imagePathToUpdate;
             }
 
@@ -204,21 +202,20 @@ public class CarsService : ICarsService
                 specificationId: null,
                 location: request.Location,
                 fuelLevel: request.FuelLevel,
-                imagePath: imagePathToUpdate,
-                cancellationToken: cancellationToken
+                imagePath: imagePathToUpdate
             );
 
-            await _unitOfWork.CommitTransactionAsync(cancellationToken);
+            await _unitOfWork.CommitTransactionAsync();
 
             return (true, string.Empty);
         }
         catch (Exception ex)
         {
-            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+            await _unitOfWork.RollbackTransactionAsync();
 
             if (newImagePathSystem != null)
             {
-                _imageService.DeleteFile(newImagePathSystem, cancellationToken);
+                _imageService.DeleteFile(newImagePathSystem);
             }
 
             if (ex.InnerException?.Message.Contains("23505") == true)
@@ -230,18 +227,18 @@ public class CarsService : ICarsService
         }
     }
 
-    public async Task MarkCarAsUnavailableAsync(int? carId, CancellationToken cancellationToken)
+    public async Task MarkCarAsUnavailableAsync(int? carId)
     {
-        await _carRepository.UpdateStatus(carId, (int)CarStatusEnum.Reserved, cancellationToken);
+        await _carRepository.UpdateStatus(carId, (int)CarStatusEnum.Reserved);
     }
 
-    public async Task MarkCarAsAvailableAsync(int? carId, CancellationToken cancellationToken)
+    public async Task MarkCarAsAvailableAsync(int? carId)
     {
-        await _carRepository.UpdateStatus(carId, (int)CarStatusEnum.Available, cancellationToken);
+        await _carRepository.UpdateStatus(carId, (int)CarStatusEnum.Available);
     }
 
-    public async Task<int> DeleteCar(int id, CancellationToken cancellationToken)
+    public async Task<int> DeleteCar(int id)
     {
-        return await _carRepository.Delete(id, cancellationToken);
+        return await _carRepository.Delete(id);
     }
 }

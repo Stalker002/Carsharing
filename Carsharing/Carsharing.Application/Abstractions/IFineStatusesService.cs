@@ -1,8 +1,8 @@
-using Carsharing.Core.Models;
+﻿using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Services;
 
 public interface IFineStatusesService
 {
-    Task<List<FineStatus>> GetFineStatuses(CancellationToken cancellationToken);
+    Task<List<FineStatus>> GetFineStatuses();
 }

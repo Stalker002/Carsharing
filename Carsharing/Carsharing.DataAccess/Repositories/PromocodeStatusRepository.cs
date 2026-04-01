@@ -1,4 +1,4 @@
-using Carsharing.Core.Abstractions;
+﻿using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,11 +13,11 @@ public class PromocodeStatusRepository : IPromocodeStatusRepository
         _context = context;
     }
 
-    public async Task<List<PromocodeStatus>> Get(CancellationToken cancellationToken)
+    public async Task<List<PromocodeStatus>> Get()
     {
         var promocodeStatusEntities = await _context.PromocodeStatus
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var promocodeStatuses = promocodeStatusEntities
             .Select(b => PromocodeStatus.Create(
@@ -28,10 +28,10 @@ public class PromocodeStatusRepository : IPromocodeStatusRepository
         return promocodeStatuses;
     }
 
-    public async Task<bool> Exists(int id, CancellationToken cancellationToken)
+    public async Task<bool> Exists(int id)
     {
         return await _context.PromocodeStatus
             .AsNoTracking()
-            .AnyAsync(b => b.Id == id, cancellationToken);
+            .AnyAsync(b => b.Id == id);
     }
 }

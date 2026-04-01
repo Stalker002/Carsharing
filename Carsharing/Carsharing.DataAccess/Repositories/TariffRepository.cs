@@ -1,4 +1,4 @@
-using Carsharing.Core.Abstractions;
+﻿using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -14,12 +14,12 @@ public class TariffRepository : ITariffRepository
         _context = context;
     }
 
-    public async Task<List<Tariff>> Get(CancellationToken cancellationToken)
+    public async Task<List<Tariff>> Get()
     {
         var tariffEntities = await _context.Tariff
             .AsNoTracking()
             .OrderBy(t => t.Id)
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var tariffs = tariffEntities
             .Select(t => Tariff.Create(
@@ -33,12 +33,12 @@ public class TariffRepository : ITariffRepository
         return tariffs;
     }
 
-    public async Task<List<Tariff>> GetById(int id, CancellationToken cancellationToken)
+    public async Task<List<Tariff>> GetById(int id)
     {
         var tariffEntities = await _context.Tariff
             .Where(t => t.Id == id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var tariffs = tariffEntities
             .Select(t => Tariff.Create(
@@ -52,7 +52,7 @@ public class TariffRepository : ITariffRepository
         return tariffs;
     }
 
-    public async Task<int> Create(Tariff tariff, CancellationToken cancellationToken)
+    public async Task<int> Create(Tariff tariff)
     {
         var (_, error) = Tariff.Create(
             tariff.Id,
@@ -80,7 +80,7 @@ public class TariffRepository : ITariffRepository
     }
 
     public async Task<int> Update(int id, string? name, decimal? pricePerMinute, decimal? pricePerKm,
-        decimal? pricePerDay, CancellationToken cancellationToken)
+        decimal? pricePerDay)
     {
         var tariff = await _context.Tariff.FirstOrDefaultAsync(t => t.Id == id)
                      ?? throw new Exception("Tariff not found");
@@ -112,11 +112,11 @@ public class TariffRepository : ITariffRepository
         return tariff.Id;
     }
 
-    public async Task<int> Delete(int id, CancellationToken cancellationToken)
+    public async Task<int> Delete(int id)
     {
         var tariffEntity = await _context.Tariff
             .Where(t => t.Id == id)
-            .ExecuteDeleteAsync(cancellationToken);
+            .ExecuteDeleteAsync();
 
         return id;
     }

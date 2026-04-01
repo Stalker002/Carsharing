@@ -1,15 +1,15 @@
-namespace Carsharing.Core.Abstractions
+﻿namespace Carsharing.Core.Abstractions
 {
     public interface IUnitOfWork
     {
-        Task BeginTransactionAsync(CancellationToken cancellationToken);
+        Task BeginTransactionAsync();
 
-        Task CommitTransactionAsync(CancellationToken cancellationToken);
+        Task CommitTransactionAsync();
 
         void Dispose();
 
-        Task RollbackTransactionAsync(CancellationToken cancellationToken);
+        Task RollbackTransactionAsync();
 
-        Task SaveChangesAsync(CancellationToken cancellationToken);
+        Task SaveChangesAsync();
     }
 }

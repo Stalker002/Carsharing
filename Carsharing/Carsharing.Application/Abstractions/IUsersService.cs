@@ -1,24 +1,24 @@
-using Carsharing.Core.Models;
+﻿using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Abstractions;
 
 public interface IUsersService
 {
-    Task<(string? Token, string? Error)> Login(string login, string password, CancellationToken cancellationToken);
+    Task<(string? Token, string? Error)> Login(string login, string password);
 
-    Task<List<User>> GetUsers(CancellationToken cancellationToken);
+    Task<List<User>> GetUsers();
 
-    Task<List<User>> GetPagedUsers(int page, int limit, CancellationToken cancellationToken);
+    Task<List<User>> GetPagedUsers(int page, int limit);
 
-    Task<int> GetUsersCount(CancellationToken cancellationToken);
+    Task<int> GetUsersCount();
 
-    Task<List<User>> GetUserById(int id, CancellationToken cancellationToken);
+    Task<List<User>> GetUserById(int id);
 
-    Task<User?> GetUserByLogin(string login, CancellationToken cancellationToken);
+    Task<User?> GetUserByLogin(string login);
 
-    Task<int> CreateUser(User user, CancellationToken cancellationToken);
+    Task<int> CreateUser(User user);
 
-    Task<int> UpdateUser(int id, int? roleId, string? login, string? password, CancellationToken cancellationToken);
+    Task<int> UpdateUser(int id, int? roleId, string? login, string? passwordHash);
 
-    Task<int> DeleteUser(int id, CancellationToken cancellationToken);
+    Task<int> DeleteUser(int id);
 }

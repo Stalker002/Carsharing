@@ -1,4 +1,4 @@
-using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
 using Carsharing.Application.Abstractions;
@@ -7,18 +7,26 @@ using Microsoft.Extensions.Configuration;
 
 namespace Carsharing.Application.Services;
 
-public class ImageService(IAmazonS3 s3Client, IConfiguration configuration) : IImageService
+public class ImageService : IImageService
 {
-    private readonly string _bucketName = configuration["Minio:BucketName"] ?? "default-bucket";
-    private readonly string _serviceUrl = configuration["Minio:ServiceURL"] ?? "http://localhost:9000";
+    private readonly IAmazonS3 _s3Client;
+    private readonly string _bucketName;
+    private readonly string _serviceUrl;
     private readonly string[] _allowedExtensions = [".jpg", ".jpeg", ".png"];
 
-    public async Task<string> SaveCarImageAsync(IFormFile file, CancellationToken cancellationToken)
+    public ImageService(IAmazonS3 s3Client, IConfiguration configuration)
+    {
+        _s3Client = s3Client;
+        _bucketName = configuration["Minio:BucketName"] ?? "default-bucket";
+        _serviceUrl = configuration["Minio:ServiceURL"] ?? "http://localhost:9000";
+    }
+
+    public async Task<string> SaveCarImageAsync(IFormFile file)
     {
         return await SaveFileInternalAsync(file, "cars");
     }
 
-    public async Task<string> SaveDocumentImageAsync(IFormFile file, CancellationToken cancellationToken)
+    public async Task<string> SaveDocumentImageAsync(IFormFile file)
     {
         return await SaveFileInternalAsync(file, "documents");
     }
@@ -44,14 +52,14 @@ public class ImageService(IAmazonS3 s3Client, IConfiguration configuration) : II
             ContentType = file.ContentType
         };
 
-        await s3Client.PutObjectAsync(putRequest);
+        await _s3Client.PutObjectAsync(putRequest);
 
         // Возвращаем полный URL к файлу
         // Внимание: для MinIO URL обычно строится так: Host/BucketName/Key
         return $"{_serviceUrl}/{_bucketName}/{objectKey}";
     }
 
-    public async void DeleteFile(string fileUrl, CancellationToken cancellationToken)
+    public async void DeleteFile(string fileUrl)
     {
         if (string.IsNullOrEmpty(fileUrl)) return;
 
@@ -70,7 +78,7 @@ public class ImageService(IAmazonS3 s3Client, IConfiguration configuration) : II
                 Key = key
             };
 
-            await s3Client.DeleteObjectAsync(deleteRequest);
+            await _s3Client.DeleteObjectAsync(deleteRequest);
         }
         catch
         {
@@ -80,7 +88,7 @@ public class ImageService(IAmazonS3 s3Client, IConfiguration configuration) : II
 
     private async Task EnsureBucketExistsAsync()
     {
-        var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, _bucketName);
+        var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(_s3Client, _bucketName);
         if (!bucketExists)
         {
             var putBucketRequest = new PutBucketRequest
@@ -88,7 +96,7 @@ public class ImageService(IAmazonS3 s3Client, IConfiguration configuration) : II
                 BucketName = _bucketName,
                 UseClientRegion = true
             };
-            await s3Client.PutBucketAsync(putBucketRequest);
+            await _s3Client.PutBucketAsync(putBucketRequest);
 
             // Делаем бакет публичным для чтения (чтобы картинки открывались на фронте)
             // В продакшене политика может быть строже
@@ -104,7 +112,7 @@ public class ImageService(IAmazonS3 s3Client, IConfiguration configuration) : II
                 ]
             }}";
 
-            await s3Client.PutBucketPolicyAsync(new PutBucketPolicyRequest
+            await _s3Client.PutBucketPolicyAsync(new PutBucketPolicyRequest
             {
                 BucketName = _bucketName,
                 Policy = policy

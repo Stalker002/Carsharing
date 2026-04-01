@@ -1,29 +1,29 @@
-using Carsharing.Core.Models;
+﻿using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Abstractions;
 
 public interface IPromocodesService
 {
-    Task<List<Promocode>> GetPromocodes(CancellationToken cancellationToken);
+    Task<List<Promocode>> GetPromocodes();
 
-    Task<List<Promocode>> GetPagedPromocodes(int page, int limit, CancellationToken cancellationToken);
+    Task<List<Promocode>> GetPagedPromocodes(int page, int limit);
 
-    Task<int> GetCountPromocodes(CancellationToken cancellationToken);
+    Task<int> GetCountPromocodes();
 
-    Task<List<Promocode>> GetPromocodeById(int id, CancellationToken cancellationToken);
+    Task<List<Promocode>> GetPromocodeById(int id);
 
-    Task<List<Promocode>> GetActivePromocode(CancellationToken cancellationToken);
+    Task<List<Promocode>> GetActivePromocode();
 
-    Task<List<Promocode>> GetPagedActivePromocodes(int page, int limit, CancellationToken cancellationToken);
+    Task<List<Promocode>> GetPagedActivePromocodes(int page, int limit);
 
-    Task<int> GetCountActivePromocodes(CancellationToken cancellationToken);
+    Task<int> GetCountActivePromocodes();
 
-    Task<List<Promocode>> GetPromocodeByCode(string code, CancellationToken cancellationToken);
+    Task<List<Promocode>> GetPromocodeByCode(string code);
 
-    Task<int> CreatePromocode(Promocode promocode, CancellationToken cancellationToken);
+    Task<int> CreatePromocode(Promocode promocode);
 
     Task<int> UpdatePromocode(int id, int? statusId, string? code, decimal? discount, DateOnly? startDate,
-        DateOnly? endDate, CancellationToken cancellationToken);
+        DateOnly? endDate);
 
-    Task<int> DeletePromocode(int id, CancellationToken cancellationToken);
+    Task<int> DeletePromocode(int id);
 }

@@ -1,4 +1,4 @@
-using Carsharing.Application.DTOs;
+﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
@@ -15,12 +15,12 @@ public class ReviewRepository : IReviewRepository
         _context = context;
     }
 
-    public async Task<List<Review>> Get(CancellationToken cancellationToken)
+    public async Task<List<Review>> Get()
     {
         var reviewEntities = await _context.Review
             .AsNoTracking()
             .OrderBy(r => r.Id)
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var reviews = reviewEntities
             .Select(r => Review.Create(
@@ -35,14 +35,14 @@ public class ReviewRepository : IReviewRepository
         return reviews;
     }
 
-    public async Task<List<Review>> GetPaged(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Review>> GetPaged(int page, int limit)
     {
         var reviewEntities = await _context.Review
             .AsNoTracking()
             .OrderBy(r => r.Id)
             .Skip((page - 1) * limit)
             .Take(limit)
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var reviews = reviewEntities
             .Select(r => Review.Create(
@@ -57,12 +57,12 @@ public class ReviewRepository : IReviewRepository
         return reviews;
     }
 
-    public async Task<int> GetCount(CancellationToken cancellationToken)
+    public async Task<int> GetCount()
     {
-        return await _context.Review.CountAsync(cancellationToken);
+        return await _context.Review.CountAsync();
     }
 
-    public async Task<List<ReviewWithClientInfo>> GetByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<List<ReviewWithClientInfo>> GetByCarId(int carId)
     {
         return await _context.Review
             .AsNoTracking()
@@ -76,10 +76,10 @@ public class ReviewRepository : IReviewRepository
                 r.Comment,
                 r.Date
             ))
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
     }
 
-    public async Task<List<ReviewWithClientInfo>> GetPagedByCarId(int carId, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<ReviewWithClientInfo>> GetPagedByCarId(int carId, int page, int limit)
     {
         return await _context.Review
             .AsNoTracking()
@@ -95,20 +95,20 @@ public class ReviewRepository : IReviewRepository
                 r.Comment,
                 r.Date
             ))
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
     }
 
-    public async Task<int> GetCountByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<int> GetCountByCarId(int carId)
     {
-        return await _context.Review.Where(r => r.CarId == carId).CountAsync(cancellationToken);
+        return await _context.Review.Where(r => r.CarId == carId).CountAsync();
     }
 
-    public async Task<List<Review>> GetById(int id, CancellationToken cancellationToken)
+    public async Task<List<Review>> GetById(int id)
     {
         var reviewEntities = await _context.Review
             .Where(r => r.Id == id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var reviews = reviewEntities
             .Select(r => Review.Create(
@@ -123,13 +123,13 @@ public class ReviewRepository : IReviewRepository
         return reviews;
     }
 
-    public async Task<List<Review>> GetByClientId(int clientId, CancellationToken cancellationToken)
+    public async Task<List<Review>> GetByClientId(int clientId)
     {
         var reviewEntities = await _context.Review
             .Where(r => r.ClientId == clientId)
             .OrderBy(r => r.Id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var reviews = reviewEntities
             .Select(r => Review.Create(
@@ -144,7 +144,7 @@ public class ReviewRepository : IReviewRepository
         return reviews;
     }
 
-    public async Task<int> Create(Review review, CancellationToken cancellationToken)
+    public async Task<int> Create(Review review)
     {
         var (_, error) = Review.Create(
             0,
@@ -173,7 +173,7 @@ public class ReviewRepository : IReviewRepository
     }
 
     public async Task<int> Update(int id, int? clientId, int? carId, short? rating, string? comment,
-        DateTime? date, CancellationToken cancellationToken)
+        DateTime? date)
     {
         var review = await _context.Review.FirstOrDefaultAsync(r => r.Id == id)
                      ?? throw new Exception("Review not found");
@@ -207,11 +207,11 @@ public class ReviewRepository : IReviewRepository
         return review.Id;
     }
 
-    public async Task<int> Delete(int id, CancellationToken cancellationToken)
+    public async Task<int> Delete(int id)
     {
         var reviewEntity = await _context.Review
             .Where(r => r.Id == id)
-            .ExecuteDeleteAsync(cancellationToken);
+            .ExecuteDeleteAsync();
 
         return id;
     }

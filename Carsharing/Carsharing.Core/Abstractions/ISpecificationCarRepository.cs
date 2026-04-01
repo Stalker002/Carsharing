@@ -1,17 +1,17 @@
-using Carsharing.Core.Models;
+﻿using Carsharing.Core.Models;
 
 namespace Carsharing.Core.Abstractions;
 
 public interface ISpecificationCarRepository
 {
-    Task<List<SpecificationCar>> Get(CancellationToken cancellationToken);
+    Task<List<SpecificationCar>> Get();
 
-    Task<List<SpecificationCar>> GetById(int id, CancellationToken cancellationToken);
+    Task<List<SpecificationCar>> GetById(int id);
 
-    Task<int> Create(SpecificationCar specificationCar, CancellationToken cancellationToken);
+    Task<int> Create(SpecificationCar specificationCar);
 
     Task<int> Update(int id, string? fuelType, string? brand, string? model, string? transmission,
-        int? year, string? vinNumber, string? stateNumber, int? mileage, decimal? maxFuel, decimal? fuelPerKm, CancellationToken cancellationToken);
+        int? year, string? vinNumber, string? stateNumber, int? mileage, decimal? maxFuel, decimal? fuelPerKm);
 
-    Task<int> Delete(int id, CancellationToken cancellationToken);
+    Task<int> Delete(int id);
 }

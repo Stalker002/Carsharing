@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +18,9 @@ public class TariffController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<StatusResponse>>> GetTariffs(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<List<StatusResponse>>> GetTariffs()
     {
-        var statuses = await _tariffsService.GetTariffs(cancellationToken);
+        var statuses = await _tariffsService.GetTariffs();
         var response = statuses.Select(t =>
             new TariffResponse(t.Id, t.Name, t.PricePerMinute, t.PricePerKm, t.PricePerDay));
 
@@ -29,9 +29,9 @@ public class TariffController : ControllerBase
 
     [HttpGet("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<StatusResponse>>> GetTariffById(int id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<List<StatusResponse>>> GetTariffById(int id)
     {
-        var statuses = await _tariffsService.GetTariffById(id, cancellationToken);
+        var statuses = await _tariffsService.GetTariffById(id);
         var response = statuses.Select(t =>
             new TariffResponse(t.Id, t.Name, t.PricePerMinute, t.PricePerKm, t.PricePerDay));
 

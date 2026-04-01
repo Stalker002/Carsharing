@@ -35,15 +35,12 @@ public class TripServiceTests
     {
         const int tripIdToCancel = 5;
 
-        _tripRepoMock.Setup(x => x.CancelTripAsync(tripIdToCancel, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        _tripRepoMock.Setup(x => x.CancelTripAsync(tripIdToCancel)).Returns(Task.CompletedTask);
 
-        using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
-
-        var result = await _tripService.CancelTripAsync(tripIdToCancel, specificToken);
+        var result = await _tripService.CancelTripAsync(tripIdToCancel);
 
         Assert.True(result);
         
-        _tripRepoMock.Verify(x => x.CancelTripAsync(tripIdToCancel, specificToken), Times.Once);
+        _tripRepoMock.Verify(x => x.CancelTripAsync(tripIdToCancel), Times.Once);
     }
 }

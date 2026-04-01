@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
@@ -9,101 +9,96 @@ public class ClientsService : IClientsService
 {
     private readonly IClientRepository _clientRepository;
     private readonly IClientDocumentRepository _clientDocumentRepository;
-    private readonly IPasswordHasher _passwordHasher;
     private readonly IUsersRepository _usersRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public ClientsService(IClientRepository clientRepository, IClientDocumentRepository clientDocumentRepository,
-        IUsersRepository usersRepository, IUnitOfWork unitOfWork, IPasswordHasher passwordHasher)
+        IUsersRepository usersRepository, IUnitOfWork unitOfWork)
     {
-        _passwordHasher = passwordHasher;
         _usersRepository = usersRepository;
         _unitOfWork = unitOfWork;
         _clientDocumentRepository = clientDocumentRepository;
         _clientRepository = clientRepository;
     }
 
-    public async Task<List<Client>> GetClients(CancellationToken cancellationToken)
+    public async Task<List<Client>> GetClients()
     {
-        return await _clientRepository.Get(cancellationToken);
+        return await _clientRepository.Get();
     }
 
-    public async Task<List<Client>> GetPagedClients(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Client>> GetPagedClients(int page, int limit)
     {
-        return await _clientRepository.GetPaged(page, limit, cancellationToken);
+        return await _clientRepository.GetPaged(page, limit);
     }
 
-    public async Task<int> GetCountClients(CancellationToken cancellationToken)
+    public async Task<int> GetCountClients()
     {
-        return await _clientRepository.GetCount(cancellationToken);
+        return await _clientRepository.GetCount();
     }
 
-    public async Task<List<Client>> GetClientById(int id, CancellationToken cancellationToken)
+    public async Task<List<Client>> GetClientById(int id)
     {
-        return await _clientRepository.GetById(id, cancellationToken);
+        return await _clientRepository.GetById(id);
     }
 
-    public async Task<List<Client>> GetClientByUserId(int userId, CancellationToken cancellationToken)
+    public async Task<List<Client>> GetClientByUserId(int userId)
     {
-        return await _clientRepository.GetClientByUserId(userId, cancellationToken);
+        return await _clientRepository.GetClientByUserId(userId);
     }
 
-    public async Task<List<ClientDocument>> GetMyDocuments(int userId, CancellationToken cancellationToken)
+    public async Task<List<ClientDocument>> GetMyDocuments(int userId)
     {
-        var client = await _clientRepository.GetClientByUserId(userId, cancellationToken);
+        var client = await _clientRepository.GetClientByUserId(userId);
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
-        return await _clientDocumentRepository.GetByClientId(clientId, cancellationToken);
+        return await _clientDocumentRepository.GetByClientId(clientId);
     }
 
-    public async Task<List<ClientDocument>> GetClientDocuments(int clientId, CancellationToken cancellationToken)
+    public async Task<List<ClientDocument>> GetClientDocuments(int clientId)
     {
-        return await _clientDocumentRepository.GetByClientId(clientId, cancellationToken);
+        return await _clientDocumentRepository.GetByClientId(clientId);
     }
 
-    public async Task<int> CreateClient(Client client, CancellationToken cancellationToken)
+    public async Task<int> CreateClient(Client client)
     {
-        return await _clientRepository.Create(client, cancellationToken);
+        return await _clientRepository.Create(client);
     }
 
-    public async Task<int> CreateClientWithUser(Client client, User user, CancellationToken cancellationToken)
+    public async Task<int> CreateClientWithUser(Client client, User user)
     {
-        var userExists = await _usersRepository.GetByLogin(user.Login, cancellationToken);
+        var userExists = await _usersRepository.GetByLogin(user.Login);
         if (userExists != null)
             throw new ConflictException($"Пользователь с таким логином уже существует");
 
-        await _unitOfWork.BeginTransactionAsync(cancellationToken);
+        await _unitOfWork.BeginTransactionAsync();
 
         try
         {
-            var hashedPassword = _passwordHasher.Generate(user.Password);
-            var userToCreate = User.Restore(0, user.RoleId, user.Login, hashedPassword);
+            client.UserId = await _usersRepository.CreateUser(user);
+            var clientId = await _clientRepository.Create(client);
 
-            client.UserId = await _usersRepository.CreateUser(userToCreate, cancellationToken);
-            var clientId = await _clientRepository.Create(client, cancellationToken);
-
-            await _unitOfWork.CommitTransactionAsync(cancellationToken);
+            await _unitOfWork.CommitTransactionAsync();
             return clientId;
         }
         catch (Exception)
         {
-            await _unitOfWork.RollbackTransactionAsync(cancellationToken); ;
+            await _unitOfWork.RollbackTransactionAsync(); ;
             throw;
         }
     }
 
-    public async Task<int> UpdateClient(int id, int userId, string? name, string? surname, string? phoneNumber, string? email, CancellationToken cancellationToken)
+    public async Task<int> UpdateClient(int id, int userId, string? name, string? surname, string? phoneNumber, string? email)
     {
-        return await _clientRepository.Update(id, userId, name, surname, phoneNumber, email, cancellationToken);
+        return await _clientRepository.Update(id, userId, name, surname, phoneNumber, email);
     }
 
-    public async Task<int> DeleteClient(int id, CancellationToken cancellationToken)
+    public async Task<int> DeleteClient(int id)
     {
-        var client = await _clientRepository.GetById(id, cancellationToken);
+        var client = await _clientRepository.GetById(id);
         var userId = client.Select(c => c.UserId).FirstOrDefault();
 
-        var user = await _usersRepository.DeleteUser(userId, cancellationToken);
+        var user = await _usersRepository.DeleteUser(userId);
 
-        return await _clientRepository.Delete(id, cancellationToken);
+        return await _clientRepository.Delete(id);
     }
 }

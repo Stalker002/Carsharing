@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Enum;
@@ -12,126 +12,95 @@ public class BookingsService : IBookingsService
     private readonly IBookingRepository _bookingRepository;
     private readonly IClientRepository _clientRepository;
     private readonly ICarRepository _carRepository;
-    private readonly IUnitOfWork _unitOfWork;
 
     public BookingsService(IBookingRepository bookingRepository, IClientRepository clientRepository,
-        ICarRepository carRepository, IUnitOfWork unitOfWork)
+        ICarRepository carRepository)
     {
-        _unitOfWork = unitOfWork;
         _carRepository = carRepository;
         _clientRepository = clientRepository;
         _bookingRepository = bookingRepository;
     }
 
-    public async Task<List<Booking>> GetBookings(CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetBookings()
     {
-        return await _bookingRepository.Get(cancellationToken);
+        return await _bookingRepository.Get();
     }
 
-    public async Task<List<Booking>> GetPagedBookings(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetPagedBookings(int page, int limit)
     {
-        return await _bookingRepository.GetPaged(page, limit, cancellationToken);
+        return await _bookingRepository.GetPaged(page, limit);
     }
 
-    public async Task<int> GetCountBookings(CancellationToken cancellationToken)
+    public async Task<int> GetCountBookings()
     {
-        return await _bookingRepository.GetCount(cancellationToken);
+        return await _bookingRepository.GetCount();
     }
 
-    public async Task<List<Booking>> GetBookingsById(int id, CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetBookingsById(int id)
     {
-        return await _bookingRepository.GetById(id, cancellationToken);
+        return await _bookingRepository.GetById(id);
     }
 
-    public async Task<List<Booking>> GetBookingsByClient(int userId, CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetBookingsByClient(int userId)
     {
-        var client = await _clientRepository.GetClientByUserId(userId, cancellationToken);
+        var client = await _clientRepository.GetClientByUserId(userId);
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
-        return await _bookingRepository.GetByClientId(clientId, cancellationToken);
+        return await _bookingRepository.GetByClientId(clientId);
     }
 
-    public async Task<List<Booking>> GetPagedBookingsByClient(int userId, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetPagedBookingsByClient(int userId, int page, int limit)
     {
-        var client = await _clientRepository.GetClientByUserId(userId, cancellationToken);
+        var client = await _clientRepository.GetClientByUserId(userId);
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
-        return await _bookingRepository.GetPagedByClientId(clientId, page, limit, cancellationToken);
+        return await _bookingRepository.GetPagedByClientId(clientId, page, limit);
     }
 
-    public async Task<int> GetCountBookingsByClient(int userId, CancellationToken cancellationToken)
+    public async Task<int> GetCountBookingsByClient(int userId)
     {
-        var client = await _clientRepository.GetClientByUserId(userId, cancellationToken);
+        var client = await _clientRepository.GetClientByUserId(userId);
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
-        return await _bookingRepository.GetCountByClient(clientId, cancellationToken);
+        return await _bookingRepository.GetCountByClient(clientId);
     }
 
-    public async Task<List<Booking>> GetBookingsByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetBookingsByCarId(int carId)
     {
-        return await _bookingRepository.GetByCarId(carId, cancellationToken);
+        return await _bookingRepository.GetByCarId(carId);
     }
 
-    public async Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int id, CancellationToken cancellationToken)
+    public async Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int id)
     {
-        return await _bookingRepository.GetBookingWithInfo(id, cancellationToken);
+        return await _bookingRepository.GetBookingWithInfo(id);
     }
 
-    public async Task<int> CreateBooking(int userId, int statusId, int carId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
+    public async Task<int> CreateBooking(Booking booking)
     {
-        var client = await _clientRepository.GetClientByUserId(userId, cancellationToken);
-        var clientId = client.Select(c => c.Id).FirstOrDefault();
+        var cars = await _carRepository.GetById(booking.CarId);
+        var car = cars.FirstOrDefault();
+    
+        if (car == null)
+            throw new NotFoundException("Автомобиль не найден");
+        
+        if (car.CarStatusId != (int)CarStatusEnum.Available)
+            throw new ConflictException("Автомобиль недоступен на выбранное время");
 
-        if (clientId == 0)
-            throw new NotFoundException("Клиент не найден");
+        var bookingId = await _bookingRepository.Create(booking);
 
-        var (booking, error) = Booking.Create(0, statusId, carId, clientId, startTime, endTime);
+        await _carRepository.UpdateStatus(booking.CarId, (int)CarStatusEnum.Reserved);
 
-        if (!string.IsNullOrWhiteSpace(error))
-            throw new ArgumentException(error);
-
-        await _unitOfWork.BeginTransactionAsync(cancellationToken);
-
-        try
-        {
-            var wasReserved = await _carRepository.TryUpdateStatus(
-                booking.CarId,
-                (int)CarStatusEnum.Available,
-                (int)CarStatusEnum.Reserved, 
-                cancellationToken);
-
-            if (!wasReserved)
-            {
-                var cars = await _carRepository.GetById(booking.CarId, cancellationToken);
-                var car = cars.FirstOrDefault();
-
-                if (car == null)
-                    throw new NotFoundException("Автомобиль не найден");
-
-                throw new ConflictException("Автомобиль недоступен на выбранное время");
-            }
-
-            var bookingId = await _bookingRepository.Create(booking, cancellationToken);
-
-            await _unitOfWork.CommitTransactionAsync(cancellationToken);
-
-            return bookingId;
-        }
-        catch
-        {
-            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
-            throw;
-        }
+        return bookingId;
     }
 
     public async Task<int> UpdateBooking(int id, int? statusId, int? carId, int? clientId,
-        DateTime? startTime, DateTime? endTime, CancellationToken cancellationToken)
+        DateTime? startTime, DateTime? endTime)
     {
-        return await _bookingRepository.Update(id, statusId, carId, clientId, startTime, endTime, cancellationToken);
+        return await _bookingRepository.Update(id, statusId, carId, clientId, startTime, endTime);
     }
 
-    public async Task<int> DeleteBooking(int id, CancellationToken cancellationToken)
+    public async Task<int> DeleteBooking(int id)
     {
-        return await _bookingRepository.Delete(id, cancellationToken);
+        return await _bookingRepository.Delete(id);
     }
 }

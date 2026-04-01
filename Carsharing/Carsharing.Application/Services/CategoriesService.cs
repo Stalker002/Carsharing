@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 
@@ -13,23 +13,23 @@ public class CategoriesService : ICategoriesService
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<List<Category>> GetCategories(CancellationToken cancellationToken)
+    public async Task<List<Category>> GetCategories()
     {
-        return await _categoryRepository.Get(cancellationToken);
+        return await _categoryRepository.Get();
     }
 
-    public async Task<int> CreateCategory(Category category, CancellationToken cancellationToken)
+    public async Task<int> CreateCategory(Category category)
     {
-        return await _categoryRepository.Create(category, cancellationToken);
+        return await _categoryRepository.Create(category);
     }
 
-    public async Task<int> UpdateCategory(int id, string? name, CancellationToken cancellationToken)
+    public async Task<int> UpdateCategory(int id, string? name)
     {
-        return await _categoryRepository.Update(id, name, cancellationToken);
+        return await _categoryRepository.Update(id, name);
     }
 
-    public async Task<int> DeleteCategory(int id, CancellationToken cancellationToken)
+    public async Task<int> DeleteCategory(int id)
     {
-        return await _categoryRepository.Delete(id, cancellationToken);
+        return await _categoryRepository.Delete(id);
     }
 }

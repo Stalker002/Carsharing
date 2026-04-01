@@ -1,8 +1,8 @@
-using Carsharing.Core.Models;
+﻿using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Abstractions;
 
 public interface IBillStatusesService
 {
-    Task<List<BillStatus>> GetBillStatuses(CancellationToken cancellationToken);
+    Task<List<BillStatus>> GetBillStatuses();
 }

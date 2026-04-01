@@ -21,9 +21,9 @@ public class BookingsController : ControllerBase
 
     [HttpGet("unpaged")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<BookingsResponse>>> GetBookings(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<BookingsResponse>>> GetBookings()
     {
-        var bookings = await _bookingsService.GetBookings(cancellationToken);
+        var bookings = await _bookingsService.GetBookings();
         var response = bookings.Select(b =>
             new BookingsResponse(b.Id, b.StatusId, b.CarId, b.ClientId, b.StartTime, b.EndTime));
 
@@ -34,10 +34,10 @@ public class BookingsController : ControllerBase
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<BookingsResponse>>> GetPagedBookings(
         [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_limit")] int limit = 25, CancellationToken cancellationToken = default)
+        [FromQuery(Name = "_limit")] int limit = 25)
     {
-        var totalCount = await _bookingsService.GetCountBookings(cancellationToken);
-        var bookings = await _bookingsService.GetPagedBookings(page, limit, cancellationToken);
+        var totalCount = await _bookingsService.GetCountBookings();
+        var bookings = await _bookingsService.GetPagedBookings(page, limit);
 
         var response = bookings
             .Select(b => new BookingsResponse(b.Id, b.StatusId, b.CarId, b.ClientId, b.StartTime, b.EndTime)).ToList();
@@ -49,11 +49,11 @@ public class BookingsController : ControllerBase
 
     [HttpGet("byClient")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<BookingsResponse>>> GetBookingByClientId(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<BookingsResponse>>> GetBookingByClientId()
     {
         var userId = User.GetRequiredUserId();
 
-        var bookings = await _bookingsService.GetBookingsByClient(userId, cancellationToken);
+        var bookings = await _bookingsService.GetBookingsByClient(userId);
         var response = bookings.Select(b =>
             new BookingsResponse(b.Id, b.StatusId, b.CarId, b.ClientId, b.StartTime, b.EndTime));
 
@@ -64,12 +64,12 @@ public class BookingsController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<BookingsResponse>>> GetPagedBookingByClient(
         [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_limit")] int limit = 25, CancellationToken cancellationToken = default)
+        [FromQuery(Name = "_limit")] int limit = 25)
     {
         var userId = User.GetRequiredUserId();
 
-        var totalCount = await _bookingsService.GetCountBookingsByClient(userId, cancellationToken);
-        var bookings = await _bookingsService.GetPagedBookingsByClient(userId, page, limit, cancellationToken);
+        var totalCount = await _bookingsService.GetCountBookingsByClient(userId);
+        var bookings = await _bookingsService.GetPagedBookingsByClient(userId, page, limit);
 
         var response = bookings
             .Select(b => new BookingsResponse(b.Id, b.StatusId, b.CarId, b.ClientId, b.StartTime, b.EndTime)).ToList();
@@ -81,9 +81,9 @@ public class BookingsController : ControllerBase
 
     [HttpGet("byCar/{carId:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<BookingsResponse>>> GetBookingByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<BookingsResponse>>> GetBookingByCarId(int carId)
     {
-        var bookings = await _bookingsService.GetBookingsByCarId(carId, cancellationToken);
+        var bookings = await _bookingsService.GetBookingsByCarId(carId);
         var response = bookings.Select(b =>
             new BookingsResponse(b.Id, b.StatusId, b.CarId, b.ClientId, b.StartTime, b.EndTime));
 
@@ -92,42 +92,45 @@ public class BookingsController : ControllerBase
 
     [HttpGet("withInfo/{id:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<BookingWithFullInfoDto>>> GetBookingsWithInfo(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<BookingWithFullInfoDto>>> GetBookingsWithInfo(int id)
     {
-        var response = await _bookingsService.GetBookingWithInfo(id, cancellationToken);
+        var response = await _bookingsService.GetBookingWithInfo(id);
         return Ok(response);
     }
 
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> CreateBooking([FromBody] BookingsRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateBooking([FromBody] BookingsRequest request)
     {
-        var userId = User.GetRequiredUserId();
-        var bookingId = await _bookingsService.CreateBooking(
-            userId,
+        var (booking, error) = Booking.Create(
+            0,
             request.StatusId,
             request.CarId,
+            request.ClientId,
             request.StartTime,
-            request.EndTime, 
-            cancellationToken);
+            request.EndTime);
+
+        if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
+
+        var bookingId = await _bookingsService.CreateBooking(booking);
 
         return Ok(bookingId);
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateBooking(int id, [FromBody] BookingsRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateBooking(int id, [FromBody] BookingsRequest request)
     {
         var bookingId = await _bookingsService.UpdateBooking(id, request.StatusId, request.CarId, request.ClientId,
-            request.StartTime, request.EndTime, cancellationToken);
+            request.StartTime, request.EndTime);
 
         return Ok(bookingId);
     }
 
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> DeleteBooking(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> DeleteBooking(int id)
     {
-        return Ok(await _bookingsService.DeleteBooking(id, cancellationToken));
+        return Ok(await _bookingsService.DeleteBooking(id));
     }
 }

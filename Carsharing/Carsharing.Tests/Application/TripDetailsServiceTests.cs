@@ -27,15 +27,12 @@ public class TripDetailsServiceTests
     {
         var tripDetail = TripDetail.Create(1, 10, "Point A", "Point B", false, 0, 0).tripDetail;
 
-        _tripDetailRepoMock.Setup(x => x.GetCarIdByTripId(tripDetail.TripId, It.IsAny<CancellationToken>())).ReturnsAsync(0);
+        _tripDetailRepoMock.Setup(x => x.GetCarIdByTripId(tripDetail.TripId)).ReturnsAsync(0);
 
-        using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
-
-        var ex = await Assert.ThrowsAsync<NotFoundException>(() => _service.CreateTripDetail(tripDetail, specificToken));
+        var ex = await Assert.ThrowsAsync<NotFoundException>(() => _service.CreateTripDetail(tripDetail));
         Assert.Contains("или связанный автомобиль не найдены", ex.Message);
 
-        _tripDetailRepoMock.Verify(x => x.Create(It.IsAny<TripDetail>(), specificToken), Times.Never);
+        _tripDetailRepoMock.Verify(x => x.Create(It.IsAny<TripDetail>()), Times.Never);
     }
 
     [Fact]
@@ -44,17 +41,14 @@ public class TripDetailsServiceTests
         const int carId = 5;
         var tripDetail = TripDetail.Create(1, 10, "Point A", "Point B", true, 0, 0).tripDetail;
 
-        _tripDetailRepoMock.Setup(x => x.GetCarIdByTripId(tripDetail.TripId, It.IsAny<CancellationToken>())).ReturnsAsync(carId);
+        _tripDetailRepoMock.Setup(x => x.GetCarIdByTripId(tripDetail.TripId)).ReturnsAsync(carId);
 
-        _insuranceRepoMock.Setup(x => x.GetActiveByCarId(carId, It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _insuranceRepoMock.Setup(x => x.GetActiveByCarId(carId)).ReturnsAsync(new List<Insurance>());
 
-        using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
-
-        var ex = await Assert.ThrowsAsync<ConflictException>(() => _service.CreateTripDetail(tripDetail, specificToken));
+        var ex = await Assert.ThrowsAsync<ConflictException>(() => _service.CreateTripDetail(tripDetail));
         Assert.Equal("Нельзя начать поездку с опцией страховки: у автомобиля нет активного полиса", ex.Message);
 
-        _tripDetailRepoMock.Verify(x => x.Create(It.IsAny<TripDetail>(), specificToken), Times.Never);
+        _tripDetailRepoMock.Verify(x => x.Create(It.IsAny<TripDetail>()), Times.Never);
     }
 
     [Fact]
@@ -63,19 +57,16 @@ public class TripDetailsServiceTests
         const int carId = 5;
         var tripDetail = TripDetail.Create(1, 10, "Point A", "Point B", false, 0, 0).tripDetail;
 
-        _tripDetailRepoMock.Setup(x => x.GetCarIdByTripId(tripDetail.TripId, It.IsAny<CancellationToken>())).ReturnsAsync(carId);
+        _tripDetailRepoMock.Setup(x => x.GetCarIdByTripId(tripDetail.TripId)).ReturnsAsync(carId);
         
-        _tripDetailRepoMock.Setup(x => x.Create(tripDetail, It.IsAny<CancellationToken>())).ReturnsAsync(99);
+        _tripDetailRepoMock.Setup(x => x.Create(tripDetail)).ReturnsAsync(99);
 
-        using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
-
-        var resultId = await _service.CreateTripDetail(tripDetail, specificToken);
+        var resultId = await _service.CreateTripDetail(tripDetail);
 
         Assert.Equal(99, resultId);
         
-        _tripDetailRepoMock.Verify(x => x.Create(tripDetail, specificToken), Times.Once);
+        _tripDetailRepoMock.Verify(x => x.Create(tripDetail), Times.Once);
         
-        _insuranceRepoMock.Verify(x => x.GetActiveByCarId(It.IsAny<int>(), specificToken), Times.Never);
+        _insuranceRepoMock.Verify(x => x.GetActiveByCarId(It.IsAny<int>()), Times.Never);
     }
 }

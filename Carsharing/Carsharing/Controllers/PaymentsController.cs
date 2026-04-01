@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Contracts;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -19,9 +19,9 @@ public class PaymentsController : ControllerBase
 
     [HttpGet("unpaged")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<PaymentResponse>>> GetPayments(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<PaymentResponse>>> GetPayments()
     {
-        var payments = await _paymentService.GetPayments(cancellationToken);
+        var payments = await _paymentService.GetPayments();
         var response = payments.Select(p => new PaymentResponse(p.Id, p.BillId, p.Sum, p.Method, p.Date));
 
         return Ok(response);
@@ -31,10 +31,10 @@ public class PaymentsController : ControllerBase
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<PaymentResponse>>> GetPagedPayments(
         [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_limit")] int limit = 25, CancellationToken cancellationToken = default)
+        [FromQuery(Name = "_limit")] int limit = 25)
     {
-        var totalCount = await _paymentService.GetCountPayments(cancellationToken);
-        var payments = await _paymentService.GetPagedPayments(page, limit, cancellationToken);
+        var totalCount = await _paymentService.GetCountPayments();
+        var payments = await _paymentService.GetPagedPayments(page, limit);
 
         var response = payments
             .Select(p => new PaymentResponse(p.Id, p.BillId, p.Sum, p.Method, p.Date)).ToList();
@@ -46,9 +46,9 @@ public class PaymentsController : ControllerBase
 
     [HttpGet("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<PaymentResponse>>> GetPaymentById(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<PaymentResponse>>> GetPaymentById(int id)
     {
-        var payments = await _paymentService.GetPaymentById(id, cancellationToken);
+        var payments = await _paymentService.GetPaymentById(id);
         var response = payments.Select(p => new PaymentResponse(p.Id, p.BillId, p.Sum, p.Method, p.Date));
 
         return Ok(response);
@@ -56,9 +56,9 @@ public class PaymentsController : ControllerBase
 
     [HttpGet("byBill/{billId:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<PaymentResponse>>> GetPaymentByBillId(int billId, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<PaymentResponse>>> GetPaymentByBillId(int billId)
     {
-        var payments = await _paymentService.GetPaymentByBillId(billId, cancellationToken);
+        var payments = await _paymentService.GetPaymentByBillId(billId);
         var response = payments.Select(p => new PaymentResponse(p.Id, p.BillId, p.Sum, p.Method, p.Date));
 
         return Ok(response);
@@ -66,7 +66,7 @@ public class PaymentsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> CreatePayment([FromBody] PaymentRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreatePayment([FromBody] PaymentRequest request)
     {
         var (payment, error) = Payment.Create(
             0,
@@ -77,24 +77,24 @@ public class PaymentsController : ControllerBase
 
         if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
 
-        var paymentId = await _paymentService.CreatePayment(payment, cancellationToken);
+        var paymentId = await _paymentService.CreatePayment(payment);
 
         return Ok(paymentId);
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdatePayment(int id, [FromBody] PaymentRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdatePayment(int id, [FromBody] PaymentRequest request)
     {
         var paymentId =
-            await _paymentService.UpdatePayment(id, request.BillId, request.Sum, request.Method, request.Date, cancellationToken);
+            await _paymentService.UpdatePayment(id, request.BillId, request.Sum, request.Method, request.Date);
         return Ok(paymentId);
     }
 
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> DeletePayment(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> DeletePayment(int id)
     {
-        return Ok(await _paymentService.DeletePayment(id, cancellationToken));
+        return Ok(await _paymentService.DeletePayment(id));
     }
 }

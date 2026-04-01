@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 
@@ -14,9 +14,9 @@ public class BillStatusesService : IBillStatusesService
         _billStatusRepository = billStatusRepository;
     }
 
-    public async Task<List<BillStatus>> GetBillStatuses(CancellationToken cancellationToken)
+    public async Task<List<BillStatus>> GetBillStatuses()
     {
-        var billStatuses = await _billStatusRepository.Get(cancellationToken);
+        var billStatuses = await _billStatusRepository.Get();
 
         return billStatuses;
     }

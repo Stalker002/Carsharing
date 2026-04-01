@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 
@@ -13,40 +13,40 @@ public class InsurancesService : IInsurancesService
         _insuranceRepository = insuranceRepository;
     }
 
-    public async Task<List<Insurance>> GetInsurances(CancellationToken cancellationToken)
+    public async Task<List<Insurance>> GetInsurances()
     {
-        return await _insuranceRepository.Get(cancellationToken);
+        return await _insuranceRepository.Get();
     }
 
-    public async Task<List<Insurance>> GetInsuranceById(int id, CancellationToken cancellationToken)
+    public async Task<List<Insurance>> GetInsuranceById(int id)
     {
-        return await _insuranceRepository.GetById(id, cancellationToken);
+        return await _insuranceRepository.GetById(id);
     }
 
-    public async Task<List<Insurance>> GetInsuranceByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<List<Insurance>> GetInsuranceByCarId(int carId)
     {
-        return await _insuranceRepository.GetByCarId(carId, cancellationToken);
+        return await _insuranceRepository.GetByCarId(carId);
     }
 
-    public async Task<List<Insurance>> GetActiveInsuranceByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<List<Insurance>> GetActiveInsuranceByCarId(int carId)
     {
-        return await _insuranceRepository.GetActiveByCarId(carId, cancellationToken);
+        return await _insuranceRepository.GetActiveByCarId(carId);
     }
 
-    public async Task<int> CreateInsurance(Insurance insurance, CancellationToken cancellationToken)
+    public async Task<int> CreateInsurance(Insurance insurance)
     {
-        return await _insuranceRepository.Create(insurance, cancellationToken);
+        return await _insuranceRepository.Create(insurance);
     }
 
     public async Task<int> UpdateInsurance(int id, int? carId, int? statusId, string type, string? company,
-        string? policyNumber, DateOnly? startDate, DateOnly? endDate, decimal? cost, CancellationToken cancellationToken)
+        string? policyNumber, DateOnly? startDate, DateOnly? endDate, decimal? cost)
     {
         return await _insuranceRepository.Update(id, carId, statusId, type, company, policyNumber, startDate, endDate,
-            cost, cancellationToken);
+            cost);
     }
 
-    public async Task<int> DeleteInsurance(int id, CancellationToken cancellationToken)
+    public async Task<int> DeleteInsurance(int id)
     {
-        return await _insuranceRepository.Delete(id, cancellationToken);
+        return await _insuranceRepository.Delete(id);
     }
 }

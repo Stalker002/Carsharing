@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
@@ -8,87 +8,66 @@ namespace Carsharing.Application.Services;
 public class BillsService : IBillsService
 {
     private readonly IBillRepository _billRepository;
-    private readonly IBookingRepository _bookingRepository;
-    private readonly IClientRepository _clientRepository;
     private readonly IPromocodeRepository _promocodeRepository;
-    private readonly ITripRepository _tripRepository;
 
-    public BillsService(IBillRepository billRepository, IPromocodeRepository promocodeRepository, ITripRepository tripRepository, IBookingRepository bookingRepository, IClientRepository clientRepository)
+    public BillsService(IBillRepository billRepository, IPromocodeRepository promocodeRepository)
     {
-        _clientRepository = clientRepository;
-        _bookingRepository = bookingRepository;
-        _tripRepository = tripRepository;
         _promocodeRepository = promocodeRepository;
         _billRepository = billRepository;
     }
 
-    public async Task<List<Bill>> GetBills(CancellationToken cancellationToken)
+    public async Task<List<Bill>> GetBills()
     {
-        return await _billRepository.Get(cancellationToken);
+        return await _billRepository.Get();
     }
 
-    public async Task<List<Bill>> GetPagedBills(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Bill>> GetPagedBills(int page, int limit)
     {
-        return await _billRepository.GetPaged(page, limit, cancellationToken);
+        return await _billRepository.GetPaged(page, limit);
     }
 
-    public async Task<int> GetBillCount(CancellationToken cancellationToken)
+    public async Task<int> GetBillCount()
     {
-        return await _billRepository.GetCount(cancellationToken);
+        return await _billRepository.GetCount();
     }
 
-    public async Task<Bill?> GetBillById(int id, CancellationToken cancellationToken)
+    public async Task<Bill?> GetBillById(int id)
     {
-        return await _billRepository.GetById(id, cancellationToken);
+        return await _billRepository.GetById(id);
     }
 
-    public async Task<List<BillWithMinInfoDto>> GetPagedBillWithMinInfoByUserId(int userId, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<BillWithMinInfoDto>> GetPagedBillWithMinInfoByUserId(int userId, int page, int limit)
     {
-        return await _billRepository.GetPagedMinInfoByUserId(userId, page, limit, cancellationToken);
+        return await _billRepository.GetPagedMinInfoByUserId(userId, page, limit);
     }
 
-    public async Task<int> GetCountPagedBillWithMinInfoByUser(int userId, CancellationToken cancellationToken)
+    public async Task<int> GetCountPagedBillWithMinInfoByUser(int userId)
     {
-        return await _billRepository.GetCountByUserId(userId, cancellationToken);
+        return await _billRepository.GetCountByUserId(userId);
     }
 
-    public async Task<List<BillWithInfoDto>> GetBillWithInfoById(int id, CancellationToken cancellationToken)
+    public async Task<List<BillWithInfoDto>> GetBillWithInfoById(int id)
     {
-        var billDto = await _billRepository.GetInfoById(id, cancellationToken);
+        var billDto = await _billRepository.GetInfoById(id);
 
         return billDto == null ? [] : [billDto];
     }
 
-    public async Task<int> CreateBill(int userId, Bill bill, CancellationToken cancellationToken)
+    public async Task<int> CreateBill(Bill bill)
     {
-        var client = await _clientRepository.GetClientByUserId(userId, cancellationToken);
-        var clientId = client.Select(c => c.Id).FirstOrDefault();
-
-        if (clientId == 0)
-            throw new Exception("Client not found");
-
-        var trip = (await _tripRepository.GetById(bill.TripId, cancellationToken)).FirstOrDefault()
-            ?? throw new Exception("Trip not found");
-
-        var booking = (await _bookingRepository.GetById(trip.BookingId, cancellationToken)).FirstOrDefault()
-            ?? throw new Exception("Booking not found");
-
-        if (booking.ClientId != clientId)
-            throw new UnauthorizedAccessException("Trip does not belong to current user");
-
-        return await _billRepository.Create(bill, cancellationToken);
+        return await _billRepository.Create(bill);
     }
 
-    public async Task ApplyPromocode(int billId, string code, CancellationToken cancellationToken)
+    public async Task ApplyPromocode(int billId, string code)
     {
-        var promos = await _promocodeRepository.GetByCode(code, cancellationToken);
+        var promos = await _promocodeRepository.GetByCode(code);
         var promo = promos.FirstOrDefault(p =>
             p.StartDate <= DateOnly.FromDateTime(DateTime.UtcNow) &&
             p.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow));
 
         if (promo == null) throw new Exception("Промокод не найден или истек");
 
-        var bill = await _billRepository.GetById(billId, cancellationToken);
+        var bill = await _billRepository.GetById(billId);
         if (bill == null) throw new Exception("Счет не найден");
 
         await _billRepository.Update(
@@ -98,19 +77,18 @@ public class BillsService : IBillsService
             null,
             null,
             null,
-            null,
-            cancellationToken
+            null
         );
     }
 
     public async Task<int> UpdateBill(int id, int? tripId, int? promocodeId, int? statusId, DateTime? issueDate,
-        decimal? amount, decimal? remainingAmount, CancellationToken cancellationToken)
+        decimal? amount, decimal? remainingAmount)
     {
-        return await _billRepository.Update(id, tripId, promocodeId, statusId, issueDate, amount, remainingAmount, cancellationToken);
+        return await _billRepository.Update(id, tripId, promocodeId, statusId, issueDate, amount, remainingAmount);
     }
 
-    public async Task<int> DeleteBill(int id, CancellationToken cancellationToken)
+    public async Task<int> DeleteBill(int id)
     {
-        return await _billRepository.Delete(id, cancellationToken);
+        return await _billRepository.Delete(id);
     }
 }

@@ -1,4 +1,4 @@
-using Carsharing.Core.Abstractions;
+﻿using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,11 +6,11 @@ namespace Carsharing.DataAccess.Repositories;
 
 public class BillStatusRepository(CarsharingDbContext context) : IBillStatusRepository
 {
-    public async Task<List<BillStatus>> Get(CancellationToken cancellationToken)
+    public async Task<List<BillStatus>> Get()
     {
         var billStatusEntities = await context.BillStatus
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var billStatuses = billStatusEntities
             .Select(b => BillStatus.Create(
@@ -21,10 +21,10 @@ public class BillStatusRepository(CarsharingDbContext context) : IBillStatusRepo
         return billStatuses;
     }
 
-    public async Task<bool> Exists(int id, CancellationToken cancellationToken)
+    public async Task<bool> Exists(int id)
     {
         return await context.BillStatus
             .AsNoTracking()
-            .AnyAsync(b => b.Id == id, cancellationToken);
+            .AnyAsync(b => b.Id == id);
     }
 }

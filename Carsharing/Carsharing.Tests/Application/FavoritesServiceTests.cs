@@ -27,18 +27,15 @@ public class FavoritesServiceTests
         const int carId = 5;
 
         _clientRepoMock
-            .Setup(repo => repo.GetClientByUserId(userId, It.IsAny<CancellationToken>()))
+            .Setup(repo => repo.GetClientByUserId(userId))
             .ReturnsAsync([]);
 
-        using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
-
         var exception = await Assert.ThrowsAsync<NotFoundException>(() => 
-            _favoriteService.AddToFavorites(userId, carId, specificToken));
+            _favoriteService.AddToFavorites(userId, carId));
 
         Assert.Equal("Клиент не найден для текущего пользователя", exception.Message);
         
-        _favoriteRepoMock.Verify(repo => repo.AddAsync(It.IsAny<int>(), It.IsAny<int>(), specificToken), Times.Never);
+        _favoriteRepoMock.Verify(repo => repo.AddAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -51,15 +48,12 @@ public class FavoritesServiceTests
         var client = Client.Create(clientId, userId, "John", "Doe", "80291234567", "test@test.com").client;
 
         _clientRepoMock
-            .Setup(repo => repo.GetClientByUserId(userId, It.IsAny<CancellationToken>()))
+            .Setup(repo => repo.GetClientByUserId(userId))
             .ReturnsAsync([client]);
 
-        using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
+        await _favoriteService.AddToFavorites(userId, carId);
 
-        await _favoriteService.AddToFavorites(userId, carId, specificToken);
-
-        _favoriteRepoMock.Verify(repo => repo.AddAsync(clientId, carId, specificToken), Times.Once);
+        _favoriteRepoMock.Verify(repo => repo.AddAsync(clientId, carId), Times.Once);
     }
 
     [Fact]
@@ -72,14 +66,14 @@ public class FavoritesServiceTests
         var client = Client.Create(clientId, userId, "John", "Doe", "80291234567", "test@test.com").client;
 
         _clientRepoMock
-            .Setup(repo => repo.GetClientByUserId(userId, It.IsAny<CancellationToken>()))
+            .Setup(repo => repo.GetClientByUserId(userId))
             .ReturnsAsync([client]);
 
         _favoriteRepoMock
-            .Setup(repo => repo.GetFavoriteCarIdsByClientIdAsync(clientId, It.IsAny<CancellationToken>()))
+            .Setup(repo => repo.GetFavoriteCarIdsByClientIdAsync(clientId))
             .ReturnsAsync(expectedIds);
 
-        var result = await _favoriteService.GetMyFavoriteCarIds(userId, CancellationToken.None);
+        var result = await _favoriteService.GetMyFavoriteCarIds(userId);
 
         Assert.NotNull(result);
         Assert.Equal(3, result.Count);

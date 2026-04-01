@@ -1,4 +1,4 @@
-using Carsharing.Core.Abstractions;
+﻿using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +14,11 @@ public class InsuranceRepository : IInsuranceRepository
         _context = context;
     }
 
-    public async Task<List<Insurance>> Get(CancellationToken cancellationToken)
+    public async Task<List<Insurance>> Get()
     {
         var insuranceEntities = await _context.Insurance
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var insurances = insuranceEntities
             .Select(i => Insurance.Create(
@@ -36,12 +36,12 @@ public class InsuranceRepository : IInsuranceRepository
         return insurances;
     }
 
-    public async Task<List<Insurance>> GetById(int id, CancellationToken cancellationToken)
+    public async Task<List<Insurance>> GetById(int id)
     {
         var insuranceEntities = await _context.Insurance
             .Where(i => i.Id == id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var insurances = insuranceEntities
             .Select(i => Insurance.Create(
@@ -59,13 +59,13 @@ public class InsuranceRepository : IInsuranceRepository
         return insurances;
     }
 
-    public async Task<List<Insurance>> GetByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<List<Insurance>> GetByCarId(int carId)
     {
         var insuranceEntities = await _context.Insurance
             .Where(i => i.CarId == carId)
             .OrderBy(i => i.Id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var insurances = insuranceEntities
             .Select(i => Insurance.Create(
@@ -83,13 +83,13 @@ public class InsuranceRepository : IInsuranceRepository
         return insurances;
     }
 
-    public async Task<List<Insurance>> GetActiveByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<List<Insurance>> GetActiveByCarId(int carId)
     {
         var insuranceEntities = await _context.Insurance
             .Where(i => i.CarId == carId && i.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow))
             .AsNoTracking()
             .OrderBy(i => i.Id)
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var insurances = insuranceEntities
             .Select(i => Insurance.Create(
@@ -107,7 +107,7 @@ public class InsuranceRepository : IInsuranceRepository
         return insurances;
     }
 
-    public async Task<int> Create(Insurance insurance, CancellationToken cancellationToken)
+    public async Task<int> Create(Insurance insurance)
     {
         var (_, error) = Insurance.Create(
             insurance.Id,
@@ -143,7 +143,7 @@ public class InsuranceRepository : IInsuranceRepository
     }
 
     public async Task<int> Update(int id, int? carId, int? statusId, string type, string? company, string? policyNumber,
-        DateOnly? startDate, DateOnly? endDate, decimal? cost, CancellationToken cancellationToken)
+        DateOnly? startDate, DateOnly? endDate, decimal? cost)
     {
         var insurance = await _context.Insurance.FirstOrDefaultAsync(i => i.Id == id)
                         ?? throw new Exception("Insurance not found");
@@ -191,11 +191,11 @@ public class InsuranceRepository : IInsuranceRepository
         return insurance.Id;
     }
 
-    public async Task<int> Delete(int id, CancellationToken cancellationToken)
+    public async Task<int> Delete(int id)
     {
         var insuranceEntity = await _context.Insurance
             .Where(i => i.Id == id)
-            .ExecuteDeleteAsync(cancellationToken);
+            .ExecuteDeleteAsync();
 
         return id;
     }

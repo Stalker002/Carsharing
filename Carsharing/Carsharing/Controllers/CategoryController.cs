@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Contracts;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -19,9 +19,9 @@ public class CategoryController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<CategoriesResponse>>> GetCategories(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<CategoriesResponse>>> GetCategories()
     {
-        var categories = await _categoriesService.GetCategories(cancellationToken);
+        var categories = await _categoriesService.GetCategories();
         var response = categories.Select(c => new CategoriesResponse(c.Id, c.Name));
 
         return Ok(response);
@@ -29,7 +29,7 @@ public class CategoryController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> CreateCategory([FromBody] CategoriesRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateCategory([FromBody] CategoriesRequest request)
     {
         var (category, error) = Category.Create(
             0,
@@ -37,24 +37,24 @@ public class CategoryController : ControllerBase
 
         if (!string.IsNullOrEmpty(error)) return BadRequest(error);
 
-        var categoryId = await _categoriesService.CreateCategory(category, cancellationToken);
+        var categoryId = await _categoriesService.CreateCategory(category);
 
         return Ok(categoryId);
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateCategory(int id, [FromBody] CategoriesRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateCategory(int id, [FromBody] CategoriesRequest request)
     {
-        var categoryId = await _categoriesService.UpdateCategory(id, request.Name, cancellationToken);
+        var categoryId = await _categoriesService.UpdateCategory(id, request.Name);
 
         return Ok(categoryId);
     }
 
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> DeleteCategory(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> DeleteCategory(int id)
     {
-        return Ok(await _categoriesService.DeleteCategory(id, cancellationToken));
+        return Ok(await _categoriesService.DeleteCategory(id));
     }
 }

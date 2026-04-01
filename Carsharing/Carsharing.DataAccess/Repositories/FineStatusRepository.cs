@@ -1,4 +1,4 @@
-using Carsharing.Core.Abstractions;
+﻿using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,11 +13,11 @@ public class FineStatusRepository : IFineStatusRepository
         _context = context;
     }
 
-    public async Task<List<FineStatus>> Get(CancellationToken cancellationToken)
+    public async Task<List<FineStatus>> Get()
     {
         var fineStatusEntities = await _context.FineStatus
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var fineStatuses = fineStatusEntities
             .Select(b => FineStatus.Create(
@@ -28,10 +28,10 @@ public class FineStatusRepository : IFineStatusRepository
         return fineStatuses;
     }
 
-    public async Task<bool> Exists(int id, CancellationToken cancellationToken)
+    public async Task<bool> Exists(int id)
     {
         return await _context.FineStatus
             .AsNoTracking()
-            .AnyAsync(b => b.Id == id, cancellationToken);
+            .AnyAsync(b => b.Id == id);
     }
 }

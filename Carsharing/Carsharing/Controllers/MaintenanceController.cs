@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Contracts;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -19,9 +19,9 @@ public class MaintenanceController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenances(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenances()
     {
-        var maintenances = await _maintenancesService.GetMaintenances(cancellationToken);
+        var maintenances = await _maintenancesService.GetMaintenances();
         var response = maintenances.Select(m =>
             new MaintenanceResponse(m.Id, m.CarId, m.WorkType, m.Description, m.Cost, m.Date));
         return Ok(response);
@@ -29,9 +29,9 @@ public class MaintenanceController : ControllerBase
 
     [HttpGet("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceById(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceById(int id)
     {
-        var maintenances = await _maintenancesService.GetMaintenanceById(id, cancellationToken);
+        var maintenances = await _maintenancesService.GetMaintenanceById(id);
         var response = maintenances.Select(m =>
             new MaintenanceResponse(m.Id, m.CarId, m.WorkType, m.Description, m.Cost, m.Date));
         return Ok(response);
@@ -39,9 +39,9 @@ public class MaintenanceController : ControllerBase
 
     [HttpGet("byCar/{carId:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceByCarId(int carId)
     {
-        var maintenances = await _maintenancesService.GetMaintenanceByCarId(carId, cancellationToken);
+        var maintenances = await _maintenancesService.GetMaintenanceByCarId(carId);
         var response = maintenances.Select(m =>
             new MaintenanceResponse(m.Id, m.CarId, m.WorkType, m.Description, m.Cost, m.Date));
         return Ok(response);
@@ -50,12 +50,12 @@ public class MaintenanceController : ControllerBase
     [HttpGet("byDate")]
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceByDateRange([FromQuery] DateOnly from,
-        [FromQuery] DateOnly to, CancellationToken cancellationToken)
+        [FromQuery] DateOnly to)
     {
         if (from > to)
             return BadRequest("Дата 'from' не может быть больше 'to'.");
 
-        var maintenances = await _maintenancesService.GetByDateRange(from, to, cancellationToken);
+        var maintenances = await _maintenancesService.GetByDateRange(from, to);
 
         var response = maintenances.Select(m =>
             new MaintenanceResponse(m.Id, m.CarId, m.WorkType, m.Description, m.Cost, m.Date));
@@ -64,7 +64,7 @@ public class MaintenanceController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> CreateMaintenance([FromBody] MaintenanceRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateMaintenance([FromBody] MaintenanceRequest request)
     {
         var (maintenance, error) = Maintenance.Create(
             0,
@@ -76,24 +76,24 @@ public class MaintenanceController : ControllerBase
 
         if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
 
-        var maintenanceId = await _maintenancesService.CreateMaintenance(maintenance, cancellationToken);
+        var maintenanceId = await _maintenancesService.CreateMaintenance(maintenance);
 
         return Ok(maintenanceId);
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateMaintenance(int id, [FromBody] MaintenanceRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateMaintenance(int id, [FromBody] MaintenanceRequest request)
     {
         var maintenanceId = await _maintenancesService.UpdateMaintenance(id, request.CarId, request.WorkType,
-            request.Description, request.Cost, request.Date, cancellationToken);
+            request.Description, request.Cost, request.Date);
         return Ok(maintenanceId);
     }
 
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> DeleteMaintenance(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> DeleteMaintenance(int id)
     {
-        return Ok(await _maintenancesService.DeleteMaintenance(id, cancellationToken));
+        return Ok(await _maintenancesService.DeleteMaintenance(id));
     }
 }

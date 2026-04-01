@@ -1,4 +1,4 @@
-using Carsharing.Core.Abstractions;
+﻿using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +14,11 @@ public class FineRepository : IFineRepository
         _context = context;
     }
 
-    public async Task<List<Fine>> Get(CancellationToken cancellationToken)
+    public async Task<List<Fine>> Get()
     {
         var fineEntities = await _context.Fine
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var fines = fineEntities
             .Select(f => Fine.Create(
@@ -33,7 +33,7 @@ public class FineRepository : IFineRepository
         return fines;
     }
 
-    public async Task<List<Fine>> GetPaged(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Fine>> GetPaged(int page, int limit)
     {
         var fineEntities = await _context.Fine
             .AsNoTracking()
@@ -41,7 +41,7 @@ public class FineRepository : IFineRepository
             .OrderByDescending(f => f.Date)
             .ThenByDescending(f => f.Id)
             .Take(limit)
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var fines = fineEntities
             .Select(f => Fine.Create(
@@ -56,17 +56,17 @@ public class FineRepository : IFineRepository
         return fines;
     }
 
-    public async Task<int> GetCount(CancellationToken cancellationToken)
+    public async Task<int> GetCount()
     {
-        return await _context.Fine.CountAsync(cancellationToken);
+        return await _context.Fine.CountAsync();
     }
 
-    public async Task<List<Fine>> GetById(int id, CancellationToken cancellationToken)
+    public async Task<List<Fine>> GetById(int id)
     {
         var fineEntities = await _context.Fine
             .Where(f => f.Id == id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var fines = fineEntities
             .Select(f => Fine.Create(
@@ -81,13 +81,13 @@ public class FineRepository : IFineRepository
         return fines;
     }
 
-    public async Task<List<Fine>> GetByTripId(int tripId, CancellationToken cancellationToken)
+    public async Task<List<Fine>> GetByTripId(int tripId)
     {
         var fineEntities = await _context.Fine
             .Where(f => f.TripId == tripId)
             .OrderByDescending(f => f.Date)
             .ThenByDescending(f => f.Id)
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var fines = fineEntities
             .Select(f => Fine.Create(
@@ -102,13 +102,13 @@ public class FineRepository : IFineRepository
         return fines;
     }
 
-    public async Task<List<Fine>> GetByStatusId(int statusId, CancellationToken cancellationToken)
+    public async Task<List<Fine>> GetByStatusId(int statusId)
     {
         var fineEntities = await _context.Fine
             .Where(f => f.StatusId == statusId)
             .OrderBy(f => f.Id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var fines = fineEntities
             .Select(f => Fine.Create(
@@ -123,7 +123,7 @@ public class FineRepository : IFineRepository
         return fines;
     }
 
-    public async Task<int> Create(Fine fine, CancellationToken cancellationToken)
+    public async Task<int> Create(Fine fine)
     {
         var (_, error) = Fine.Create(
             fine.Id,
@@ -153,7 +153,7 @@ public class FineRepository : IFineRepository
     }
 
     public async Task<int> Update(int id, int? tripId, int? statusId, string? type, decimal? amount,
-        DateTime? date, CancellationToken cancellationToken)
+        DateTime? date)
     {
         var fine = await _context.Fine.FirstOrDefaultAsync(f => f.Id == id)
                    ?? throw new Exception("Fine not found");
@@ -189,11 +189,11 @@ public class FineRepository : IFineRepository
         return fine.Id;
     }
 
-    public async Task<int> Delete(int id, CancellationToken cancellationToken)
+    public async Task<int> Delete(int id)
     {
         var fineEntity = await _context.Fine
             .Where(f => f.Id == id)
-            .ExecuteDeleteAsync(cancellationToken);
+            .ExecuteDeleteAsync();
 
         return id;
     }

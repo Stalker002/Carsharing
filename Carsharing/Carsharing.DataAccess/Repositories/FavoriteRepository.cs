@@ -1,4 +1,4 @@
-using Carsharing.Application.DTOs;
+﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -14,16 +14,16 @@ public class FavoriteRepository : IFavoriteRepository
         _context = context;
     }
 
-    public async Task<List<int>> GetFavoriteCarIdsByClientIdAsync(int clientId, CancellationToken cancellationToken)
+    public async Task<List<int>> GetFavoriteCarIdsByClientIdAsync(int clientId)
     {
         return await _context.Favorites
             .AsNoTracking()
             .Where(f => f.ClientId == clientId)
             .Select(f => f.CarId)
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
     }
 
-    public async Task<List<CarWithMinInfoDto>> GetFavoriteCarsDtoByClientIdAsync(int clientId, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<CarWithMinInfoDto>> GetFavoriteCarsDtoByClientIdAsync(int clientId, int page, int limit)
     {
         return await _context.Favorites
             .AsNoTracking()
@@ -51,20 +51,20 @@ public class FavoriteRepository : IFavoriteRepository
                 f.Car.SpecificationCar.Transmission!,
                 f.Car.ImagePath
             ))
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
     }
 
-    public async Task<int> GetCountByClientIdAsync(int clientId, CancellationToken cancellationToken)
+    public async Task<int> GetCountByClientIdAsync(int clientId)
     {
         return await _context.Favorites
             .Where(f => f.ClientId == clientId)
-            .CountAsync(cancellationToken);
+            .CountAsync();
     }
 
-    public async Task AddAsync(int clientId, int carId, CancellationToken cancellationToken)
+    public async Task AddAsync(int clientId, int carId)
     {
         var exists = await _context.Favorites
-            .AnyAsync(f => f.ClientId == clientId && f.CarId == carId, cancellationToken);
+            .AnyAsync(f => f.ClientId == clientId && f.CarId == carId);
 
         if (exists) return;
 
@@ -78,16 +78,16 @@ public class FavoriteRepository : IFavoriteRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task RemoveAsync(int clientId, int carId, CancellationToken cancellationToken)
+    public async Task RemoveAsync(int clientId, int carId)
     {
         await _context.Favorites
             .Where(f => f.ClientId == clientId && f.CarId == carId)
-            .ExecuteDeleteAsync(cancellationToken);
+            .ExecuteDeleteAsync();
     }
 
-    public async Task<bool> IsFavoriteAsync(int clientId, int carId, CancellationToken cancellationToken)
+    public async Task<bool> IsFavoriteAsync(int clientId, int carId)
     {
         return await _context.Favorites
-            .AnyAsync(f => f.ClientId == clientId && f.CarId == carId, cancellationToken);
+            .AnyAsync(f => f.ClientId == clientId && f.CarId == carId);
     }
 }

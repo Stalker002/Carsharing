@@ -1,4 +1,4 @@
-using Carsharing.Core.Abstractions;
+﻿using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,11 +13,11 @@ public class CarStatusRepository : ICarStatusRepository
         _context = context;
     }
 
-    public async Task<List<CarStatus>> Get(CancellationToken cancellationToken)
+    public async Task<List<CarStatus>> Get()
     {
         var carStatusEntities = await _context.CarStatus
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var carStatuses = carStatusEntities
             .Select(b => CarStatus.Create(
@@ -28,12 +28,12 @@ public class CarStatusRepository : ICarStatusRepository
         return carStatuses;
     }
 
-    public async Task<List<CarStatus>> GetById(int id, CancellationToken cancellationToken)
+    public async Task<List<CarStatus>> GetById(int id)
     {
         var carStatusEntities = await _context.CarStatus
             .AsNoTracking()
             .Where(c => c.Id == id)
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var carStatuses = carStatusEntities
             .Select(b => CarStatus.Create(
@@ -44,10 +44,10 @@ public class CarStatusRepository : ICarStatusRepository
         return carStatuses;
     }
 
-    public async Task<bool> Exists(int id, CancellationToken cancellationToken)
+    public async Task<bool> Exists(int id)
     {
         return await _context.CarStatus
             .AsNoTracking()
-            .AnyAsync(b => b.Id == id, cancellationToken);
+            .AnyAsync(b => b.Id == id);
     }
 }

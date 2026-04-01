@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 
@@ -13,26 +13,26 @@ public class SpecificationsCarService : ISpecificationsCarService
         _specificationCarRepository = specificationCarRepository;
     }
 
-    public async Task<List<SpecificationCar>> GetSpecifications(CancellationToken cancellationToken)
+    public async Task<List<SpecificationCar>> GetSpecifications()
     {
-        return await _specificationCarRepository.Get(cancellationToken);
+        return await _specificationCarRepository.Get();
     }
 
-    public async Task<int> CreateSpecification(SpecificationCar specificationCar, CancellationToken cancellationToken)
+    public async Task<int> CreateSpecification(SpecificationCar specificationCar)
     {
-        return await _specificationCarRepository.Create(specificationCar, cancellationToken);
+        return await _specificationCarRepository.Create(specificationCar);
     }
 
     public async Task<int> UpdateSpecification(int id, string? fuelType, string? brand, string? model,
         string? transmission, int? year, string? vinNumber, string? stateNumber, int? mileage, decimal? maxFuel,
-        decimal? fuelPerKm, CancellationToken cancellationToken)
+        decimal? fuelPerKm)
     {
         return await _specificationCarRepository.Update(id, fuelType, brand, model, transmission, year, vinNumber,
-            stateNumber, mileage, maxFuel, fuelPerKm, cancellationToken);
+            stateNumber, mileage, maxFuel, fuelPerKm);
     }
 
-    public async Task<int> DeleteSpecification(int id, CancellationToken cancellationToken)
+    public async Task<int> DeleteSpecification(int id)
     {
-        return await _specificationCarRepository.Delete(id, cancellationToken);
+        return await _specificationCarRepository.Delete(id);
     }
 }

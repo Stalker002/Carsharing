@@ -1,10 +1,10 @@
-using Carsharing.Core.Models;
+﻿using Carsharing.Core.Models;
 
 namespace Carsharing.Core.Abstractions;
 
 public interface IBookingStatusRepository
 {
-    Task<List<BookingStatus>> Get(CancellationToken cancellationToken);
+    Task<List<BookingStatus>> Get();
 
-    Task<bool> Exists(int id, CancellationToken cancellationToken);
+    Task<bool> Exists(int id);
 }

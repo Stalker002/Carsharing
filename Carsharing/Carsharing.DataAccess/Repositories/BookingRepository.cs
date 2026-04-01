@@ -1,4 +1,4 @@
-using Carsharing.Application.DTOs;
+﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
@@ -9,11 +9,11 @@ namespace Carsharing.DataAccess.Repositories;
 
 public class BookingRepository(CarsharingDbContext context) : IBookingRepository
 {
-    public async Task<List<Booking>> Get(CancellationToken cancellationToken)
+    public async Task<List<Booking>> Get()
     {
         var bookingEntity = await context.Booking
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var bookings = bookingEntity
             .Select(b => Booking.Create(
@@ -28,7 +28,7 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
         return bookings;
     }
 
-    public async Task<List<Booking>> GetPaged(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetPaged(int page, int limit)
     {
         var bookingEntity = await context.Booking
             .AsNoTracking()
@@ -36,7 +36,7 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
             .Take(limit)
             .OrderByDescending(b => b.StartTime)
             .ThenByDescending(b => b.Id)
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var bookings = bookingEntity
             .Select(b => Booking.Create(
@@ -51,17 +51,17 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
         return bookings;
     }
 
-    public async Task<int> GetCount(CancellationToken cancellationToken)
+    public async Task<int> GetCount()
     {
-        return await context.Booking.CountAsync(cancellationToken);
+        return await context.Booking.CountAsync();
     }
 
-    public async Task<List<Booking>> GetById(int id, CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetById(int id)
     {
         var bookingEntity = await context.Booking
             .Where(b => b.Id == id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var bookings = bookingEntity
             .Select(b => Booking.Create(
@@ -76,12 +76,12 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
         return bookings;
     }
 
-    public async Task<List<Booking>> GetByClientId(int clientId, CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetByClientId(int clientId)
     {
         var bookingEntity = await context.Booking
             .Where(b => b.ClientId == clientId)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var bookings = bookingEntity
             .Select(b => Booking.Create(
@@ -96,7 +96,7 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
         return bookings;
     }
 
-    public async Task<List<Booking>> GetPagedByClientId(int clientId, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetPagedByClientId(int clientId, int page, int limit)
     {
         var bookingEntity = await context.Booking
             .Where(b => b.ClientId == clientId)
@@ -105,7 +105,7 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
             .Skip((page - 1) * limit)
             .Take(limit)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var bookings = bookingEntity
             .Select(b => Booking.Create(
@@ -120,17 +120,17 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
         return bookings;
     }
 
-    public async Task<int> GetCountByClient(int clientId, CancellationToken cancellationToken)
+    public async Task<int> GetCountByClient(int clientId)
     {
-        return await context.Booking.Where(b => b.ClientId == clientId).CountAsync(cancellationToken);
+        return await context.Booking.Where(b => b.ClientId == clientId).CountAsync();
     }
 
-    public async Task<List<Booking>> GetByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetByCarId(int carId)
     {
         var bookingEntity = await context.Booking
             .Where(b => b.CarId == carId)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var bookings = bookingEntity
             .Select(b => Booking.Create(
@@ -145,7 +145,7 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
         return bookings;
     }
 
-    public async Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int id, CancellationToken cancellationToken)
+    public async Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int id)
     {
         return await context.Booking
             .AsNoTracking()
@@ -158,10 +158,10 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
                 b.StartTime,
                 b.EndTime
             ))
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
     }
 
-    public async Task<int> Create(Booking booking, CancellationToken cancellationToken)
+    public async Task<int> Create(Booking booking)
     {
         var hasActiveBooking = await context.Booking
             .AnyAsync(b =>
@@ -199,7 +199,7 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
     }
 
     public async Task<int> Update(int id, int? statusId, int? carId, int? clientId,
-        DateTime? startTime, DateTime? endTime, CancellationToken cancellationToken)
+        DateTime? startTime, DateTime? endTime)
     {
         var booking = await context.Booking.FirstOrDefaultAsync(b => b.Id == id)
                       ?? throw new Exception("Booking not found");
@@ -235,11 +235,11 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
         return booking.Id;
     }
 
-    public async Task<int> Delete(int id, CancellationToken cancellationToken)
+    public async Task<int> Delete(int id)
     {
         await context.Booking
             .Where(b => b.Id == id)
-            .ExecuteDeleteAsync(cancellationToken);
+            .ExecuteDeleteAsync();
 
         return id;
     }

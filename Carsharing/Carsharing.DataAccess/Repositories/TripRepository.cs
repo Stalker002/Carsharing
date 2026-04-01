@@ -1,4 +1,4 @@
-using Carsharing.Application.DTOs;
+﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
@@ -16,13 +16,13 @@ public class TripRepository : ITripRepository
         _context = context;
     }
 
-    public async Task<List<Trip>> Get(CancellationToken cancellationToken)
+    public async Task<List<Trip>> Get()
     {
         var tripEntities = await _context.Trip
             .AsNoTracking()
             .OrderByDescending(t => t.StartTime)
             .ThenByDescending(t => t.Id)
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var trips = tripEntities
             .Select(t => Trip.Create(
@@ -39,7 +39,7 @@ public class TripRepository : ITripRepository
         return trips;
     }
 
-    public async Task<List<Trip>> GetPaged(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Trip>> GetPaged(int page, int limit)
     {
         var tripEntities = await _context.Trip
             .AsNoTracking()
@@ -47,7 +47,7 @@ public class TripRepository : ITripRepository
             .ThenByDescending(t => t.Id)
             .Skip((page - 1) * limit)
             .Take(limit)
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var trips = tripEntities
             .Select(t => Trip.Create(
@@ -64,17 +64,17 @@ public class TripRepository : ITripRepository
         return trips;
     }
 
-    public async Task<int> GetCount(CancellationToken cancellationToken)
+    public async Task<int> GetCount()
     {
-        return await _context.Trip.CountAsync(cancellationToken);
+        return await _context.Trip.CountAsync();
     }
 
-    public async Task<List<Trip>> GetById(int id, CancellationToken cancellationToken)
+    public async Task<List<Trip>> GetById(int id)
     {
         var tripEntities = await _context.Trip
             .Where(tr => tr.Id == id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var trips = tripEntities
             .Select(t => Trip.Create(
@@ -91,13 +91,13 @@ public class TripRepository : ITripRepository
         return trips;
     }
 
-    public async Task<List<Trip>> GetByBookingId(List<int> bookingIds, CancellationToken cancellationToken)
+    public async Task<List<Trip>> GetByBookingId(List<int> bookingIds)
     {
         var tripEntities = await _context.Trip
             .Where(tr => bookingIds.Contains(tr.BookingId))
             .OrderBy(tr => tr.Id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var trips = tripEntities
             .Select(t => Trip.Create(
@@ -114,12 +114,12 @@ public class TripRepository : ITripRepository
         return trips;
     }
 
-    public async Task<int> GetCountByBooking(List<int> bookingIds, CancellationToken cancellationToken)
+    public async Task<int> GetCountByBooking(List<int> bookingIds)
     {
-        return await _context.Trip.Where(tr => bookingIds.Contains(tr.BookingId)).CountAsync(cancellationToken);
+        return await _context.Trip.Where(tr => bookingIds.Contains(tr.BookingId)).CountAsync();
     }
 
-    public async Task<List<TripWithInfoDto>> GetTripWithDetailsById(int id, CancellationToken cancellationToken)
+    public async Task<List<TripWithInfoDto>> GetTripWithDetailsById(int id)
     {
         return await _context.Trip
             .AsNoTracking()
@@ -139,11 +139,11 @@ public class TripRepository : ITripRepository
                 t.Duration,
                 t.Distance
             ))
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
     }
 
     public async Task<(List<TripHistoryDto> Items, int TotalCount)> GetHistoryByClientId(int clientId, int page,
-        int limit, CancellationToken cancellationToken)
+        int limit)
     {
         var query = _context.Trip
             .AsNoTracking()
@@ -179,7 +179,7 @@ public class TripRepository : ITripRepository
         return (items, totalCount);
     }
 
-    public async Task<CurrentTripDto?> GetActiveTripDtoByClientId(int clientId, CancellationToken cancellationToken)
+    public async Task<CurrentTripDto?> GetActiveTripDtoByClientId(int clientId)
     {
         var tripEntity = await _context.Trip
             .AsNoTracking()
@@ -192,7 +192,7 @@ public class TripRepository : ITripRepository
             .Where(t => t.Booking!.ClientId == clientId &&
                         t.EndTime == null &&
                         (t.StatusId == (int)TripStatusEnum.WaitingStart || t.StatusId == (int)TripStatusEnum.EnRoute))
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync();
 
         if (tripEntity == null) return null;
 
@@ -214,12 +214,12 @@ public class TripRepository : ITripRepository
         );
     }
 
-    public async Task<int> FinishTripAsync(int tripId, decimal distance, string endLocation, decimal fuelLevel, CancellationToken cancellationToken)
+    public async Task<int> FinishTripAsync(int tripId, decimal distance, string endLocation, decimal fuelLevel)
     {
         var trip = await _context.Trip
             .Include(t => t.Booking)
                 .ThenInclude(b => b!.Car)
-            .FirstOrDefaultAsync(t => t.Id == tripId, cancellationToken);
+            .FirstOrDefaultAsync(t => t.Id == tripId);
 
         if (trip is not { EndTime: null })
             throw new Exception("Поездка не найдена или уже завершена");
@@ -277,12 +277,12 @@ public class TripRepository : ITripRepository
         return billId;
     }
 
-    public async Task CancelTripAsync(int tripId, CancellationToken cancellationToken)
+    public async Task CancelTripAsync(int tripId)
     {
         var trip = await _context.Trip
             .Include(t => t.Booking)
                 .ThenInclude(b => b!.Car)
-            .FirstOrDefaultAsync(t => t.Id == tripId, cancellationToken);
+            .FirstOrDefaultAsync(t => t.Id == tripId);
 
         if (trip == null || trip.EndTime != null)
             throw new Exception("Поездка не найдена или уже завершена.");
@@ -303,7 +303,7 @@ public class TripRepository : ITripRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<int> Create(Trip trip, CancellationToken cancellationToken)
+    public async Task<int> Create(Trip trip)
     {
         var (_, error) = Trip.Create(
             trip.Id,
@@ -337,7 +337,7 @@ public class TripRepository : ITripRepository
     }
 
     public async Task<int> Update(int id, int? bookingId, int? statusId, string? tariffType, DateTime? startTime,
-        DateTime? endTime, decimal? duration, decimal? distance, CancellationToken cancellationToken)
+        DateTime? endTime, decimal? duration, decimal? distance)
     {
         var trip = await _context.Trip.FirstOrDefaultAsync(t => t.Id == id)
                    ?? throw new Exception("Trip not found");
@@ -381,11 +381,11 @@ public class TripRepository : ITripRepository
         return trip.Id;
     }
 
-    public async Task<int> Delete(int id, CancellationToken cancellationToken)
+    public async Task<int> Delete(int id)
     {
         var tripEntity = await _context.Trip
             .Where(t => t.Id == id)
-            .ExecuteDeleteAsync(cancellationToken);
+            .ExecuteDeleteAsync();
 
         return id;
     }

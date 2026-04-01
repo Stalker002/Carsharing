@@ -1,4 +1,4 @@
-using Carsharing.Core.Abstractions;
+﻿using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +14,11 @@ public class MaintenanceRepository : IMaintenanceRepository
         _context = context;
     }
 
-    public async Task<List<Maintenance>> Get(CancellationToken cancellationToken)
+    public async Task<List<Maintenance>> Get()
     {
         var maintenanceEntity = await _context.Maintenance
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var maintenances = maintenanceEntity
             .Select(m => Maintenance.Create(
@@ -33,12 +33,12 @@ public class MaintenanceRepository : IMaintenanceRepository
         return maintenances;
     }
 
-    public async Task<List<Maintenance>> GetById(int id, CancellationToken cancellationToken)
+    public async Task<List<Maintenance>> GetById(int id)
     {
         var maintenanceEntity = await _context.Maintenance
             .Where(m => m.Id == id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var maintenances = maintenanceEntity
             .Select(m => Maintenance.Create(
@@ -53,14 +53,14 @@ public class MaintenanceRepository : IMaintenanceRepository
         return maintenances;
     }
 
-    public async Task<List<Maintenance>> GetByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<List<Maintenance>> GetByCarId(int carId)
     {
         var maintenanceEntity = await _context.Maintenance
             .Where(m => m.CarId == carId)
             .OrderByDescending(m => m.Date)
             .ThenByDescending(m => m.Id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var maintenances = maintenanceEntity
             .Select(m => Maintenance.Create(
@@ -75,13 +75,13 @@ public class MaintenanceRepository : IMaintenanceRepository
         return maintenances;
     }
 
-    public async Task<List<Maintenance>> GetByDateRange(DateOnly from, DateOnly to, CancellationToken cancellationToken)
+    public async Task<List<Maintenance>> GetByDateRange(DateOnly from, DateOnly to)
     {
         var maintenanceEntity = await _context.Maintenance
             .Where(m => m.Date >= from && m.Date <= to)
             .OrderBy(m => m.Id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var maintenances = maintenanceEntity
             .Select(m => Maintenance.Create(
@@ -96,7 +96,7 @@ public class MaintenanceRepository : IMaintenanceRepository
         return maintenances;
     }
 
-    public async Task<int> Create(Maintenance maintenance, CancellationToken cancellationToken)
+    public async Task<int> Create(Maintenance maintenance)
     {
         var (_, error) = Maintenance.Create(
             maintenance.Id,
@@ -126,7 +126,7 @@ public class MaintenanceRepository : IMaintenanceRepository
     }
 
     public async Task<int> Update(int id, int? carId, string? workType, string? description, decimal? cost,
-        DateOnly? date, CancellationToken cancellationToken)
+        DateOnly? date)
     {
         var maintenance = await _context.Maintenance.FirstOrDefaultAsync(m => m.Id == id)
                           ?? throw new Exception("Maintenance not found");
@@ -162,11 +162,11 @@ public class MaintenanceRepository : IMaintenanceRepository
         return maintenance.Id;
     }
 
-    public async Task<int> Delete(int id, CancellationToken cancellationToken)
+    public async Task<int> Delete(int id)
     {
         var maintenanceEntity = await _context.Maintenance
             .Where(m => m.Id == id)
-            .ExecuteDeleteAsync(cancellationToken);
+            .ExecuteDeleteAsync();
 
         return id;
     }

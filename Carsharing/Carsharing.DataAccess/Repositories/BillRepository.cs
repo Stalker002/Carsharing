@@ -1,4 +1,4 @@
-using Carsharing.Application.DTOs;
+﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
@@ -15,11 +15,11 @@ public class BillRepository : IBillRepository
         _context = context;
     }
 
-    public async Task<List<Bill>> Get(CancellationToken cancellationToken)
+    public async Task<List<Bill>> Get()
     {
         var billEntities = await _context.Bill
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var bills = billEntities
             .Select(b => Bill.Create(
@@ -35,7 +35,7 @@ public class BillRepository : IBillRepository
         return bills;
     }
 
-    public async Task<List<Bill>> GetPaged(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Bill>> GetPaged(int page, int limit)
     {
         var billEntities = await _context.Bill
             .AsNoTracking()
@@ -43,7 +43,7 @@ public class BillRepository : IBillRepository
             .Take(limit)
             .OrderByDescending(b => b.IssueDate)
             .ThenByDescending(b => b.Id)
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var bills = billEntities
             .Select(b => Bill.Create(
@@ -59,17 +59,17 @@ public class BillRepository : IBillRepository
         return bills;
     }
 
-    public async Task<int> GetCount(CancellationToken cancellationToken)
+    public async Task<int> GetCount()
     {
-        return await _context.Bill.CountAsync(cancellationToken);
+        return await _context.Bill.CountAsync();
     }
 
-    public async Task<Bill?> GetById(int id, CancellationToken cancellationToken)
+    public async Task<Bill?> GetById(int id)
     {
         var billEntities = await _context.Bill
             .Where(b => b.Id == id)
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var bills = billEntities
             .Select(b => Bill.Create(
@@ -85,12 +85,12 @@ public class BillRepository : IBillRepository
         return bills;
     }
 
-    public async Task<List<Bill>> GetByTripId(List<int> tripIds, CancellationToken cancellationToken)
+    public async Task<List<Bill>> GetByTripId(List<int> tripIds)
     {
         var billEntities = await _context.Bill
             .Where(b => tripIds.Contains(b.Id))
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
 
         var bills = billEntities
             .Select(b => Bill.Create(
@@ -106,7 +106,7 @@ public class BillRepository : IBillRepository
         return bills;
     }
 
-    public async Task<BillWithInfoDto?> GetInfoById(int id, CancellationToken cancellationToken)
+    public async Task<BillWithInfoDto?> GetInfoById(int id)
     {
         return await _context.Bill
             .AsNoTracking()
@@ -123,10 +123,10 @@ public class BillRepository : IBillRepository
                 b.Trip.Distance,
                 b.Trip.TariffType
             ))
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync();
     }
 
-    public async Task<List<BillWithMinInfoDto>> GetPagedMinInfoByUserId(int userId, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<BillWithMinInfoDto>> GetPagedMinInfoByUserId(int userId, int page, int limit)
     {
         return await _context.Bill
             .AsNoTracking()
@@ -142,18 +142,18 @@ public class BillRepository : IBillRepository
                 b.RemainingAmount,
                 b.Trip!.TariffType
             ))
-            .ToListAsync(cancellationToken);
+            .ToListAsync();
     }
 
-    public async Task<int> GetCountByUserId(int userId, CancellationToken cancellationToken)
+    public async Task<int> GetCountByUserId(int userId)
     {
         return await _context.Bill
             .AsNoTracking()
             .Where(b => b.Trip!.Booking!.Client!.UserId == userId)
-            .CountAsync(cancellationToken);
+            .CountAsync();
     }
 
-    public async Task<int> Create(Bill bill, CancellationToken cancellationToken)
+    public async Task<int> Create(Bill bill)
     {
         var (_, error) = Bill.Create(
             bill.Id,
@@ -185,7 +185,7 @@ public class BillRepository : IBillRepository
     }
 
     public async Task<int> Update(int id, int? tripId, int? promocodeId, int? statusId, DateTime? issueDate,
-        decimal? amount, decimal? remainingAmount, CancellationToken cancellationToken)
+        decimal? amount, decimal? remainingAmount)
     {
         var bill = await _context.Bill.FirstOrDefaultAsync(b => b.Id == id)
                    ?? throw new Exception("Bill not found");
@@ -224,11 +224,11 @@ public class BillRepository : IBillRepository
         return bill.Id;
     }
 
-    public async Task<int> Delete(int id, CancellationToken cancellationToken)
+    public async Task<int> Delete(int id)
     {
         await _context.Bill
             .Where(b => b.Id == id)
-            .ExecuteDeleteAsync(cancellationToken);
+            .ExecuteDeleteAsync();
 
         return id;
     }

@@ -1,32 +1,32 @@
-using Carsharing.Application.DTOs;
+﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Models;
 
 namespace Carsharing.Core.Abstractions;
 
 public interface IBookingRepository
 {
-    Task<List<Booking>> Get(CancellationToken cancellationToken);
+    Task<List<Booking>> Get();
 
-    Task<List<Booking>> GetPaged(int page, int limit, CancellationToken cancellationToken);
+    Task<List<Booking>> GetPaged(int page, int limit);
 
-    Task<int> GetCount(CancellationToken cancellationToken);
+    Task<int> GetCount();
 
-    Task<List<Booking>> GetById(int id, CancellationToken cancellationToken);
+    Task<List<Booking>> GetById(int id);
 
-    Task<List<Booking>> GetByClientId(int clientId, CancellationToken cancellationToken);
+    Task<List<Booking>> GetByClientId(int clientId);
 
-    Task<List<Booking>> GetPagedByClientId(int clientId, int page, int limit, CancellationToken cancellationToken);
+    Task<List<Booking>> GetPagedByClientId(int clientId, int page, int limit);
 
-    Task<int> GetCountByClient(int clientId, CancellationToken cancellationToken);
+    Task<int> GetCountByClient(int clientId);
 
-    Task<List<Booking>> GetByCarId(int carId, CancellationToken cancellationToken);
+    Task<List<Booking>> GetByCarId(int carId);
 
-    Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int id, CancellationToken cancellationToken);
+    Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int id);
 
-    Task<int> Create(Booking booking, CancellationToken cancellationToken);
+    Task<int> Create(Booking booking);
 
     Task<int> Update(int id, int? statusId, int? carId, int? clientId,
-        DateTime? startTime, DateTime? endTime, CancellationToken cancellationToken);
+        DateTime? startTime, DateTime? endTime);
 
-    Task<int> Delete(int id, CancellationToken cancellationToken);
+    Task<int> Delete(int id);
 }

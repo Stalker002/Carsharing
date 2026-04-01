@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
@@ -16,77 +16,54 @@ public class ReviewsService : IReviewsService
         _reviewRepository = reviewRepository;
     }
 
-    public async Task<List<Review>> GetReviews(CancellationToken cancellationToken)
+    public async Task<List<Review>> GetReviews()
     {
-        return await _reviewRepository.Get(cancellationToken);
+        return await _reviewRepository.Get();
     }
 
-    public async Task<List<Review>> GetPagedReviews(int page, int limit, CancellationToken cancellationToken = default)
+    public async Task<List<Review>> GetPagedReviews(int page, int limit)
     {
-        return await _reviewRepository.GetPaged(page, limit, cancellationToken);
+        return await _reviewRepository.GetPaged(page, limit);
     }
 
-    public async Task<int> GetReviewsCount(CancellationToken cancellationToken)
+    public async Task<int> GetReviewsCount()
     {
-        return await _reviewRepository.GetCount(cancellationToken);
+        return await _reviewRepository.GetCount();
     }
 
-    public async Task<List<Review>> GetReviewById(int id, CancellationToken cancellationToken = default)
+    public async Task<List<Review>> GetReviewById(int id)
     {
-        return await _reviewRepository.GetById(id, cancellationToken);
+        return await _reviewRepository.GetById(id);
     }
 
-    public async Task<List<ReviewWithClientInfo>> GetReviewsByCarId(int carId, CancellationToken cancellationToken = default)
+    public async Task<List<ReviewWithClientInfo>> GetReviewsByCarId(int carId)
     {
-        return await _reviewRepository.GetByCarId(carId, cancellationToken);
+        return await _reviewRepository.GetByCarId(carId);
     }
 
-    public async Task<List<ReviewWithClientInfo>> GetPagedReviewsByCarId(int carId, int page, int limit, CancellationToken cancellationToken = default)
+    public async Task<List<ReviewWithClientInfo>> GetPagedReviewsByCarId(int carId, int page, int limit)
     {
-        return await _reviewRepository.GetPagedByCarId(carId, page, limit, cancellationToken);
+        return await _reviewRepository.GetPagedByCarId(carId, page, limit);
     }
 
-    public async Task<int> GetReviewsCountsByCarId(int carId, CancellationToken cancellationToken = default)
+    public async Task<int> GetReviewsCountsByCarId(int carId)
     {
-        return await _reviewRepository.GetCountByCarId(carId, cancellationToken);
+        return await _reviewRepository.GetCountByCarId(carId);
     }
 
-    public async Task<int> CreateReview(int userId, int carId, short rating, string comment, DateTime date, CancellationToken cancellationToken = default)
+    public async Task<int> CreateReview(Review review)
     {
-        var client = await _clientRepository.GetClientByUserId(userId, cancellationToken);
-        var clientId = client.Select(c => c.Id).FirstOrDefault();
-
-        if (clientId == 0)
-            throw new Exception("Client not found");
-
-        var (review, error) = Review.Create(0, clientId, carId, rating, comment, date);
-
-        if (!string.IsNullOrWhiteSpace(error))
-            throw new ArgumentException(error);
-
-        return await _reviewRepository.Create(review, cancellationToken);
+        return await _reviewRepository.Create(review);
     }
 
-    public async Task<int> UpdateReview(int userId, int id, int? carId, short? rating, string? comment,
-        DateTime? date, CancellationToken cancellationToken = default)
+    public async Task<int> UpdateReview(int id, int? clientId, int? carId, short? rating, string? comment,
+        DateTime? date)
     {
-        var client = await _clientRepository.GetClientByUserId(userId, cancellationToken);
-        var clientId = client.Select(c => c.Id).FirstOrDefault();
-
-        if (clientId == 0)
-            throw new Exception("Client not found");
-
-        var review = (await _reviewRepository.GetById(id, cancellationToken)).FirstOrDefault()
-            ?? throw new Exception("Review not found");
-
-        if (review.ClientId != clientId)
-            throw new UnauthorizedAccessException("Review does not belong to current user");
-
-        return await _reviewRepository.Update(id, clientId, carId, rating, comment, date, cancellationToken);
+        return await _reviewRepository.Update(id, clientId, carId, rating, comment, date);
     }
 
-    public async Task<int> DeleteReview(int id, CancellationToken cancellationToken = default)
+    public async Task<int> DeleteReview(int id)
     {
-        return await _reviewRepository.Delete(id, cancellationToken);
+        return await _reviewRepository.Delete(id);
     }
 }

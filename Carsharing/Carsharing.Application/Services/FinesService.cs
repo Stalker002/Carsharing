@@ -1,4 +1,4 @@
-using Carsharing.Application.Abstractions;
+﻿using Carsharing.Application.Abstractions;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 
@@ -13,49 +13,49 @@ public class FinesService : IFinesService
         _fineRepository = fineRepository;
     }
 
-    public async Task<List<Fine>> GetFines(CancellationToken cancellationToken)
+    public async Task<List<Fine>> GetFines()
     {
-        return await _fineRepository.Get(cancellationToken);
+        return await _fineRepository.Get();
     }
 
-    public async Task<List<Fine>> GetPagedFines(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Fine>> GetPagedFines(int page, int limit)
     {
-        return await _fineRepository.GetPaged(page, limit, cancellationToken);
+        return await _fineRepository.GetPaged(page, limit);
     }
 
-    public async Task<int> GetCountFines(CancellationToken cancellationToken)
+    public async Task<int> GetCountFines()
     {
-        return await _fineRepository.GetCount(cancellationToken);
+        return await _fineRepository.GetCount();
     }
 
-    public async Task<List<Fine>> GetFineById(int id, CancellationToken cancellationToken)
+    public async Task<List<Fine>> GetFineById(int id)
     {
-        return await _fineRepository.GetById(id, cancellationToken);
+        return await _fineRepository.GetById(id);
     }
 
-    public async Task<List<Fine>> GetFinesByTripId(int tripId, CancellationToken cancellationToken)
+    public async Task<List<Fine>> GetFinesByTripId(int tripId)
     {
-        return await _fineRepository.GetByTripId(tripId, cancellationToken);
+        return await _fineRepository.GetByTripId(tripId);
     }
 
-    public async Task<List<Fine>> GetFinesByStatusId(int statusId, CancellationToken cancellationToken)
+    public async Task<List<Fine>> GetFinesByStatusId(int statusId)
     {
-        return await _fineRepository.GetByStatusId(statusId, cancellationToken);
+        return await _fineRepository.GetByStatusId(statusId);
     }
 
-    public async Task<int> CreateFine(Fine fine, CancellationToken cancellationToken)
+    public async Task<int> CreateFine(Fine fine)
     {
-        return await _fineRepository.Create(fine, cancellationToken);
+        return await _fineRepository.Create(fine);
     }
 
     public async Task<int> UpdateFine(int id, int? tripId, int? statusId, string? type, decimal? amount,
-        DateTime? date, CancellationToken cancellationToken)
+        DateTime? date)
     {
-        return await _fineRepository.Update(id, tripId, statusId, type, amount, date, cancellationToken);
+        return await _fineRepository.Update(id, tripId, statusId, type, amount, date);
     }
 
-    public async Task<int> DeleteFine(int id, CancellationToken cancellationToken)
+    public async Task<int> DeleteFine(int id)
     {
-        return await _fineRepository.Delete(id, cancellationToken);
+        return await _fineRepository.Delete(id);
     }
 }
