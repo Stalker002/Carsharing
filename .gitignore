@@ -79,3 +79,6 @@ dist-ssr
 # Keys
 **/keys/
 Carsharing/.dotnet/.dotnet/
+/Carsharing/.dotnet/.nuget/packages
+/Carsharing/.local-bin
+/Carsharing/Directory.Build.rsp
