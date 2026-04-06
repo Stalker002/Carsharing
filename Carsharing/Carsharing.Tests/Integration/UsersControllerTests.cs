@@ -1,9 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
-using Carsharing.Contracts;
 using Carsharing.DataAccess;
 using Carsharing.DataAccess.Entites;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Contracts.Users;
 
 namespace Carsharing.Tests.Integration;
 

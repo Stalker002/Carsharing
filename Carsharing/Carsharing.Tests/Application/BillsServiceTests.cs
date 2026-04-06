@@ -1,5 +1,6 @@
 using Carsharing.Application.Services;
 using Carsharing.Core.Abstractions;
+using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
 using Moq;
 
@@ -37,7 +38,7 @@ public class BillsServiceTests
 
         _promoRepoMock.Setup(x => x.GetByCode(code, It.IsAny<CancellationToken>())).ReturnsAsync([]);
 
-        var ex = await Assert.ThrowsAsync<Exception>(() => _billsService.ApplyPromocode(billId, code, CancellationToken.None));
+        var ex = await Assert.ThrowsAsync<NotFoundException>(() => _billsService.ApplyPromocode(billId, code, CancellationToken.None));
         Assert.Equal("Промокод не найден или истек", ex.Message);
     }
 
@@ -54,7 +55,7 @@ public class BillsServiceTests
         
         _billRepoMock.Setup(x => x.GetById(billId, It.IsAny<CancellationToken>())).ReturnsAsync((Bill?)null);
 
-        var ex = await Assert.ThrowsAsync<Exception>(() => _billsService.ApplyPromocode(billId, code, CancellationToken.None));
+        var ex = await Assert.ThrowsAsync<NotFoundException>(() => _billsService.ApplyPromocode(billId, code, CancellationToken.None));
         Assert.Equal("Счет не найден", ex.Message);
     }
 

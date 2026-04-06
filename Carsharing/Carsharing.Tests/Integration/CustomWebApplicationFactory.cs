@@ -11,6 +11,8 @@ namespace Carsharing.Tests.Integration;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
+    private readonly string _databaseName = $"TestDb_{Guid.NewGuid():N}";
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices(services =>
@@ -20,7 +22,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             
             services.AddDbContext<CarsharingDbContext>(options =>
             {
-                options.UseInMemoryDatabase("TestDb");
+                options.UseInMemoryDatabase(_databaseName);
         
                 options.ConfigureWarnings(warnings => 
                     warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning));
