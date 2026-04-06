@@ -1,9 +1,9 @@
 using Carsharing.Application.Abstractions;
 using Carsharing.Application.DTOs;
-using Carsharing.Contracts;
 using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Contracts.ClientDocuments;
 
 namespace Carsharing.Controllers;
 
@@ -20,11 +20,19 @@ public class ClientDocumentsController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<ClientDocumentsResponse>>> GetDocuments(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetDocuments(CancellationToken cancellationToken)
     {
         var documents = await _clientDocumentsService.GetClientDocuments(cancellationToken);
         var response = documents.Select(d =>
-            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.LicenseCategory, d.IssueDate, d.ExpiryDate));
+            new
+            {
+                d.Id,
+                d.ClientId,
+                d.Type,
+                d.LicenseCategory,
+                d.IssueDate,
+                d.ExpiryDate
+            });
         return Ok(response);
     }
 

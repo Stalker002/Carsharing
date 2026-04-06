@@ -1,9 +1,10 @@
 using Carsharing.Application.Abstractions;
-using Carsharing.Contracts;
 using Carsharing.Core.Models;
 using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Contracts.ClientDocuments;
+using Shared.Contracts.Clients;
 
 namespace Carsharing.Controllers;
 
@@ -80,23 +81,39 @@ public class ClientsController : ControllerBase
 
     [HttpGet("MyDocuments")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<ClientsResponse>>> GetMyDocuments(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMyDocuments(CancellationToken cancellationToken)
     {
         var userId = User.GetRequiredUserId();
 
         var clients = await _clientsService.GetMyDocuments(userId, cancellationToken);
         var response = clients.Select(d =>
-            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.LicenseCategory, d.IssueDate, d.ExpiryDate));
+            new
+            {
+                d.Id,
+                d.ClientId,
+                d.Type,
+                d.LicenseCategory,
+                d.IssueDate,
+                d.ExpiryDate
+            });
         return Ok(response);
     }
 
     [HttpGet("Documents/{clientId:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<ClientsResponse>>> GetClientDocuments(int clientId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetClientDocuments(int clientId, CancellationToken cancellationToken)
     {
         var clients = await _clientsService.GetClientDocuments(clientId, cancellationToken);
         var response = clients.Select(d =>
-            new ClientDocumentsResponse(d.Id, d.ClientId, d.Type, d.LicenseCategory, d.IssueDate, d.ExpiryDate));
+            new
+            {
+                d.Id,
+                d.ClientId,
+                d.Type,
+                d.LicenseCategory,
+                d.IssueDate,
+                d.ExpiryDate
+            });
         return Ok(response);
     }
 

@@ -1,8 +1,8 @@
 using Carsharing.Application.Abstractions;
-using Carsharing.Contracts;
 using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Contracts.Users;
 
 namespace Carsharing.Controllers;
 
@@ -38,16 +38,16 @@ public class UsersController : ControllerBase
 
     [HttpGet("unpaged")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<UsersResponse>>> GetUsers(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
     {
         var users = await _usersService.GetUsers(cancellationToken);
-        var response = users.Select(u => new UsersResponse(u.Id, u.RoleId, u.Login));
+        var response = users.Select(u => new { u.Id, u.RoleId, u.Login });
         return Ok(response);
     }
 
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<UsersResponse>>> GetPagedUsers(
+    public async Task<IActionResult> GetPagedUsers(
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25, CancellationToken cancellationToken = default)
     {
@@ -55,7 +55,7 @@ public class UsersController : ControllerBase
         var users = await _usersService.GetPagedUsers(page, limit, cancellationToken);
 
         var response = users
-            .Select(u => new UsersResponse(u.Id, u.RoleId, u.Login)).ToList();
+            .Select(u => new { u.Id, u.RoleId, u.Login }).ToList();
 
         Response.Headers.Append("x-total-count", totalCount.ToString());
 
@@ -64,21 +64,21 @@ public class UsersController : ControllerBase
 
     [HttpGet("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<UsersResponse>>> GetUserById(int id, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetUserById(int id, CancellationToken cancellationToken = default)
     {
         var users = await _usersService.GetUserById(id, cancellationToken);
-        var response = users.Select(u => new UsersResponse(u.Id, u.RoleId, u.Login));
+        var response = users.Select(u => new { u.Id, u.RoleId, u.Login });
         return Ok(response);
     }
 
     [HttpGet("MyUser")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<UsersResponse>>> GetMyUser(CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetMyUser(CancellationToken cancellationToken = default)
     {
         var userId = User.GetRequiredUserId();
 
         var users = await _usersService.GetUserById(userId, cancellationToken);
-        var response = users.Select(u => new UsersResponse(u.Id, u.RoleId, u.Login));
+        var response = users.Select(u => new { u.Id, u.RoleId, u.Login });
         return Ok(response);
     }
 

@@ -3,11 +3,12 @@ using Carsharing.Application;
 using Carsharing.Application.Abstractions;
 using Carsharing.Application.Extensions;
 using Carsharing.DataAccess;
-using Carsharing.Extension;
 using Carsharing.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.DataProtection;
+using Carsharing.Extensions;
+using Carsharing.Core.Abstractions;
 
 namespace Carsharing;
 
@@ -84,7 +85,10 @@ public class Program
         using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<CarsharingDbContext>();
-            dbContext.Database.Migrate();
+            if (dbContext.Database.IsRelational())
+            {
+                dbContext.Database.Migrate();
+            }
         }
 
         if (app.Environment.IsDevelopment())

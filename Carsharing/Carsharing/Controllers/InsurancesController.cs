@@ -1,8 +1,8 @@
 using Carsharing.Application.Abstractions;
-using Carsharing.Contracts;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Contracts.Insurances;
 
 namespace Carsharing.Controllers;
 
@@ -63,7 +63,7 @@ public class InsurancesController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> CreateInsurance([FromBody] InsuranceRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateInsurance([FromBody] InsurancesRequest request, CancellationToken cancellationToken)
     {
         var (insurance, error) = Insurance.Create(
             0,
@@ -85,7 +85,7 @@ public class InsurancesController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateInsurance(int id, [FromBody] InsuranceRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateInsurance(int id, [FromBody] InsurancesRequest request, CancellationToken cancellationToken)
     {
         var insuranceId = await _insurancesService.UpdateInsurance(id, request.CarId, request.StatusId, request.Type,
             request.Company, request.PolicyNumber, request.StartDate, request.EndDate, request.Cost, cancellationToken);
