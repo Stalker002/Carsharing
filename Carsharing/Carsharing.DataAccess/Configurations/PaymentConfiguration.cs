@@ -12,17 +12,25 @@ public class PaymentConfiguration : IEntityTypeConfiguration<PaymentEntity>
 
         builder.HasKey(x => x.Id);
 
+        builder.Property(p => p.Id)
+            .HasColumnName("payment_id");
+
         builder.Property(p => p.BillId)
+            .HasColumnName("payment_bill_id")
             .IsRequired();
 
         builder.Property(p => p.Sum)
+            .HasColumnName("payment_sum")
             .IsRequired();
 
         builder.Property(p => p.Method)
+            .HasColumnName("payment_method")
+            .HasMaxLength(20)
             .HasDefaultValue("Картой")
             .IsRequired();
 
         builder.Property(p => p.Date)
+            .HasColumnName("payment_date")
             .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .IsRequired();
 

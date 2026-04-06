@@ -1,8 +1,8 @@
-﻿using Carsharing.Application.Abstractions;
-using Carsharing.Contracts;
+using Carsharing.Application.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Contracts.Insurances;
 
 namespace Carsharing.Controllers;
 
@@ -19,9 +19,9 @@ public class InsurancesController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<InsurancesResponse>>> GetInsurances()
+    public async Task<ActionResult<List<InsurancesResponse>>> GetInsurances(CancellationToken cancellationToken)
     {
-        var insurances = await _insurancesService.GetInsurances();
+        var insurances = await _insurancesService.GetInsurances(cancellationToken);
         var response = insurances.Select(i => new InsurancesResponse(i.Id, i.CarId, i.StatusId, i.Type, i.Company,
             i.PolicyNumber, i.StartDate, i.EndDate, i.Cost));
 
@@ -30,9 +30,9 @@ public class InsurancesController : ControllerBase
 
     [HttpGet("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<InsurancesResponse>>> GetInsuranceById(int id)
+    public async Task<ActionResult<List<InsurancesResponse>>> GetInsuranceById(int id, CancellationToken cancellationToken)
     {
-        var insurances = await _insurancesService.GetInsuranceById(id);
+        var insurances = await _insurancesService.GetInsuranceById(id, cancellationToken);
         var response = insurances.Select(i => new InsurancesResponse(i.Id, i.CarId, i.StatusId, i.Type, i.Company,
             i.PolicyNumber, i.StartDate, i.EndDate, i.Cost));
 
@@ -41,9 +41,9 @@ public class InsurancesController : ControllerBase
 
     [HttpGet("byCarId/{carId:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<InsurancesResponse>>> GetInsuranceByCarId(int carId)
+    public async Task<ActionResult<List<InsurancesResponse>>> GetInsuranceByCarId(int carId, CancellationToken cancellationToken)
     {
-        var insurances = await _insurancesService.GetInsuranceByCarId(carId);
+        var insurances = await _insurancesService.GetInsuranceByCarId(carId, cancellationToken);
         var response = insurances.Select(i => new InsurancesResponse(i.Id, i.CarId, i.StatusId, i.Type, i.Company,
             i.PolicyNumber, i.StartDate, i.EndDate, i.Cost));
 
@@ -52,9 +52,9 @@ public class InsurancesController : ControllerBase
 
     [HttpGet("ActiveByCarId/{carId:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<InsurancesResponse>>> GetActiveInsuranceByCarId(int carId)
+    public async Task<ActionResult<List<InsurancesResponse>>> GetActiveInsuranceByCarId(int carId, CancellationToken cancellationToken)
     {
-        var insurances = await _insurancesService.GetActiveInsuranceByCarId(carId);
+        var insurances = await _insurancesService.GetActiveInsuranceByCarId(carId, cancellationToken);
         var response = insurances.Select(i => new InsurancesResponse(i.Id, i.CarId, i.StatusId, i.Type, i.Company,
             i.PolicyNumber, i.StartDate, i.EndDate, i.Cost));
 
@@ -63,7 +63,7 @@ public class InsurancesController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> CreateInsurance([FromBody] InsuranceRequest request)
+    public async Task<ActionResult<int>> CreateInsurance([FromBody] InsurancesRequest request, CancellationToken cancellationToken)
     {
         var (insurance, error) = Insurance.Create(
             0,
@@ -78,24 +78,24 @@ public class InsurancesController : ControllerBase
 
         if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
 
-        var insuranceId = await _insurancesService.CreateInsurance(insurance);
+        var insuranceId = await _insurancesService.CreateInsurance(insurance, cancellationToken);
 
         return Ok(insuranceId);
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateInsurance(int id, [FromBody] InsuranceRequest request)
+    public async Task<ActionResult<int>> UpdateInsurance(int id, [FromBody] InsurancesRequest request, CancellationToken cancellationToken)
     {
         var insuranceId = await _insurancesService.UpdateInsurance(id, request.CarId, request.StatusId, request.Type,
-            request.Company, request.PolicyNumber, request.StartDate, request.EndDate, request.Cost);
+            request.Company, request.PolicyNumber, request.StartDate, request.EndDate, request.Cost, cancellationToken);
         return Ok(insuranceId);
     }
 
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> DeleteInsurance(int id)
+    public async Task<ActionResult<int>> DeleteInsurance(int id, CancellationToken cancellationToken)
     {
-        return Ok(await _insurancesService.DeleteInsurance(id));
+        return Ok(await _insurancesService.DeleteInsurance(id, cancellationToken));
     }
 }

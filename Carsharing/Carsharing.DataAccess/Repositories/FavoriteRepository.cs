@@ -1,7 +1,7 @@
-﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
+using Shared.Contracts.Cars;
 
 namespace Carsharing.DataAccess.Repositories;
 
@@ -14,16 +14,16 @@ public class FavoriteRepository : IFavoriteRepository
         _context = context;
     }
 
-    public async Task<List<int>> GetFavoriteCarIdsByClientIdAsync(int clientId)
+    public async Task<List<int>> GetFavoriteCarIdsByClientIdAsync(int clientId, CancellationToken cancellationToken)
     {
         return await _context.Favorites
             .AsNoTracking()
             .Where(f => f.ClientId == clientId)
             .Select(f => f.CarId)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<CarWithMinInfoDto>> GetFavoriteCarsDtoByClientIdAsync(int clientId, int page, int limit)
+    public async Task<List<CarWithMinInfoDto>> GetFavoriteCarsDtoByClientIdAsync(int clientId, int page, int limit, CancellationToken cancellationToken)
     {
         return await _context.Favorites
             .AsNoTracking()
@@ -41,9 +41,9 @@ public class FavoriteRepository : IFavoriteRepository
             .Take(limit)
             .Select(f => new CarWithMinInfoDto(
                 f.Car!.Id,
-                f.Car.CarStatus!.Name,
+                f.Car.CarStatus!.Name!,
                 f.Car.Tariff!.PricePerDay,
-                f.Car.Category!.Name,
+                f.Car.Category!.Name!,
                 f.Car.SpecificationCar!.FuelType!,
                 f.Car.SpecificationCar.MaxFuel,
                 f.Car.SpecificationCar.Brand!,
@@ -51,20 +51,20 @@ public class FavoriteRepository : IFavoriteRepository
                 f.Car.SpecificationCar.Transmission!,
                 f.Car.ImagePath
             ))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<int> GetCountByClientIdAsync(int clientId)
+    public async Task<int> GetCountByClientIdAsync(int clientId, CancellationToken cancellationToken)
     {
         return await _context.Favorites
             .Where(f => f.ClientId == clientId)
-            .CountAsync();
+            .CountAsync(cancellationToken);
     }
 
-    public async Task AddAsync(int clientId, int carId)
+    public async Task AddAsync(int clientId, int carId, CancellationToken cancellationToken)
     {
         var exists = await _context.Favorites
-            .AnyAsync(f => f.ClientId == clientId && f.CarId == carId);
+            .AnyAsync(f => f.ClientId == clientId && f.CarId == carId, cancellationToken);
 
         if (exists) return;
 
@@ -78,16 +78,16 @@ public class FavoriteRepository : IFavoriteRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task RemoveAsync(int clientId, int carId)
+    public async Task RemoveAsync(int clientId, int carId, CancellationToken cancellationToken)
     {
         await _context.Favorites
             .Where(f => f.ClientId == clientId && f.CarId == carId)
-            .ExecuteDeleteAsync();
+            .ExecuteDeleteAsync(cancellationToken);
     }
 
-    public async Task<bool> IsFavoriteAsync(int clientId, int carId)
+    public async Task<bool> IsFavoriteAsync(int clientId, int carId, CancellationToken cancellationToken)
     {
         return await _context.Favorites
-            .AnyAsync(f => f.ClientId == clientId && f.CarId == carId);
+            .AnyAsync(f => f.ClientId == clientId && f.CarId == carId, cancellationToken);
     }
 }

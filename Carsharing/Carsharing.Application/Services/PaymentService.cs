@@ -1,4 +1,4 @@
-﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.Abstractions;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 
@@ -13,43 +13,43 @@ public class PaymentService : IPaymentService
         _paymentRepository = paymentRepository;
     }
 
-    public async Task<List<Payment>> GetPayments()
+    public async Task<List<Payment>> GetPayments(CancellationToken cancellationToken)
     {
-        return await _paymentRepository.Get();
+        return await _paymentRepository.Get(cancellationToken);
     }
 
-    public async Task<List<Payment>> GetPagedPayments(int page, int limit)
+    public async Task<List<Payment>> GetPagedPayments(int page, int limit, CancellationToken cancellationToken)
     {
-        return await _paymentRepository.GetPaged(page, limit);
+        return await _paymentRepository.GetPaged(page, limit, cancellationToken);
     }
 
-    public async Task<int> GetCountPayments()
+    public async Task<int> GetCountPayments(CancellationToken cancellationToken)
     {
-        return await _paymentRepository.GetCount();
+        return await _paymentRepository.GetCount(cancellationToken);
     }
 
-    public async Task<List<Payment>> GetPaymentById(int id)
+    public async Task<List<Payment>> GetPaymentById(int id, CancellationToken cancellationToken)
     {
-        return await _paymentRepository.GetById(id);
+        return await _paymentRepository.GetById(id, cancellationToken);
     }
 
-    public async Task<List<Payment>> GetPaymentByBillId(int billId)
+    public async Task<List<Payment>> GetPaymentByBillId(int billId, CancellationToken cancellationToken)
     {
-        return await _paymentRepository.GetByBillId(billId);
+        return await _paymentRepository.GetByBillId(billId, cancellationToken);
     }
 
-    public async Task<int> CreatePayment(Payment payment)
+    public async Task<int> CreatePayment(Payment payment, CancellationToken cancellationToken)
     {
-        return await _paymentRepository.Create(payment);
+        return await _paymentRepository.Create(payment, cancellationToken);
     }
 
-    public async Task<int> UpdatePayment(int id, int? billId, decimal? sum, string? method, DateTime? date)
+    public async Task<int> UpdatePayment(int id, int? billId, decimal? sum, string? method, DateTime? date, CancellationToken cancellationToken)
     {
-        return await _paymentRepository.Update(id, billId, sum, method, date);
+        return await _paymentRepository.Update(id, billId, sum, method, date, cancellationToken);
     }
 
-    public async Task<int> DeletePayment(int id)
+    public async Task<int> DeletePayment(int id, CancellationToken cancellationToken)
     {
-        return await _paymentRepository.Delete(id);
+        return await _paymentRepository.Delete(id, cancellationToken);
     }
 }

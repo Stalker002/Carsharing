@@ -1,8 +1,8 @@
-﻿using Carsharing.Core.Models;
+using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Abstractions;
 
 public interface IPromocodeStatusesService
 {
-    Task<List<PromocodeStatus>> GetPromocodeStatuses();
+    Task<List<PromocodeStatus>> GetPromocodeStatuses(CancellationToken cancellationToken);
 }

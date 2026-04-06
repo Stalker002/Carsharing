@@ -1,9 +1,9 @@
-﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
-using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
+using Shared.Contracts.Cars;
+using Shared.Enums;
 
 namespace Carsharing.DataAccess.Repositories;
 
@@ -16,11 +16,11 @@ public class CarRepository : ICarRepository
         _context = context;
     }
 
-    public async Task<List<Car>> Get()
+    public async Task<List<Car>> Get(CancellationToken cancellationToken)
     {
         var carEntities = await _context.Car
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var cars = carEntities
             .Select(c => Car.Create(
@@ -37,14 +37,14 @@ public class CarRepository : ICarRepository
         return cars;
     }
 
-    public async Task<List<Car>> GetPaged(int page, int limit)
+    public async Task<List<Car>> GetPaged(int page, int limit, CancellationToken cancellationToken)
     {
         var carEntities = await _context.Car
             .AsNoTracking()
             .Skip((page - 1) * limit)
             .Take(limit)
             .OrderBy(c => c.Id)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var cars = carEntities
             .Select(c => Car.Create(
@@ -61,17 +61,17 @@ public class CarRepository : ICarRepository
         return cars;
     }
 
-    public async Task<int> GetCount()
+    public async Task<int> GetCount(CancellationToken cancellationToken)
     {
-        return await _context.Car.CountAsync();
+        return await _context.Car.CountAsync(cancellationToken);
     }
 
-    public async Task<List<Car>> GetById(int id)
+    public async Task<List<Car>> GetById(int id, CancellationToken cancellationToken)
     {
         var carEntities = await _context.Car
             .Where(c => c.Id == id)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var cars = carEntities
             .Select(c => Car.Create(
@@ -88,12 +88,12 @@ public class CarRepository : ICarRepository
         return cars;
     }
 
-    public async Task<List<Car>> GetByCategoryId(List<int> categoryIds)
+    public async Task<List<Car>> GetByCategoryId(List<int> categoryIds, CancellationToken cancellationToken)
     {
         var carEntities = await _context.Car
             .Where(c => categoryIds.Contains(c.CategoryId))
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var cars = carEntities
             .Select(c => Car.Create(
@@ -110,14 +110,14 @@ public class CarRepository : ICarRepository
         return cars;
     }
 
-    public async Task<List<Car>> GetPagedByCategoryId(List<int> categoryIds, int page, int limit)
+    public async Task<List<Car>> GetPagedByCategoryId(List<int> categoryIds, int page, int limit, CancellationToken cancellationToken)
     {
         var carEntities = await _context.Car
             .Where(c => categoryIds.Contains(c.CategoryId) && c.StatusId == (int)CarStatusEnum.Available)
             .AsNoTracking()
             .Skip((page - 1) * limit)
             .Take(limit)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var cars = carEntities
             .Select(c => Car.Create(
@@ -134,25 +134,25 @@ public class CarRepository : ICarRepository
         return cars;
     }
 
-    public async Task<int> GetCountByCategory(List<int> categoryIds)
+    public async Task<int> GetCountByCategory(List<int> categoryIds, CancellationToken cancellationToken)
     {
         return await _context.Car
             .Where(c => categoryIds.Contains(c.CategoryId))
-            .CountAsync();
+            .CountAsync(cancellationToken);
     }
 
-    public async Task<List<CarWithInfoDto>> GetCarWithInfo(int id)
+    public async Task<List<CarWithInfoDto>> GetCarWithInfo(int id, CancellationToken cancellationToken)
     {
         return await _context.Car
             .AsNoTracking()
             .Where(c => c.Id == id)
             .Select(c => new CarWithInfoDto(
                 c.Id,
-                c.CarStatus!.Name,
+                c.CarStatus!.Name!,
                 c.Tariff!.PricePerMinute,
                 c.Tariff.PricePerKm,
                 c.Tariff.PricePerDay,
-                c.Category!.Name,
+                c.Category!.Name!,
                 c.SpecificationCar!.FuelType!,
                 c.SpecificationCar.Brand!,
                 c.SpecificationCar.Model!,
@@ -164,10 +164,10 @@ public class CarRepository : ICarRepository
                 c.FuelLevel,
                 c.ImagePath
             ))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<CarWithInfoAdminDto>> GetCarWithInfoAdmin(int id)
+    public async Task<List<CarWithInfoAdminDto>> GetCarWithInfoAdmin(int id, CancellationToken cancellationToken)
     {
         return await _context.Car
             .AsNoTracking()
@@ -194,10 +194,10 @@ public class CarRepository : ICarRepository
                 c.Tariff.PricePerDay,
                 c.ImagePath
             ))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit)
+    public async Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit, CancellationToken cancellationToken)
     {
         return await _context.Car
             .AsNoTracking()
@@ -206,9 +206,9 @@ public class CarRepository : ICarRepository
             .Take(limit)
             .Select(c => new CarWithMinInfoDto(
                 c.Id,
-                c.CarStatus!.Name,
+                c.CarStatus!.Name!,
                 c.Tariff!.PricePerDay,
-                c.Category!.Name,
+                c.Category!.Name!,
                 c.SpecificationCar!.FuelType!,
                 c.SpecificationCar.MaxFuel,
                 c.SpecificationCar.Brand!,
@@ -216,10 +216,10 @@ public class CarRepository : ICarRepository
                 c.SpecificationCar.Transmission!,
                 c.ImagePath
             ))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit)
+    public async Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit, CancellationToken cancellationToken)
     {
         return await _context.Car
             .AsNoTracking()
@@ -230,9 +230,9 @@ public class CarRepository : ICarRepository
             .Take(limit)
             .Select(c => new CarWithMinInfoDto(
                 c.Id,
-                c.CarStatus!.Name,
+                c.CarStatus!.Name!,
                 c.Tariff!.PricePerDay,
-                c.Category!.Name,
+                c.Category!.Name!,
                 c.SpecificationCar!.FuelType!,
                 c.SpecificationCar.MaxFuel,
                 c.SpecificationCar.Brand!,
@@ -240,15 +240,15 @@ public class CarRepository : ICarRepository
                 c.SpecificationCar.Transmission!,
                 c.ImagePath
             ))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<Car>> GetByStatusId(int statusId)
+    public async Task<List<Car>> GetByStatusId(int statusId, CancellationToken cancellationToken)
     {
         var carEntities = await _context.Car
             .Where(c => c.StatusId == statusId)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var cars = carEntities
             .Select(c => Car.Create(
@@ -265,7 +265,7 @@ public class CarRepository : ICarRepository
         return cars;
     }
 
-    public async Task<int> Create(Car car)
+    public async Task<int> Create(Car car, CancellationToken cancellationToken)
     {
         var (_, error) = Car.Create(
             car.Id,
@@ -299,7 +299,7 @@ public class CarRepository : ICarRepository
     }
 
     public async Task<int> Update(int id, int? statusId, int? tariffId, int? categoryId, int? specificationId,
-        string? location, decimal? fuelLevel, string? imagePath)
+        string? location, decimal? fuelLevel, string? imagePath, CancellationToken cancellationToken)
     {
         var car = await _context.Car.FirstOrDefaultAsync(c => c.Id == id)
                   ?? throw new Exception("Car not found");
@@ -343,9 +343,9 @@ public class CarRepository : ICarRepository
         return car.Id;
     }
 
-    public async Task UpdateStatus(int? carId, int statusId)
+    public async Task UpdateStatus(int? carId, int statusId, CancellationToken cancellationToken)
     {
-        var car = await _context.Car.FindAsync(carId);
+        var car = await _context.Car.FindAsync(carId, cancellationToken);
         if (car == null)
             throw new Exception("Автомобиль не найден");
 
@@ -354,11 +354,33 @@ public class CarRepository : ICarRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<int> Delete(int id)
+    public async Task<bool> TryUpdateStatus(int carId, int currentStatusId, int newStatusId, CancellationToken cancellationToken)
     {
-        var carEntity = await _context.Car
+        if (!_context.Database.IsRelational())
+        {
+            var car = await _context.Car.FirstOrDefaultAsync(c => c.Id == carId && c.StatusId == currentStatusId);
+            if (car == null)
+                return false;
+
+            car.StatusId = newStatusId;
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        var affectedRows = await _context.Car
+            .Where(c => c.Id == carId && c.StatusId == currentStatusId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(c => c.StatusId, newStatusId));
+
+        return affectedRows > 0;
+    }
+
+    public async Task<int> Delete(int id, CancellationToken cancellationToken)
+    {
+        await _context.Car
             .Where(t => t.Id == id)
-            .ExecuteDeleteAsync();
+            .ExecuteDeleteAsync(cancellationToken);
 
         return id;
     }

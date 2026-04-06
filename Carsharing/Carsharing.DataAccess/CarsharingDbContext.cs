@@ -15,6 +15,11 @@ public class CarsharingDbContext : DbContext
         _configuration = configuration;
     }
 
+    public CarsharingDbContext(IConfigurationRoot configuration)
+    {
+        _configuration = configuration;
+    }
+
     public DbSet<BillEntity> Bill { get; set; }
     public DbSet<BillStatusEntity> BillStatus { get; set; }
     public DbSet<BookingEntity> Booking { get; set; }

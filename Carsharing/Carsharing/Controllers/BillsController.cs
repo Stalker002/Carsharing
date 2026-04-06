@@ -1,9 +1,10 @@
-﻿using Carsharing.Application.Abstractions;
-using Carsharing.Application.DTOs;
-using Carsharing.Contracts;
+using Carsharing.Application.Abstractions;
 using Carsharing.Core.Models;
+using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Contracts.Bills;
+using Shared.Contracts.Promocodes;
 
 namespace Carsharing.Controllers;
 
@@ -20,9 +21,9 @@ public class BillsController : ControllerBase
 
     [HttpGet("unpaged")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<BillsResponse>>> GetBills()
+    public async Task<ActionResult<List<BillsResponse>>> GetBills(CancellationToken cancellationToken)
     {
-        var bills = await _billsService.GetBills();
+        var bills = await _billsService.GetBills(cancellationToken);
         var response = bills.Select(b => new BillsResponse(
             b.Id,
             b.TripId,
@@ -39,10 +40,10 @@ public class BillsController : ControllerBase
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<BillsResponse>>> GetPagedBills(
         [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_limit")] int limit = 25)
+        [FromQuery(Name = "_limit")] int limit = 25, CancellationToken cancellationToken = default)
     {
-        var totalCount = await _billsService.GetBillCount();
-        var reviews = await _billsService.GetPagedBills(page, limit);
+        var totalCount = await _billsService.GetBillCount(cancellationToken);
+        var reviews = await _billsService.GetPagedBills(page, limit, cancellationToken);
 
         var response = reviews
             .Select(b => new BillsResponse(b.Id,
@@ -60,17 +61,20 @@ public class BillsController : ControllerBase
 
     [HttpGet("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<BillsResponse>>> GetBillById(int id)
+    public async Task<ActionResult<List<BillsResponse>>> GetBillById(int id, CancellationToken cancellationToken)
     {
-        var bills = await _billsService.GetBillById(id);
+        var bill = await _billsService.GetBillById(id, cancellationToken);
+        if (bill == null)
+            return NotFound("Счёт не найден");
+
         var response = new BillsResponse(
-            bills!.Id,
-            bills.TripId,
-            bills.PromocodeId,
-            bills.StatusId,
-            bills.IssueDate,
-            bills.Amount,
-            bills.RemainingAmount);
+            bill.Id,
+            bill.TripId,
+            bill.PromocodeId,
+            bill.StatusId,
+            bill.IssueDate,
+            bill.Amount,
+            bill.RemainingAmount);
 
         return Ok(response);
     }
@@ -79,12 +83,12 @@ public class BillsController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<BillWithMinInfoDto>>> GetPagedBillWithMinInfoByUser(
         [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_limit")] int limit = 25)
+        [FromQuery(Name = "_limit")] int limit = 25, CancellationToken cancellationToken = default)
     {
-        var userId = int.Parse(User.FindFirst("userId")!.Value);
+        var userId = User.GetRequiredUserId();
 
-        var totalCount = await _billsService.GetCountPagedBillWithMinInfoByUser(userId);
-        var bills = await _billsService.GetPagedBillWithMinInfoByUserId(userId, page, limit);
+        var totalCount = await _billsService.GetCountPagedBillWithMinInfoByUser(userId, cancellationToken);
+        var bills = await _billsService.GetPagedBillWithMinInfoByUserId(userId, page, limit, cancellationToken);
 
         var response = bills
             .Select(b => new BillWithMinInfoDto(
@@ -102,9 +106,9 @@ public class BillsController : ControllerBase
 
     [HttpGet("info/{id:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<BillsResponse>>> GetBillWithInfoById(int id)
+    public async Task<ActionResult<List<BillsResponse>>> GetBillWithInfoById(int id, CancellationToken cancellationToken)
     {
-        var bill = await _billsService.GetBillWithInfoById(id);
+        var bill = await _billsService.GetBillWithInfoById(id, cancellationToken);
 
         if (bill.Count == 0)
             return NotFound("Счёт не найден");
@@ -114,8 +118,9 @@ public class BillsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> CreateBill([FromBody] BillsRequest request)
+    public async Task<ActionResult<int>> CreateBill([FromBody] BillsRequest request, CancellationToken cancellationToken)
     {
+        var userId = User.GetRequiredUserId();
         var (bill, error) = Bill.Create(
             0,
             request.TripId,
@@ -127,14 +132,14 @@ public class BillsController : ControllerBase
 
         if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
 
-        var billId = await _billsService.CreateBill(bill);
+        var billId = await _billsService.CreateBill(userId, bill, cancellationToken);
 
         return Ok(billId);
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateBill(int id, [FromBody] BillsRequest request)
+    public async Task<ActionResult<int>> UpdateBill(int id, [FromBody] BillsRequest request, CancellationToken cancellationToken)
     {
         var billId = await _billsService.UpdateBill(
             id,
@@ -143,17 +148,18 @@ public class BillsController : ControllerBase
             request.StatusId,
             request.IssueDate,
             request.Amount,
-            request.RemainingAmount);
+            request.RemainingAmount,
+            cancellationToken);
         return Ok(billId);
     }
 
     [HttpPost("{id:int}/promocode")]
     [Authorize]
-    public async Task<IActionResult> ApplyPromocode(int id, [FromBody] ApplyPromocodeRequest request)
+    public async Task<IActionResult> ApplyPromocode(int id, [FromBody] ApplyPromocodeRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            await _billsService.ApplyPromocode(id, request.Code);
+            await _billsService.ApplyPromocode(id, request.Code, cancellationToken);
             return Ok(new { message = "Промокод применен" });
         }
         catch (Exception ex)
@@ -164,8 +170,8 @@ public class BillsController : ControllerBase
 
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> DeleteBill(int id)
+    public async Task<ActionResult<int>> DeleteBill(int id, CancellationToken cancellationToken)
     {
-        return Ok(await _billsService.DeleteBill(id));
+        return Ok(await _billsService.DeleteBill(id, cancellationToken));
     }
 }

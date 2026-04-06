@@ -16,6 +16,7 @@ COPY ["Carsharing/Carsharing.csproj", "Carsharing/"]
 COPY ["Carsharing.Application/Carsharing.Application.csproj", "Carsharing.Application/"]
 COPY ["Carsharing.Core/Carsharing.Core.csproj", "Carsharing.Core/"]
 COPY ["Carsharing.DataAccess/Carsharing.DataAccess.csproj", "Carsharing.DataAccess/"]
+COPY ["Shared/Shared.csproj", "Shared/"]
 RUN dotnet restore "./Carsharing/Carsharing.csproj"
 COPY . .
 WORKDIR "/src/Carsharing"

@@ -1,4 +1,4 @@
-﻿namespace Carsharing.Application.Abstractions;
+﻿namespace Carsharing.Core.Abstractions;
 
 public interface IPasswordHasher
 {

@@ -12,19 +12,27 @@ public class FineConfiguration : IEntityTypeConfiguration<FineEntity>
 
         builder.HasKey(x => x.Id);
 
+        builder.Property(f => f.Id)
+            .HasColumnName("fine_id");
+
         builder.Property(f => f.TripId)
+            .HasColumnName("fine_trip_id")
             .IsRequired();
 
         builder.Property(f => f.StatusId)
+            .HasColumnName("fine_status_id")
             .IsRequired();
 
         builder.Property(f => f.Type)
+            .HasColumnName("fine_type")
             .IsRequired();
 
         builder.Property(f => f.Amount)
+            .HasColumnName("fine_amount")
             .IsRequired();
 
         builder.Property(f => f.Date)
+            .HasColumnName("fine_date")
             .IsRequired()
             .HasDefaultValueSql("CURRENT_DATE");
 
@@ -36,8 +44,10 @@ public class FineConfiguration : IEntityTypeConfiguration<FineEntity>
         builder.HasOne(f => f.FineStatus)
             .WithMany(s => s.Fines)
             .HasForeignKey(f => f.StatusId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
 
-        //Чек на не <0 стоимость
+        builder.ToTable(t => t.HasCheckConstraint(
+            "chk_fine_amount_nonneg",
+            "fine_amount >= 0"));
     }
 }

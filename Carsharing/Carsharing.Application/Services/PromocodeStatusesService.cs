@@ -1,4 +1,4 @@
-﻿using Carsharing.Application.Abstractions;
+using Carsharing.Application.Abstractions;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 
@@ -14,9 +14,9 @@ public class PromocodeStatusesService : IPromocodeStatusesService
         _promocodeStatusRepository = promocodeStatusRepository;
     }
 
-    public async Task<List<PromocodeStatus>> GetPromocodeStatuses()
+    public async Task<List<PromocodeStatus>> GetPromocodeStatuses(CancellationToken cancellationToken)
     {
-        var promocodeStatuses = await _promocodeStatusRepository.Get();
+        var promocodeStatuses = await _promocodeStatusRepository.Get(cancellationToken);
 
         return promocodeStatuses;
     }

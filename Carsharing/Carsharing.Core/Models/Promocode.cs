@@ -1,4 +1,4 @@
-﻿using Carsharing.Core.Enum;
+﻿using Shared.Enums;
 
 namespace Carsharing.Core.Models;
 

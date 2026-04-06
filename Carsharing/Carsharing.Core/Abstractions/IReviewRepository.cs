@@ -1,30 +1,30 @@
-﻿using Carsharing.Application.DTOs;
 using Carsharing.Core.Models;
+using Shared.Contracts.Reviews;
 
 namespace Carsharing.Core.Abstractions;
 
 public interface IReviewRepository
 {
-    Task<List<Review>> Get();
+    Task<List<Review>> Get(CancellationToken cancellationToken);
 
-    Task<List<Review>> GetPaged(int page, int limit);
+    Task<List<Review>> GetPaged(int page, int limit, CancellationToken cancellationToken);
 
-    Task<int> GetCount();
+    Task<int> GetCount(CancellationToken cancellationToken);
 
-    Task<List<ReviewWithClientInfo>> GetByCarId(int carId);
+    Task<List<ReviewWithClientInfo>> GetByCarId(int carId, CancellationToken cancellationToken);
 
-    Task<List<ReviewWithClientInfo>> GetPagedByCarId(int carId, int page, int limit);
+    Task<List<ReviewWithClientInfo>> GetPagedByCarId(int carId, int page, int limit, CancellationToken cancellationToken);
 
-    Task<int> GetCountByCarId(int carId);
+    Task<int> GetCountByCarId(int carId, CancellationToken cancellationToken);
 
-    Task<List<Review>> GetById(int id);
+    Task<List<Review>> GetById(int id, CancellationToken cancellationToken);
 
-    Task<List<Review>> GetByClientId(int clientId);
+    Task<List<Review>> GetByClientId(int clientId, CancellationToken cancellationToken);
 
-    Task<int> Create(Review review);
+    Task<int> Create(Review review, CancellationToken cancellationToken);
 
     Task<int> Update(int id, int? clientId, int? carId, short? rating, string? comment,
-        DateTime? date);
+        DateTime? date, CancellationToken cancellationToken);
 
-    Task<int> Delete(int id);
+    Task<int> Delete(int id, CancellationToken cancellationToken);
 }

@@ -53,4 +53,9 @@ public class User
 
         return (user, error);
     }
+
+    public static User Restore(int id, int roleId, string login, string passwordHash)
+    {
+        return new User(id, roleId, login, passwordHash);
+    }
 }

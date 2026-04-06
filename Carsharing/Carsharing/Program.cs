@@ -3,10 +3,12 @@ using Carsharing.Application;
 using Carsharing.Application.Abstractions;
 using Carsharing.Application.Extensions;
 using Carsharing.DataAccess;
-using Carsharing.Extension;
 using Carsharing.Middleware;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.DataProtection;
+using Carsharing.Extensions;
+using Carsharing.Core.Abstractions;
 
 namespace Carsharing;
 
@@ -71,8 +73,11 @@ public class Program
 
         builder.Services.AddApiAuthentication(builder.Configuration);
 
+        var dataProtectionKeysPath = Path.Combine(builder.Environment.ContentRootPath, "keys");
+        Directory.CreateDirectory(dataProtectionKeysPath);
+
         builder.Services.AddDataProtection()
-            .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"))
+            .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath))
             .SetApplicationName("carsharing-app");
 
         var app = builder.Build();
@@ -80,7 +85,10 @@ public class Program
         using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<CarsharingDbContext>();
-            dbContext.Database.EnsureCreated();
+            if (dbContext.Database.IsRelational())
+            {
+                dbContext.Database.Migrate();
+            }
         }
 
         if (app.Environment.IsDevelopment())

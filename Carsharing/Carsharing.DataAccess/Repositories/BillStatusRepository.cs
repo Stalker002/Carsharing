@@ -1,34 +1,30 @@
-﻿using Carsharing.Core.Abstractions;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.DataAccess.Repositories;
 
-public class BillStatusRepository : IBillStatusRepository
+public class BillStatusRepository(CarsharingDbContext context) : IBillStatusRepository
 {
-    private readonly CarsharingDbContext _context;
-
-    public BillStatusRepository(CarsharingDbContext context) => _context = context;
-
-    public async Task<List<BillStatus>> Get()
+    public async Task<List<BillStatus>> Get(CancellationToken cancellationToken)
     {
-        var billStatusEntities = await _context.BillStatus
+        var billStatusEntities = await context.BillStatus
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var billStatuses = billStatusEntities
             .Select(b => BillStatus.Create(
                 b.Id,
-                b.Name).billStatus)
+                b.Name!).billStatus)
             .ToList();
 
         return billStatuses;
     }
 
-    public async Task<bool> Exists(int id)
+    public async Task<bool> Exists(int id, CancellationToken cancellationToken)
     {
-        return await _context.BillStatus
+        return await context.BillStatus
             .AsNoTracking()
-            .AnyAsync(b => b.Id == id);
+            .AnyAsync(b => b.Id == id, cancellationToken);
     }
 }

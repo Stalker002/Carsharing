@@ -1,7 +1,8 @@
-﻿using Carsharing.Application.Abstractions;
-using Carsharing.Contracts;
+using Carsharing.Application.Abstractions;
+using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Contracts.Users;
 
 namespace Carsharing.Controllers;
 
@@ -17,9 +18,9 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
-        var (token, error) = await _usersService.Login(request.Login, request.Password);
+        var (token, error) = await _usersService.Login(request.Login, request.Password, cancellationToken);
 
         if (!string.IsNullOrEmpty(error)) return BadRequest(new { message = "Неверный логин или пароль" });
 
@@ -37,24 +38,24 @@ public class UsersController : ControllerBase
 
     [HttpGet("unpaged")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<UsersResponse>>> GetUsers()
+    public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
     {
-        var users = await _usersService.GetUsers();
-        var response = users.Select(u => new UsersResponse(u.Id, u.RoleId, u.Login, u.Password));
+        var users = await _usersService.GetUsers(cancellationToken);
+        var response = users.Select(u => new { u.Id, u.RoleId, u.Login });
         return Ok(response);
     }
 
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<UsersResponse>>> GetPagedUsers(
+    public async Task<IActionResult> GetPagedUsers(
         [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_limit")] int limit = 25)
+        [FromQuery(Name = "_limit")] int limit = 25, CancellationToken cancellationToken = default)
     {
-        var totalCount = await _usersService.GetUsersCount();
-        var users = await _usersService.GetPagedUsers(page, limit);
+        var totalCount = await _usersService.GetUsersCount(cancellationToken);
+        var users = await _usersService.GetPagedUsers(page, limit, cancellationToken);
 
         var response = users
-            .Select(u => new UsersResponse(u.Id, u.RoleId, u.Login, u.Password)).ToList();
+            .Select(u => new { u.Id, u.RoleId, u.Login }).ToList();
 
         Response.Headers.Append("x-total-count", totalCount.ToString());
 
@@ -63,28 +64,27 @@ public class UsersController : ControllerBase
 
     [HttpGet("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<UsersResponse>>> GetUserById(int id)
+    public async Task<IActionResult> GetUserById(int id, CancellationToken cancellationToken = default)
     {
-        var users = await _usersService.GetUserById(id);
-        var response = users.Select(u => new UsersResponse(u.Id, u.RoleId, u.Login, u.Password));
+        var users = await _usersService.GetUserById(id, cancellationToken);
+        var response = users.Select(u => new { u.Id, u.RoleId, u.Login });
         return Ok(response);
     }
 
     [HttpGet("MyUser")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<UsersResponse>>> GetMyUser()
+    public async Task<IActionResult> GetMyUser(CancellationToken cancellationToken = default)
     {
-        var userId = int.Parse(User.FindFirst("userId")!.Value);
+        var userId = User.GetRequiredUserId();
 
-        var users = await _usersService.GetUserById(userId);
-        var response = users.Select(u =>
-            new UsersResponse(u.Id, u.RoleId, u.Login, u.Password));
+        var users = await _usersService.GetUserById(userId, cancellationToken);
+        var response = users.Select(u => new { u.Id, u.RoleId, u.Login });
         return Ok(response);
     }
 
     [HttpPost]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> CreateUser([FromBody] UsersRequest request)
+    public async Task<ActionResult<int>> CreateUser([FromBody] UsersRequest request, CancellationToken cancellationToken = default)
     {
         var (user, error) = Core.Models.User.Create(
             0,
@@ -94,23 +94,23 @@ public class UsersController : ControllerBase
 
         if (!string.IsNullOrEmpty(error)) return BadRequest(error);
 
-        var userId = await _usersService.CreateUser(user);
+        var userId = await _usersService.CreateUser(user, cancellationToken);
 
         return Ok(userId);
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateUser(int id, [FromBody] UsersRequest request)
+    public async Task<ActionResult<int>> UpdateUser(int id, [FromBody] UsersRequest request, CancellationToken cancellationToken)
     {
-        var userId = await _usersService.UpdateUser(id, request.RoleId, request.Login, request.Password);
+        var userId = await _usersService.UpdateUser(id, request.RoleId, request.Login, request.Password, cancellationToken);
         return Ok(userId);
     }
 
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> DeleteUser(int id)
+    public async Task<ActionResult<int>> DeleteUser(int id, CancellationToken cancellationToken)
     {
-        return Ok(await _usersService.DeleteUser(id));
+        return Ok(await _usersService.DeleteUser(id, cancellationToken));
     }
 }

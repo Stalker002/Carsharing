@@ -13,7 +13,11 @@ public class CategoryConfiguration : IEntityTypeConfiguration<CategoryEntity>
 
         builder.HasKey(x => x.Id);
 
+        builder.Property(c => c.Id)
+            .HasColumnName("category_id");
+
         builder.Property(c => c.Name)
+            .HasColumnName("category_name")
             .HasMaxLength(Category.MaxNameLength)
             .IsRequired();
 

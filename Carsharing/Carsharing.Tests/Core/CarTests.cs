@@ -1,5 +1,5 @@
-using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
+using Shared.Enums;
 
 namespace Carsharing.Tests.Core;
 

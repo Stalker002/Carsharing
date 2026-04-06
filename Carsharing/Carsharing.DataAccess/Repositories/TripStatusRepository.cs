@@ -1,4 +1,4 @@
-﻿using Carsharing.Core.Abstractions;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,25 +13,25 @@ public class TripStatusRepository : ITripStatusRepository
         _context = context;
     }
 
-    public async Task<List<TripStatus>> Get()
+    public async Task<List<TripStatus>> Get(CancellationToken cancellationToken)
     {
         var tripStatusEntities = await _context.TripStatus
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var tripStatuses = tripStatusEntities
             .Select(b => TripStatus.Create(
                 b.Id,
-                b.Name).tripStatus)
+                b.Name!).tripStatus)
             .ToList();
 
         return tripStatuses;
     }
 
-    public async Task<bool> Exists(int id)
+    public async Task<bool> Exists(int id, CancellationToken cancellationToken)
     {
         return await _context.TripStatus
             .AsNoTracking()
-            .AnyAsync(b => b.Id == id);
+            .AnyAsync(b => b.Id == id, cancellationToken);
     }
 }

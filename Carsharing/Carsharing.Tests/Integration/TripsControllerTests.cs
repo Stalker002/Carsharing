@@ -1,10 +1,10 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Carsharing.Application.DTOs;
-using Carsharing.Core.Enum;
 using Carsharing.DataAccess;
 using Carsharing.DataAccess.Entites;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Contracts.Trip;
+using Shared.Enums;
 
 namespace Carsharing.Tests.Integration;
 
@@ -26,6 +26,16 @@ public class TripsControllerTests(CustomWebApplicationFactory factory) : IClassF
         using (var scope = factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<CarsharingDbContext>();
+
+            db.Client.Add(new ClientEntity
+            {
+                Id = 1,
+                UserId = testUserId,
+                Name = "Trip",
+                Surname = "User",
+                PhoneNumber = "+375291112233",
+                Email = "trip@test.com"
+            });
             
             db.Tariff.Add(new TariffEntity { Id = 1, PricePerMinute = 5, Name = "Basic" });
             

@@ -13,28 +13,39 @@ public class CarConfiguration : IEntityTypeConfiguration<CarEntity>
 
         builder.HasKey(x => x.Id);
 
+        builder.Property(c => c.Id)
+            .HasColumnName("car_id");
+
         builder.Property(c => c.StatusId)
+            .HasColumnName("car_status_id")
             .IsRequired();
 
         builder.Property(c => c.TariffId)
+            .HasColumnName("car_tariff_id")
             .IsRequired();
 
         builder.Property(c => c.CategoryId)
+            .HasColumnName("car_category_id")
             .IsRequired();
 
         builder.Property(c => c.SpecificationId)
+            .HasColumnName("car_specification_id")
             .IsRequired();
 
         builder.Property(c => c.Location)
+            .HasColumnName("car_location")
             .IsRequired()
             .HasMaxLength(Car.MaxLocationLength);
 
         builder.Property(c => c.FuelLevel)
+            .HasColumnName("car_fuel_level")
             .IsRequired()
             .HasDefaultValue(0)
             .ValueGeneratedOnAdd();
 
         builder.Property(c => c.ImagePath)
+            .HasColumnName("car_image_path")
+            .HasMaxLength(300)
             .IsRequired(false);
 
         builder.HasIndex(c => c.SpecificationId)
@@ -55,12 +66,12 @@ public class CarConfiguration : IEntityTypeConfiguration<CarEntity>
         builder.HasOne(c => c.Category)
             .WithMany(c => c.Cars)
             .HasForeignKey(c => c.CategoryId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(c => c.Tariff)
             .WithMany(t => t.Cars)
             .HasForeignKey(c => c.TariffId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(c => c.SpecificationCar)
             .WithOne(sp => sp.Car)
@@ -70,8 +81,10 @@ public class CarConfiguration : IEntityTypeConfiguration<CarEntity>
         builder.HasOne(c => c.CarStatus)
             .WithMany(st => st.Cars)
             .HasForeignKey(c => c.StatusId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
 
-        //Сделать чек на положительное топливо
+        builder.ToTable(t => t.HasCheckConstraint(
+            "chk_fuel_level",
+            "car_fuel_level >= 0"));
     }
 }

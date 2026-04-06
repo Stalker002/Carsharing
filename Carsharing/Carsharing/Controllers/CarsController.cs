@@ -1,7 +1,7 @@
-﻿using Carsharing.Application.DTOs;
-using Carsharing.Contracts;
+using Carsharing.Application.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Contracts.Cars;
 using ICarsService = Carsharing.Application.Abstractions.ICarsService;
 
 namespace Carsharing.Controllers;
@@ -21,10 +21,10 @@ public class CarsController : ControllerBase
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<CarsResponse>>> GetPagedCars(
         [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_limit")] int limit = 25)
+        [FromQuery(Name = "_limit")] int limit = 25, CancellationToken cancellationToken = default)
     {
-        var totalCount = await _carsService.GetCount();
-        var cars = await _carsService.GetPagedCars(page, limit);
+        var totalCount = await _carsService.GetCount(cancellationToken);
+        var cars = await _carsService.GetPagedCars(page, limit, cancellationToken);
 
         var response = cars
             .Select(c => new CarsResponse(c.Id, c.CarStatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location,
@@ -37,9 +37,9 @@ public class CarsController : ControllerBase
 
     [HttpGet("with-info/{id:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<CarWithInfoDto>>> GetCarWithInfo(int id)
+    public async Task<ActionResult<List<CarWithInfoDto>>> GetCarWithInfo(int id, CancellationToken cancellationToken = default)
     {
-        var carsWithInfo = await _carsService.GetCarWithInfo(id);
+        var carsWithInfo = await _carsService.GetCarWithInfo(id, cancellationToken);
         var response = carsWithInfo.Select(c => new CarWithInfoDto(c.Id, c.StatusName, c.PricePerMinute, c.PricePerKm,
             c.PricePerDay, c.CategoryName, c.FuelType, c.Brand, c.Model, c.Transmission, c.Year, c.StateNumber,
             c.MaxFuel, c.Location, c.FuelLevel, c.ImagePath));
@@ -49,9 +49,9 @@ public class CarsController : ControllerBase
 
     [HttpGet("with-info-admin/{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<CarWithInfoAdminDto>>> GetCarWithInfoAdmin(int id)
+    public async Task<ActionResult<List<CarWithInfoAdminDto>>> GetCarWithInfoAdmin(int id, CancellationToken cancellationToken = default)
     {
-        var carsWithInfo = await _carsService.GetCarWithInfoAdmin(id);
+        var carsWithInfo = await _carsService.GetCarWithInfoAdmin(id, cancellationToken);
         var response = carsWithInfo.Select(c => new CarWithInfoAdminDto(c.Id, c.StatusId, c.CategoryId,
             c.Transmission, c.Brand, c.Model, c.Year, c.Location, c.VinNumber, c.StateNumber, c.FuelType, c.FuelLevel,
             c.MaxFuel, c.FuelPerKm, c.Mileage, c.TariffName, c.PricePerMinute, c.PricePerKm, c.PricePerDay, c.Image));
@@ -62,12 +62,12 @@ public class CarsController : ControllerBase
     [HttpGet("pagedByCategory")]
     public async Task<ActionResult<List<CarWithMinInfoDto>>> GetCarsByCategories([FromQuery] List<int>? ids,
         [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_limit")] int limit = 25)
+        [FromQuery(Name = "_limit")] int limit = 25, CancellationToken cancellationToken = default)
     {
         if (ids == null || ids.Count == 0)
         {
-            var totalCount = await _carsService.GetCount();
-            var cars = await _carsService.GetPagedCarsByClients(page, limit);
+            var totalCount = await _carsService.GetCount(cancellationToken);
+            var cars = await _carsService.GetPagedCarsByClients(page, limit, cancellationToken);
 
             var response = cars
                 .Select(c => new CarWithMinInfoDto(c.Id, c.StatusName, c.PricePerDay, c.CategoryName, c.FuelType,
@@ -79,8 +79,8 @@ public class CarsController : ControllerBase
         }
         else
         {
-            var totalCount = await _carsService.GetCountByCategory(ids);
-            var cars = await _carsService.GetCarWithMinInfoByCategoryIds(ids, page, limit);
+            var totalCount = await _carsService.GetCountByCategory(ids, cancellationToken);
+            var cars = await _carsService.GetCarWithMinInfoByCategoryIds(ids, page, limit, cancellationToken);
 
             var response = cars.Select(c =>
                 new CarWithMinInfoDto(c.Id, c.StatusName, c.PricePerDay, c.CategoryName, c.FuelType, c.MaxFuel, c.Brand,
@@ -95,9 +95,9 @@ public class CarsController : ControllerBase
     [HttpPost]
     [Consumes("multipart/form-data")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> CreateCar([FromForm] CarsCreateRequest request)
+    public async Task<ActionResult<int>> CreateCar([FromForm] CarsCreateRequest request, CancellationToken cancellationToken = default)
     {
-        var (carId, error) = await _carsService.CreateCarFullAsync(request);
+        var (carId, error) = await _carsService.CreateCarFullAsync(request, cancellationToken);
 
         if (string.IsNullOrEmpty(error)) return Ok(carId);
 
@@ -107,12 +107,12 @@ public class CarsController : ControllerBase
     [HttpPut("{id:int}")]
     [Consumes("multipart/form-data")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateCar(int id, [FromForm] CarUpdateDto request)
+    public async Task<ActionResult<int>> UpdateCar(int id, [FromForm] CarUpdateDto request, CancellationToken cancellationToken = default)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var (isSuccess, error) = await _carsService.UpdateCarFullAsync(id, request);
+        var (isSuccess, error) = await _carsService.UpdateCarFullAsync(id, request, cancellationToken);
 
         if (isSuccess) return Ok(id);
 
@@ -121,8 +121,8 @@ public class CarsController : ControllerBase
 
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> DeleteCar(int id)
+    public async Task<ActionResult<int>> DeleteCar(int id, CancellationToken cancellationToken = default)
     {
-        return Ok(await _carsService.DeleteCar(id));
+        return Ok(await _carsService.DeleteCar(id, cancellationToken));
     }
 }

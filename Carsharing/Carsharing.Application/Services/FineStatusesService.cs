@@ -1,4 +1,5 @@
-﻿using Carsharing.Core.Abstractions;
+using Carsharing.Application.Abstractions;
+using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Services;
@@ -13,9 +14,9 @@ public class FineStatusesService : IFineStatusesService
         _fineStatusRepository = fineStatusRepository;
     }
 
-    public async Task<List<FineStatus>> GetFineStatuses()
+    public async Task<List<FineStatus>> GetFineStatuses(CancellationToken cancellationToken)
     {
-        var fineStatuses = await _fineStatusRepository.Get();
+        var fineStatuses = await _fineStatusRepository.Get(cancellationToken);
 
         return fineStatuses;
     }
