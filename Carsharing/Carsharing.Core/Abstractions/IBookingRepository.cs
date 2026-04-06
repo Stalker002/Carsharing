@@ -1,5 +1,5 @@
-using Carsharing.Application.DTOs;
 using Carsharing.Core.Models;
+using Shared.Contracts.Bookings;
 
 namespace Carsharing.Core.Abstractions;
 

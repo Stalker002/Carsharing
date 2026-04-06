@@ -1,7 +1,8 @@
 using Carsharing.Application.Abstractions;
-using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
+using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
+using Shared.Contracts.Reviews;
 
 namespace Carsharing.Application.Services;
 
@@ -57,7 +58,7 @@ public class ReviewsService : IReviewsService
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
         if (clientId == 0)
-            throw new Exception("Client not found");
+            throw new NotFoundException("Client not found");
 
         var (review, error) = Review.Create(0, clientId, carId, rating, comment, date);
 
@@ -74,10 +75,10 @@ public class ReviewsService : IReviewsService
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
         if (clientId == 0)
-            throw new Exception("Client not found");
+            throw new NotFoundException("Client not found");
 
         var review = (await _reviewRepository.GetById(id, cancellationToken)).FirstOrDefault()
-            ?? throw new Exception("Review not found");
+            ?? throw new NotFoundException("Review not found");
 
         if (review.ClientId != clientId)
             throw new UnauthorizedAccessException("Review does not belong to current user");

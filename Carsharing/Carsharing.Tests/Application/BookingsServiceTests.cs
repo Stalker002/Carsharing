@@ -1,9 +1,9 @@
 using Carsharing.Application.Services;
 using Carsharing.Core.Abstractions;
-using Carsharing.Core.Enum;
 using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
 using Moq;
+using Shared.Enums;
 
 namespace Carsharing.Tests.Application;
 

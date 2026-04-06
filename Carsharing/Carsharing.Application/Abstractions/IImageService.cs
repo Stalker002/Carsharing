@@ -8,5 +8,5 @@ public interface IImageService
 
     Task<string> SaveDocumentImageAsync(IFormFile file, CancellationToken cancellationToken);
 
-    void DeleteFile(string webPath, CancellationToken cancellationToken);
+    Task DeleteFile(string webPath, CancellationToken cancellationToken);
 }

@@ -1,4 +1,4 @@
-﻿using Carsharing.Application.Abstractions;
+﻿using Carsharing.Core.Abstractions;
 
 namespace Carsharing.Application.Extensions;
 

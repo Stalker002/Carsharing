@@ -13,30 +13,30 @@ public class UnitOfWork : IUnitOfWork
         _context = context;
     }
 
-    public async Task BeginTransactionAsync()
+    public async Task BeginTransactionAsync(CancellationToken cancellationToken)
     {
         if (_currentTransaction != null)
         {
             return;
         }
 
-        _currentTransaction = await _context.Database.BeginTransactionAsync();
+        _currentTransaction = await _context.Database.BeginTransactionAsync(cancellationToken);
     }
 
-    public async Task CommitTransactionAsync()
+    public async Task CommitTransactionAsync(CancellationToken cancellationToken)
     {
         try
         {
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             if (_currentTransaction != null)
             {
-                await _currentTransaction.CommitAsync();
+                await _currentTransaction.CommitAsync(cancellationToken);
             }
         }
         catch
         {
-            await RollbackTransactionAsync();
+            await RollbackTransactionAsync(cancellationToken);
             throw;
         }
         finally
@@ -49,19 +49,19 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    public async Task RollbackTransactionAsync()
+    public async Task RollbackTransactionAsync(CancellationToken cancellationToken)
     {
         if (_currentTransaction != null)
         {
-            await _currentTransaction.RollbackAsync();
+            await _currentTransaction.RollbackAsync(cancellationToken);
             await _currentTransaction.DisposeAsync();
             _currentTransaction = null;
         }
     }
 
-    public async Task SaveChangesAsync()
+    public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public void Dispose()

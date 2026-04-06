@@ -1,8 +1,8 @@
-﻿using Carsharing.Core.Enum;
-using Carsharing.Core.Validation;
+﻿using Carsharing.Core.Validation;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shared.Enums;
 
 namespace Carsharing.DataAccess.Configurations;
 

@@ -15,26 +15,25 @@ public class ImageService(IAmazonS3 s3Client, IConfiguration configuration) : II
 
     public async Task<string> SaveCarImageAsync(IFormFile file, CancellationToken cancellationToken)
     {
-        return await SaveFileInternalAsync(file, "cars");
+        return await SaveFileInternalAsync(file, "cars", cancellationToken);
     }
 
     public async Task<string> SaveDocumentImageAsync(IFormFile file, CancellationToken cancellationToken)
     {
-        return await SaveFileInternalAsync(file, "documents");
+        return await SaveFileInternalAsync(file, "documents", cancellationToken);
     }
 
-    private async Task<string> SaveFileInternalAsync(IFormFile file, string subFolder)
+    private async Task<string> SaveFileInternalAsync(IFormFile file, string subFolder, CancellationToken cancellationToken)
     {
         var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
 
         if (!_allowedExtensions.Contains(ext))
             throw new ArgumentException($"Неподдерживаемый формат файла. Разрешены: {string.Join(", ", _allowedExtensions)}");
 
-        // Проверяем, существует ли бакет, если нет — создаем
-        await EnsureBucketExistsAsync();
+        await EnsureBucketExistsAsync(cancellationToken);
 
         var fileName = $"{Guid.NewGuid()}{ext}";
-        var objectKey = $"images/{subFolder}/{fileName}"; // Путь внутри бакета (ключ)
+        var objectKey = $"images/{subFolder}/{fileName}";
 
         var putRequest = new PutObjectRequest
         {
@@ -44,24 +43,17 @@ public class ImageService(IAmazonS3 s3Client, IConfiguration configuration) : II
             ContentType = file.ContentType
         };
 
-        await s3Client.PutObjectAsync(putRequest);
+        await s3Client.PutObjectAsync(putRequest, cancellationToken);
 
-        // Возвращаем полный URL к файлу
-        // Внимание: для MinIO URL обычно строится так: Host/BucketName/Key
         return $"{_serviceUrl}/{_bucketName}/{objectKey}";
     }
 
-    public async void DeleteFile(string fileUrl, CancellationToken cancellationToken)
+    public async Task DeleteFile(string fileUrl, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(fileUrl)) return;
 
         try
         {
-            // Нам нужно извлечь "Key" (путь внутри бакета) из полного URL.
-            // URL: http://localhost:9000/carsharing-images/images/cars/guid.jpg
-            // Key: images/cars/guid.jpg
-
-            // Простая логика парсинга (можно улучшить через Uri класс)
             var key = fileUrl.Replace($"{_serviceUrl}/{_bucketName}/", "");
 
             var deleteRequest = new DeleteObjectRequest
@@ -70,15 +62,15 @@ public class ImageService(IAmazonS3 s3Client, IConfiguration configuration) : II
                 Key = key
             };
 
-            await s3Client.DeleteObjectAsync(deleteRequest);
+            await s3Client.DeleteObjectAsync(deleteRequest, cancellationToken);
         }
         catch
         {
-            // Логирование ошибки удаления
+            // Ignore cleanup failures to avoid masking the original business error.
         }
     }
 
-    private async Task EnsureBucketExistsAsync()
+    private async Task EnsureBucketExistsAsync(CancellationToken cancellationToken)
     {
         var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, _bucketName);
         if (!bucketExists)
@@ -88,10 +80,8 @@ public class ImageService(IAmazonS3 s3Client, IConfiguration configuration) : II
                 BucketName = _bucketName,
                 UseClientRegion = true
             };
-            await s3Client.PutBucketAsync(putBucketRequest);
+            await s3Client.PutBucketAsync(putBucketRequest, cancellationToken);
 
-            // Делаем бакет публичным для чтения (чтобы картинки открывались на фронте)
-            // В продакшене политика может быть строже
             string policy = $@"{{
                 ""Version"": ""2012-10-17"",
                 ""Statement"": [
@@ -108,7 +98,7 @@ public class ImageService(IAmazonS3 s3Client, IConfiguration configuration) : II
             {
                 BucketName = _bucketName,
                 Policy = policy
-            });
+            }, cancellationToken);
         }
     }
 }

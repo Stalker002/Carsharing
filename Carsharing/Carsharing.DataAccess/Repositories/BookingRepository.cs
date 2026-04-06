@@ -1,9 +1,9 @@
-using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
-using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
+using Shared.Contracts.Bookings;
+using Shared.Enums;
 
 namespace Carsharing.DataAccess.Repositories;
 

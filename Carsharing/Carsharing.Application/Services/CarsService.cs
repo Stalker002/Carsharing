@@ -1,8 +1,9 @@
 using Carsharing.Application.Abstractions;
 using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
-using Carsharing.Core.Enum;
 using Carsharing.Core.Models;
+using Shared.Contracts.Cars;
+using Shared.Enums;
 
 namespace Carsharing.Application.Services;
 
@@ -129,7 +130,7 @@ public class CarsService : ICarsService
 
             if (!string.IsNullOrEmpty(errorCar))
             {
-                if (savedImagePath != null) _imageService.DeleteFile(savedImagePath, cancellationToken);
+                if (savedImagePath != null) await _imageService.DeleteFile(savedImagePath, cancellationToken);
                 return (null, errorCar);
             }
 
@@ -142,7 +143,7 @@ public class CarsService : ICarsService
         {
             await _unitOfWork.RollbackTransactionAsync(cancellationToken);
 
-            if (savedImagePath != null) _imageService.DeleteFile(savedImagePath, cancellationToken);
+            if (savedImagePath != null) await _imageService.DeleteFile(savedImagePath, cancellationToken);
 
             if (ex.InnerException?.Message.Contains("23505") == true)
             {
@@ -218,7 +219,7 @@ public class CarsService : ICarsService
 
             if (newImagePathSystem != null)
             {
-                _imageService.DeleteFile(newImagePathSystem, cancellationToken);
+                await _imageService.DeleteFile(newImagePathSystem, cancellationToken);
             }
 
             if (ex.InnerException?.Message.Contains("23505") == true)

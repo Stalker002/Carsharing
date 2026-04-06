@@ -1,5 +1,6 @@
 using Carsharing.Application.Abstractions;
 using Carsharing.Core.Abstractions;
+using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Services;
@@ -77,7 +78,7 @@ public class UsersService : IUsersService
     public async Task<int> UpdateUser(int id, int? roleId, string? login, string? password, CancellationToken cancellationToken)
     {
         var existingUser = (await _userRepository.GetUserById(id, cancellationToken)).SingleOrDefault()
-            ?? throw new Exception("User not found");
+            ?? throw new NotFoundException("User not found");
 
         var nextRoleId = roleId ?? existingUser.RoleId;
         var nextLogin = string.IsNullOrWhiteSpace(login) ? existingUser.Login : login;

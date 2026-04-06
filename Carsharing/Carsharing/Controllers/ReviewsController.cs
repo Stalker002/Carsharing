@@ -1,9 +1,8 @@
 using Carsharing.Application.Abstractions;
-using Carsharing.Application.DTOs;
-using Carsharing.Contracts;
 using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Contracts.Reviews;
 
 namespace Carsharing.Controllers;
 

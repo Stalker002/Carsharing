@@ -1,7 +1,8 @@
 using Carsharing.Application.Abstractions;
-using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
+using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
+using Shared.Contracts.Bills;
 
 namespace Carsharing.Application.Services;
 
@@ -65,13 +66,13 @@ public class BillsService : IBillsService
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
         if (clientId == 0)
-            throw new Exception("Client not found");
+            throw new NotFoundException("Client not found");
 
         var trip = (await _tripRepository.GetById(bill.TripId, cancellationToken)).FirstOrDefault()
-            ?? throw new Exception("Trip not found");
+            ?? throw new NotFoundException("Trip not found");
 
         var booking = (await _bookingRepository.GetById(trip.BookingId, cancellationToken)).FirstOrDefault()
-            ?? throw new Exception("Booking not found");
+            ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != clientId)
             throw new UnauthorizedAccessException("Trip does not belong to current user");
@@ -86,10 +87,10 @@ public class BillsService : IBillsService
             p.StartDate <= DateOnly.FromDateTime(DateTime.UtcNow) &&
             p.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow));
 
-        if (promo == null) throw new Exception("Промокод не найден или истек");
+        if (promo == null) throw new NotFoundException("Промокод не найден или истек");
 
         var bill = await _billRepository.GetById(billId, cancellationToken);
-        if (bill == null) throw new Exception("Счет не найден");
+        if (bill == null) throw new NotFoundException("Счет не найден");
 
         await _billRepository.Update(
             bill.Id,

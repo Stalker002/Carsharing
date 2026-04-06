@@ -1,10 +1,9 @@
 using Carsharing.Application.Abstractions;
-using Carsharing.Application.DTOs;
-using Carsharing.Contracts;
 using Carsharing.Core.Abstractions;
-using Carsharing.Core.Enum;
 using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
+using Shared.Contracts.Trip;
+using Shared.Enums;
 
 namespace Carsharing.Application.Services;
 

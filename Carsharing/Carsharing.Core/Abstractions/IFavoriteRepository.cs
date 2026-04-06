@@ -1,4 +1,4 @@
-using Carsharing.Application.DTOs;
+using Shared.Contracts.Cars;
 
 namespace Carsharing.Core.Abstractions
 {

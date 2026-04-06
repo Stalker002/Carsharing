@@ -1,7 +1,7 @@
 using Carsharing.Application.Abstractions;
-using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Exceptions;
+using Shared.Contracts.Cars;
 
 namespace Carsharing.Application.Services;
 

@@ -1,7 +1,7 @@
 using Carsharing.Application.DTOs;
-using Carsharing.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Contracts.Cars;
 using ICarsService = Carsharing.Application.Abstractions.ICarsService;
 
 namespace Carsharing.Controllers;

@@ -2,6 +2,7 @@ using Carsharing.Application.Abstractions;
 using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
+using Shared.Contracts.ClientDocuments;
 
 namespace Carsharing.Application.Services;
 
@@ -59,7 +60,7 @@ public class ClientDocumentsService : IClientDocumentsService
 
             if (!string.IsNullOrEmpty(errorDocument))
             {
-                _imageService.DeleteFile(savedFilePath, cancellationToken);
+                await _imageService.DeleteFile(savedFilePath, cancellationToken);
                 return (null, errorDocument);
             }
 
@@ -72,7 +73,7 @@ public class ClientDocumentsService : IClientDocumentsService
         {
             await _unitOfWork.RollbackTransactionAsync(cancellationToken);
 
-            if (savedFilePath != null) _imageService.DeleteFile(savedFilePath, cancellationToken);
+            if (savedFilePath != null) await _imageService.DeleteFile(savedFilePath, cancellationToken);
 
             if (ex.InnerException?.Message.Contains("23505") == true)
             {
@@ -125,7 +126,7 @@ public class ClientDocumentsService : IClientDocumentsService
 
             if (newFilePathSystem != null && !string.IsNullOrEmpty(docEntity.FilePath))
             {
-                _imageService.DeleteFile(docEntity.FilePath, cancellationToken);
+                await _imageService.DeleteFile(docEntity.FilePath, cancellationToken);
             }
 
             return (true, string.Empty);
@@ -136,7 +137,7 @@ public class ClientDocumentsService : IClientDocumentsService
 
             if (newFilePathSystem != null)
             {
-                _imageService.DeleteFile(newFilePathSystem, cancellationToken);
+                await _imageService.DeleteFile(newFilePathSystem, cancellationToken);
             }
 
             return ex.InnerException?.Message.Contains("23505") == true
@@ -164,7 +165,7 @@ public class ClientDocumentsService : IClientDocumentsService
 
             if (!string.IsNullOrEmpty(filePath))
             {
-                _imageService.DeleteFile(filePath, cancellationToken);
+                await _imageService.DeleteFile(filePath, cancellationToken);
             }
 
             return (true, string.Empty);

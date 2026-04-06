@@ -1,8 +1,8 @@
-using Carsharing.Application.DTOs;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
+using Shared.Contracts.Reviews;
 
 namespace Carsharing.DataAccess.Repositories;
 
