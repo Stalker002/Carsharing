@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CarsharingMobile.Views.RegistrationPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
+    Title="Регистрация"
+    x:DataType="vm:RegistrationViewModel"
+    BackgroundColor="#112347"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <Grid
+            Grid.Row="0"
+            Padding="15,20"
+            ColumnDefinitions="Auto, *"
+            HeightRequest="80">
+            <ImageButton
+                BackgroundColor="Transparent"
+                Command="{Binding GoBackCommand}"
+                HeightRequest="48"
+                HorizontalOptions="Start"
+                Source="back_icon.png"
+                WidthRequest="48" />
+            <Label
+                Grid.Column="1"
+                Margin="-24,0,0,0"
+                FontAttributes="Bold"
+                FontSize="20"
+                HorizontalOptions="Center"
+                Text="Создание аккаунта"
+                TextColor="White"
+                VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="30" Spacing="25">
+
+                <VerticalStackLayout IsVisible="{Binding IsStep1}" Spacing="15">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="24"
+                        Text="Введите номер телефона"
+                        TextColor="White" />
+                    <Label
+                        FontSize="14"
+                        Text="Мы отправим SMS с кодом подтверждения"
+                        TextColor="#ACACAC" />
+
+                    <Border
+                        Margin="0,10,0,0"
+                        BackgroundColor="#213868"
+                        HeightRequest="55"
+                        StrokeShape="RoundRectangle 8"
+                        StrokeThickness="0">
+                        <Entry
+                            Margin="15,0"
+                            FontSize="18"
+                            Keyboard="Telephone"
+                            Placeholder="+375 29 000-00-00"
+                            PlaceholderColor="#7084B3"
+                            Text="{Binding PhoneNumber}"
+                            TextColor="White" />
+                    </Border>
+
+                    <Button
+                        Margin="0,20,0,0"
+                        BackgroundColor="#3296F8"
+                        Command="{Binding SendSmsCommand}"
+                        CornerRadius="8"
+                        FontAttributes="Bold"
+                        HeightRequest="55"
+                        Text="Получить код"
+                        TextColor="White" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout IsVisible="{Binding IsStep2}" Spacing="15">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="24"
+                        Text="Код из SMS"
+                        TextColor="White" />
+                    <Label
+                        FontSize="14"
+                        Text="{Binding PhoneNumber, StringFormat='Код отправлен на номер {0}'}"
+                        TextColor="#ACACAC" />
+
+                    <Border
+                        Margin="0,10,0,0"
+                        BackgroundColor="#213868"
+                        HeightRequest="55"
+                        StrokeShape="RoundRectangle 8"
+                        StrokeThickness="0">
+                        <Entry
+                            Margin="15,0"
+                            CharacterSpacing="10"
+                            FontSize="24"
+                            HorizontalTextAlignment="Center"
+                            Keyboard="Numeric"
+                            MaxLength="4"
+                            Placeholder="0000"
+                            PlaceholderColor="#7084B3"
+                            Text="{Binding SmsCode}"
+                            TextColor="White" />
+                    </Border>
+
+                    <Button
+                        Margin="0,20,0,0"
+                        BackgroundColor="#3296F8"
+                        Command="{Binding VerifySmsCommand}"
+                        CornerRadius="8"
+                        FontAttributes="Bold"
+                        HeightRequest="55"
+                        Text="Подтвердить"
+                        TextColor="White" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout IsVisible="{Binding IsStep3}" Spacing="15">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="24"
+                        Text="Личные данные"
+                        TextColor="White" />
+                    <Label
+                        FontSize="14"
+                        Text="Осталось совсем чуть-чуть"
+                        TextColor="#ACACAC" />
+
+                    <Border
+                        BackgroundColor="#213868"
+                        HeightRequest="50"
+                        StrokeShape="RoundRectangle 8"
+                        StrokeThickness="0">
+                        <Entry
+                            Margin="15,0"
+                            Placeholder="Имя *"
+                            PlaceholderColor="#7084B3"
+                            Text="{Binding Name}"
+                            TextColor="White" />
+                    </Border>
+
+                    <Border
+                        BackgroundColor="#213868"
+                        HeightRequest="50"
+                        StrokeShape="RoundRectangle 8"
+                        StrokeThickness="0">
+                        <Entry
+                            Margin="15,0"
+                            Placeholder="Фамилия"
+                            PlaceholderColor="#7084B3"
+                            Text="{Binding Surname}"
+                            TextColor="White" />
+                    </Border>
+
+                    <Border
+                        BackgroundColor="#213868"
+                        HeightRequest="50"
+                        StrokeShape="RoundRectangle 8"
+                        StrokeThickness="0">
+                        <Entry
+                            Margin="15,0"
+                            Keyboard="Email"
+                            Placeholder="Email *"
+                            PlaceholderColor="#7084B3"
+                            Text="{Binding Email}"
+                            TextColor="White" />
+                    </Border>
+
+                    <Border
+                        BackgroundColor="#213868"
+                        HeightRequest="50"
+                        StrokeShape="RoundRectangle 8"
+                        StrokeThickness="0">
+                        <Grid ColumnDefinitions="*, 50">
+                            <Entry
+                                Grid.Column="0"
+                                Margin="15,0"
+                                IsPassword="{Binding IsPasswordHidden}"
+                                Placeholder="Придумайте пароль *"
+                                PlaceholderColor="#7084B3"
+                                Text="{Binding UserPassword}"
+                                TextColor="White" />
+                            <ImageButton
+                                Grid.Column="1"
+                                Padding="15"
+                                BackgroundColor="Transparent"
+                                Command="{Binding TogglePasswordCommand}"
+                                Source="{Binding PasswordIcon}" />
+                        </Grid>
+                    </Border>
+
+                    <Button
+                        Margin="0,20,0,0"
+                        BackgroundColor="#3296F8"
+                        Command="{Binding CompleteRegistrationCommand}"
+                        CornerRadius="8"
+                        FontAttributes="Bold"
+                        HeightRequest="55"
+                        Text="Завершить регистрацию"
+                        TextColor="White" />
+                </VerticalStackLayout>
+
+                <ActivityIndicator
+                    Margin="0,10"
+                    HorizontalOptions="Center"
+                    IsRunning="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}"
+                    Color="White" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

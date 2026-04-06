@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CarsharingMobile.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
+    xmlns:cars="clr-namespace:Shared.Contracts.Cars;assembly=Shared"
+    Title="Автомобили"
+    x:DataType="vm:MainViewModel"
+    BackgroundColor="{StaticResource BgLight}"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <Grid
+            Grid.Row="0"
+            Padding="20"
+            BackgroundColor="{StaticResource Surface}"
+            HeightRequest="80">
+            <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="22"
+                    Text="CarShare"
+                    TextColor="{StaticResource Primary}"
+                    VerticalOptions="Center" />
+            </HorizontalStackLayout>
+        </Grid>
+
+        <RefreshView
+            Grid.Row="1"
+            Command="{Binding LoadInitialCommand}"
+            IsRefreshing="{Binding IsRefreshing}"
+            RefreshColor="{StaticResource Primary}">
+
+            <CollectionView
+                Margin="0,15,0,0"
+                ItemsSource="{Binding Cars}"
+                RemainingItemsThreshold="2"
+                RemainingItemsThresholdReachedCommand="{Binding LoadNextPageCommand}">
+
+                <CollectionView.EmptyView>
+                    <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label
+                            FontSize="16"
+                            Text="Свободных машин пока нет"
+                            TextColor="{StaticResource TextGray}" />
+                    </StackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="cars:CarWithMinInfoDto">
+
+                        <Border
+                            Margin="15,0,15,20"
+                            Padding="15"
+                            BackgroundColor="{StaticResource Surface}"
+                            Stroke="{StaticResource BorderLight}"
+                            StrokeShape="RoundRectangle 16"
+                            StrokeThickness="1">
+
+                            <Border.Shadow>
+                                <Shadow
+                                    Brush="Black"
+                                    Opacity="0.05"
+                                    Radius="10"
+                                    Offset="0,4" />
+                            </Border.Shadow>
+
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainViewModel}}, Path=GoToDetailsCommand}" CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+
+                            <VerticalStackLayout Spacing="10">
+
+                                <VerticalStackLayout Spacing="2">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="18"
+                                        TextColor="{StaticResource TextDark}">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding Brand}" />
+                                                <Span Text=" " />
+                                                <Span Text="{Binding Model}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label
+                                        FontSize="13"
+                                        Text="{Binding CategoryName}"
+                                        TextColor="{StaticResource TextGray}" />
+                                </VerticalStackLayout>
+
+                                <Image
+                                    Margin="0,10"
+                                    Aspect="AspectFit"
+                                    HeightRequest="140"
+                                    Source="{Binding ImagePath, TargetNullValue='car_placeholder.png'}" />
+
+                                <Grid
+                                    Margin="0,0,0,15"
+                                    ColumnDefinitions="Auto, Auto, Auto"
+                                    ColumnSpacing="15"
+                                    HorizontalOptions="Center">
+                                    <Label
+                                        Grid.Column="0"
+                                        FontSize="12"
+                                        Text="{Binding MaxFuel, StringFormat='⛽ {0}Л'}"
+                                        TextColor="{StaticResource TextGray}" />
+                                    <Label
+                                        Grid.Column="1"
+                                        FontSize="12"
+                                        Text="{Binding Transmission, StringFormat='⚙️ {0}'}"
+                                        TextColor="{StaticResource TextGray}" />
+                                    <Label
+                                        Grid.Column="2"
+                                        FontSize="12"
+                                        Text="{Binding FuelType, StringFormat='⚡ {0}'}"
+                                        TextColor="{StaticResource TextGray}" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*, Auto" VerticalOptions="End">
+                                    <Label Grid.Column="0" VerticalOptions="Center">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span
+                                                    FontAttributes="Bold"
+                                                    FontSize="16"
+                                                    Text="{Binding PricePerDay, StringFormat='{0:0.##} BYN'}"
+                                                    TextColor="{StaticResource TextDark}" />
+                                                <Span
+                                                    FontSize="12"
+                                                    Text="/день"
+                                                    TextColor="{StaticResource TextGray}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+
+                                    <Button
+                                        Grid.Column="1"
+                                        Padding="15,0"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainViewModel}}, Path=GoToDetailsCommand}"
+                                        CommandParameter="{Binding .}"
+                                        CornerRadius="8"
+                                        FontSize="14"
+                                        HeightRequest="40"
+                                        Text="Арендовать" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <CollectionView.Footer>
+                    <ActivityIndicator
+                        Margin="10"
+                        IsRunning="{Binding IsLoadingMore}"
+                        IsVisible="{Binding IsLoadingMore}"
+                        Color="{StaticResource Primary}" />
+                </CollectionView.Footer>
+
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>
