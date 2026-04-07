@@ -3,10 +3,11 @@
     x:Class="CarsharingMobile.Views.RegistrationPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
     Title="Регистрация"
     x:DataType="vm:RegistrationViewModel"
-    BackgroundColor="#112347"
+    BackgroundColor="#F4F5F7"
     Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="Auto, *">
@@ -19,10 +20,10 @@
             <ImageButton
                 BackgroundColor="Transparent"
                 Command="{Binding GoBackCommand}"
-                HeightRequest="48"
+                HeightRequest="24"
                 HorizontalOptions="Start"
-                Source="back_icon.png"
-                WidthRequest="48" />
+                Source="back_icon_dark.png"
+                WidthRequest="24" />
             <Label
                 Grid.Column="1"
                 Margin="-24,0,0,0"
@@ -30,7 +31,7 @@
                 FontSize="20"
                 HorizontalOptions="Center"
                 Text="Создание аккаунта"
-                TextColor="White"
+                TextColor="#112347"
                 VerticalOptions="Center" />
         </Grid>
 
@@ -42,27 +43,47 @@
                         FontAttributes="Bold"
                         FontSize="24"
                         Text="Введите номер телефона"
-                        TextColor="White" />
+                        TextColor="#112347" />
                     <Label
                         FontSize="14"
                         Text="Мы отправим SMS с кодом подтверждения"
-                        TextColor="#ACACAC" />
+                        TextColor="#6E6E6E" />
 
-                    <Border
-                        Margin="0,10,0,0"
-                        BackgroundColor="#213868"
-                        HeightRequest="55"
-                        StrokeShape="RoundRectangle 8"
-                        StrokeThickness="0">
-                        <Entry
-                            Margin="15,0"
-                            FontSize="18"
-                            Keyboard="Telephone"
-                            Placeholder="+375 29 000-00-00"
-                            PlaceholderColor="#7084B3"
-                            Text="{Binding PhoneNumber}"
-                            TextColor="White" />
-                    </Border>
+                    <VerticalStackLayout Margin="0,10,0,0" Spacing="0">
+                        <Border
+                            BackgroundColor="White"
+                            HeightRequest="55"
+                            Stroke="#E1E1E1"
+                            StrokeShape="RoundRectangle 8"
+                            StrokeThickness="1">
+                            <Entry
+                                x:Name="PhoneEntry"
+                                Margin="15,0"
+                                FontSize="18"
+                                Keyboard="Telephone"
+                                MaxLength="13"
+                                Placeholder="+375 XX XXX-XX-XX"
+                                PlaceholderColor="#ACACAC"
+                                ReturnCommand="{Binding SendSmsCommand}"
+                                ReturnType="Go"
+                                Text="{Binding PhoneNumber, Mode=TwoWay}"
+                                TextColor="#1E1E1E" />
+                        </Border>
+                        <Label
+                            Margin="5,4,0,0"
+                            FontSize="12"
+                            Text="{Binding PhoneNumberError}"
+                            TextColor="#FF3333">
+                            <Label.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding PhoneNumberError}"
+                                    TargetType="Label"
+                                    Value="{x:Null}">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </VerticalStackLayout>
 
                     <Button
                         Margin="0,20,0,0"
@@ -80,30 +101,49 @@
                         FontAttributes="Bold"
                         FontSize="24"
                         Text="Код из SMS"
-                        TextColor="White" />
+                        TextColor="#112347" />
                     <Label
                         FontSize="14"
                         Text="{Binding PhoneNumber, StringFormat='Код отправлен на номер {0}'}"
-                        TextColor="#ACACAC" />
+                        TextColor="#6E6E6E" />
 
-                    <Border
-                        Margin="0,10,0,0"
-                        BackgroundColor="#213868"
-                        HeightRequest="55"
-                        StrokeShape="RoundRectangle 8"
-                        StrokeThickness="0">
-                        <Entry
-                            Margin="15,0"
-                            CharacterSpacing="10"
-                            FontSize="24"
-                            HorizontalTextAlignment="Center"
-                            Keyboard="Numeric"
-                            MaxLength="4"
-                            Placeholder="0000"
-                            PlaceholderColor="#7084B3"
-                            Text="{Binding SmsCode}"
-                            TextColor="White" />
-                    </Border>
+                    <VerticalStackLayout Margin="0,10,0,0" Spacing="0">
+                        <Border
+                            BackgroundColor="White"
+                            HeightRequest="55"
+                            Stroke="#E1E1E1"
+                            StrokeShape="RoundRectangle 8"
+                            StrokeThickness="1">
+                            <Entry
+                                x:Name="SmsCodeEntry"
+                                Margin="15,0"
+                                CharacterSpacing="10"
+                                FontSize="24"
+                                HorizontalTextAlignment="Center"
+                                Keyboard="Numeric"
+                                MaxLength="4"
+                                Placeholder="0000"
+                                PlaceholderColor="#ACACAC"
+                                ReturnCommand="{Binding VerifySmsCommand}"
+                                ReturnType="Go"
+                                Text="{Binding SmsCode}"
+                                TextColor="#1E1E1E" />
+                        </Border>
+                        <Label
+                            Margin="5,4,0,0"
+                            FontSize="12"
+                            Text="{Binding SmsCodeError}"
+                            TextColor="#FF3333">
+                            <Label.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding SmsCodeError}"
+                                    TargetType="Label"
+                                    Value="{x:Null}">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </VerticalStackLayout>
 
                     <Button
                         Margin="0,20,0,0"
@@ -121,74 +161,154 @@
                         FontAttributes="Bold"
                         FontSize="24"
                         Text="Личные данные"
-                        TextColor="White" />
+                        TextColor="#112347" />
                     <Label
                         FontSize="14"
                         Text="Осталось совсем чуть-чуть"
-                        TextColor="#ACACAC" />
+                        TextColor="#6E6E6E" />
 
-                    <Border
-                        BackgroundColor="#213868"
-                        HeightRequest="50"
-                        StrokeShape="RoundRectangle 8"
-                        StrokeThickness="0">
-                        <Entry
-                            Margin="15,0"
-                            Placeholder="Имя *"
-                            PlaceholderColor="#7084B3"
-                            Text="{Binding Name}"
-                            TextColor="White" />
-                    </Border>
-
-                    <Border
-                        BackgroundColor="#213868"
-                        HeightRequest="50"
-                        StrokeShape="RoundRectangle 8"
-                        StrokeThickness="0">
-                        <Entry
-                            Margin="15,0"
-                            Placeholder="Фамилия"
-                            PlaceholderColor="#7084B3"
-                            Text="{Binding Surname}"
-                            TextColor="White" />
-                    </Border>
-
-                    <Border
-                        BackgroundColor="#213868"
-                        HeightRequest="50"
-                        StrokeShape="RoundRectangle 8"
-                        StrokeThickness="0">
-                        <Entry
-                            Margin="15,0"
-                            Keyboard="Email"
-                            Placeholder="Email *"
-                            PlaceholderColor="#7084B3"
-                            Text="{Binding Email}"
-                            TextColor="White" />
-                    </Border>
-
-                    <Border
-                        BackgroundColor="#213868"
-                        HeightRequest="50"
-                        StrokeShape="RoundRectangle 8"
-                        StrokeThickness="0">
-                        <Grid ColumnDefinitions="*, 50">
+                    <VerticalStackLayout Spacing="0">
+                        <Border
+                            BackgroundColor="White"
+                            HeightRequest="50"
+                            Stroke="#E1E1E1"
+                            StrokeShape="RoundRectangle 8"
+                            StrokeThickness="1">
                             <Entry
-                                Grid.Column="0"
+                                x:Name="NameEntry"
                                 Margin="15,0"
-                                IsPassword="{Binding IsPasswordHidden}"
-                                Placeholder="Придумайте пароль *"
-                                PlaceholderColor="#7084B3"
-                                Text="{Binding UserPassword}"
-                                TextColor="White" />
-                            <ImageButton
-                                Grid.Column="1"
-                                Padding="15"
-                                BackgroundColor="Transparent"
-                                Command="{Binding TogglePasswordCommand}"
-                                Source="{Binding PasswordIcon}" />
-                        </Grid>
-                    </Border>
+                                Completed="OnNameCompleted"
+                                Placeholder="Имя *"
+                                PlaceholderColor="#ACACAC"
+                                ReturnType="Next"
+                                Text="{Binding Name}"
+                                TextColor="#1E1E1E" />
+                        </Border>
+                        <Label
+                            Margin="5,4,0,0"
+                            FontSize="12"
+                            Text="{Binding NameError}"
+                            TextColor="#FF3333">
+                            <Label.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding NameError}"
+                                    TargetType="Label"
+                                    Value="{x:Null}">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="0">
+                        <Border
+                            BackgroundColor="White"
+                            HeightRequest="50"
+                            Stroke="#E1E1E1"
+                            StrokeShape="RoundRectangle 8"
+                            StrokeThickness="1">
+                            <Entry
+                                x:Name="SurnameEntry"
+                                Margin="15,0"
+                                Completed="OnSurnameCompleted"
+                                Placeholder="Фамилия *"
+                                PlaceholderColor="#ACACAC"
+                                ReturnType="Next"
+                                Text="{Binding Surname}"
+                                TextColor="#1E1E1E" />
+                        </Border>
+                        <Label
+                            Margin="5,4,0,0"
+                            FontSize="12"
+                            Text="{Binding SurnameError}"
+                            TextColor="#FF3333">
+                            <Label.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding SurnameError}"
+                                    TargetType="Label"
+                                    Value="{x:Null}">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="0">
+                        <Border
+                            BackgroundColor="White"
+                            HeightRequest="50"
+                            Stroke="#E1E1E1"
+                            StrokeShape="RoundRectangle 8"
+                            StrokeThickness="1">
+                            <Entry
+                                x:Name="EmailEntry"
+                                Margin="15,0"
+                                Completed="OnEmailCompleted"
+                                Keyboard="Email"
+                                Placeholder="Email *"
+                                PlaceholderColor="#ACACAC"
+                                ReturnType="Next"
+                                Text="{Binding Email}"
+                                TextColor="#1E1E1E" />
+                        </Border>
+                        <Label
+                            Margin="5,4,0,0"
+                            FontSize="12"
+                            Text="{Binding EmailError}"
+                            TextColor="#FF3333">
+                            <Label.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding EmailError}"
+                                    TargetType="Label"
+                                    Value="{x:Null}">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="0">
+                        <Border
+                            BackgroundColor="White"
+                            HeightRequest="50"
+                            Stroke="#E1E1E1"
+                            StrokeShape="RoundRectangle 8"
+                            StrokeThickness="1">
+                            <Grid ColumnDefinitions="*, 50">
+                                <Entry
+                                    x:Name="PasswordEntry"
+                                    Grid.Column="0"
+                                    Margin="15,0"
+                                    IsPassword="{Binding IsPasswordHidden}"
+                                    Placeholder="Придумайте пароль *"
+                                    PlaceholderColor="#ACACAC"
+                                    ReturnCommand="{Binding CompleteRegistrationCommand}"
+                                    ReturnType="Go"
+                                    Text="{Binding UserPassword}"
+                                    TextColor="#1E1E1E" />
+                                <ImageButton
+                                    Grid.Column="1"
+                                    Padding="15"
+                                    BackgroundColor="Transparent"
+                                    Command="{Binding TogglePasswordCommand}"
+                                    Source="{Binding PasswordIcon}" />
+                            </Grid>
+                        </Border>
+                        <Label
+                            Margin="5,4,0,0"
+                            FontSize="12"
+                            Text="{Binding UserPasswordError}"
+                            TextColor="#FF3333">
+                            <Label.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding UserPasswordError}"
+                                    TargetType="Label"
+                                    Value="{x:Null}">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </VerticalStackLayout>
 
                     <Button
                         Margin="0,20,0,0"
@@ -206,7 +326,7 @@
                     HorizontalOptions="Center"
                     IsRunning="{Binding IsBusy}"
                     IsVisible="{Binding IsBusy}"
-                    Color="White" />
+                    Color="#3296F8" />
 
             </VerticalStackLayout>
         </ScrollView>
