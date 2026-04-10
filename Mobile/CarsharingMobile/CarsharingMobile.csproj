@@ -71,6 +71,7 @@
 		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.5" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.5" />
+		<PackageReference Include="Microsoft.Maui.Controls.Maps" Version="9.0.120" />
 		<PackageReference Include="Syncfusion.Maui.Toolkit" Version="1.0.9" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0" />
 	</ItemGroup>

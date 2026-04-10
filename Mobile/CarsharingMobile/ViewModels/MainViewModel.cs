@@ -14,80 +14,47 @@ public partial class MainViewModel(CarService carService) : ObservableObject
     [ObservableProperty] public partial bool IsRefreshing { get; set; }
     [ObservableProperty] public partial bool IsLoadingMore { get; set; }
 
-    private int _currentPage = 1;
+    private const int _currentPage = 1;
     private int _totalItems;
     private const int PageSize = 15;
 
+    [ObservableProperty]
+    public partial CarWithMinInfoDto? SelectedCar { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsCardVisible { get; set; } // Показывает/скрывает нижнюю карточку
+
+    // Имитация координат для пинов (в реальном проекте надо добавить Lat/Lng в БД авто)
+    public Location MapCenter { get; set; } = new Location(53.9006, 27.5590); // Центр Минска
+
     [RelayCommand]
-    private async Task LoadInitialAsync()
+    private void SelectCar(CarWithMinInfoDto car)
     {
-        if (IsBusy) return;
-
-        try
-        {
-            IsBusy = true;
-            Cars.Clear();
-            _currentPage = 1;
-            _totalItems = 0;
-
-            await LoadDataInternalAsync();
-        }
-        catch (Exception ex)
-        {
-            await Shell.Current.DisplayAlert("Ошибка", $"Не удалось загрузить авто: {ex.Message}", "ОК");
-        }
-        finally
-        {
-            IsBusy = false;
-            IsRefreshing = false;
-        }
+        SelectedCar = car;
+        IsCardVisible = true; // Показываем карточку снизу
     }
 
     [RelayCommand]
-    private async Task LoadNextPageAsync()
+    private void CloseCard()
     {
-        if (IsLoadingMore || IsBusy || (Cars.Count >= _totalItems && _totalItems != 0))
-        {
-            return;
-        }
-
-        try
-        {
-            IsLoadingMore = true;
-            await LoadDataInternalAsync();
-        }
-        finally
-        {
-            IsLoadingMore = false;
-        }
-    }
-
-    private async Task LoadDataInternalAsync()
-    {
-        var (items, total) = await carService.GetAvailableCarsAsync(_currentPage);
-        _totalItems = total;
-
-        if (items != null)
-        {
-            foreach (var item in items)
-            {
-                Cars.Add(item);
-            }
-        }
-
-        _currentPage++;
+        IsCardVisible = false; // Прячем карточку
+        SelectedCar = null;
     }
 
     [RelayCommand]
-    private async Task GoToDetailsAsync(CarWithMinInfoDto? car)
+    private void OpenMenu()
     {
-        if (car == null) return;
+        Shell.Current.FlyoutIsPresented = true; // Открываем боковую шторку
+    }
 
-        var navParam = new Dictionary<string, object>
+    [RelayCommand]
+    private async Task BookCarAsync()
+    {
+        if (SelectedCar != null)
         {
-            { "Car", car }
-        };
-
-        await Shell.Current.GoToAsync("CarDetailsPage", navParam);
+            // Переход на страницу бронирования с передачей машины
+            var navParam = new Dictionary<string, object> { { "Car", SelectedCar } };
+            await Shell.Current.GoToAsync("CarDetailsPage", navParam);
+        }
     }
 }
