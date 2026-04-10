@@ -112,8 +112,8 @@ public class ClientDocumentRepository : IClientDocumentRepository
             FilePath = document.FilePath
         };
 
-        await _context.ClientDocument.AddAsync(clientDocumentEntities);
-        await _context.SaveChangesAsync();
+        await _context.ClientDocument.AddAsync(clientDocumentEntities, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return clientDocumentEntities.Id;
     }
@@ -121,7 +121,7 @@ public class ClientDocumentRepository : IClientDocumentRepository
     public async Task<int> Update(int id, int? clientId, string? licenseCategory, string? type, string? number,
         DateOnly? issueDate, DateOnly? expiryDate, string? filePath, CancellationToken cancellationToken)
     {
-        var document = await _context.ClientDocument.FirstOrDefaultAsync(d => d.Id == id)
+        var document = await _context.ClientDocument.FirstOrDefaultAsync(d => d.Id == id, cancellationToken: cancellationToken)
                        ?? throw new Exception("Client document not found");
 
         if (clientId.HasValue)
@@ -158,7 +158,7 @@ public class ClientDocumentRepository : IClientDocumentRepository
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception document Client: {error}");
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return document.Id;
     }

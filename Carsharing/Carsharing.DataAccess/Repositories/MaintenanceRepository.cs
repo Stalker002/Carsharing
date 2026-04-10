@@ -119,8 +119,8 @@ public class MaintenanceRepository : IMaintenanceRepository
             Date = maintenance.Date
         };
 
-        await _context.Maintenance.AddAsync(maintenanceEntity);
-        await _context.SaveChangesAsync();
+        await _context.Maintenance.AddAsync(maintenanceEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return maintenanceEntity.Id;
     }
@@ -128,7 +128,7 @@ public class MaintenanceRepository : IMaintenanceRepository
     public async Task<int> Update(int id, int? carId, string? workType, string? description, decimal? cost,
         DateOnly? date, CancellationToken cancellationToken)
     {
-        var maintenance = await _context.Maintenance.FirstOrDefaultAsync(m => m.Id == id)
+        var maintenance = await _context.Maintenance.FirstOrDefaultAsync(m => m.Id == id, cancellationToken: cancellationToken)
                           ?? throw new Exception("Maintenance not found");
 
         if (carId.HasValue)
@@ -157,7 +157,7 @@ public class MaintenanceRepository : IMaintenanceRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new ArgumentException($"Maintenance create error: {error}");
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return maintenance.Id;
     }

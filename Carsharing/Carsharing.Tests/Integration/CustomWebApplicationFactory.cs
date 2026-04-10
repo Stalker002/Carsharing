@@ -1,4 +1,5 @@
 using Carsharing.Application.Abstractions;
+using Carsharing.Application.Extensions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess;
 using Microsoft.AspNetCore.Hosting;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace Carsharing.Tests.Integration;
 
@@ -15,10 +17,19 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment("Testing");
+
         builder.ConfigureServices(services =>
         {
-            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<CarsharingDbContext>));
-            if (descriptor != null) services.Remove(descriptor);
+            var descriptors = services
+                .Where(d => d.ServiceType == typeof(DbContextOptions<CarsharingDbContext>)
+                    || d.ServiceType == typeof(CarsharingDbContext))
+                .ToList();
+
+            foreach (var descriptor in descriptors)
+            {
+                services.Remove(descriptor);
+            }
             
             services.AddDbContext<CarsharingDbContext>(options =>
             {

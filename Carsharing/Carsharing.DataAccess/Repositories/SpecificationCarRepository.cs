@@ -97,8 +97,8 @@ public class SpecificationCarRepository : ISpecificationCarRepository
             FuelPerKm = specificationCar.FuelPerKm
         };
 
-        await _context.SpecificationCar.AddAsync(specificationEntity);
-        await _context.SaveChangesAsync();
+        await _context.SpecificationCar.AddAsync(specificationEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return specificationEntity.Id;
     }
@@ -106,7 +106,7 @@ public class SpecificationCarRepository : ISpecificationCarRepository
     public async Task<int> Update(int id, string? fuelType, string? brand, string? model, string? transmission,
         int? year, string? vinNumber, string? stateNumber, int? mileage, decimal? maxFuel, decimal? fuelPerKm, CancellationToken cancellationToken)
     {
-        var specification = await _context.SpecificationCar.FirstOrDefaultAsync(sp => sp.Id == id)
+        var specification = await _context.SpecificationCar.FirstOrDefaultAsync(sp => sp.Id == id, cancellationToken: cancellationToken)
                             ?? throw new Exception("Specification not found");
 
         specification.FuelType = fuelType;
@@ -154,7 +154,7 @@ public class SpecificationCarRepository : ISpecificationCarRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new ArgumentException($"Specification car create error: {error}");
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return specification.Id;
     }

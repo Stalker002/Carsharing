@@ -38,3 +38,10 @@ README.md
 !.git/config
 !.git/packed-refs
 !.git/refs/heads/**
+
+.dotnet
+.vs
+.idea
+*.log
+Mobile
+keys

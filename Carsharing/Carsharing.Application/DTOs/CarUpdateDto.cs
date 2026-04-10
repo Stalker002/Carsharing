@@ -6,6 +6,8 @@ public record CarUpdateDto(
     int StatusId,
     int CategoryId,
     string Location,
+    double? Latitude,
+    double? Longitude,
     decimal FuelLevel,
     string Brand,
     string Model,

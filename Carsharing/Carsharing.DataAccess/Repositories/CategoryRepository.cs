@@ -61,15 +61,15 @@ public class CategoryRepository : ICategoryRepository
             Name = category.Name
         };
 
-        await _context.Category.AddAsync(categoryEntity);
-        await _context.SaveChangesAsync();
+        await _context.Category.AddAsync(categoryEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return categoryEntity.Id;
     }
 
     public async Task<int> Update(int id, string? name, CancellationToken cancellationToken)
     {
-        var category = await _context.Category.FirstOrDefaultAsync(c => c.Id == id)
+        var category = await _context.Category.FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken)
                        ?? throw new Exception("Category not found");
 
         if (!string.IsNullOrWhiteSpace(name))
@@ -82,7 +82,7 @@ public class CategoryRepository : ICategoryRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new Exception($"Category create error: {error}");
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return category.Id;
     }
