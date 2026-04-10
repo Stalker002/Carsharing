@@ -1,5 +1,6 @@
 using Carsharing.Application.Abstractions;
 using Carsharing.Core.Models;
+using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Contracts.Payments;
@@ -58,7 +59,9 @@ public class PaymentsController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<PaymentsResponse>>> GetPaymentByBillId(int billId, CancellationToken cancellationToken)
     {
-        var payments = await _paymentService.GetPaymentByBillId(billId, cancellationToken);
+        var payments = User.IsAdmin()
+            ? await _paymentService.GetPaymentByBillId(billId, cancellationToken)
+            : await _paymentService.GetPaymentByBillId(User.GetRequiredUserId(), billId, cancellationToken);
         var response = payments.Select(p => new PaymentsResponse(p.Id, p.BillId, p.Sum, p.Method, p.Date));
 
         return Ok(response);
@@ -77,7 +80,9 @@ public class PaymentsController : ControllerBase
 
         if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
 
-        var paymentId = await _paymentService.CreatePayment(payment, cancellationToken);
+        var paymentId = User.IsAdmin()
+            ? await _paymentService.CreatePayment(payment, cancellationToken)
+            : await _paymentService.CreatePayment(User.GetRequiredUserId(), payment, cancellationToken);
 
         return Ok(paymentId);
     }

@@ -1,15 +1,26 @@
 using Carsharing.Application.Abstractions;
 using Carsharing.Core.Abstractions;
+using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Services;
 
 public class FinesService : IFinesService
 {
+    private readonly IBookingRepository _bookingRepository;
+    private readonly IClientRepository _clientRepository;
     private readonly IFineRepository _fineRepository;
+    private readonly ITripRepository _tripRepository;
 
-    public FinesService(IFineRepository fineRepository)
+    public FinesService(
+        IFineRepository fineRepository,
+        ITripRepository tripRepository,
+        IBookingRepository bookingRepository,
+        IClientRepository clientRepository)
     {
+        _tripRepository = tripRepository;
+        _bookingRepository = bookingRepository;
+        _clientRepository = clientRepository;
         _fineRepository = fineRepository;
     }
 
@@ -35,6 +46,23 @@ public class FinesService : IFinesService
 
     public async Task<List<Fine>> GetFinesByTripId(int tripId, CancellationToken cancellationToken)
     {
+        return await _fineRepository.GetByTripId(tripId, cancellationToken);
+    }
+
+    public async Task<List<Fine>> GetFinesByTripId(int userId, int tripId, CancellationToken cancellationToken)
+    {
+        var client = (await _clientRepository.GetClientByUserId(userId, cancellationToken)).FirstOrDefault()
+            ?? throw new NotFoundException("Client not found");
+
+        var trip = (await _tripRepository.GetById(tripId, cancellationToken)).FirstOrDefault()
+            ?? throw new NotFoundException("Trip not found");
+
+        var booking = (await _bookingRepository.GetById(trip.BookingId, cancellationToken)).FirstOrDefault()
+            ?? throw new NotFoundException("Booking not found");
+
+        if (booking.ClientId != client.Id)
+            throw new UnauthorizedAccessException("Trip does not belong to current user");
+
         return await _fineRepository.GetByTripId(tripId, cancellationToken);
     }
 

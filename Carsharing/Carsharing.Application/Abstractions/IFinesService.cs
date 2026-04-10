@@ -14,6 +14,8 @@ public interface IFinesService
 
     Task<List<Fine>> GetFinesByTripId(int tripId, CancellationToken cancellationToken);
 
+    Task<List<Fine>> GetFinesByTripId(int userId, int tripId, CancellationToken cancellationToken);
+
     Task<List<Fine>> GetFinesByStatusId(int statusId, CancellationToken cancellationToken);
 
     Task<int> CreateFine(Fine fine, CancellationToken cancellationToken);

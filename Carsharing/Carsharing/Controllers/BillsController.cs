@@ -108,7 +108,9 @@ public class BillsController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<BillsResponse>>> GetBillWithInfoById(int id, CancellationToken cancellationToken)
     {
-        var bill = await _billsService.GetBillWithInfoById(id, cancellationToken);
+        var bill = User.IsAdmin()
+            ? await _billsService.GetBillWithInfoById(id, cancellationToken)
+            : await _billsService.GetBillWithInfoByUserId(User.GetRequiredUserId(), id, cancellationToken);
 
         if (bill.Count == 0)
             return NotFound("Счёт не найден");
@@ -154,12 +156,15 @@ public class BillsController : ControllerBase
     }
 
     [HttpPost("{id:int}/promocode")]
-    [Authorize]
+    [Authorize(Policy = "AdminClientPolicy")]
     public async Task<IActionResult> ApplyPromocode(int id, [FromBody] ApplyPromocodeRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            await _billsService.ApplyPromocode(id, request.Code, cancellationToken);
+            if (User.IsAdmin())
+                await _billsService.ApplyPromocode(id, request.Code, cancellationToken);
+            else
+                await _billsService.ApplyPromocode(User.GetRequiredUserId(), id, request.Code, cancellationToken);
             return Ok(new { message = "Промокод применен" });
         }
         catch (Exception ex)
