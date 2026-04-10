@@ -73,8 +73,8 @@ public class TariffRepository : ITariffRepository
             PricePerDay = tariff.PricePerDay
         };
 
-        await _context.Tariff.AddAsync(tariffEntity);
-        await _context.SaveChangesAsync();
+        await _context.Tariff.AddAsync(tariffEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return tariffEntity.Id;
     }
@@ -82,7 +82,7 @@ public class TariffRepository : ITariffRepository
     public async Task<int> Update(int id, string? name, decimal? pricePerMinute, decimal? pricePerKm,
         decimal? pricePerDay, CancellationToken cancellationToken)
     {
-        var tariff = await _context.Tariff.FirstOrDefaultAsync(t => t.Id == id)
+        var tariff = await _context.Tariff.FirstOrDefaultAsync(t => t.Id == id, cancellationToken: cancellationToken)
                      ?? throw new Exception("Tariff not found");
 
         if (!string.IsNullOrWhiteSpace(name))
@@ -107,7 +107,7 @@ public class TariffRepository : ITariffRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new ArgumentException($"Tariff create exception error: {error}");
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return tariff.Id;
     }

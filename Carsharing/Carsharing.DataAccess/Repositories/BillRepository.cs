@@ -178,8 +178,8 @@ public class BillRepository : IBillRepository
             RemainingAmount = bill.RemainingAmount
         };
 
-        await _context.Bill.AddAsync(billEntity);
-        await _context.SaveChangesAsync();
+        await _context.Bill.AddAsync(billEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return billEntity.Id;
     }
@@ -187,7 +187,7 @@ public class BillRepository : IBillRepository
     public async Task<int> Update(int id, int? tripId, int? promocodeId, int? statusId, DateTime? issueDate,
         decimal? amount, decimal? remainingAmount, CancellationToken cancellationToken)
     {
-        var bill = await _context.Bill.FirstOrDefaultAsync(b => b.Id == id)
+        var bill = await _context.Bill.FirstOrDefaultAsync(b => b.Id == id, cancellationToken: cancellationToken)
                    ?? throw new Exception("Bill not found");
 
         if (tripId.HasValue)

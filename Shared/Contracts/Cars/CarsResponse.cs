@@ -7,5 +7,7 @@ public record CarsResponse(
     int CategoryId,
     int SpecificationId,
     string? Location,
+    double? Latitude,
+    double? Longitude,
     decimal FuelLevel,
     string? ImagePath);

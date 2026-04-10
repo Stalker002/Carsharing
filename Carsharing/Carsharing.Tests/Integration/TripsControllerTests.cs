@@ -62,6 +62,8 @@ public class TripsControllerTests(CustomWebApplicationFactory factory) : IClassF
             TripId: testTripId,
             Distance: 15.5m,
             EndLocation: "New Location",
+            CarLatitude: 53.900634, 
+            CarLongitude: 27.558973,
             FuelLevel: 45m
         );
 

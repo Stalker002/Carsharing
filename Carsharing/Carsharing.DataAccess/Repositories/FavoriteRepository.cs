@@ -49,6 +49,8 @@ public class FavoriteRepository : IFavoriteRepository
                 f.Car.SpecificationCar.Brand!,
                 f.Car.SpecificationCar.Model!,
                 f.Car.SpecificationCar.Transmission!,
+                f.Car.Coordinates.Y,
+                f.Car.Coordinates.X,
                 f.Car.ImagePath
             ))
             .ToListAsync(cancellationToken);
@@ -74,8 +76,8 @@ public class FavoriteRepository : IFavoriteRepository
             CarId = carId
         };
 
-        await _context.Favorites.AddAsync(entity);
-        await _context.SaveChangesAsync();
+        await _context.Favorites.AddAsync(entity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task RemoveAsync(int clientId, int carId, CancellationToken cancellationToken)

@@ -149,7 +149,7 @@ public class TripRepository : ITripRepository
             .AsNoTracking()
             .Where(t => t.Booking != null && t.Booking.ClientId == clientId && t.EndTime != null);
 
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync(cancellationToken: cancellationToken);
 
         var items = await query
             .OrderByDescending(t => t.StartTime)
@@ -174,7 +174,7 @@ public class TripRepository : ITripRepository
                 t.TripDetail != null ? t.TripDetail.StartLocation : "Неизвестно",
                 t.TripDetail != null ? t.TripDetail.EndLocation : "Неизвестно"
             ))
-            .ToListAsync();
+            .ToListAsync(cancellationToken: cancellationToken);
 
         return (items, totalCount);
     }
@@ -208,6 +208,8 @@ public class TripRepository : ITripRepository
             car.SpecificationCar!.Model,
             car.ImagePath,
             car.Location,
+            car.Coordinates?.Y,
+            car.Coordinates?.X,
             car.Tariff!.PricePerMinute,
             car.Tariff.PricePerKm,
             car.Tariff.PricePerDay
@@ -237,7 +239,7 @@ public class TripRepository : ITripRepository
             trip.Booking.StatusId = (int)BookingStatusEnum.Completed;
         }
 
-        var tripDetail = await _context.TripDetail.FirstOrDefaultAsync(td => td.TripId == trip.Id);
+        var tripDetail = await _context.TripDetail.FirstOrDefaultAsync(td => td.TripId == trip.Id, cancellationToken: cancellationToken);
 
         if (tripDetail == null)
         {
@@ -266,13 +268,13 @@ public class TripRepository : ITripRepository
             car.FuelLevel = fuelLevel;
         }
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         // Пытаемся найти ID счета (для возврата), если он был создан триггером или другой логикой
         var billId = await _context.Bill
             .Where(b => b.TripId == trip.Id)
             .Select(b => b.Id)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
         return billId;
     }
@@ -300,7 +302,7 @@ public class TripRepository : ITripRepository
             }
         }
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<int> Create(Trip trip, CancellationToken cancellationToken)
@@ -330,8 +332,8 @@ public class TripRepository : ITripRepository
             Distance = trip.Distance
         };
 
-        await _context.Trip.AddAsync(tripEntity);
-        await _context.SaveChangesAsync();
+        await _context.Trip.AddAsync(tripEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return tripEntity.Id;
     }
@@ -339,7 +341,7 @@ public class TripRepository : ITripRepository
     public async Task<int> Update(int id, int? bookingId, int? statusId, string? tariffType, DateTime? startTime,
         DateTime? endTime, decimal? duration, decimal? distance, CancellationToken cancellationToken)
     {
-        var trip = await _context.Trip.FirstOrDefaultAsync(t => t.Id == id)
+        var trip = await _context.Trip.FirstOrDefaultAsync(t => t.Id == id, cancellationToken: cancellationToken)
                    ?? throw new Exception("Trip not found");
 
         if (bookingId.HasValue)
@@ -376,7 +378,7 @@ public class TripRepository : ITripRepository
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception trip: {error}");
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return trip.Id;
     }

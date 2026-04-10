@@ -1,4 +1,6 @@
-﻿namespace Carsharing.DataAccess.Entites;
+﻿using NetTopologySuite.Geometries;
+
+namespace Carsharing.DataAccess.Entites;
 
 public class CarEntity
 {
@@ -13,6 +15,8 @@ public class CarEntity
     public int SpecificationId { get; set; }
 
     public string? Location { get; set; }
+
+    public Point? Coordinates { get; set; }
 
     public decimal FuelLevel { get; set; }
 

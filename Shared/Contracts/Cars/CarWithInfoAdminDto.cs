@@ -9,6 +9,8 @@ public record CarWithInfoAdminDto(
     string? Model,
     int Year,
     string? Location,
+    double? Latitude,
+    double? Longitude,
     string? VinNumber,
     string StateNumber,
     string? FuelType,

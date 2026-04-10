@@ -1,4 +1,5 @@
 using Carsharing.Application.Abstractions;
+using Carsharing.Application.Extensions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess;
 using Microsoft.AspNetCore.Hosting;
