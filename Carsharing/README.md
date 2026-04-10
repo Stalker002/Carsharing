@@ -64,8 +64,18 @@ Backend-сервис для системы каршеринга на ASP.NET Cor
 Запуск:
 
 ```powershell
+Copy-Item .env.example .env
 docker compose up --build
 ```
+
+Перед запуском заполните `.env` реальными секретами:
+
+- `POSTGRES_PASSWORD`
+- `JWT_SECRET_KEY`
+- `MINIO_ROOT_USER`
+- `MINIO_ROOT_PASSWORD`
+
+`docker-compose.yml` по умолчанию поднимает приложение в окружении `Staging`, а не `Development`.
 
 После запуска сервисы доступны по адресам:
 
@@ -77,7 +87,22 @@ docker compose up --build
 
 ## Локальный запуск без Docker
 
-Требуется предварительно поднять PostgreSQL и MinIO, затем указать корректные параметры подключения в `Carsharing/appsettings.Development.json` и `Carsharing/appsettings.json`.
+Требуется предварительно поднять PostgreSQL и MinIO, затем задать секреты через `UserSecrets` или переменные окружения.
+
+Пример для `UserSecrets`:
+
+```powershell
+dotnet user-secrets set "ConnectionStrings:CarsharingDbContext" "Host=localhost;Port=5432;Database=Carsharing;Username=postgres;Password=<password>" --project .\Carsharing\Carsharing.csproj
+dotnet user-secrets set "JwtOptions:SecretKey" "<long-random-secret>" --project .\Carsharing\Carsharing.csproj
+dotnet user-secrets set "JwtOptions:ExpiresHours" "12" --project .\Carsharing\Carsharing.csproj
+dotnet user-secrets set "Minio:AccessKey" "<minio-user>" --project .\Carsharing\Carsharing.csproj
+dotnet user-secrets set "Minio:SecretKey" "<minio-password>" --project .\Carsharing\Carsharing.csproj
+dotnet user-secrets set "Minio:ServiceURL" "http://localhost:9000" --project .\Carsharing\Carsharing.csproj
+dotnet user-secrets set "Minio:PublicURL" "http://localhost:9000" --project .\Carsharing\Carsharing.csproj
+dotnet user-secrets set "Minio:BucketName" "carsharing-images" --project .\Carsharing\Carsharing.csproj
+dotnet user-secrets set "FileUpload:MaxCarImageBytes" "5242880" --project .\Carsharing\Carsharing.csproj
+dotnet user-secrets set "FileUpload:MaxDocumentImageBytes" "10485760" --project .\Carsharing\Carsharing.csproj
+```
 
 Запуск приложения:
 
@@ -92,12 +117,27 @@ dotnet run --project .\Carsharing\Carsharing.csproj
 
 - `Carsharing/appsettings.json`
 - `Carsharing/appsettings.Development.json`
+- `Carsharing/appsettings.Staging.json`
+- `Carsharing/appsettings.Production.json`
+- пользовательских секретах (`dotnet user-secrets`)
+- переменных окружения / `.env`
 
 Используются секции:
 
 - `ConnectionStrings`
 - `JwtOptions`
 - `Minio`
+- `FileUpload`
+
+Во всех окружениях используется один и тот же ключ подключения к БД:
+
+- `ConnectionStrings:CarsharingDbContext`
+- env override: `ConnectionStrings__CarsharingDbContext`
+
+Для файлов:
+
+- изображения и документы хранятся в бакете `Minio:BucketName`
+- загрузка валидирует допустимый формат файла и размер файла
 
 ## API
 
@@ -127,3 +167,4 @@ dotnet run --project .\Carsharing\Carsharing.csproj
 - При старте приложения вызывается `Database.Migrate()`.
 - В development-режиме включены Swagger и CORS для фронтенда `http://localhost:5173`.
 - В решении присутствует интеграционный тестовый проект `Carsharing.Tests`.
+- Секреты не должны храниться в репозитории; после удаления из git их нужно отдельно ротировать во всех окружениях.
