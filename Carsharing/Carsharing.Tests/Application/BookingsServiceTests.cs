@@ -92,6 +92,8 @@ public class BookingsServiceTests
             1,
             1,
             "Center",
+            53.900634, 
+            27.558973,
             50,
             null).car!;
 
