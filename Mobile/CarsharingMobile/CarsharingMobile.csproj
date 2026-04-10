@@ -50,6 +50,11 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<GoogleMapsApiKey Condition="'$(GoogleMapsApiKey)' == ''">__SET_ANDROID_MAPS_API_KEY__</GoogleMapsApiKey>
+		<AndroidManifestPlaceholders>$(AndroidManifestPlaceholders);googleMapsApiKey=$(GoogleMapsApiKey)</AndroidManifestPlaceholders>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<!-- App Icon -->
 
@@ -83,5 +88,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Shared\Shared.csproj" />
 	</ItemGroup>
+
+	<Import Project="LocalSecrets.props" Condition="Exists('LocalSecrets.props')" />
 	
 </Project>
