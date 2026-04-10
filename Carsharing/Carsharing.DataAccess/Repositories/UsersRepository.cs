@@ -89,14 +89,14 @@ public class UsersRepository : IUsersRepository
         };
 
         await _context.Users.AddAsync(userEntity, cancellationToken);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return userEntity.Id;
     }
 
     public async Task<int> UpdateUser(int id, int? roleId, string? login, string? passwordHash, CancellationToken cancellationToken)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id)
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken: cancellationToken)
                    ?? throw new Exception("User not found");
 
         if (roleId.HasValue)
@@ -108,7 +108,7 @@ public class UsersRepository : IUsersRepository
         if (!string.IsNullOrWhiteSpace(passwordHash))
             user.Password = passwordHash;
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return user.Id;
     }

@@ -2,19 +2,20 @@ using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using Shared.Contracts.Cars;
 using Shared.Enums;
 
 namespace Carsharing.DataAccess.Repositories;
 
-public class CarRepository : ICarRepository
+public class CarRepository(CarsharingDbContext context) : ICarRepository
 {
-    private readonly CarsharingDbContext _context;
+    private readonly CarsharingDbContext _context = context;
 
-    public CarRepository(CarsharingDbContext context)
-    {
-        _context = context;
-    }
+
+    private static double? GetLatitude(Point? point) => point?.Y;
+
+    private static double? GetLongitude(Point? point) => point?.X;
 
     public async Task<List<Car>> Get(CancellationToken cancellationToken)
     {
@@ -30,6 +31,8 @@ public class CarRepository : ICarRepository
                 c.CategoryId,
                 c.SpecificationId,
                 c.Location,
+                GetLatitude(c.Coordinates),
+                GetLongitude(c.Coordinates),
                 c.FuelLevel,
                 c.ImagePath).car)
             .ToList();
@@ -54,6 +57,8 @@ public class CarRepository : ICarRepository
                 c.CategoryId,
                 c.SpecificationId,
                 c.Location,
+                GetLatitude(c.Coordinates),
+                GetLongitude(c.Coordinates),
                 c.FuelLevel,
                 c.ImagePath).car)
             .ToList();
@@ -81,6 +86,8 @@ public class CarRepository : ICarRepository
                 c.CategoryId,
                 c.SpecificationId,
                 c.Location,
+                GetLatitude(c.Coordinates),
+                GetLongitude(c.Coordinates),
                 c.FuelLevel,
                 c.ImagePath).car)
             .ToList();
@@ -103,6 +110,8 @@ public class CarRepository : ICarRepository
                 c.CategoryId,
                 c.SpecificationId,
                 c.Location,
+                GetLatitude(c.Coordinates),
+                GetLongitude(c.Coordinates),
                 c.FuelLevel,
                 c.ImagePath).car)
             .ToList();
@@ -127,6 +136,8 @@ public class CarRepository : ICarRepository
                 c.CategoryId,
                 c.SpecificationId,
                 c.Location,
+                GetLatitude(c.Coordinates),
+                GetLongitude(c.Coordinates),
                 c.FuelLevel,
                 c.ImagePath).car)
             .ToList();
@@ -161,6 +172,8 @@ public class CarRepository : ICarRepository
                 c.SpecificationCar.StateNumber!,
                 c.SpecificationCar.MaxFuel,
                 c.Location,
+                GetLatitude(c.Coordinates),
+                GetLongitude(c.Coordinates),
                 c.FuelLevel,
                 c.ImagePath
             ))
@@ -181,6 +194,8 @@ public class CarRepository : ICarRepository
                 c.SpecificationCar.Model,
                 c.SpecificationCar.Year,
                 c.Location,
+                GetLatitude(c.Coordinates),
+                GetLongitude(c.Coordinates),
                 c.SpecificationCar.VinNumber,
                 c.SpecificationCar.StateNumber!,
                 c.SpecificationCar.FuelType,
@@ -214,6 +229,8 @@ public class CarRepository : ICarRepository
                 c.SpecificationCar.Brand!,
                 c.SpecificationCar.Model!,
                 c.SpecificationCar.Transmission!,
+                GetLatitude(c.Coordinates),
+                GetLongitude(c.Coordinates),
                 c.ImagePath
             ))
             .ToListAsync(cancellationToken);
@@ -238,6 +255,8 @@ public class CarRepository : ICarRepository
                 c.SpecificationCar.Brand!,
                 c.SpecificationCar.Model!,
                 c.SpecificationCar.Transmission!,
+                GetLatitude(c.Coordinates),
+                GetLongitude(c.Coordinates),
                 c.ImagePath
             ))
             .ToListAsync(cancellationToken);
@@ -258,6 +277,8 @@ public class CarRepository : ICarRepository
                 c.CategoryId,
                 c.SpecificationId,
                 c.Location,
+                GetLatitude(c.Coordinates),
+                GetLongitude(c.Coordinates),
                 c.FuelLevel,
                 c.ImagePath).car)
             .ToList();
@@ -274,6 +295,8 @@ public class CarRepository : ICarRepository
             car.CategoryId,
             car.SpecificationId,
             car.Location,
+            car.Latitude,
+            car.Longitude,
             car.FuelLevel,
             car.ImagePath);
 
@@ -289,19 +312,22 @@ public class CarRepository : ICarRepository
             SpecificationId = car.SpecificationId,
             Location = car.Location,
             FuelLevel = car.FuelLevel,
+            Coordinates = car.Latitude.HasValue && car.Longitude.HasValue
+                ? new Point(car.Longitude.Value, car.Latitude.Value) { SRID = 4326 }
+                : null,
             ImagePath = car.ImagePath
         };
 
-        await _context.Car.AddAsync(carEntity);
-        await _context.SaveChangesAsync();
+        await _context.Car.AddAsync(carEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return carEntity.Id;
     }
 
     public async Task<int> Update(int id, int? statusId, int? tariffId, int? categoryId, int? specificationId,
-        string? location, decimal? fuelLevel, string? imagePath, CancellationToken cancellationToken)
+        string? location, double? latitude, double? longitude, decimal? fuelLevel, string? imagePath, CancellationToken cancellationToken)
     {
-        var car = await _context.Car.FirstOrDefaultAsync(c => c.Id == id)
+        var car = await _context.Car.FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken)
                   ?? throw new Exception("Car not found");
 
         if (statusId.HasValue)
@@ -319,6 +345,12 @@ public class CarRepository : ICarRepository
         if (!string.IsNullOrWhiteSpace(location))
             car.Location = location;
 
+        if (latitude.HasValue != longitude.HasValue)
+            throw new ArgumentException("Latitude and longitude must be provided together");
+
+        if (latitude.HasValue && longitude.HasValue)
+            car.Coordinates = new Point(longitude.Value, latitude.Value) { SRID = 4326 };
+
         if (fuelLevel.HasValue)
             car.FuelLevel = fuelLevel.Value;
 
@@ -332,38 +364,40 @@ public class CarRepository : ICarRepository
             car.CategoryId,
             car.SpecificationId,
             car.Location,
+            GetLatitude(car.Coordinates),
+            GetLongitude(car.Coordinates),
             car.FuelLevel,
             car.ImagePath);
 
         if (!string.IsNullOrWhiteSpace(error))
             throw new ArgumentException($"Create exception car: {error}");
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return car.Id;
     }
 
     public async Task UpdateStatus(int? carId, int statusId, CancellationToken cancellationToken)
     {
-        var car = await _context.Car.FindAsync(carId, cancellationToken);
+        var car = await _context.Car.FindAsync([carId], cancellationToken: cancellationToken);
         if (car == null)
             throw new Exception("Автомобиль не найден");
 
         car.StatusId = statusId;
         _context.Car.Update(car);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<bool> TryUpdateStatus(int carId, int currentStatusId, int newStatusId, CancellationToken cancellationToken)
     {
-        if (!_context.Database.IsRelational())
+        if (!context.Database.IsRelational())
         {
-            var car = await _context.Car.FirstOrDefaultAsync(c => c.Id == carId && c.StatusId == currentStatusId);
+            var car = await _context.Car.FirstOrDefaultAsync(c => c.Id == carId && c.StatusId == currentStatusId, cancellationToken: cancellationToken);
             if (car == null)
                 return false;
 
             car.StatusId = newStatusId;
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return true;
         }
@@ -371,7 +405,7 @@ public class CarRepository : ICarRepository
         var affectedRows = await _context.Car
             .Where(c => c.Id == carId && c.StatusId == currentStatusId)
             .ExecuteUpdateAsync(setters => setters
-                .SetProperty(c => c.StatusId, newStatusId));
+                .SetProperty(c => c.StatusId, newStatusId), cancellationToken: cancellationToken);
 
         return affectedRows > 0;
     }

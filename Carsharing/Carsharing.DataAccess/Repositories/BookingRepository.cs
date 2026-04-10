@@ -166,7 +166,7 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
         var hasActiveBooking = await context.Booking
             .AnyAsync(b =>
                 b.ClientId == booking.ClientId &&
-                b.StatusId == (int)BookingStatusEnum.Active);
+                b.StatusId == (int)BookingStatusEnum.Active, cancellationToken: cancellationToken);
 
         if (hasActiveBooking)
             throw new ArgumentException(
@@ -192,8 +192,8 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
             EndTime = booking.EndTime
         };
 
-        await context.Booking.AddAsync(bookingEntities);
-        await context.SaveChangesAsync();
+        await context.Booking.AddAsync(bookingEntities, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
 
         return bookingEntities.Id;
     }
@@ -201,7 +201,7 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
     public async Task<int> Update(int id, int? statusId, int? carId, int? clientId,
         DateTime? startTime, DateTime? endTime, CancellationToken cancellationToken)
     {
-        var booking = await context.Booking.FirstOrDefaultAsync(b => b.Id == id)
+        var booking = await context.Booking.FirstOrDefaultAsync(b => b.Id == id, cancellationToken: cancellationToken)
                       ?? throw new Exception("Booking not found");
 
         if (statusId.HasValue)
@@ -230,7 +230,7 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception booking: {error}");
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
 
         return booking.Id;
     }

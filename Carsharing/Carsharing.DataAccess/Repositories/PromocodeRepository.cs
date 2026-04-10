@@ -172,8 +172,8 @@ public class PromocodeRepository : IPromocodeRepository
             EndDate = promocode.EndDate
         };
 
-        await _context.Promocode.AddAsync(promocodeEntity);
-        await _context.SaveChangesAsync();
+        await _context.Promocode.AddAsync(promocodeEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return promocode.Id;
     }
@@ -181,7 +181,7 @@ public class PromocodeRepository : IPromocodeRepository
     public async Task<int> Update(int id, int? statusId, string? code, decimal? discount, DateOnly? startDate,
         DateOnly? endDate, CancellationToken cancellationToken)
     {
-        var promocode = await _context.Promocode.FirstOrDefaultAsync(pr => pr.Id == id)
+        var promocode = await _context.Promocode.FirstOrDefaultAsync(pr => pr.Id == id, cancellationToken: cancellationToken)
                         ?? throw new Exception("Promocode not found");
 
         if (statusId.HasValue)
@@ -210,7 +210,7 @@ public class PromocodeRepository : IPromocodeRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new Exception($"Promocode create exception: {error}");
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return promocode.Id;
     }

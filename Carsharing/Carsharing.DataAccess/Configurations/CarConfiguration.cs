@@ -37,6 +37,10 @@ public class CarConfiguration : IEntityTypeConfiguration<CarEntity>
             .IsRequired()
             .HasMaxLength(Car.MaxLocationLength);
 
+        builder.Property(c => c.Coordinates)
+            .HasColumnName("car_coordinates")
+            .HasColumnType("geometry(Point, 4326)");
+
         builder.Property(c => c.FuelLevel)
             .HasColumnName("car_fuel_level")
             .IsRequired()

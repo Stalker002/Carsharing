@@ -39,9 +39,6 @@ README.md
 !.git/packed-refs
 !.git/refs/heads/**
 
-.dotnet
-.vs
-.idea
-*.log
-Mobile
-keys
+Mobile/
+react-app/
+Database/
