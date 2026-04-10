@@ -9,10 +9,12 @@ public class Car
     public const int MaxFuelLevelLength = 200;
 
     private Car(int id, int carStatusId, int tariffId, int categoryId, int specificationId,
-        string? location, decimal fuelLevel, string? imagePath)
+        string? location, double? latitude, double? longitude, decimal fuelLevel, string? imagePath)
     {
         Id = id;
         Location = location;
+        Latitude = latitude;
+        Longitude = longitude;
         CarStatusId = carStatusId;
         TariffId = tariffId;
         CategoryId = categoryId;
@@ -33,12 +35,16 @@ public class Car
 
     public string? Location { get; }
 
+    public double? Latitude { get; }
+
+    public double? Longitude { get; }
+
     public decimal FuelLevel { get; }
 
     public string? ImagePath { get; }
 
     public static (Car car, string error) Create(int id, int carStatusId, int tariffId,
-        int categoryId, int specificationId, string? location, decimal fuelLevel, string? imagePath)
+        int categoryId, int specificationId, string? location, double? latitude, double? longitude, decimal fuelLevel, string? imagePath)
     {
         var error = string.Empty;
 
@@ -59,6 +65,15 @@ public class Car
         if (location is { Length: > MaxLocationLength })
             error = $"Car location can't be longer than {MaxLocationLength} symbols";
 
+        if (latitude.HasValue != longitude.HasValue)
+            error = "Latitude and longitude must be provided together";
+
+        if (latitude is < -90 or > 90)
+            error = "Latitude must be between -90 and 90";
+
+        if (longitude is < -180 or > 180)
+            error = "Longitude must be between -180 and 180";
+
         error = fuelLevel switch
         {
             > MaxFuelLevelLength => "There can't be that much fuel in the car.",
@@ -71,7 +86,7 @@ public class Car
             return (null, error)!;
         }
 
-        var car = new Car(id, carStatusId, tariffId, categoryId, specificationId, location, fuelLevel, imagePath);
+        var car = new Car(id, carStatusId, tariffId, categoryId, specificationId, location, latitude, longitude, fuelLevel, imagePath);
 
         return (car, error);
     }

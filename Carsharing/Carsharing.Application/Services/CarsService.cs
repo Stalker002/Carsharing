@@ -125,6 +125,8 @@ public class CarsService : ICarsService
                 request.CategoryId,
                 specificationId,
                 request.Location,
+                request.Latitude,
+                request.Longitude,
                 request.FuelLevel,
                 savedImagePath);
 
@@ -184,7 +186,7 @@ public class CarsService : ICarsService
                 request.Year,
                 request.VinNumber,
                 request.StateNumber,
-                (int)request.Mileage,
+                request.Mileage,
                 request.MaxFuel,
                 request.FuelPerKm,
                 cancellationToken
@@ -204,6 +206,8 @@ public class CarsService : ICarsService
                 tariffId: null,
                 specificationId: null,
                 location: request.Location,
+                latitude:  request.Latitude,
+                longitude:  request.Longitude,
                 fuelLevel: request.FuelLevel,
                 imagePath: imagePathToUpdate,
                 cancellationToken: cancellationToken

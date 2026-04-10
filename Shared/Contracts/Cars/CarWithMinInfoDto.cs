@@ -10,4 +10,6 @@ public record CarWithMinInfoDto(
     string? Brand,
     string? Model,
     string? Transmission,
+    double? Latitude,
+    double? Longitude,
     string? ImagePath);
