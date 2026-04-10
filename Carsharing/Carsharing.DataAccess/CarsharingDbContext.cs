@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NetTopologySuite;
 
 namespace Carsharing.DataAccess;
 
@@ -52,7 +53,10 @@ public class CarsharingDbContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder
-                .UseNpgsql(_configuration.GetConnectionString(nameof(CarsharingDbContext)))
+                .UseNpgsql(
+                    _configuration.GetConnectionString(nameof(CarsharingDbContext)),
+                    o => o.UseNetTopologySuite()
+                )
                 .UseLoggerFactory(CreateLoggerFactory())
                 .EnableSensitiveDataLogging(false);
         }

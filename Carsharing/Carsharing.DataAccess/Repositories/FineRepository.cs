@@ -146,8 +146,8 @@ public class FineRepository : IFineRepository
             Date = fine.Date
         };
 
-        await _context.Fine.AddAsync(fineEntity);
-        await _context.SaveChangesAsync();
+        await _context.Fine.AddAsync(fineEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return fineEntity.Id;
     }
@@ -155,7 +155,7 @@ public class FineRepository : IFineRepository
     public async Task<int> Update(int id, int? tripId, int? statusId, string? type, decimal? amount,
         DateTime? date, CancellationToken cancellationToken)
     {
-        var fine = await _context.Fine.FirstOrDefaultAsync(f => f.Id == id)
+        var fine = await _context.Fine.FirstOrDefaultAsync(f => f.Id == id, cancellationToken: cancellationToken)
                    ?? throw new Exception("Fine not found");
 
         if (tripId.HasValue)
@@ -184,7 +184,7 @@ public class FineRepository : IFineRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new Exception($"Fine create exception: {error}");
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return fine.Id;
     }

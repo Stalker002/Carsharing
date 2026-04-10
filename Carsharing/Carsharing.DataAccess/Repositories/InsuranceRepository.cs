@@ -5,14 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.DataAccess.Repositories;
 
-public class InsuranceRepository : IInsuranceRepository
+public class InsuranceRepository(CarsharingDbContext context) : IInsuranceRepository
 {
-    private readonly CarsharingDbContext _context;
-
-    public InsuranceRepository(CarsharingDbContext context)
-    {
-        _context = context;
-    }
+    private readonly CarsharingDbContext _context = context;
 
     public async Task<List<Insurance>> Get(CancellationToken cancellationToken)
     {
@@ -136,8 +131,8 @@ public class InsuranceRepository : IInsuranceRepository
             Cost = insurance.Cost
         };
 
-        await _context.Insurance.AddAsync(insuranceEntity);
-        await _context.SaveChangesAsync();
+        await _context.Insurance.AddAsync(insuranceEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return insuranceEntity.Id;
     }
@@ -145,7 +140,7 @@ public class InsuranceRepository : IInsuranceRepository
     public async Task<int> Update(int id, int? carId, int? statusId, string type, string? company, string? policyNumber,
         DateOnly? startDate, DateOnly? endDate, decimal? cost, CancellationToken cancellationToken)
     {
-        var insurance = await _context.Insurance.FirstOrDefaultAsync(i => i.Id == id)
+        var insurance = await _context.Insurance.FirstOrDefaultAsync(i => i.Id == id, cancellationToken: cancellationToken)
                         ?? throw new Exception("Insurance not found");
 
         if (carId.HasValue)
@@ -186,7 +181,7 @@ public class InsuranceRepository : IInsuranceRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new Exception($"Insurance create exception: {error}");
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return insurance.Id;
     }
