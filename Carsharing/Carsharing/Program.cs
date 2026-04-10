@@ -18,14 +18,9 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        if (builder.Environment.IsEnvironment("Testing")
-            && string.IsNullOrWhiteSpace(builder.Configuration[$"{nameof(JwtOptions)}:{nameof(JwtOptions.SecretKey)}"]))
+        if (builder.Environment.IsEnvironment("Testing"))
         {
-            builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                [$"{nameof(JwtOptions)}:{nameof(JwtOptions.SecretKey)}"] =
-                    "SecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKey"
-            });
+            builder.Configuration.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: false);
         }
 
         var minioConfig = builder.Configuration.GetSection("Minio");
