@@ -1,24 +1,14 @@
 ﻿using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using NetTopologySuite;
 
 namespace Carsharing.DataAccess;
 
 public class CarsharingDbContext : DbContext
 {
-    private readonly IConfiguration _configuration;
-
-    public CarsharingDbContext(DbContextOptions<CarsharingDbContext> options, IConfiguration configuration) 
-        : base(options) 
+    public CarsharingDbContext(DbContextOptions<CarsharingDbContext> options)
+        : base(options)
     {
-        _configuration = configuration;
-    }
-
-    public CarsharingDbContext(IConfigurationRoot configuration)
-    {
-        _configuration = configuration;
     }
 
     public DbSet<BillEntity> Bill { get; set; }
@@ -48,20 +38,6 @@ public class CarsharingDbContext : DbContext
     public DbSet<TripStatusEntity> TripStatus { get; set; }
     public DbSet<UserEntity> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder
-                .UseNpgsql(
-                    _configuration.GetConnectionString(nameof(CarsharingDbContext)),
-                    o => o.UseNetTopologySuite()
-                )
-                .UseLoggerFactory(CreateLoggerFactory())
-                .EnableSensitiveDataLogging(false);
-        }
-    }
-
     private static ILoggerFactory CreateLoggerFactory()
     {
         return LoggerFactory.Create(builder => { builder.AddConsole(); });
@@ -69,6 +45,11 @@ public class CarsharingDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        if (Database.ProviderName is not "Microsoft.EntityFrameworkCore.InMemory")
+        {
+            modelBuilder.UseIdentityByDefaultColumns();
+        }
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CarsharingDbContext).Assembly);
     }
 }

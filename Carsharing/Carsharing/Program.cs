@@ -18,6 +18,16 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        if (builder.Environment.IsEnvironment("Testing")
+            && string.IsNullOrWhiteSpace(builder.Configuration[$"{nameof(JwtOptions)}:{nameof(JwtOptions.SecretKey)}"]))
+        {
+            builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                [$"{nameof(JwtOptions)}:{nameof(JwtOptions.SecretKey)}"] =
+                    "SecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKey"
+            });
+        }
+
         var minioConfig = builder.Configuration.GetSection("Minio");
 
         builder.Services.AddControllers();
@@ -60,10 +70,13 @@ public class Program
 
         builder.Services.AddOpenApi();
 
-        builder.Services.AddDbContext<CarsharingDbContext>(options =>
-            options.UseNpgsql(
-                builder.Configuration.GetConnectionString(nameof(CarsharingDbContext)),
-                npgsqlOptions => npgsqlOptions.UseNetTopologySuite()));
+        if (!builder.Environment.IsEnvironment("Testing"))
+        {
+            builder.Services.AddDbContext<CarsharingDbContext>(options =>
+                options.UseNpgsql(
+                    builder.Configuration.GetConnectionString(nameof(CarsharingDbContext)),
+                    npgsqlOptions => npgsqlOptions.UseNetTopologySuite()));
+        }
 
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
         builder.Services.AddScoped<IJwtProvider, JwtProvider>();
