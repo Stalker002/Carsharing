@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Carsharing.Tests.Integration;
 
@@ -18,6 +19,25 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
+        builder.ConfigureLogging(logging =>
+        {
+            logging.ClearProviders();
+        });
+        builder.ConfigureAppConfiguration((_, configBuilder) =>
+        {
+            configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["JwtOptions:SecretKey"] = "TestingSecretKey_ChangeMe_1234567890",
+                ["JwtOptions:ExpiresHours"] = "12",
+                ["Minio:ServiceURL"] = "http://localhost:9000",
+                ["Minio:PublicURL"] = "http://localhost:9000",
+                ["Minio:AccessKey"] = "test-access-key",
+                ["Minio:SecretKey"] = "test-secret-key",
+                ["Minio:BucketName"] = "test-bucket",
+                ["FileUpload:MaxCarImageBytes"] = "5242880",
+                ["FileUpload:MaxDocumentImageBytes"] = "10485760"
+            });
+        });
 
         builder.ConfigureServices(services =>
         {

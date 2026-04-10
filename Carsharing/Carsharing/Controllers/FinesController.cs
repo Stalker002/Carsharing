@@ -1,5 +1,6 @@
 using Carsharing.Application.Abstractions;
 using Carsharing.Core.Models;
+using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Contracts.Fines;
@@ -60,7 +61,9 @@ public class FinesController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<FinesResponse>>> GetFinesByTripId(int tripId, CancellationToken cancellationToken)
     {
-        var fines = await _finesService.GetFinesByTripId(tripId, cancellationToken);
+        var fines = User.IsAdmin()
+            ? await _finesService.GetFinesByTripId(tripId, cancellationToken)
+            : await _finesService.GetFinesByTripId(User.GetRequiredUserId(), tripId, cancellationToken);
 
         var response = fines.Select(f => new FinesResponse(f.Id, f.TripId, f.StatusId, f.Type, f.Amount, f.Date));
 

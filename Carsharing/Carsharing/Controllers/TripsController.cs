@@ -66,7 +66,9 @@ public class TripsController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<TripWithInfoDto>>> GetTripWithInfo(int id, CancellationToken cancellationToken)
     {
-        var tripWithInfo = await _tripService.GetTripWithInfo(id, cancellationToken);
+        var tripWithInfo = User.IsAdmin()
+            ? await _tripService.GetTripWithInfo(id, cancellationToken)
+            : await _tripService.GetTripWithInfo(User.GetRequiredUserId(), id, cancellationToken);
         var response = tripWithInfo.Select(t => new TripWithInfoDto(t.Id, t.BookingId, t.StatusId, t.StartLocation,
             t.EndLocation, t.InsuranceActive, t.FuelUsed, t.Refueled, t.TariffType, t.StartTime, t.EndTime, t.Duration,
             t.Distance));

@@ -24,5 +24,7 @@ public interface IClientsService
 
     Task<int> UpdateClient(int id, int userId, string? name, string? surname, string? phoneNumber, string? email, CancellationToken cancellationToken);
 
+    Task<int> UpdateOwnClient(int userId, string? name, string? surname, string? phoneNumber, string? email, CancellationToken cancellationToken);
+
     Task<int> DeleteClient(int id, CancellationToken cancellationToken);
 }

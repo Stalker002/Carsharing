@@ -168,9 +168,39 @@ public class ClientsController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<int>> UpdateClient(int id, [FromBody] ClientsRequest request, CancellationToken cancellationToken)
     {
-        var clientId =
-            await _clientsService.UpdateClient(id, request.UserId, request.Name, request.Surname, request.PhoneNumber,
-                request.Email, cancellationToken);
+        int clientId;
+
+        if (User.IsAdmin())
+        {
+            clientId = await _clientsService.UpdateClient(
+                id,
+                request.UserId,
+                request.Name,
+                request.Surname,
+                request.PhoneNumber,
+                request.Email,
+                cancellationToken);
+        }
+        else
+        {
+            var currentUserId = User.GetRequiredUserId();
+            var myClient = (await _clientsService.GetClientByUserId(currentUserId, cancellationToken)).SingleOrDefault();
+
+            if (myClient == null)
+                return NotFound(new { message = "Клиент не найден" });
+
+            if (myClient.Id != id)
+                return Forbid();
+
+            clientId = await _clientsService.UpdateOwnClient(
+                currentUserId,
+                request.Name,
+                request.Surname,
+                request.PhoneNumber,
+                request.Email,
+                cancellationToken);
+        }
+
         return Ok(clientId);
     }
 

@@ -19,12 +19,16 @@ public interface IBillsService
 
     Task<List<BillWithInfoDto>> GetBillWithInfoById(int id, CancellationToken cancellationToken);
 
+    Task<List<BillWithInfoDto>> GetBillWithInfoByUserId(int userId, int id, CancellationToken cancellationToken);
+
     Task<int> CreateBill(int userId, Bill bill, CancellationToken cancellationToken);
 
     Task<int> UpdateBill(int id, int? tripId, int? promocodeId, int? statusId, DateTime? issueDate,
         decimal? amount, decimal? remainingAmount, CancellationToken cancellationToken);
 
     Task ApplyPromocode(int billId, string code, CancellationToken cancellationToken);
+
+    Task ApplyPromocode(int userId, int billId, string code, CancellationToken cancellationToken);
 
     Task<int> DeleteBill(int id, CancellationToken cancellationToken);
 }

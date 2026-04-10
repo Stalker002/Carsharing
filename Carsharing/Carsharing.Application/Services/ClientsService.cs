@@ -97,6 +97,14 @@ public class ClientsService : IClientsService
         return await _clientRepository.Update(id, userId, name, surname, phoneNumber, email, cancellationToken);
     }
 
+    public async Task<int> UpdateOwnClient(int userId, string? name, string? surname, string? phoneNumber, string? email, CancellationToken cancellationToken)
+    {
+        var client = (await _clientRepository.GetClientByUserId(userId, cancellationToken)).SingleOrDefault()
+            ?? throw new NotFoundException("Client not found");
+
+        return await _clientRepository.Update(client.Id, null, name, surname, phoneNumber, email, cancellationToken);
+    }
+
     public async Task<int> DeleteClient(int id, CancellationToken cancellationToken)
     {
         var client = await _clientRepository.GetById(id, cancellationToken);
