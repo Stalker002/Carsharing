@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="CarsharingMobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:CarsharingMobile.Views"
+    FlyoutBehavior="Flyout">
+    <Shell.FlyoutContent>
+        <Grid
+            Padding="20,50,20,20"
+            BackgroundColor="#112347"
+            RowDefinitions="Auto, *, Auto">
+
+            <VerticalStackLayout
+                Grid.Row="0"
+                Margin="0,0,0,30"
+                Spacing="5">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="22"
+                    Text="Иван"
+                    TextColor="White" />
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="22"
+                    Text="Иванов"
+                    TextColor="White" />
+                <Label
+                    Margin="0,5,0,0"
+                    FontAttributes="Bold"
+                    FontSize="14"
+                    Text="БОНУСЫ 0.00 BYN"
+                    TextColor="#3296F8" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Row="1" Spacing="25">
+                <Label
+                    FontSize="16"
+                    Text="ЦЕНА ПРОЕЗДА"
+                    TextColor="White" />
+                <Label
+                    FontSize="16"
+                    Text="ПОЕЗДКИ"
+                    TextColor="White" />
+                <Label
+                    FontSize="16"
+                    Text="ПРОМОКОДЫ"
+                    TextColor="White" />
+                <Label
+                    FontSize="16"
+                    Text="НАПИСАТЬ В ПОДДЕРЖКУ"
+                    TextColor="White" />
+
+                <BoxView
+                    Margin="0,10"
+                    HeightRequest="1"
+                    Color="#213868" />
+
+                <Button
+                    Padding="0"
+                    BackgroundColor="Transparent"
+                    HorizontalOptions="Start"
+                    Text="Выйти из аккаунта"
+                    TextColor="#FF3333" />
+            </VerticalStackLayout>
+
+            <!--  Подвал меню  -->
+            <VerticalStackLayout
+                Grid.Row="2"
+                HorizontalOptions="Center"
+                Spacing="5">
+                <Label
+                    FontAttributes="Italic"
+                    FontSize="12"
+                    HorizontalOptions="Center"
+                    Text="СЛУЖБА ПОДДЕРЖКИ"
+                    TextColor="#ACACAC" />
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="14"
+                    HorizontalOptions="Center"
+                    Text="+375 29 000-00-00"
+                    TextColor="White" />
+                <Label
+                    Margin="0,10,0,0"
+                    FontSize="10"
+                    HorizontalOptions="Center"
+                    Text="ВЕРСИЯ 1.0.0"
+                    TextColor="#6E6E6E" />
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutContent>
+
+    <ShellContent
+        ContentTemplate="{DataTemplate views:LoginPage}"
+        FlyoutItemIsVisible="False"
+        Route="LoginPage" />
+    <ShellContent
+        ContentTemplate="{DataTemplate views:MainPage}"
+        FlyoutItemIsVisible="False"
+        Route="MainPage" />
+
+</Shell>
