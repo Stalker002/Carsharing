@@ -42,3 +42,9 @@ README.md
 Mobile/
 react-app/
 Database/
+
+Mobile
+**/.dotnet
+**/.idea
+**/keys
+**/*.log
