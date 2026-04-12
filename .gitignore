@@ -73,7 +73,6 @@ dist-ssr
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
 *.sw?
 
 # Keys
@@ -82,3 +81,6 @@ Carsharing/.dotnet/.dotnet/
 /Carsharing/.dotnet/.nuget/packages
 /Carsharing/.local-bin
 /Carsharing/Directory.Build.rsp
+/Mobile/CarsharingMobile/LocalSecrets.props.example
+/Mobile/CarsharingMobile/LocalSecrets.props
+*.env

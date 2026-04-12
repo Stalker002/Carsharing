@@ -60,6 +60,12 @@ public class BillsService : IBillsService
         return billDto == null ? [] : [billDto];
     }
 
+    public async Task<List<BillWithInfoDto>> GetBillWithInfoByUserId(int userId, int id, CancellationToken cancellationToken)
+    {
+        await EnsureBillBelongsToUser(userId, id, cancellationToken);
+        return await GetBillWithInfoById(id, cancellationToken);
+    }
+
     public async Task<int> CreateBill(int userId, Bill bill, CancellationToken cancellationToken)
     {
         var client = await _clientRepository.GetClientByUserId(userId, cancellationToken);
@@ -82,6 +88,17 @@ public class BillsService : IBillsService
 
     public async Task ApplyPromocode(int billId, string code, CancellationToken cancellationToken)
     {
+        await ApplyPromocodeInternal(billId, code, cancellationToken);
+    }
+
+    public async Task ApplyPromocode(int userId, int billId, string code, CancellationToken cancellationToken)
+    {
+        await EnsureBillBelongsToUser(userId, billId, cancellationToken);
+        await ApplyPromocodeInternal(billId, code, cancellationToken);
+    }
+
+    private async Task ApplyPromocodeInternal(int billId, string code, CancellationToken cancellationToken)
+    {
         var promos = await _promocodeRepository.GetByCode(code, cancellationToken);
         var promo = promos.FirstOrDefault(p =>
             p.StartDate <= DateOnly.FromDateTime(DateTime.UtcNow) &&
@@ -102,6 +119,24 @@ public class BillsService : IBillsService
             null,
             cancellationToken
         );
+    }
+
+    private async Task EnsureBillBelongsToUser(int userId, int billId, CancellationToken cancellationToken)
+    {
+        var client = (await _clientRepository.GetClientByUserId(userId, cancellationToken)).FirstOrDefault()
+            ?? throw new NotFoundException("Client not found");
+
+        var bill = await _billRepository.GetById(billId, cancellationToken)
+            ?? throw new NotFoundException("Bill not found");
+
+        var trip = (await _tripRepository.GetById(bill.TripId, cancellationToken)).FirstOrDefault()
+            ?? throw new NotFoundException("Trip not found");
+
+        var booking = (await _bookingRepository.GetById(trip.BookingId, cancellationToken)).FirstOrDefault()
+            ?? throw new NotFoundException("Booking not found");
+
+        if (booking.ClientId != client.Id)
+            throw new UnauthorizedAccessException("Bill does not belong to current user");
     }
 
     public async Task<int> UpdateBill(int id, int? tripId, int? promocodeId, int? statusId, DateTime? issueDate,

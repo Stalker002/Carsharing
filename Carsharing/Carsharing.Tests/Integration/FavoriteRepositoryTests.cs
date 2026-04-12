@@ -1,8 +1,6 @@
 using Carsharing.DataAccess;
 using Carsharing.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Moq;
 
 namespace Carsharing.Tests.Integration;
 
@@ -14,9 +12,7 @@ public class FavoriteRepositoryTests
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) 
             .Options;
 
-        var mockConfig = new Mock<IConfiguration>().Object;
-
-        return new CarsharingDbContext(options, mockConfig);
+        return new CarsharingDbContext(options);
     }
 
     [Fact]
@@ -28,7 +24,7 @@ public class FavoriteRepositoryTests
         const int clientId = 10;
         const int carId = 5;
 
-        await repository.AddAsync(clientId, carId, It.IsAny<CancellationToken>());
+        await repository.AddAsync(clientId, carId, CancellationToken.None);
 
         var favoriteInDb = await context.Favorites.FirstOrDefaultAsync();
         

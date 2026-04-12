@@ -166,8 +166,8 @@ public class ReviewRepository : IReviewRepository
             Date = review.Date
         };
 
-        await _context.Review.AddAsync(reviewEntity);
-        await _context.SaveChangesAsync();
+        await _context.Review.AddAsync(reviewEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return reviewEntity.Id;
     }
@@ -175,7 +175,7 @@ public class ReviewRepository : IReviewRepository
     public async Task<int> Update(int id, int? clientId, int? carId, short? rating, string? comment,
         DateTime? date, CancellationToken cancellationToken)
     {
-        var review = await _context.Review.FirstOrDefaultAsync(r => r.Id == id)
+        var review = await _context.Review.FirstOrDefaultAsync(r => r.Id == id, cancellationToken: cancellationToken)
                      ?? throw new Exception("Review not found");
 
         if (clientId.HasValue)
@@ -202,7 +202,7 @@ public class ReviewRepository : IReviewRepository
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception review: {error}");
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return review.Id;
     }

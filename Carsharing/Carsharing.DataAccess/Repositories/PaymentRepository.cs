@@ -117,15 +117,15 @@ public class PaymentRepository : IPaymentRepository
             Date = payment.Date
         };
 
-        await _context.Payment.AddAsync(paymentEntity);
-        await _context.SaveChangesAsync();
+        await _context.Payment.AddAsync(paymentEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return paymentEntity.Id;
     }
 
     public async Task<int> Update(int id, int? billId, decimal? sum, string? method, DateTime? date, CancellationToken cancellationToken)
     {
-        var payment = await _context.Payment.FirstOrDefaultAsync(p => p.Id == id)
+        var payment = await _context.Payment.FirstOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken)
                       ?? throw new Exception("Payment not found");
 
         if (billId.HasValue)
@@ -150,7 +150,7 @@ public class PaymentRepository : IPaymentRepository
         if (!string.IsNullOrWhiteSpace(error))
             throw new Exception($"Payment create error: {error}");
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return payment.Id;
     }

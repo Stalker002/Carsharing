@@ -6,20 +6,12 @@ using Shared.Contracts.ClientDocuments;
 
 namespace Carsharing.Application.Services;
 
-public class ClientDocumentsService : IClientDocumentsService
+public class ClientDocumentsService(IClientDocumentRepository clientDocumentRepository, IClientRepository clientRepository, IUnitOfWork unitOfWork, IImageService imageService) : IClientDocumentsService
 {
-    private readonly IClientDocumentRepository _clientDocumentRepository;
-    private readonly IClientRepository _clientRepository;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IImageService _imageService;
-
-    public ClientDocumentsService(IClientDocumentRepository clientDocumentRepository, IClientRepository clientRepository, IUnitOfWork unitOfWork, IImageService imageService)
-    {
-        _clientRepository = clientRepository;
-        _clientDocumentRepository = clientDocumentRepository;
-        _unitOfWork = unitOfWork;
-        _imageService = imageService;
-    }
+    private readonly IClientDocumentRepository _clientDocumentRepository = clientDocumentRepository;
+    private readonly IClientRepository _clientRepository = clientRepository;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IImageService _imageService = imageService;
 
     public async Task<List<ClientDocument>> GetClientDocuments(CancellationToken cancellationToken)
     {

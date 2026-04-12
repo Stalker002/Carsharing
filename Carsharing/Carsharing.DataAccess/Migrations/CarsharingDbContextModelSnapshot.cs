@@ -4,6 +4,7 @@ using Carsharing.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -20,6 +21,7 @@ namespace Carsharing.DataAccess.Migrations
                 .HasAnnotation("ProductVersion", "9.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Carsharing.DataAccess.Entites.BillEntity", b =>
@@ -210,6 +212,10 @@ namespace Carsharing.DataAccess.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer")
                         .HasColumnName("car_category_id");
+
+                    b.Property<Point>("Coordinates")
+                        .HasColumnType("geometry(Point, 4326)")
+                        .HasColumnName("car_coordinates");
 
                     b.Property<decimal>("FuelLevel")
                         .ValueGeneratedOnAdd()

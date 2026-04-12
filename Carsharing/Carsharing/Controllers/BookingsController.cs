@@ -81,7 +81,9 @@ public class BookingsController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<BookingsResponse>>> GetBookingByCarId(int carId, CancellationToken cancellationToken)
     {
-        var bookings = await _bookingsService.GetBookingsByCarId(carId, cancellationToken);
+        var bookings = User.IsAdmin()
+            ? await _bookingsService.GetBookingsByCarId(carId, cancellationToken)
+            : await _bookingsService.GetBookingsByCarId(User.GetRequiredUserId(), carId, cancellationToken);
         var response = bookings.Select(b =>
             new BookingsResponse(b.Id, b.StatusId, b.CarId, b.ClientId, b.StartTime, b.EndTime));
 
@@ -92,7 +94,9 @@ public class BookingsController : ControllerBase
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<List<BookingWithFullInfoDto>>> GetBookingsWithInfo(int id, CancellationToken cancellationToken)
     {
-        var response = await _bookingsService.GetBookingWithInfo(id, cancellationToken);
+        var response = User.IsAdmin()
+            ? await _bookingsService.GetBookingWithInfo(id, cancellationToken)
+            : await _bookingsService.GetBookingWithInfo(User.GetRequiredUserId(), id, cancellationToken);
         return Ok(response);
     }
 

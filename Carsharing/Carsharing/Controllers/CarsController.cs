@@ -27,7 +27,7 @@ public class CarsController : ControllerBase
         var cars = await _carsService.GetPagedCars(page, limit, cancellationToken);
 
         var response = cars
-            .Select(c => new CarsResponse(c.Id, c.CarStatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location,
+            .Select(c => new CarsResponse(c.Id, c.CarStatusId, c.TariffId, c.CategoryId, c.SpecificationId, c.Location, c.Latitude, c.Longitude,
                 c.FuelLevel, c.ImagePath)).ToList();
 
         Response.Headers.Append("x-total-count", totalCount.ToString());
@@ -42,7 +42,7 @@ public class CarsController : ControllerBase
         var carsWithInfo = await _carsService.GetCarWithInfo(id, cancellationToken);
         var response = carsWithInfo.Select(c => new CarWithInfoDto(c.Id, c.StatusName, c.PricePerMinute, c.PricePerKm,
             c.PricePerDay, c.CategoryName, c.FuelType, c.Brand, c.Model, c.Transmission, c.Year, c.StateNumber,
-            c.MaxFuel, c.Location, c.FuelLevel, c.ImagePath));
+            c.MaxFuel, c.Location, c.Latitude, c.Longitude, c.FuelLevel, c.ImagePath));
 
         return Ok(response);
     }
@@ -53,7 +53,7 @@ public class CarsController : ControllerBase
     {
         var carsWithInfo = await _carsService.GetCarWithInfoAdmin(id, cancellationToken);
         var response = carsWithInfo.Select(c => new CarWithInfoAdminDto(c.Id, c.StatusId, c.CategoryId,
-            c.Transmission, c.Brand, c.Model, c.Year, c.Location, c.VinNumber, c.StateNumber, c.FuelType, c.FuelLevel,
+            c.Transmission, c.Brand, c.Model, c.Year, c.Location, c.Latitude, c.Longitude, c.VinNumber, c.StateNumber, c.FuelType, c.FuelLevel,
             c.MaxFuel, c.FuelPerKm, c.Mileage, c.TariffName, c.PricePerMinute, c.PricePerKm, c.PricePerDay, c.Image));
 
         return Ok(response);
@@ -71,7 +71,8 @@ public class CarsController : ControllerBase
 
             var response = cars
                 .Select(c => new CarWithMinInfoDto(c.Id, c.StatusName, c.PricePerDay, c.CategoryName, c.FuelType,
-                    c.MaxFuel, c.Brand, c.Model, c.Transmission, c.ImagePath)).ToList();
+                    c.MaxFuel, c.Brand, c.Model, c.Transmission, c.Latitude,
+c.Longitude, c.ImagePath)).ToList();
 
             Response.Headers.Append("x-total-count", totalCount.ToString());
 
@@ -84,7 +85,7 @@ public class CarsController : ControllerBase
 
             var response = cars.Select(c =>
                 new CarWithMinInfoDto(c.Id, c.StatusName, c.PricePerDay, c.CategoryName, c.FuelType, c.MaxFuel, c.Brand,
-                    c.Model, c.Transmission, c.ImagePath));
+                    c.Model, c.Transmission, c.Latitude, c.Longitude, c.ImagePath));
 
             Response.Headers.Append("x-total-count", totalCount.ToString());
 
@@ -116,7 +117,13 @@ public class CarsController : ControllerBase
 
         if (isSuccess) return Ok(id);
 
-        return error == "Car not found" ? NotFound(error) : StatusCode(500, new { error });
+        if (error == "Car not found")
+            return NotFound(error);
+
+        if (error.StartsWith("Internal error", StringComparison.Ordinal))
+            return StatusCode(500, new { error });
+
+        return BadRequest(new { error });
     }
 
     [HttpDelete("{id:int}")]

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CarsharingMobile.Views.ProfilePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Мой профиль"
+    BackgroundColor="#F4F5F7"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *">
+        <Grid
+            Grid.Row="0"
+            Padding="15,20"
+            ColumnDefinitions="Auto, *"
+            HeightRequest="80">
+            <ImageButton
+                BackgroundColor="Transparent"
+                Command="{Binding GoBackCommand}"
+                HeightRequest="24"
+                HorizontalOptions="Start"
+                Source="back_icon_dark.png"
+                WidthRequest="24" />
+            <Label
+                Grid.Column="1"
+                Margin="-24,0,0,0"
+                FontAttributes="Bold"
+                FontSize="20"
+                HorizontalOptions="Center"
+                Text="Профиль"
+                TextColor="#112347"
+                VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="30" Spacing="20">
+
+                <Border
+                    BackgroundColor="#E1E1E1"
+                    HeightRequest="100"
+                    HorizontalOptions="Center"
+                    StrokeShape="RoundRectangle 50"
+                    StrokeThickness="0"
+                    WidthRequest="100">
+                    <Label
+                        FontSize="50"
+                        HorizontalOptions="Center"
+                        Text="👤"
+                        VerticalOptions="Center" />
+                </Border>
+
+                <VerticalStackLayout Spacing="5">
+                    <Label
+                        FontSize="12"
+                        Text="Имя"
+                        TextColor="#6E6E6E" />
+                    <Border
+                        Padding="15"
+                        BackgroundColor="White"
+                        Stroke="#E1E1E1"
+                        StrokeShape="RoundRectangle 8">
+                        <Label
+                            FontSize="16"
+                            Text="Михаил"
+                            TextColor="#112347" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="5">
+                    <Label
+                        FontSize="12"
+                        Text="Телефон"
+                        TextColor="#6E6E6E" />
+                    <Border
+                        Padding="15"
+                        BackgroundColor="White"
+                        Stroke="#E1E1E1"
+                        StrokeShape="RoundRectangle 8">
+                        <Label
+                            FontSize="16"
+                            Text="+375 29 111 22 33"
+                            TextColor="#112347" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <Button
+                    Margin="0,20,0,0"
+                    BackgroundColor="#3296F8"
+                    CornerRadius="8"
+                    HeightRequest="50"
+                    Text="Редактировать"
+                    TextColor="White" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

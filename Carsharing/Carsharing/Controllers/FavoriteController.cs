@@ -1,5 +1,6 @@
 using Carsharing.Application.Abstractions;
 using Carsharing.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Contracts.Cars;
 
@@ -7,6 +8,7 @@ namespace Carsharing.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize(Policy = "AdminClientPolicy")]
 public class FavoriteController : ControllerBase
 {
     private readonly IFavoriteService _favoritesService;

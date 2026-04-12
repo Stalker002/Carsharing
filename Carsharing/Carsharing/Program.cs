@@ -2,6 +2,7 @@ using Amazon.S3;
 using Carsharing.Application;
 using Carsharing.Application.Abstractions;
 using Carsharing.Application.Extensions;
+using Carsharing.Application.Services;
 using Carsharing.DataAccess;
 using Carsharing.Middleware;
 using Microsoft.EntityFrameworkCore;
@@ -14,9 +15,26 @@ namespace Carsharing;
 
 public class Program
 {
+    private const string ConnectionStringName = nameof(CarsharingDbContext);
+
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        if (builder.Environment.IsEnvironment("Testing"))
+        {
+            builder.Configuration.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: false);
+            builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                [$"{nameof(JwtOptions)}:SecretKey"] = "TestingSecretKey_ChangeMe_1234567890",
+                [$"{nameof(JwtOptions)}:ExpiresHours"] = "12",
+                ["Minio:ServiceURL"] = "http://localhost:9000",
+                ["Minio:PublicURL"] = "http://localhost:9000",
+                ["Minio:AccessKey"] = "test-access-key",
+                ["Minio:SecretKey"] = "test-secret-key",
+                ["Minio:BucketName"] = "test-bucket"
+            });
+        }
 
         var minioConfig = builder.Configuration.GetSection("Minio");
 
@@ -59,8 +77,16 @@ public class Program
         });
 
         builder.Services.AddOpenApi();
+        builder.Services.Configure<MinioStorageOptions>(minioConfig);
+        builder.Services.Configure<FileUploadOptions>(builder.Configuration.GetSection("FileUpload"));
 
-        builder.Services.AddDbContext<CarsharingDbContext>(_ => { });
+        if (!builder.Environment.IsEnvironment("Testing"))
+        {
+            builder.Services.AddDbContext<CarsharingDbContext>(options =>
+                options.UseNpgsql(
+                    builder.Configuration.GetConnectionString(ConnectionStringName),
+                    npgsqlOptions => npgsqlOptions.UseNetTopologySuite()));
+        }
 
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
         builder.Services.AddScoped<IJwtProvider, JwtProvider>();
@@ -91,7 +117,7 @@ public class Program
             }
         }
 
-        if (app.Environment.IsDevelopment())
+        if (!app.Environment.IsEnvironment("Testing"))
         {
             app.UseSwagger();
             app.UseSwaggerUI();
@@ -120,8 +146,6 @@ public class Program
         app.UseStaticFiles();
 
         app.MapControllers();
-
-        app.MapFallbackToFile("index.html");
 
         app.Run();
     }

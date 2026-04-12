@@ -126,8 +126,8 @@ public class ClientRepository : IClientRepository
             Email = client.Email
         };
 
-        await _context.Client.AddAsync(clientEntities);
-        await _context.SaveChangesAsync();
+        await _context.Client.AddAsync(clientEntities, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return clientEntities.Id;
     }
@@ -135,7 +135,7 @@ public class ClientRepository : IClientRepository
     public async Task<int> Update(int id, int? userId, string? name, string? surname,
         string? phoneNumber, string? email, CancellationToken cancellationToken)
     {
-        var client = await _context.Client.FirstOrDefaultAsync(c => c.Id == id)
+        var client = await _context.Client.FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken)
                      ?? throw new Exception("Client not found");
 
         if (userId.HasValue)
@@ -164,7 +164,7 @@ public class ClientRepository : IClientRepository
         if (!string.IsNullOrEmpty(error))
             throw new ArgumentException($"Create exception Client: {error}");
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return client.Id;
     }

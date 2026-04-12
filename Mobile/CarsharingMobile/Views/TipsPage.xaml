@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CarsharingMobile.Views.TipsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Подсказки"
+    BackgroundColor="#F4F5F7"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *">
+        <Grid
+            Grid.Row="0"
+            Padding="15,20"
+            ColumnDefinitions="Auto, *"
+            HeightRequest="80">
+            <ImageButton
+                BackgroundColor="Transparent"
+                Clicked="OnBackClicked"
+                HeightRequest="24"
+                HorizontalOptions="Start"
+                Source="back_icon_dark.png"
+                WidthRequest="24" />
+            <Label
+                Grid.Column="1"
+                Margin="-24,0,0,0"
+                FontAttributes="Bold"
+                FontSize="20"
+                HorizontalOptions="Center"
+                Text="Подсказки"
+                TextColor="#112347"
+                VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="15">
+
+                <Border
+                    Padding="20"
+                    BackgroundColor="White"
+                    Stroke="#E1E1E1"
+                    StrokeShape="RoundRectangle 12"
+                    StrokeThickness="1">
+                    <VerticalStackLayout Spacing="5">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            Text="Как начать аренду?"
+                            TextColor="#1E1E1E" />
+                        <Label
+                            FontSize="14"
+                            Text="Подойдите к автомобилю, осмотрите его на наличие повреждений и нажмите кнопку 'Открыть' в приложении. Ключи и документы уже в салоне."
+                            TextColor="#6E6E6E" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border
+                    Padding="20"
+                    BackgroundColor="White"
+                    Stroke="#E1E1E1"
+                    StrokeShape="RoundRectangle 12"
+                    StrokeThickness="1">
+                    <VerticalStackLayout Spacing="5">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            Text="Что делать при ДТП?"
+                            TextColor="#1E1E1E" />
+                        <Label
+                            FontSize="14"
+                            Text="Сразу же вызовите ГАИ и свяжитесь с нашей службой поддержки. Не покидайте место происшествия!"
+                            TextColor="#6E6E6E" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border
+                    Padding="20"
+                    BackgroundColor="White"
+                    Stroke="#E1E1E1"
+                    StrokeShape="RoundRectangle 12"
+                    StrokeThickness="1">
+                    <VerticalStackLayout Spacing="5">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            Text="Как завершить поездку?"
+                            TextColor="#1E1E1E" />
+                        <Label
+                            FontSize="14"
+                            Text="Припаркуйтесь по правилам ПДД внутри фиолетовой зоны на карте. Выключите двигатель, закройте двери и нажмите 'Завершить' в приложении."
+                            TextColor="#6E6E6E" />
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

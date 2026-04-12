@@ -3,66 +3,106 @@ using Amazon.S3.Model;
 using Amazon.S3.Util;
 using Carsharing.Application.Abstractions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace Carsharing.Application.Services;
 
-public class ImageService(IAmazonS3 s3Client, IConfiguration configuration) : IImageService
+public class ImageService(
+    IAmazonS3 s3Client,
+    IOptions<MinioStorageOptions> minioOptions,
+    IOptions<FileUploadOptions> fileUploadOptions) : IImageService
 {
-    private readonly string _bucketName = configuration["Minio:BucketName"] ?? "default-bucket";
-    private readonly string _serviceUrl = configuration["Minio:ServiceURL"] ?? "http://localhost:9000";
-    private readonly string[] _allowedExtensions = [".jpg", ".jpeg", ".png"];
+    private static readonly HashSet<string> AllowedExtensions = [".jpg", ".jpeg", ".png"];
+
+    private static readonly Dictionary<string, string[]> AllowedMimeTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        [".jpg"] = ["image/jpeg"],
+        [".jpeg"] = ["image/jpeg"],
+        [".png"] = ["image/png"]
+    };
+
+    private readonly FileUploadOptions _fileUploadOptions = fileUploadOptions.Value;
+    private readonly MinioStorageOptions _minioOptions = minioOptions.Value;
 
     public async Task<string> SaveCarImageAsync(IFormFile file, CancellationToken cancellationToken)
     {
-        return await SaveFileInternalAsync(file, "cars", cancellationToken);
+        return await SaveFileInternalAsync(
+            file,
+            bucketName: _minioOptions.BucketName,
+            baseUrl: _minioOptions.PublicURL,
+            subFolder: "cars",
+            maxBytes: _fileUploadOptions.MaxCarImageBytes,
+            cancellationToken);
     }
 
     public async Task<string> SaveDocumentImageAsync(IFormFile file, CancellationToken cancellationToken)
     {
-        return await SaveFileInternalAsync(file, "documents", cancellationToken);
+        return await SaveFileInternalAsync(
+            file,
+            bucketName: _minioOptions.BucketName,
+            baseUrl: _minioOptions.PublicURL,
+            subFolder: "documents",
+            maxBytes: _fileUploadOptions.MaxDocumentImageBytes,
+            cancellationToken);
     }
 
-    private async Task<string> SaveFileInternalAsync(IFormFile file, string subFolder, CancellationToken cancellationToken)
+    private async Task<string> SaveFileInternalAsync(
+        IFormFile file,
+        string bucketName,
+        string baseUrl,
+        string subFolder,
+        long maxBytes,
+        CancellationToken cancellationToken)
     {
-        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
-        if (!_allowedExtensions.Contains(ext))
-            throw new ArgumentException($"Неподдерживаемый формат файла. Разрешены: {string.Join(", ", _allowedExtensions)}");
+        if (!AllowedExtensions.Contains(extension))
+            throw new ArgumentException($"Неподдерживаемый формат файла. Разрешены: {string.Join(", ", AllowedExtensions)}");
 
-        await EnsureBucketExistsAsync(cancellationToken);
+        if (file.Length <= 0)
+            throw new ArgumentException("Файл пустой.");
 
-        var fileName = $"{Guid.NewGuid()}{ext}";
+        if (file.Length > maxBytes)
+            throw new ArgumentException($"Размер файла превышает допустимый лимит {maxBytes / (1024 * 1024)} MB.");
+
+        ValidateMimeType(file.ContentType, extension);
+
+        await using var buffer = new MemoryStream();
+        await file.CopyToAsync(buffer, cancellationToken);
+        await EnsureBucketExistsAsync(bucketName, cancellationToken);
+
+        var fileName = $"{Guid.NewGuid()}{extension}";
         var objectKey = $"images/{subFolder}/{fileName}";
+        buffer.Position = 0;
 
         var putRequest = new PutObjectRequest
         {
-            BucketName = _bucketName,
+            BucketName = bucketName,
             Key = objectKey,
-            InputStream = file.OpenReadStream(),
+            InputStream = buffer,
             ContentType = file.ContentType
         };
 
         await s3Client.PutObjectAsync(putRequest, cancellationToken);
 
-        return $"{_serviceUrl}/{_bucketName}/{objectKey}";
+        return $"{baseUrl.TrimEnd('/')}/{bucketName}/{objectKey}";
     }
 
     public async Task DeleteFile(string fileUrl, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(fileUrl)) return;
+        if (string.IsNullOrWhiteSpace(fileUrl))
+            return;
 
         try
         {
-            var key = fileUrl.Replace($"{_serviceUrl}/{_bucketName}/", "");
+            var (bucketName, key) = ParseStoredFileReference(fileUrl);
 
-            var deleteRequest = new DeleteObjectRequest
+            await s3Client.DeleteObjectAsync(new DeleteObjectRequest
             {
-                BucketName = _bucketName,
+                BucketName = bucketName,
                 Key = key
-            };
-
-            await s3Client.DeleteObjectAsync(deleteRequest, cancellationToken);
+            }, cancellationToken);
         }
         catch
         {
@@ -70,35 +110,74 @@ public class ImageService(IAmazonS3 s3Client, IConfiguration configuration) : II
         }
     }
 
-    private async Task EnsureBucketExistsAsync(CancellationToken cancellationToken)
+    private async Task EnsureBucketExistsAsync(string bucketName, CancellationToken cancellationToken)
     {
-        var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, _bucketName);
+        var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName);
         if (!bucketExists)
         {
-            var putBucketRequest = new PutBucketRequest
+            await s3Client.PutBucketAsync(new PutBucketRequest
             {
-                BucketName = _bucketName,
+                BucketName = bucketName,
                 UseClientRegion = true
-            };
-            await s3Client.PutBucketAsync(putBucketRequest, cancellationToken);
-
-            string policy = $@"{{
-                ""Version"": ""2012-10-17"",
-                ""Statement"": [
-                    {{
-                        ""Effect"": ""Allow"",
-                        ""Principal"": {{ ""AWS"": [""*""] }},
-                        ""Action"": [""s3:GetObject""],
-                        ""Resource"": [""arn:aws:s3:::{_bucketName}/*""]
-                    }}
-                ]
-            }}";
-
-            await s3Client.PutBucketPolicyAsync(new PutBucketPolicyRequest
-            {
-                BucketName = _bucketName,
-                Policy = policy
             }, cancellationToken);
         }
+
+        await ApplyPublicReadPolicyAsync(bucketName, cancellationToken);
+    }
+
+    private async Task ApplyPublicReadPolicyAsync(string bucketName, CancellationToken cancellationToken)
+    {
+        var policyDocument = new
+        {
+            Version = "2012-10-17",
+            Statement = new[]
+            {
+                new
+                {
+                    Effect = "Allow",
+                    Principal = new { AWS = new[] { "*" } },
+                    Action = new[] { "s3:GetObject" },
+                    Resource = new[] { $"arn:aws:s3:::{bucketName}/images/cars/*" }
+                }
+            }
+        };
+
+        await s3Client.PutBucketPolicyAsync(new PutBucketPolicyRequest
+        {
+            BucketName = bucketName,
+            Policy = JsonSerializer.Serialize(policyDocument)
+        }, cancellationToken);
+    }
+
+    private static void ValidateMimeType(string? contentType, string extension)
+    {
+        if (string.IsNullOrWhiteSpace(contentType))
+            throw new ArgumentException("Не удалось определить MIME-тип файла.");
+
+        if (!AllowedMimeTypes.TryGetValue(extension, out var allowedMimeTypes) ||
+            !allowedMimeTypes.Contains(contentType, StringComparer.OrdinalIgnoreCase))
+        {
+            throw new ArgumentException("Неподдерживаемый MIME-тип файла.");
+        }
+    }
+
+    private static (string BucketName, string Key) ParseStoredFileReference(string fileUrl)
+    {
+        if (fileUrl.StartsWith("s3://", StringComparison.OrdinalIgnoreCase))
+        {
+            var reference = fileUrl["s3://".Length..];
+            var separatorIndex = reference.IndexOf('/');
+            if (separatorIndex <= 0 || separatorIndex >= reference.Length - 1)
+                throw new ArgumentException("Некорректная ссылка на файл.");
+
+            return (reference[..separatorIndex], reference[(separatorIndex + 1)..]);
+        }
+
+        var uri = new Uri(fileUrl, UriKind.Absolute);
+        var segments = uri.AbsolutePath.Trim('/').Split('/', 2, StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length != 2)
+            throw new ArgumentException("Некорректная ссылка на файл.");
+
+        return (segments[0], segments[1]);
     }
 }

@@ -12,14 +12,17 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Carsharing/Carsharing.csproj", "Carsharing/"]
-COPY ["Carsharing.Application/Carsharing.Application.csproj", "Carsharing.Application/"]
-COPY ["Carsharing.Core/Carsharing.Core.csproj", "Carsharing.Core/"]
-COPY ["Carsharing.DataAccess/Carsharing.DataAccess.csproj", "Carsharing.DataAccess/"]
+COPY ["Carsharing/Carsharing/Carsharing.csproj", "Carsharing/Carsharing/"]
+COPY ["Carsharing/Carsharing.Application/Carsharing.Application.csproj", "Carsharing/Carsharing.Application/"]
+COPY ["Carsharing/Carsharing.Core/Carsharing.Core.csproj", "Carsharing/Carsharing.Core/"]
+COPY ["Carsharing/Carsharing.DataAccess/Carsharing.DataAccess.csproj", "Carsharing/Carsharing.DataAccess/"]
 COPY ["Shared/Shared.csproj", "Shared/"]
-RUN dotnet restore "./Carsharing/Carsharing.csproj"
-COPY . .
-WORKDIR "/src/Carsharing"
+RUN dotnet restore "./Carsharing/Carsharing/Carsharing.csproj"
+
+COPY ["Carsharing/", "Carsharing/"]
+COPY ["Shared/", "Shared/"]
+
+WORKDIR "/src/Carsharing/Carsharing"
 RUN dotnet build "./Carsharing.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Этот этап используется для публикации проекта службы, который будет скопирован на последний этап

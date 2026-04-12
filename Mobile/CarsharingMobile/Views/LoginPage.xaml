@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CarsharingMobile.Views.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
+    x:DataType="vm:LoginViewModel"
+    BackgroundColor="{StaticResource BgLight}"
+    Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30"
+            MinimumHeightRequest="600"
+            Spacing="20"
+            VerticalOptions="Center">
+
+            <Image
+                Margin="0,0,0,30"
+                HeightRequest="180"
+                HorizontalOptions="Center"
+                Source="logo.png"
+                WidthRequest="180" />
+
+            <VerticalStackLayout Spacing="5">
+                <Label
+                    FontSize="14"
+                    Text="Логин"
+                    TextColor="{StaticResource TextGray}" />
+                <Border
+                    BackgroundColor="{StaticResource Surface}"
+                    HeightRequest="50"
+                    Stroke="{StaticResource BorderLight}"
+                    StrokeShape="RoundRectangle 8"
+                    StrokeThickness="1">
+                    <Entry
+                        x:Name="LoginEntry"
+                        Margin="15,0"
+                        Completed="OnLoginCompleted"
+                        ReturnType="Next"
+                        Text="{Binding UserLogin, Mode=TwoWay}" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="5">
+                <Label
+                    FontSize="14"
+                    Text="Пароль"
+                    TextColor="{StaticResource TextGray}" />
+                <Border
+                    BackgroundColor="{StaticResource Surface}"
+                    HeightRequest="50"
+                    Stroke="{StaticResource BorderLight}"
+                    StrokeShape="RoundRectangle 8"
+                    StrokeThickness="1">
+                    <Grid ColumnDefinitions="*, 50">
+                        <Entry
+                            x:Name="PasswordEntry"
+                            Grid.Column="0"
+                            Margin="15,0"
+                            IsPassword="{Binding IsPasswordHidden}"
+                            ReturnCommand="{Binding LoginCommand}"
+                            Text="{Binding UserPassword, Mode=TwoWay}" />
+
+                        <ImageButton
+                            Grid.Column="1"
+                            Padding="12"
+                            BackgroundColor="Transparent"
+                            Command="{Binding TogglePasswordCommand}"
+                            Source="{Binding PasswordIcon}" />
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+
+            <ActivityIndicator
+                HorizontalOptions="Center"
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}"
+                Color="{StaticResource Primary}" />
+
+            <Button
+                Margin="0,15,0,0"
+                Command="{Binding LoginCommand}"
+                Text="Войти" />
+
+            <Button
+                BackgroundColor="Transparent"
+                Command="{Binding GoToRegistrationCommand}"
+                FontSize="16"
+                Text="Создать аккаунт"
+                TextColor="{StaticResource Primary}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

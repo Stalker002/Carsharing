@@ -1,0 +1,31 @@
+using CarsharingMobile.Services;
+
+namespace CarsharingMobile.Extensions;
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    {
+        services.AddTransient<AuthHttpMessageHandler>();
+        services.AddSingleton<IdentityService>();
+
+        services.AddApiClient<AuthService>();
+        services.AddApiClient<CarService>();
+        services.AddApiClient<TripService>();
+        services.AddApiClient<ClientService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddApiClient<TService>(this IServiceCollection services)
+        where TService : class
+    {
+        services.AddHttpClient<TService>(client => 
+            { 
+                client.BaseAddress = new Uri(ApiConfig.BaseUrl); 
+            })
+            .AddHttpMessageHandler<AuthHttpMessageHandler>();
+
+        return services;
+    }
+}
