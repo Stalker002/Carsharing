@@ -82,3 +82,4 @@ Carsharing/.dotnet/.dotnet/
 /Carsharing/.local-bin
 /Carsharing/Directory.Build.rsp
 /Mobile/CarsharingMobile/LocalSecrets.props.example
+/Carsharing/.env
