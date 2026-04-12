@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         services.AddApiClient<AuthService>();
         services.AddApiClient<CarService>();
         services.AddApiClient<TripService>();
+        services.AddApiClient<ClientService>();
 
         return services;
     }

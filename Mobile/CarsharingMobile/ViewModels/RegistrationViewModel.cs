@@ -1,6 +1,7 @@
 using CarsharingMobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Shared.Contracts.Clients;
 using Shared.Contracts.Users;
 using System.Net.Mail;
@@ -174,6 +175,7 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
 
             if (loginError == null)
             {
+                WeakReferenceMessenger.Default.Send(new UserLoggedInMessage());
                 await Shell.Current.GoToAsync("//MainPage");
             }
         }

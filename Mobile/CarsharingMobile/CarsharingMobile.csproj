@@ -50,6 +50,8 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
+	<Import Project="LocalSecrets.props" Condition="Exists('LocalSecrets.props')" />
+
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
 		<GoogleMapsApiKey Condition="'$(GoogleMapsApiKey)' == ''">__SET_ANDROID_MAPS_API_KEY__</GoogleMapsApiKey>
 		<AndroidManifestPlaceholders>$(AndroidManifestPlaceholders);googleMapsApiKey=$(GoogleMapsApiKey)</AndroidManifestPlaceholders>
@@ -72,6 +74,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiFont Include="Resources\Images\chat_icon.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="12.3.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.5" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
@@ -89,6 +95,10 @@
 	  <ProjectReference Include="..\..\Shared\Shared.csproj" />
 	</ItemGroup>
 
-	<Import Project="LocalSecrets.props" Condition="Exists('LocalSecrets.props')" />
-	
+	<ItemGroup>
+	  <MauiXaml Update="Views\TipsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 </Project>
