@@ -87,7 +87,7 @@ public class SpecificationCar
         if (vinNumber is { Length: > MaxVinNumberLength })
             error = $"Vin number name can't be longer than {MaxVinNumberLength} symbols";
         if (!Regex.IsMatch(vinNumber, @"^[A-HJ-NPR-Z0-9]{17}$"))
-            error = "VIN number in invalid
+            error = "VIN number in invalid";
 
         if (string.IsNullOrWhiteSpace(stateNumber))
             error = "State Number can't be empty";
