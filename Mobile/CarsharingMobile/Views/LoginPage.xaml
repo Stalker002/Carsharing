@@ -33,7 +33,12 @@
                     Stroke="{StaticResource BorderLight}"
                     StrokeShape="RoundRectangle 8"
                     StrokeThickness="1">
-                    <Entry Margin="15,0" Text="{Binding UserLogin, Mode=TwoWay}" />
+                    <Entry
+                        x:Name="LoginEntry"
+                        Margin="15,0"
+                        Completed="OnLoginCompleted"
+                        ReturnType="Next"
+                        Text="{Binding UserLogin, Mode=TwoWay}" />
                 </Border>
             </VerticalStackLayout>
 
@@ -50,6 +55,7 @@
                     StrokeThickness="1">
                     <Grid ColumnDefinitions="*, 50">
                         <Entry
+                            x:Name="PasswordEntry"
                             Grid.Column="0"
                             Margin="15,0"
                             IsPassword="{Binding IsPasswordHidden}"

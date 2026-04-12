@@ -1,6 +1,7 @@
 using CarsharingMobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Shared.Contracts.Clients;
 using Shared.Contracts.Users;
 using System.Net.Mail;
@@ -26,6 +27,12 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
     [ObservableProperty] public partial string? PhoneNumberError { get; set; }
     partial void OnPhoneNumberChanged(string? value)
     {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            PhoneNumberError = "Введите телефон.";
+            return;
+        }
+
         var phoneRegex = MyRegex;
         if (!phoneRegex.IsMatch(value.Trim()))
             PhoneNumberError = "Неверный формат телефона. Пример: (+375/80)(29/44/33/25)XXX-XX-XX";
@@ -65,16 +72,20 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
     [ObservableProperty] public partial string? EmailError { get; set; }
     partial void OnEmailChanged(string? value)
     {
-        if (!string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(value))
         {
-            try
-            {
-                _ = new MailAddress(value);
-            }
-            catch
-            {
-                EmailError = "Неверный формат e-mail.";
-            }
+            EmailError = "Введите почту.";
+            return;
+        }
+
+        try
+        {
+            _ = new MailAddress(value);
+            EmailError = null;
+        }
+        catch
+        {
+            EmailError = "Неверный формат e-mail.";
         }
     }
 
@@ -136,7 +147,7 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
     private async Task CompleteRegistrationAsync()
     {
         OnNameChanged(Name);
-        OnSurnameChanged(Name);
+        OnSurnameChanged(Surname);
         OnEmailChanged(Email);
         OnUserPasswordChanged(UserPassword);
 
@@ -164,6 +175,7 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
 
             if (loginError == null)
             {
+                WeakReferenceMessenger.Default.Send(new UserLoggedInMessage());
                 await Shell.Current.GoToAsync("//MainPage");
             }
         }

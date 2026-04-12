@@ -2,6 +2,7 @@ using CarsharingMobile.Extensions;
 using CarsharingMobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Shared.Contracts.Users;
 
 namespace CarsharingMobile.ViewModels;
@@ -49,9 +50,11 @@ public partial class LoginViewModel(AuthService authService, IdentityService ide
             switch (roleId)
             {
                 case 2:
+                    WeakReferenceMessenger.Default.Send(new UserLoggedInMessage());
                     await Shell.Current.GoToAsync("//MainPage");
                     break;
                 case 1:
+                    WeakReferenceMessenger.Default.Send(new UserLoggedInMessage());
                     await Shell.Current.DisplayAlert("Привет, Админ!", "Добро пожаловать в систему управления", "ОК");
                     await Shell.Current.GoToAsync("//MainPage");
                     break;

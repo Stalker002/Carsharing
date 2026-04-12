@@ -4,6 +4,8 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:CarsharingMobile.Views"
+    xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
+    x:DataType="vm:AppShellViewModel"
     FlyoutBehavior="Flyout">
     <Shell.FlyoutContent>
         <Grid
@@ -15,58 +17,108 @@
                 Grid.Row="0"
                 Margin="0,0,0,30"
                 Spacing="5">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoToProfileCommand}" />
+                </VerticalStackLayout.GestureRecognizers>
                 <Label
                     FontAttributes="Bold"
                     FontSize="22"
-                    Text="Иван"
+                    Text="{Binding Name}"
                     TextColor="White" />
                 <Label
                     FontAttributes="Bold"
                     FontSize="22"
-                    Text="Иванов"
+                    Text="{Binding Surname}"
                     TextColor="White" />
-                <Label
-                    Margin="0,5,0,0"
-                    FontAttributes="Bold"
-                    FontSize="14"
-                    Text="БОНУСЫ 0.00 BYN"
-                    TextColor="#3296F8" />
             </VerticalStackLayout>
 
-            <VerticalStackLayout Grid.Row="1" Spacing="25">
-                <Label
-                    FontSize="16"
-                    Text="ЦЕНА ПРОЕЗДА"
-                    TextColor="White" />
-                <Label
-                    FontSize="16"
-                    Text="ПОЕЗДКИ"
-                    TextColor="White" />
-                <Label
-                    FontSize="16"
-                    Text="ПРОМОКОДЫ"
-                    TextColor="White" />
-                <Label
-                    FontSize="16"
-                    Text="НАПИСАТЬ В ПОДДЕРЖКУ"
-                    TextColor="White" />
+            <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
+                <VerticalStackLayout Spacing="20">
 
-                <BoxView
-                    Margin="0,10"
-                    HeightRequest="1"
-                    Color="#213868" />
+                    <HorizontalStackLayout Spacing="15">
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnTipsClicked" />
+                        </HorizontalStackLayout.GestureRecognizers>
+                        <Image
+                            HeightRequest="24"
+                            Source="info_icon.png"
+                            VerticalOptions="Center"
+                            WidthRequest="24" />
+                        <Label
+                            FontSize="16"
+                            Text="ПОДСКАЗКИ"
+                            TextColor="White"
+                            VerticalOptions="Center" />
+                    </HorizontalStackLayout>
 
-                <Button
-                    Padding="0"
-                    BackgroundColor="Transparent"
-                    HorizontalOptions="Start"
-                    Text="Выйти из аккаунта"
-                    TextColor="#FF3333" />
-            </VerticalStackLayout>
+                    <HorizontalStackLayout Spacing="15">
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnTripsClicked" />
+                        </HorizontalStackLayout.GestureRecognizers>
+                        <Image
+                            HeightRequest="24"
+                            Source="car_icon.png"
+                            VerticalOptions="Center"
+                            WidthRequest="24" />
+                        <Label
+                            FontSize="16"
+                            Text="ПОЕЗДКИ"
+                            TextColor="White"
+                            VerticalOptions="Center" />
+                    </HorizontalStackLayout>
 
-            <!--  Подвал меню  -->
+                    <HorizontalStackLayout Spacing="15">
+                        <Image
+                            HeightRequest="24"
+                            Source="gift_icon.png"
+                            VerticalOptions="Center"
+                            WidthRequest="24" />
+                        <Label
+                            FontSize="16"
+                            Text="ПРОМОКОДЫ"
+                            TextColor="White"
+                            VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="15">
+                        <Image
+                            HeightRequest="24"
+                            Source="chat_icon.png"
+                            VerticalOptions="Center"
+                            WidthRequest="24" />
+                        <Label
+                            FontSize="16"
+                            Text="ПОДДЕРЖКА"
+                            TextColor="White"
+                            VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <BoxView
+                        Margin="0,5"
+                        HeightRequest="1"
+                        Color="#213868" />
+
+                    <HorizontalStackLayout Spacing="15">
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLogoutClicked" />
+                        </HorizontalStackLayout.GestureRecognizers>
+                        <Image
+                            HeightRequest="24"
+                            Source="logout_icon.png"
+                            VerticalOptions="Center"
+                            WidthRequest="24" />
+                        <Label
+                            FontSize="16"
+                            Text="ВЫЙТИ ИЗ АККАУНТА"
+                            TextColor="#FF3333"
+                            VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+
             <VerticalStackLayout
                 Grid.Row="2"
+                Margin="0,20,0,0"
                 HorizontalOptions="Center"
                 Spacing="5">
                 <Label
