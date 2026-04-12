@@ -2,26 +2,14 @@
 
 public static class ApiConfig
 {
-    public const string LocalIpAddress = "192.168.137.99";
-
     public const string Port = "5078";
 
-    public static string BaseUrl
-    {
-        get
-        {
-            // Android Emulator
-            if (DeviceInfo.Platform == DevicePlatform.Android && DeviceInfo.DeviceType == DeviceType.Virtual)
-            {
-                return $"http://10.0.2.2:{Port}/";
-            }
+    public const string LocalIpAddress = "192.168.1.12";
 
-            // Win application
-            return DeviceInfo.Platform == DevicePlatform.WinUI
-                ? $"http://localhost:{Port}/"
-                :
-                // 3. Real IP
-                $"http://{LocalIpAddress}:{Port}/";
-        }
-    }
+    public static string HostIp =>
+        (DeviceInfo.Platform == DevicePlatform.Android && DeviceInfo.DeviceType == DeviceType.Virtual)
+            ? "10.0.2.2"
+            : LocalIpAddress;
+
+    public static string BaseUrl => $"http://{HostIp}:{Port}/";
 }

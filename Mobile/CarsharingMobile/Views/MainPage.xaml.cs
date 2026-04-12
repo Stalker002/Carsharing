@@ -1,6 +1,7 @@
 ﻿using CarsharingMobile.ViewModels;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
+using Shared.Contracts.Cars;
 
 namespace CarsharingMobile.Views;
 
@@ -22,6 +23,32 @@ public partial class MainPage : ContentPage
         DrawServiceArea();
 
         await MoveMapToUserLocationAsync();
+
+        if (_viewModel.Cars.Count == 0 && _viewModel.LoadInitialCommand.CanExecute(null))
+        {
+            await _viewModel.LoadInitialCommand.ExecuteAsync(null);
+        }
+    }
+
+    private void OnCarPinClicked(object sender, Microsoft.Maui.Controls.Maps.PinClickedEventArgs e)
+    {
+        e.HideInfoWindow = true;
+
+        if (sender is Pin pin)
+        {
+            if (pin.BindingContext is CarWithMinInfoDto clickedCar)
+            {
+                _viewModel.SelectCarCommand.Execute(clickedCar);
+            }
+        }
+    }
+
+    private void OnMapClicked(object sender, MapClickedEventArgs e)
+    {
+        if (_viewModel.IsCardVisible)
+        {
+            _viewModel.CloseCardCommand.Execute(null);
+        }
     }
 
     private void DrawServiceArea()
@@ -162,7 +189,6 @@ public partial class MainPage : ContentPage
         var region = CarMap.VisibleRegion;
         if (region != null)
         {
-            // Умножаем радиус обзора на 2 (Отдаляем карту)
             CarMap.MoveToRegion(MapSpan.FromCenterAndRadius(region.Center, Distance.FromKilometers(region.Radius.Kilometers * 2)));
         }
     }

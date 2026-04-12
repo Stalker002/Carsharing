@@ -3,26 +3,33 @@
     x:Class="CarsharingMobile.Views.MainPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:cars="clr-namespace:Shared.Contracts.Cars;assembly=Shared"
+    xmlns:controls="clr-namespace:CarsharingMobile.Extensions"
     xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
-    xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
     x:DataType="vm:MainViewModel"
     Shell.NavBarIsVisible="False">
 
     <Grid>
-        <maps:Map x:Name="CarMap" IsShowingUser="True">
-            <maps:Map.Pins>
-                <maps:Pin Address="ул. Козлова" Label="VW Polo">
-                    <maps:Pin.Location>
-                        <sensors:Location>
-                            <x:Arguments>
-                                <x:Double>53.9006</x:Double>
-                                <x:Double>27.5590</x:Double>
-                            </x:Arguments>
-                        </sensors:Location>
-                    </maps:Pin.Location>
-                </maps:Pin>
-            </maps:Map.Pins>
+        <maps:Map
+            x:Name="CarMap"
+            IsShowingUser="True"
+            ItemsSource="{Binding Cars}"
+            MapClicked="OnMapClicked">
+            <maps:Map.ItemTemplate>
+                <DataTemplate x:DataType="cars:CarWithMinInfoDto">
+
+                    <controls:CarPin
+                        Address="{Binding Model}"
+                        ImageUrl="{Binding ImagePath}"
+                        Label="{Binding Brand}"
+                        Latitude="{Binding Latitude}"
+                        Longitude="{Binding Longitude}"
+                        MarkerClicked="OnCarPinClicked" />
+
+                </DataTemplate>
+            </maps:Map.ItemTemplate>
         </maps:Map>
 
         <Grid Padding="20,40,20,40" InputTransparent="False">
@@ -124,6 +131,9 @@
                     Radius="10"
                     Offset="0,-2" />
             </Border.Shadow>
+            <Border.GestureRecognizers>
+                <SwipeGestureRecognizer Command="{Binding CloseCardCommand}" Direction="Down" />
+            </Border.GestureRecognizers>
             <VerticalStackLayout Spacing="15">
                 <BoxView
                     Margin="0,0,0,10"
@@ -141,7 +151,7 @@
                         Grid.Column="0"
                         Aspect="AspectFit"
                         HeightRequest="80"
-                        Source="car_placeholder.png" />
+                        Source="{Binding SelectedCar.ImagePath, TargetNullValue='car_placeholder.png'}" />
                     <VerticalStackLayout
                         Grid.Column="1"
                         Spacing="2"
@@ -149,11 +159,44 @@
                         <Label
                             FontAttributes="Bold"
                             FontSize="18"
-                            Text="VW Polo NEW AT"
-                            TextColor="Black" />
+                            TextColor="Black">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{Binding SelectedCar.Brand}" />
+                                    <Span Text=" " />
+                                    <Span Text="{Binding SelectedCar.Model}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
                         <Label
                             FontSize="13"
-                            Text="4 улица Берестянская"
+                            Text="{Binding SelectedCar.Transmission}"
+                            TextColor="#999" />
+                    </VerticalStackLayout>
+                </Grid>
+                <Grid Padding="10,0" ColumnDefinitions="*, *">
+                    <VerticalStackLayout Grid.Column="0" Spacing="0">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            HorizontalOptions="Center"
+                            Text="{Binding SelectedCar.PricePerDay, StringFormat='{0} byn/день'}"
+                            TextColor="Black" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout
+                        Grid.Column="1"
+                        Spacing="2"
+                        VerticalOptions="Center">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            HorizontalOptions="Center"
+                            Text="{Binding SelectedCar.MaxFuel, StringFormat='{0} л.'}"
+                            TextColor="Black" />
+                        <Label
+                            FontSize="11"
+                            HorizontalOptions="Center"
+                            Text="ОБЪЕМ БАКА"
                             TextColor="#999" />
                     </VerticalStackLayout>
                 </Grid>
