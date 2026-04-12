@@ -117,7 +117,7 @@ public class Program
             }
         }
 
-        if (app.Environment.IsDevelopment())
+        if (!app.Environment.IsEnvironment("Testing"))
         {
             app.UseSwagger();
             app.UseSwaggerUI();
@@ -146,11 +146,6 @@ public class Program
         app.UseStaticFiles();
 
         app.MapControllers();
-
-        if (!app.Environment.IsEnvironment("Testing"))
-        {
-            app.MapFallbackToFile("index.html");
-        }
 
         app.Run();
     }
