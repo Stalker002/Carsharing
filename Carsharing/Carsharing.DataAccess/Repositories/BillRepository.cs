@@ -218,8 +218,9 @@ public class BillRepository : IBillRepository
             bill.RemainingAmount);
 
         if (!string.IsNullOrWhiteSpace(error))
+            throw new ArgumentException($"Create exception bill: {error}");
 
-            await _context.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return bill.Id;
     }

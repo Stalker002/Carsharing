@@ -49,7 +49,7 @@ public class FavoriteRepository : IFavoriteRepository
                 f.Car.SpecificationCar.Brand!,
                 f.Car.SpecificationCar.Model!,
                 f.Car.SpecificationCar.Transmission!,
-                f.Car.Coordinates.Y,
+                f.Car.Coordinates!.Y,
                 f.Car.Coordinates.X,
                 f.Car.ImagePath
             ))

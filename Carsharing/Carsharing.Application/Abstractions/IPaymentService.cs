@@ -14,7 +14,11 @@ public interface IPaymentService
 
     Task<List<Payment>> GetPaymentByBillId(int billId, CancellationToken cancellationToken);
 
+    Task<List<Payment>> GetPaymentByBillId(int userId, int billId, CancellationToken cancellationToken);
+
     Task<int> CreatePayment(Payment payment, CancellationToken cancellationToken);
+
+    Task<int> CreatePayment(int userId, Payment payment, CancellationToken cancellationToken);
 
     Task<int> UpdatePayment(int id, int? billId, decimal? sum, string? method, DateTime? date, CancellationToken cancellationToken);
 

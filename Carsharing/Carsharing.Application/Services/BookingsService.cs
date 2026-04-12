@@ -72,18 +72,34 @@ public class BookingsService : IBookingsService
         return await _bookingRepository.GetByCarId(carId, cancellationToken);
     }
 
+    public async Task<List<Booking>> GetBookingsByCarId(int userId, int carId, CancellationToken cancellationToken)
+    {
+        var clientId = await GetRequiredClientId(userId, cancellationToken);
+        var bookings = await _bookingRepository.GetByCarId(carId, cancellationToken);
+
+        return bookings.Where(b => b.ClientId == clientId).ToList();
+    }
+
     public async Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int id, CancellationToken cancellationToken)
     {
         return await _bookingRepository.GetBookingWithInfo(id, cancellationToken);
     }
 
+    public async Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int userId, int id, CancellationToken cancellationToken)
+    {
+        var clientId = await GetRequiredClientId(userId, cancellationToken);
+        var booking = (await _bookingRepository.GetById(id, cancellationToken)).FirstOrDefault()
+            ?? throw new NotFoundException("Booking not found");
+
+        if (booking.ClientId != clientId)
+            throw new UnauthorizedAccessException("Booking does not belong to current user");
+
+        return await _bookingRepository.GetBookingWithInfo(id, cancellationToken);
+    }
+
     public async Task<int> CreateBooking(int userId, int statusId, int carId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
     {
-        var client = await _clientRepository.GetClientByUserId(userId, cancellationToken);
-        var clientId = client.Select(c => c.Id).FirstOrDefault();
-
-        if (clientId == 0)
-            throw new NotFoundException("Клиент не найден");
+        var clientId = await GetRequiredClientId(userId, cancellationToken);
 
         var (booking, error) = Booking.Create(0, statusId, carId, clientId, startTime, endTime);
 
@@ -133,5 +149,16 @@ public class BookingsService : IBookingsService
     public async Task<int> DeleteBooking(int id, CancellationToken cancellationToken)
     {
         return await _bookingRepository.Delete(id, cancellationToken);
+    }
+
+    private async Task<int> GetRequiredClientId(int userId, CancellationToken cancellationToken)
+    {
+        var client = await _clientRepository.GetClientByUserId(userId, cancellationToken);
+        var clientId = client.Select(c => c.Id).FirstOrDefault();
+
+        if (clientId == 0)
+            throw new NotFoundException("Клиент не найден");
+
+        return clientId;
     }
 }

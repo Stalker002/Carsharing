@@ -86,15 +86,15 @@ public class SpecificationCar
             error = "Vin Number can't be empty";
         if (vinNumber is { Length: > MaxVinNumberLength })
             error = $"Vin number name can't be longer than {MaxVinNumberLength} symbols";
-        /*if (!Regex.IsMatch(vinNumber, @"^[A-HJ-NPR-Z0-9]{17}$"))
-            error = "VIN number in invalid */
+        if (!Regex.IsMatch(vinNumber, @"^[A-HJ-NPR-Z0-9]{17}$"))
+            error = "VIN number in invalid
 
         if (string.IsNullOrWhiteSpace(stateNumber))
             error = "State Number can't be empty";
         if (stateNumber is { Length: > MaxStateNumberLength })
             error = $"State number name can't be longer than {MaxStateNumberLength} symbols";
         if (!Regex.IsMatch(stateNumber ?? throw new ArgumentNullException(nameof(stateNumber)),
-                @"^(\d{4}\s?[ABEIKMHOPCTX]{2}-[1-7]|[ABEIKMHOPCTX]{2}\s?\d{4}-[1-7]|(TA|TT|TY)\d{4}|E\d{3}[ABEIKMHOPCTX]{2}[1-7])$"))
+                @"^(\d{4}\s?[ABEIKMHOPCTX]{2}-[1-8]|[ABEIKMHOPCTX]{2}\s?\d{4}-[1-8]|(TA|TT|TY)\d{4}|E\d{3}[ABEIKMHOPCTX]{2}[1-8])$"))
             error = "State number in invalid format";
 
         if (mileage < 0)
