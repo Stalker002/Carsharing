@@ -99,7 +99,7 @@ public class UsersServiceTests
     [Fact]
     public async Task CreateUser_HashesPasswordInServiceBeforeSaving()
     {
-        var plainUser = User.Create(0, 2, "new_user", "StrongPassword123!").user!;
+        var plainUser = User.Create(0, 2, "new_user", "StrongPassword123!").user;
 
         _passwordHasherMock
             .Setup(x => x.Generate("StrongPassword123!"))

@@ -1,5 +1,4 @@
 using Carsharing.Application.Abstractions;
-using Carsharing.Application.Extensions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess;
 using Microsoft.AspNetCore.Hosting;
@@ -66,7 +65,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         using var scope = Services.CreateScope();
         var jwtProvider = scope.ServiceProvider.GetRequiredService<IJwtProvider>();
         
-        var testUser = User.Create(userId, roleId, "testuser", "password").user!;
+        var testUser = User.Create(userId, roleId, "testuser", "password").user;
         
         return jwtProvider.GenerateToken(testUser);
     }

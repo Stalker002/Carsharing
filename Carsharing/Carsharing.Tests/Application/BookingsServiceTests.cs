@@ -37,7 +37,7 @@ public class BookingsServiceTests
         var startTime = DateTime.UtcNow;
         var endTime = DateTime.UtcNow.AddHours(1);
 
-        var client = Client.Create(clientId, userId, "Test", "User", "+375291234567", "test@example.com").client!;
+        var client = Client.Create(clientId, userId, "Test", "User", "+375291234567", "test@example.com").client;
         _clientRepositoryMock
             .Setup(x => x.GetClientByUserId(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync([client]);
@@ -83,7 +83,7 @@ public class BookingsServiceTests
         var startTime = DateTime.UtcNow;
         var endTime = DateTime.UtcNow.AddHours(1);
 
-        var client = Client.Create(clientId, userId, "Test", "User", "+375291234567", "test@example.com").client!;
+        var client = Client.Create(clientId, userId, "Test", "User", "+375291234567", "test@example.com").client;
 
         var existingCar = Car.Create(
             5,
@@ -95,7 +95,7 @@ public class BookingsServiceTests
             53.900634, 
             27.558973,
             50,
-            null).car!;
+            null).car;
 
         _carRepositoryMock
             .Setup(x => x.TryUpdateStatus(5, (int)CarStatusEnum.Available, (int)CarStatusEnum.Reserved, It.IsAny<CancellationToken>()))
@@ -127,7 +127,7 @@ public class BookingsServiceTests
         var startTime = DateTime.UtcNow;
         var endTime = DateTime.UtcNow.AddHours(1);
 
-        var client = Client.Create(clientId, userId, "Test", "User", "+375291234567", "test@example.com").client!;
+        var client = Client.Create(clientId, userId, "Test", "User", "+375291234567", "test@example.com").client;
 
         _carRepositoryMock
             .Setup(x => x.TryUpdateStatus(5, (int)CarStatusEnum.Available, (int)CarStatusEnum.Reserved, It.IsAny<CancellationToken>()))

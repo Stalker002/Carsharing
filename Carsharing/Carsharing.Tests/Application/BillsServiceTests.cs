@@ -9,25 +9,22 @@ namespace Carsharing.Tests.Application;
 public class BillsServiceTests
 {
     private readonly Mock<IBillRepository> _billRepoMock;
-    private readonly Mock<IBookingRepository> _bookingRepoMock;
-    private readonly Mock<IClientRepository> _clientRepoMock;
     private readonly Mock<IPromocodeRepository> _promoRepoMock;
-    private readonly Mock<ITripRepository> _tripRepoMock;
     private readonly BillsService _billsService;
 
     public BillsServiceTests()
     {
         _billRepoMock = new Mock<IBillRepository>();
-        _bookingRepoMock = new Mock<IBookingRepository>();
-        _clientRepoMock = new Mock<IClientRepository>();
+        var bookingRepoMock = new Mock<IBookingRepository>();
+        var clientRepoMock = new Mock<IClientRepository>();
         _promoRepoMock = new Mock<IPromocodeRepository>();
-        _tripRepoMock = new Mock<ITripRepository>();
+        var tripRepoMock = new Mock<ITripRepository>();
         _billsService = new BillsService(
             _billRepoMock.Object,
             _promoRepoMock.Object,
-            _tripRepoMock.Object,
-            _bookingRepoMock.Object,
-            _clientRepoMock.Object);
+            tripRepoMock.Object,
+            bookingRepoMock.Object,
+            clientRepoMock.Object);
     }
 
     [Fact]
