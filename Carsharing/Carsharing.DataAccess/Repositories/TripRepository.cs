@@ -385,10 +385,8 @@ public class TripRepository : ITripRepository
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var tripEntity = await _context.Trip
+        return await _context.Trip
             .Where(t => t.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

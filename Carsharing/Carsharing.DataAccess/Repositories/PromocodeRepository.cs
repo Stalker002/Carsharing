@@ -217,10 +217,8 @@ public class PromocodeRepository : IPromocodeRepository
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var promocodeEntity = await _context.Promocode
+        return await _context.Promocode
             .Where(pr => pr.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

@@ -188,10 +188,8 @@ public class InsuranceRepository(CarsharingDbContext context) : IInsuranceReposi
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var insuranceEntity = await _context.Insurance
+        return await _context.Insurance
             .Where(i => i.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

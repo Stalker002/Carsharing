@@ -164,10 +164,8 @@ public class MaintenanceRepository : IMaintenanceRepository
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var maintenanceEntity = await _context.Maintenance
+        return await _context.Maintenance
             .Where(m => m.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

@@ -209,10 +209,8 @@ public class ReviewRepository : IReviewRepository
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var reviewEntity = await _context.Review
+        return await _context.Review
             .Where(r => r.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

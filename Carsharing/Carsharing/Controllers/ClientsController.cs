@@ -3,27 +3,19 @@ using Carsharing.Core.Models;
 using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Contracts.ClientDocuments;
 using Shared.Contracts.Clients;
 
 namespace Carsharing.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ClientsController : ControllerBase
+public class ClientsController(IClientsService clientsService) : ControllerBase
 {
-    private readonly IClientsService _clientsService;
-
-    public ClientsController(IClientsService clientsService)
-    {
-        _clientsService = clientsService;
-    }
-
     [HttpGet("unpaged")]
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<ClientsResponse>>> GetClients(CancellationToken cancellationToken)
     {
-        var clients = await _clientsService.GetClients(cancellationToken);
+        var clients = await clientsService.GetClients(cancellationToken);
         var response = clients.Select(cl =>
             new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email));
         return Ok(response);
@@ -35,8 +27,8 @@ public class ClientsController : ControllerBase
         [FromQuery(Name = "_page")] int page = 1,
         [FromQuery(Name = "_limit")] int limit = 25, CancellationToken cancellationToken = default)
     {
-        var totalCount = await _clientsService.GetCountClients(cancellationToken);
-        var clients = await _clientsService.GetPagedClients(page, limit, cancellationToken);
+        var totalCount = await clientsService.GetCountClients(cancellationToken);
+        var clients = await clientsService.GetPagedClients(page, limit, cancellationToken);
 
         var response = clients
             .Select(cl => new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email))
@@ -51,7 +43,7 @@ public class ClientsController : ControllerBase
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<ClientsResponse>>> GetClientById(int id, CancellationToken cancellationToken)
     {
-        var clients = await _clientsService.GetClientById(id, cancellationToken);
+        var clients = await clientsService.GetClientById(id, cancellationToken);
         var response = clients.Select(cl =>
             new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email));
 
@@ -62,7 +54,7 @@ public class ClientsController : ControllerBase
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<List<ClientsResponse>>> GetClientByUserId(int userId, CancellationToken cancellationToken)
     {
-        var clients = await _clientsService.GetClientByUserId(userId, cancellationToken);
+        var clients = await clientsService.GetClientByUserId(userId, cancellationToken);
         var response = clients.Select(cl =>
             new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email));
         return Ok(response);
@@ -73,7 +65,7 @@ public class ClientsController : ControllerBase
     public async Task<ActionResult<List<ClientsResponse>>> GetClientByUserId(CancellationToken cancellationToken)
     {
         var userId = User.GetRequiredUserId();
-        var clients = await _clientsService.GetClientByUserId(userId, cancellationToken);
+        var clients = await clientsService.GetClientByUserId(userId, cancellationToken);
         var response = clients.Select(cl =>
             new ClientsResponse(cl.Id, cl.UserId, cl.Name, cl.Surname, cl.PhoneNumber, cl.Email));
         return Ok(response);
@@ -85,7 +77,7 @@ public class ClientsController : ControllerBase
     {
         var userId = User.GetRequiredUserId();
 
-        var clients = await _clientsService.GetMyDocuments(userId, cancellationToken);
+        var clients = await clientsService.GetMyDocuments(userId, cancellationToken);
         var response = clients.Select(d =>
             new
             {
@@ -103,7 +95,7 @@ public class ClientsController : ControllerBase
     [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> GetClientDocuments(int clientId, CancellationToken cancellationToken)
     {
-        var clients = await _clientsService.GetClientDocuments(clientId, cancellationToken);
+        var clients = await clientsService.GetClientDocuments(clientId, cancellationToken);
         var response = clients.Select(d =>
             new
             {
@@ -131,7 +123,7 @@ public class ClientsController : ControllerBase
         if (clientError is { Length: > 0 })
             return BadRequest(clientError);
 
-        var clientId = await _clientsService.CreateClient(client, cancellationToken);
+        var clientId = await clientsService.CreateClient(client, cancellationToken);
 
         return Ok(clientId);
     }
@@ -159,7 +151,7 @@ public class ClientsController : ControllerBase
         if (clientError is { Length: > 0 })
             return BadRequest(clientError);
 
-        var clientId = await _clientsService.CreateClientWithUser(client, user, cancellationToken);
+        var clientId = await clientsService.CreateClientWithUser(client, user, cancellationToken);
 
         return Ok(new { ClientId = clientId, Message = "Registration successful" });
     }
@@ -172,7 +164,7 @@ public class ClientsController : ControllerBase
 
         if (User.IsAdmin())
         {
-            clientId = await _clientsService.UpdateClient(
+            clientId = await clientsService.UpdateClient(
                 id,
                 request.UserId,
                 request.Name,
@@ -184,7 +176,7 @@ public class ClientsController : ControllerBase
         else
         {
             var currentUserId = User.GetRequiredUserId();
-            var myClient = (await _clientsService.GetClientByUserId(currentUserId, cancellationToken)).SingleOrDefault();
+            var myClient = (await clientsService.GetClientByUserId(currentUserId, cancellationToken)).SingleOrDefault();
 
             if (myClient == null)
                 return NotFound(new { message = "Клиент не найден" });
@@ -192,7 +184,7 @@ public class ClientsController : ControllerBase
             if (myClient.Id != id)
                 return Forbid();
 
-            clientId = await _clientsService.UpdateOwnClient(
+            clientId = await clientsService.UpdateOwnClient(
                 currentUserId,
                 request.Name,
                 request.Surname,
@@ -208,6 +200,6 @@ public class ClientsController : ControllerBase
     [Authorize(Policy = "AdminPolicy")]
     public async Task<ActionResult<int>> DeleteClient(int id, CancellationToken cancellationToken)
     {
-        return Ok(await _clientsService.DeleteClient(id, cancellationToken));
+        return Ok(await clientsService.DeleteClient(id, cancellationToken));
     }
 }

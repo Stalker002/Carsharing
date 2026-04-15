@@ -35,7 +35,7 @@ public class Trip
         if (bookingId < 0)
             error = "Booking Id must be positive";
 
-        if (!System.Enum.IsDefined(typeof(TripStatusEnum), statusId))
+        if (!Enum.IsDefined(typeof(TripStatusEnum), statusId))
             error = $"Invalid insurance type. Allowed: \"8. Ожидание начала\", \"9. В пути\", \"10. Завершена\", \"11. Отменена\", \"12. Требуется оплата\" ";
 
         if (string.IsNullOrWhiteSpace(tariffType))

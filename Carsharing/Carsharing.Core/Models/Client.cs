@@ -27,9 +27,9 @@ public class Client
 
     public string? Surname { get; }
 
-    public string? PhoneNumber { get; } = string.Empty;
+    public string? PhoneNumber { get; }
 
-    public string? Email { get; } = string.Empty;
+    public string? Email { get; }
 
     public static (Client client, string error) Create(int id, int userId, string? name, string? surname,
         string? phoneNumber, string? email)

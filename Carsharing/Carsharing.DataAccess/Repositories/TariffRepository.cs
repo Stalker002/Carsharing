@@ -114,10 +114,8 @@ public class TariffRepository : ITariffRepository
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var tariffEntity = await _context.Tariff
+        return await _context.Tariff
             .Where(t => t.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

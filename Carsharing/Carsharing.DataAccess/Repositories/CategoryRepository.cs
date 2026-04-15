@@ -89,10 +89,8 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var categoryEntity = await _context.Category
+        return await _context.Category
             .Where(c => c.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

@@ -35,7 +35,7 @@ public class Bill
         if (promocodeId < 0)
             error = "Promo code Id must be positive";
 
-        if (!System.Enum.IsDefined(typeof(BillStatusEnum), statusId))
+        if (!Enum.IsDefined(typeof(BillStatusEnum), statusId))
             error = "Invalid insurance type. Allowed: \"13. Не оплачен\", \"14. Частично оплачен\", \"15. Оплачен\", \"16. Отменён\" ";
 
         if (issueDate < DateTime.Now)

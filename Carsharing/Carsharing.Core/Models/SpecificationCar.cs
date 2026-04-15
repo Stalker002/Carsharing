@@ -2,7 +2,7 @@
 
 namespace Carsharing.Core.Models;
 
-public class SpecificationCar
+public partial class SpecificationCar
 {
     public const int MaxBrandLength = 50;
     public const int MaxModelLength = 100;
@@ -86,7 +86,7 @@ public class SpecificationCar
             error = "Vin Number can't be empty";
         if (vinNumber is { Length: > MaxVinNumberLength })
             error = $"Vin number name can't be longer than {MaxVinNumberLength} symbols";
-        if (!Regex.IsMatch(vinNumber, @"^[A-HJ-NPR-Z0-9]{17}$"))
+        if (vinNumber != null && !MyRegex().IsMatch(vinNumber))
             error = "VIN number in invalid";
 
         if (string.IsNullOrWhiteSpace(stateNumber))
@@ -116,4 +116,7 @@ public class SpecificationCar
 
         return (specificationCar, error);
     }
+
+    [GeneratedRegex(@"^[A-HJ-NPR-Z0-9]{17}$")]
+    private static partial Regex MyRegex();
 }

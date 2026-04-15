@@ -33,7 +33,7 @@ public class Promocode
     {
         var error = string.Empty;
 
-        if (!System.Enum.IsDefined(typeof(PromocodeStatusEnum), statusId))
+        if (!Enum.IsDefined(typeof(PromocodeStatusEnum), statusId))
             error = "Invalid insurance type. Allowed: \"20. Активен\", \"21. Истек\", \"22. Использован\" ";
 
         if (string.IsNullOrWhiteSpace(code))

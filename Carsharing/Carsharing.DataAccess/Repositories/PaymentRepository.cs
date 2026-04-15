@@ -157,10 +157,8 @@ public class PaymentRepository : IPaymentRepository
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var paymentEntity = await _context.Payment
+        return await _context.Payment
             .Where(p => p.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

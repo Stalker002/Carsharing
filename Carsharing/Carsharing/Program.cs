@@ -61,7 +61,7 @@ public class Program
                 });
         });
 
-        builder.Services.AddSingleton<IAmazonS3>(sp =>
+        builder.Services.AddSingleton<IAmazonS3>(_ =>
         {
             var config = new AmazonS3Config
             {

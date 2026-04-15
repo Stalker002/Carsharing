@@ -165,10 +165,8 @@ public class ClientDocumentRepository : IClientDocumentRepository
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var clientDocumentEntity = await _context.ClientDocument
+        return await _context.ClientDocument
             .Where(d => d.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

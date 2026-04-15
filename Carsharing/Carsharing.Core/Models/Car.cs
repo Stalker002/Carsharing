@@ -48,7 +48,7 @@ public class Car
     {
         var error = string.Empty;
 
-        if (!System.Enum.IsDefined(typeof(CarStatusEnum), carStatusId))
+        if (!Enum.IsDefined(typeof(CarStatusEnum), carStatusId))
             error = "Invalid insurance type. Allowed: \"1.Доступен\", \"2. Недоступен\", \"3. На обслуживании\", \"4. В ремонте\"";
 
         if (tariffId < 0)

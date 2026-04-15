@@ -47,8 +47,7 @@ public class CustomExceptionMiddleware
 
         var response = new
         {
-            StatusCode = statusCode,
-            Message = exception.Message,
+            StatusCode = statusCode, exception.Message,
         };
 
         return context.Response.WriteAsJsonAsync(response);

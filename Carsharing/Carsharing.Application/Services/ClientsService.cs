@@ -87,7 +87,7 @@ public class ClientsService : IClientsService
         }
         catch (Exception)
         {
-            await _unitOfWork.RollbackTransactionAsync(cancellationToken); ;
+            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
             throw;
         }
     }
@@ -110,7 +110,7 @@ public class ClientsService : IClientsService
         var client = await _clientRepository.GetById(id, cancellationToken);
         var userId = client.Select(c => c.UserId).FirstOrDefault();
 
-        var user = await _usersRepository.DeleteUser(userId, cancellationToken);
+        await _usersRepository.DeleteUser(userId, cancellationToken);
 
         return await _clientRepository.Delete(id, cancellationToken);
     }

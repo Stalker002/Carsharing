@@ -191,10 +191,8 @@ public class FineRepository : IFineRepository
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var fineEntity = await _context.Fine
+        return await _context.Fine
             .Where(f => f.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

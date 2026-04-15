@@ -32,7 +32,7 @@ public class Booking
     {
         var error = string.Empty;
 
-        if (!System.Enum.IsDefined(typeof(BookingStatusEnum), statusId))
+        if (!Enum.IsDefined(typeof(BookingStatusEnum), statusId))
             error = "Invalid booking status type. Allowed: \"5.Активно\", \"6. Завершено\", \"7. Отменено\" ";
 
         if (carId < 0)

@@ -40,7 +40,7 @@ public class Fine
         if (tripId < 0)
             error = "Trip Id must be positive";
 
-        if (!System.Enum.IsDefined(typeof(FineStatusEnum), statusId))
+        if (!Enum.IsDefined(typeof(FineStatusEnum), statusId))
             error = "Invalid fine status type. Allowed: \"17. Начислен\", \"18. Ожидает оплаты\", \"19. Оплачен\" ";
 
         if (string.IsNullOrWhiteSpace(type))
