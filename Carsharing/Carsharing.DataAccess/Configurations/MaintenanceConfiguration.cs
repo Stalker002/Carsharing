@@ -26,6 +26,7 @@ public class MaintenanceConfiguration : IEntityTypeConfiguration<MaintenanceEnti
 
         builder.Property(m => m.Description)
             .HasColumnName("maintenance_description")
+            .HasMaxLength(300)
             .IsRequired();
 
         builder.Property(m => m.Cost)

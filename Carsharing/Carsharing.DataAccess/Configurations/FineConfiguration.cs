@@ -25,6 +25,7 @@ public class FineConfiguration : IEntityTypeConfiguration<FineEntity>
 
         builder.Property(f => f.Type)
             .HasColumnName("fine_type")
+            .HasMaxLength(50)
             .IsRequired();
 
         builder.Property(f => f.Amount)
