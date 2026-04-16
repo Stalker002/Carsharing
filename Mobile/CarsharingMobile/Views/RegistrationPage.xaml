@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage
     x:Class="CarsharingMobile.Views.RegistrationPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
     Title="Регистрация"
     x:DataType="vm:RegistrationViewModel"
@@ -288,7 +288,7 @@
                                     TextColor="#1E1E1E" />
                                 <ImageButton
                                     Grid.Column="1"
-                                    Padding="15"
+                                    Padding="6"
                                     BackgroundColor="Transparent"
                                     Command="{Binding TogglePasswordCommand}"
                                     Source="{Binding PasswordIcon}" />

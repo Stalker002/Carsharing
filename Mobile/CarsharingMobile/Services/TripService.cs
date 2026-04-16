@@ -10,7 +10,7 @@ public class TripService(HttpClient httpClient)
     public async Task<(int? BookingId, string? Error)> CreateBookingAsync(BookingsRequest request)
     {
         var response = await httpClient.PostAsJsonAsync("Bookings", request);
-        
+
         if (response.IsSuccessStatusCode)
         {
             var id = await response.Content.ReadFromJsonAsync<int>();
@@ -26,10 +26,7 @@ public class TripService(HttpClient httpClient)
         try
         {
             var response = await httpClient.GetAsync("Trips/current");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<CurrentTripDto>();
-            }
+            if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<CurrentTripDto>();
             return null;
         }
         catch (Exception ex)
@@ -42,7 +39,7 @@ public class TripService(HttpClient httpClient)
     public async Task<(TripFinishResult? Result, string? Error)> FinishTripAsync(FinishTripRequest request)
     {
         var response = await httpClient.PostAsJsonAsync("Trips/finish", request);
-        
+
         if (response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<TripFinishResult>();

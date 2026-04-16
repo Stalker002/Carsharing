@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -18,7 +19,7 @@ public static class HttpClientExtensions
         {
             var response = await httpClient.GetAsync(url);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 SecureStorage.Default.Remove("tasty");
                 MainThread.BeginInvokeOnMainThread(async () => { await Shell.Current.GoToAsync("//LoginPage"); });
@@ -34,9 +35,7 @@ public static class HttpClientExtensions
 
             var totalCount = 0;
             if (response.Headers.TryGetValues("x-total-count", out var values))
-            {
                 int.TryParse(values.FirstOrDefault(), out totalCount);
-            }
 
             var items = await response.Content.ReadFromJsonAsync<List<TResponse>>(JsonOptions);
             return (items, totalCount);

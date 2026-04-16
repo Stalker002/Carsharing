@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace CarsharingMobile;
 
 public class AppHelpers
@@ -8,14 +10,11 @@ public class AppHelpers
         {
             var token = await SecureStorage.Default.GetAsync("jwt_token");
 
-            if (!string.IsNullOrEmpty(token))
-            {
-                await Shell.Current.GoToAsync("//MainPage");
-            }
+            if (!string.IsNullOrEmpty(token)) await Shell.Current.GoToAsync("//MainPage");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Auth check failed: {ex.Message}");
+            Debug.WriteLine($"Auth check failed: {ex.Message}");
         }
     }
 }

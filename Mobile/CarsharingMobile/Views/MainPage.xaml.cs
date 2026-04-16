@@ -1,4 +1,5 @@
-﻿using CarsharingMobile.ViewModels;
+﻿using System.ComponentModel;
+using CarsharingMobile.ViewModels;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using Shared.Contracts.Cars;
@@ -16,6 +17,39 @@ public partial class MainPage : ContentPage
         BindingContext = _viewModel;
     }
 
+    private double _startY;
+
+    private async void OnCardPanUpdated(object sender, PanUpdatedEventArgs e)
+    {
+        switch (e.StatusType)
+        {
+            case GestureStatus.Started:
+                _startY = BottomSheetBorder.TranslationY;
+                break;
+
+            case GestureStatus.Running:
+                var newY = _startY + e.TotalY;
+
+                if (newY > 0)
+                {
+                    BottomSheetBorder.TranslationY = newY;
+                }
+                break;
+
+            case GestureStatus.Completed:
+            case GestureStatus.Canceled:
+                if (BottomSheetBorder.TranslationY > 100)
+                {
+                    _viewModel.CloseCardCommand.Execute(null);
+                }
+                else
+                {
+                    await BottomSheetBorder.TranslateTo(0, 0, 250, Easing.SpringOut);
+                }
+                break;
+        }
+    }
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -25,30 +59,21 @@ public partial class MainPage : ContentPage
         await MoveMapToUserLocationAsync();
 
         if (_viewModel.Cars.Count == 0 && _viewModel.LoadInitialCommand.CanExecute(null))
-        {
             await _viewModel.LoadInitialCommand.ExecuteAsync(null);
-        }
     }
 
-    private void OnCarPinClicked(object sender, Microsoft.Maui.Controls.Maps.PinClickedEventArgs e)
+    private void OnCarPinClicked(object sender, PinClickedEventArgs e)
     {
         e.HideInfoWindow = true;
 
         if (sender is Pin pin)
-        {
             if (pin.BindingContext is CarWithMinInfoDto clickedCar)
-            {
                 _viewModel.SelectCarCommand.Execute(clickedCar);
-            }
-        }
     }
 
     private void OnMapClicked(object sender, MapClickedEventArgs e)
     {
-        if (_viewModel.IsCardVisible)
-        {
-            _viewModel.CloseCardCommand.Execute(null);
-        }
+        if (_viewModel.IsCardVisible) _viewModel.CloseCardCommand.Execute(null);
     }
 
     private void DrawServiceArea()
@@ -58,7 +83,7 @@ public partial class MainPage : ContentPage
         var minskZone = new Polygon
         {
             StrokeWidth = 4,
-            StrokeColor = Color.FromArgb("#9B59B6"), 
+            StrokeColor = Color.FromArgb("#9B59B6"),
             FillColor = Color.FromArgb("#339B59B6")
         };
 
@@ -67,7 +92,7 @@ public partial class MainPage : ContentPage
             new(53.9632, 27.6245),
             new(53.9610, 27.6380),
             new(53.9585, 27.6490),
-            
+
             // --- СЕВЕРО-ВОСТОК (Выступ Уручье / Копище) ---
             new(53.9555, 27.6650),
             new(53.9560, 27.6850),
@@ -136,10 +161,7 @@ public partial class MainPage : ContentPage
             new(53.9640, 27.6100)
         };
 
-        foreach (var point in mkadPoints)
-        {
-            minskZone.Geopath.Add(point);
-        }
+        foreach (var point in mkadPoints) minskZone.Geopath.Add(point);
 
         CarMap.MapElements.Add(minskZone);
     }
@@ -150,18 +172,16 @@ public partial class MainPage : ContentPage
         {
             var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
             if (status != PermissionStatus.Granted)
-            {
                 status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
-            }
 
             if (status == PermissionStatus.Granted)
             {
-                var location = await Geolocation.Default.GetLastKnownLocationAsync() ?? await Geolocation.Default.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(5)));
+                var location = await Geolocation.Default.GetLastKnownLocationAsync() ??
+                               await Geolocation.Default.GetLocationAsync(
+                                   new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(5)));
 
                 if (location != null)
-                {
                     CarMap.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(1)));
-                }
             }
         }
         catch (Exception ex)
@@ -179,17 +199,15 @@ public partial class MainPage : ContentPage
     {
         var region = CarMap.VisibleRegion;
         if (region != null)
-        {
-            CarMap.MoveToRegion(MapSpan.FromCenterAndRadius(region.Center, Distance.FromKilometers(region.Radius.Kilometers * 0.5)));
-        }
+            CarMap.MoveToRegion(MapSpan.FromCenterAndRadius(region.Center,
+                Distance.FromKilometers(region.Radius.Kilometers * 0.5)));
     }
 
     private void OnZoomOutClicked(object sender, EventArgs e)
     {
         var region = CarMap.VisibleRegion;
         if (region != null)
-        {
-            CarMap.MoveToRegion(MapSpan.FromCenterAndRadius(region.Center, Distance.FromKilometers(region.Radius.Kilometers * 2)));
-        }
+            CarMap.MoveToRegion(MapSpan.FromCenterAndRadius(region.Center,
+                Distance.FromKilometers(region.Radius.Kilometers * 2)));
     }
 }

@@ -12,22 +12,24 @@ public class CarService(HttpClient httpClient)
         var url = $"Cars?_page={page}&_limit={limit}";
         return await httpClient.GetPagedAsync<CarsResponse>(url);
     }
-    
-    public async Task<(List<CarWithMinInfoDto>? Items, int TotalCount)> GetAvailableCarsAsync(int page = 1, int limit = 15)
+
+    public async Task<(List<CarWithMinInfoDto>? Items, int TotalCount)> GetAvailableCarsAsync(int page = 1,
+        int limit = 15)
     {
         var url = $"Cars/pagedByCategory?_page={page}&_limit={limit}";
         var (items, count) = await httpClient.GetPagedAsync<CarWithMinInfoDto>(url);
         if (items != null)
-        {
-            items = [.. items.Select(car =>
-            {
-                var safeUrl = car.ImagePath?
-                    .Replace("http://localhost:9000", $"http://{ApiConfig.HostIp}:9000")
-                    .Replace("http://minio:9000", $"http://{ApiConfig.HostIp}:9000");
+            items =
+            [
+                .. items.Select(car =>
+                {
+                    var safeUrl = car.ImagePath?
+                        .Replace("http://localhost:9000", $"http://{ApiConfig.HostIp}:9000")
+                        .Replace("http://minio:9000", $"http://{ApiConfig.HostIp}:9000");
 
-                return car with { ImagePath = safeUrl };
-            })];
-        }
+                    return car with { ImagePath = safeUrl };
+                })
+            ];
 
         return (items, count);
     }
@@ -40,12 +42,12 @@ public class CarService(HttpClient httpClient)
             var car = response?.FirstOrDefault();
 
             if (car != null)
-            {
-                return car with { ImagePath = car.ImagePath?
-                    .Replace("http://localhost:9000", $"http://{ApiConfig.HostIp}:9000")
-                    .Replace("http://minio:9000", $"http://{ApiConfig.HostIp}:9000")
+                return car with
+                {
+                    ImagePath = car.ImagePath?
+                        .Replace("http://localhost:9000", $"http://{ApiConfig.HostIp}:9000")
+                        .Replace("http://minio:9000", $"http://{ApiConfig.HostIp}:9000")
                 };
-            }
 
             return null;
         }

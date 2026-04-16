@@ -6,14 +6,13 @@ using CommunityToolkit.Mvvm.Messaging;
 
 namespace CarsharingMobile.ViewModels;
 
-public class UserLoggedInMessage { }
+public class UserLoggedInMessage
+{
+}
 
 public partial class AppShellViewModel : ObservableObject, IRecipient<UserLoggedInMessage>
 {
     private readonly ClientService _clientService;
-
-    [ObservableProperty] public partial string Name { get; set; } = "Загрузка...";
-    [ObservableProperty] public partial string Surname { get; set; } = "";
 
     public AppShellViewModel(ClientService clientService)
     {
@@ -23,6 +22,9 @@ public partial class AppShellViewModel : ObservableObject, IRecipient<UserLogged
 
         Task.Run(LoadProfileAsync);
     }
+
+    [ObservableProperty] public partial string Name { get; set; } = "Загрузка...";
+    [ObservableProperty] public partial string Surname { get; set; } = "";
 
     public void Receive(UserLoggedInMessage message)
     {
@@ -35,13 +37,11 @@ public partial class AppShellViewModel : ObservableObject, IRecipient<UserLogged
         var profile = await _clientService.GetMyProfileAsync();
 
         if (profile != null)
-        {
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 Name = string.IsNullOrWhiteSpace(profile.Name) ? "Без имени" : profile.Name;
                 Surname = profile.Surname ?? "";
             });
-        }
     }
 
     [RelayCommand]

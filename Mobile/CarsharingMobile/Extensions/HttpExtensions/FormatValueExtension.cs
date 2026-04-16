@@ -6,15 +6,9 @@ public static class FormatValueExtension
 {
     public static string FormatValue(object? value)
     {
-        if (value == null)
-        {
-            return string.Empty;
-        }
+        if (value == null) return string.Empty;
 
-        if (value.GetType().IsEnum)
-        {
-            return ((int)value).ToString();
-        }
+        if (value.GetType().IsEnum) return ((int)value).ToString();
 
         return value switch
         {
