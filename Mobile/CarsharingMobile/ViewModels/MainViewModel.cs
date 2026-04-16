@@ -1,20 +1,17 @@
+using System.Collections.ObjectModel;
 using CarsharingMobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Shared.Contracts.Cars;
-using System.Collections.ObjectModel;
 
 namespace CarsharingMobile.ViewModels;
 
-public partial class MainViewModel : ObservableObject
+public partial class MainViewModel(CarService carService) : ObservableObject
 {
-    private readonly CarService _carService;
+    private const int PageSize = 50;
 
-    public MainViewModel(CarService carService)
-    {
-        _carService = carService;
-    }
-
+    private int _currentPage = 1;
+    private int _totalItems;
     public ObservableCollection<CarWithMinInfoDto> Cars { get; } = [];
 
     [ObservableProperty] public partial bool IsBusy { get; set; }
@@ -23,10 +20,6 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] public partial CarWithMinInfoDto? SelectedCar { get; set; }
     [ObservableProperty] public partial bool IsCardVisible { get; set; }
-
-    private int _currentPage = 1;
-    private int _totalItems;
-    private const int PageSize = 50;
 
     [RelayCommand]
     private async Task LoadInitialAsync()
@@ -52,6 +45,7 @@ public partial class MainViewModel : ObservableObject
             IsRefreshing = false;
         }
     }
+
     [RelayCommand]
     private async Task LoadNextPageAsync()
     {
@@ -71,23 +65,20 @@ public partial class MainViewModel : ObservableObject
 
     private async Task LoadDataInternalAsync()
     {
-        var (items, total) = await _carService.GetAvailableCarsAsync(_currentPage, PageSize);
+        var (items, total) = await carService.GetAvailableCarsAsync(_currentPage, PageSize);
         _totalItems = total;
 
         if (items != null)
         {
             var tasks = items.Select(async car =>
             {
-                var localPath = await _carService.DownloadAndCacheImageAsync(car.ImagePath, car.Id);
+                var localPath = await carService.DownloadAndCacheImageAsync(car.ImagePath, car.Id);
                 return car with { ImagePath = localPath };
             }).ToList();
 
             var processedCars = await Task.WhenAll(tasks);
 
-            foreach (var car in processedCars)
-            {
-                Cars.Add(car);
-            }
+            foreach (var car in processedCars) Cars.Add(car);
         }
 
         _currentPage++;

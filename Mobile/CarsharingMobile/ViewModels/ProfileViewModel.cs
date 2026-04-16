@@ -6,8 +6,8 @@ namespace CarsharingMobile.ViewModels;
 public partial class ProfileViewModel : ObservableObject
 {
     [RelayCommand]
-    private async Task GoBackd()
+    private async Task GoBack()
     {
-            await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync("..");
     }
 }

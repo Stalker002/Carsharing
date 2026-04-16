@@ -12,7 +12,7 @@ public partial class AppShell : Shell
 
         Routing.RegisterRoute(nameof(RegistrationPage), typeof(RegistrationPage));
         Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
-        
+
         Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
         Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
         Routing.RegisterRoute(nameof(CurrentTripPage), typeof(CurrentTripPage));
@@ -23,7 +23,7 @@ public partial class AppShell : Shell
 
     private async void OnTipsClicked(object sender, EventArgs e)
     {
-        Current.FlyoutIsPresented = false; 
+        Current.FlyoutIsPresented = false;
         await Current.GoToAsync(nameof(TipsPage));
     }
 
@@ -41,7 +41,7 @@ public partial class AppShell : Shell
 
     private async void OnLogoutClicked(object sender, EventArgs e)
     {
-        bool answer = await Current.DisplayAlert("Выход", "Вы действительно хотите выйти?", "Да", "Нет");
+        var answer = await Current.DisplayAlert("Выход", "Вы действительно хотите выйти?", "Да", "Нет");
         if (answer)
         {
             Current.FlyoutIsPresented = false;

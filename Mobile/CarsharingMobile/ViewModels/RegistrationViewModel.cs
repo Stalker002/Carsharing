@@ -1,11 +1,11 @@
+using System.Net.Mail;
+using System.Text.RegularExpressions;
 using CarsharingMobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Shared.Contracts.Clients;
 using Shared.Contracts.Users;
-using System.Net.Mail;
-using System.Text.RegularExpressions;
 
 namespace CarsharingMobile.ViewModels;
 
@@ -25,6 +25,26 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
 
     [ObservableProperty] public partial string? PhoneNumber { get; set; }
     [ObservableProperty] public partial string? PhoneNumberError { get; set; }
+
+    [ObservableProperty] public partial string? SmsCode { get; set; }
+    [ObservableProperty] public partial string? SmsCodeError { get; set; }
+    [ObservableProperty] public partial string? Name { get; set; }
+    [ObservableProperty] public partial string? NameError { get; set; }
+
+    [ObservableProperty] public partial string? Surname { get; set; }
+    [ObservableProperty] public partial string? SurnameError { get; set; }
+    [ObservableProperty] public partial string? Email { get; set; }
+    [ObservableProperty] public partial string? EmailError { get; set; }
+
+    [ObservableProperty] public partial string? UserPassword { get; set; }
+    [ObservableProperty] public partial string? UserPasswordError { get; set; }
+
+    [ObservableProperty] public partial bool IsPasswordHidden { get; set; } = true;
+    [ObservableProperty] public partial string PasswordIcon { get; set; } = "eye_hide.png";
+
+    [GeneratedRegex(@"^(\+375|80)(29|44|33|25)\d{7}$")]
+    private static partial Regex MyRegex { get; }
+
     partial void OnPhoneNumberChanged(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -40,8 +60,6 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
             PhoneNumberError = null;
     }
 
-    [ObservableProperty] public partial string? SmsCode { get; set; }
-    [ObservableProperty] public partial string? SmsCodeError { get; set; }
     partial void OnSmsCodeChanged(string? value)
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length < 4)
@@ -49,8 +67,7 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
         else
             SmsCodeError = null;
     }
-    [ObservableProperty] public partial string? Name { get; set; }
-    [ObservableProperty] public partial string? NameError { get; set; }
+
     partial void OnNameChanged(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -59,8 +76,6 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
             NameError = null;
     }
 
-    [ObservableProperty] public partial string? Surname { get; set; }
-    [ObservableProperty] public partial string? SurnameError { get; set; }
     partial void OnSurnameChanged(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -68,8 +83,7 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
         else
             SurnameError = null;
     }
-    [ObservableProperty] public partial string? Email { get; set; }
-    [ObservableProperty] public partial string? EmailError { get; set; }
+
     partial void OnEmailChanged(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -89,8 +103,6 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
         }
     }
 
-    [ObservableProperty] public partial string? UserPassword { get; set; }
-    [ObservableProperty] public partial string? UserPasswordError { get; set; }
     partial void OnUserPasswordChanged(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -100,9 +112,6 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
         else
             UserPasswordError = null;
     }
-
-    [ObservableProperty] public partial bool IsPasswordHidden { get; set; } = true;
-    [ObservableProperty] public partial string PasswordIcon { get; set; } = "eye_hide.png";
 
     [RelayCommand]
     private void TogglePassword()
@@ -115,13 +124,13 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
     private async Task SendSmsAsync()
     {
         OnPhoneNumberChanged(PhoneNumber);
-        if (PhoneNumberError != null) return; 
+        if (PhoneNumberError != null) return;
 
         IsBusy = true;
         await Task.Delay(1000);
         IsBusy = false;
 
-        CurrentStep = 2; 
+        CurrentStep = 2;
     }
 
     [RelayCommand]
@@ -194,7 +203,4 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
         else
             await Shell.Current.GoToAsync("..");
     }
-
-    [GeneratedRegex(@"^(\+375|80)(29|44|33|25)\d{7}$")]
-    private static partial Regex MyRegex { get; }
 }
