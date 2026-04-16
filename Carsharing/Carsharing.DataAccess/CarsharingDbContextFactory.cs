@@ -17,8 +17,8 @@ public class CarsharingDbContextFactory : IDesignTimeDbContextFactory<Carsharing
 
         var configuration = new ConfigurationBuilder()
             .SetBasePath(startupProjectPath)
-            .AddJsonFile("appsettings.json", optional: false)
-            .AddJsonFile($"appsettings.{environmentName}.json", optional: true)
+            .AddJsonFile("appsettings.json", false)
+            .AddJsonFile($"appsettings.{environmentName}.json", true)
             .AddEnvironmentVariables()
             .Build();
 

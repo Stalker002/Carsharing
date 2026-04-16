@@ -18,19 +18,14 @@ public class UsersService : IUsersService
         _jwtProvider = jwtProvider;
     }
 
-    public async Task<(string? Token, string? Error)> Login(string login, string password, CancellationToken cancellationToken)
+    public async Task<(string? Token, string? Error)> Login(string login, string password,
+        CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByLogin(login, cancellationToken);
-        if (user == null)
-        {
-            return (null, "Пользователь с таким логином не найден");
-        }
+        if (user == null) return (null, "Пользователь с таким логином не найден");
 
         var result = _passwordHasher.Verify(password, user.Password);
-        if (!result)
-        {
-            return (null, "Неверный пароль");
-        }
+        if (!result) return (null, "Неверный пароль");
 
         var token = _jwtProvider.GenerateToken(user);
 
@@ -75,10 +70,11 @@ public class UsersService : IUsersService
         return await _userRepository.CreateUser(userToCreate, cancellationToken);
     }
 
-    public async Task<int> UpdateUser(int id, int? roleId, string? login, string? password, CancellationToken cancellationToken)
+    public async Task<int> UpdateUser(int id, int? roleId, string? login, string? password,
+        CancellationToken cancellationToken)
     {
         var existingUser = (await _userRepository.GetUserById(id, cancellationToken)).SingleOrDefault()
-            ?? throw new NotFoundException("User not found");
+                           ?? throw new NotFoundException("User not found");
 
         var nextRoleId = roleId ?? existingUser.RoleId;
         var nextLogin = string.IsNullOrWhiteSpace(login) ? existingUser.Login : login;
@@ -96,7 +92,8 @@ public class UsersService : IUsersService
 
         var passwordHash = _passwordHasher.Generate(validatedUser.Password);
 
-        return await _userRepository.UpdateUser(id, validatedUser.RoleId, validatedUser.Login, passwordHash, cancellationToken);
+        return await _userRepository.UpdateUser(id, validatedUser.RoleId, validatedUser.Login, passwordHash,
+            cancellationToken);
     }
 
     public async Task<int> DeleteUser(int id, CancellationToken cancellationToken)

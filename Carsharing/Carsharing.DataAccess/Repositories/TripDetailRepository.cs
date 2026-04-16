@@ -80,7 +80,7 @@ public class TripDetailRepository : ITripDetailRepository
     public async Task<int> Update(int id, int? tripId, string? startLocation, string? endLocation,
         bool? insuranceActive, decimal? fuelUsed, decimal? refueled, CancellationToken cancellationToken)
     {
-        var tripDetail = await _context.TripDetail.FirstOrDefaultAsync(d => d.Id == id, cancellationToken: cancellationToken)
+        var tripDetail = await _context.TripDetail.FirstOrDefaultAsync(d => d.Id == id, cancellationToken)
                          ?? throw new Exception("Trip detail not found");
 
         if (tripId.HasValue)

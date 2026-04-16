@@ -69,7 +69,7 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<int> Update(int id, string? name, CancellationToken cancellationToken)
     {
-        var category = await _context.Category.FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken)
+        var category = await _context.Category.FirstOrDefaultAsync(c => c.Id == id, cancellationToken)
                        ?? throw new Exception("Category not found");
 
         if (!string.IsNullOrWhiteSpace(name))

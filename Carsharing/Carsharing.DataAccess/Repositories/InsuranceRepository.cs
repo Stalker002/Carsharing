@@ -140,7 +140,7 @@ public class InsuranceRepository(CarsharingDbContext context) : IInsuranceReposi
     public async Task<int> Update(int id, int? carId, int? statusId, string type, string? company, string? policyNumber,
         DateOnly? startDate, DateOnly? endDate, decimal? cost, CancellationToken cancellationToken)
     {
-        var insurance = await _context.Insurance.FirstOrDefaultAsync(i => i.Id == id, cancellationToken: cancellationToken)
+        var insurance = await _context.Insurance.FirstOrDefaultAsync(i => i.Id == id, cancellationToken)
                         ?? throw new Exception("Insurance not found");
 
         if (carId.HasValue)

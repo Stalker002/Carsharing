@@ -5,14 +5,19 @@ using Carsharing.Core.Models;
 
 namespace Carsharing.Application.Services;
 
-public class ClientDocumentsService(IClientDocumentRepository clientDocumentRepository, IClientRepository clientRepository, IUnitOfWork unitOfWork, IImageService imageService) : IClientDocumentsService
+public class ClientDocumentsService(
+    IClientDocumentRepository clientDocumentRepository,
+    IClientRepository clientRepository,
+    IUnitOfWork unitOfWork,
+    IImageService imageService) : IClientDocumentsService
 {
     public async Task<List<ClientDocument>> GetClientDocuments(CancellationToken cancellationToken)
     {
         return await clientDocumentRepository.Get(cancellationToken);
     }
 
-    public async Task<(int? Id, string Error)> CreateClientDocumentAsync(int userId, ClientDocumentsRequest request, CancellationToken cancellationToken)
+    public async Task<(int? Id, string Error)> CreateClientDocumentAsync(int userId, ClientDocumentsRequest request,
+        CancellationToken cancellationToken)
     {
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         string? savedFilePath = null;
@@ -20,13 +25,9 @@ public class ClientDocumentsService(IClientDocumentRepository clientDocumentRepo
         try
         {
             if (request.File is { Length: > 0 })
-            {
                 savedFilePath = await imageService.SaveDocumentImageAsync(request.File, cancellationToken);
-            }
             else
-            {
                 return (null, "Файл документа обязателен");
-            }
 
             var client = await clientRepository.GetClientByUserId(userId, cancellationToken);
             var clientId = client.Select(c => c.Id).FirstOrDefault();
@@ -62,15 +63,14 @@ public class ClientDocumentsService(IClientDocumentRepository clientDocumentRepo
             if (savedFilePath != null) await imageService.DeleteFile(savedFilePath, cancellationToken);
 
             if (ex.InnerException?.Message.Contains("23505") == true)
-            {
                 return (null, "Документ с таким номером уже существует.");
-            }
 
             return (null, $"Internal error: {ex.Message}");
         }
     }
 
-    public async Task<(bool IsSuccess, string Error)> UpdateClientDocumentAsync(int userId, int id, ClientDocumentsRequest request, CancellationToken cancellationToken)
+    public async Task<(bool IsSuccess, string Error)> UpdateClientDocumentAsync(int userId, int id,
+        ClientDocumentsRequest request, CancellationToken cancellationToken)
     {
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         string? newFilePathSystem = null;
@@ -111,9 +111,7 @@ public class ClientDocumentsService(IClientDocumentRepository clientDocumentRepo
             await unitOfWork.CommitTransactionAsync(cancellationToken);
 
             if (newFilePathSystem != null && !string.IsNullOrEmpty(docEntity.FilePath))
-            {
                 await imageService.DeleteFile(docEntity.FilePath, cancellationToken);
-            }
 
             return (true, string.Empty);
         }
@@ -121,10 +119,7 @@ public class ClientDocumentsService(IClientDocumentRepository clientDocumentRepo
         {
             await unitOfWork.RollbackTransactionAsync(cancellationToken);
 
-            if (newFilePathSystem != null)
-            {
-                await imageService.DeleteFile(newFilePathSystem, cancellationToken);
-            }
+            if (newFilePathSystem != null) await imageService.DeleteFile(newFilePathSystem, cancellationToken);
 
             return ex.InnerException?.Message.Contains("23505") == true
                 ? (false, "Дубликат данных: Документ с таким номером уже существует.")
@@ -132,7 +127,8 @@ public class ClientDocumentsService(IClientDocumentRepository clientDocumentRepo
         }
     }
 
-    public async Task<(bool IsSuccess, string Error)> DeleteClientDocumentAsync(int userId, int id, CancellationToken cancellationToken)
+    public async Task<(bool IsSuccess, string Error)> DeleteClientDocumentAsync(int userId, int id,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -149,10 +145,7 @@ public class ClientDocumentsService(IClientDocumentRepository clientDocumentRepo
 
             await clientDocumentRepository.Delete(id, cancellationToken);
 
-            if (!string.IsNullOrEmpty(filePath))
-            {
-                await imageService.DeleteFile(filePath, cancellationToken);
-            }
+            if (!string.IsNullOrEmpty(filePath)) await imageService.DeleteFile(filePath, cancellationToken);
 
             return (true, string.Empty);
         }

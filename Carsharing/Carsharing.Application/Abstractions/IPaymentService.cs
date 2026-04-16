@@ -20,7 +20,8 @@ public interface IPaymentService
 
     Task<int> CreatePayment(int userId, Payment payment, CancellationToken cancellationToken);
 
-    Task<int> UpdatePayment(int id, int? billId, decimal? sum, string? method, DateTime? date, CancellationToken cancellationToken);
+    Task<int> UpdatePayment(int id, int? billId, decimal? sum, string? method, DateTime? date,
+        CancellationToken cancellationToken);
 
     Task<int> DeletePayment(int id, CancellationToken cancellationToken);
 }

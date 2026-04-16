@@ -8,8 +8,8 @@ public class CarTests
     [Fact]
     public void Create_ValidData_ReturnsCar()
     {
-        var (car, error) = Car.Create(1, (int)CarStatusEnum.Available, 1, 1, 1, "Center", 53.900634, 
-            27.558973,50m, "image.jpg");
+        var (car, error) = Car.Create(1, (int)CarStatusEnum.Available, 1, 1, 1, "Center", 53.900634,
+            27.558973, 50m, "image.jpg");
 
         Assert.NotNull(car);
         Assert.Equal(string.Empty, error);
@@ -20,19 +20,19 @@ public class CarTests
     [Fact]
     public void Create_InvalidStatus_ReturnsError()
     {
-        var (car, error) = Car.Create(1, 999, 1, 1, 1, "Center", 53.900634, 
-            27.558973,50m, null);
+        var (car, error) = Car.Create(1, 999, 1, 1, 1, "Center", 53.900634,
+            27.558973, 50m, null);
 
         Assert.Null(car);
         Assert.Contains("Invalid", error);
     }
 
     [Theory]
-    [InlineData(-10)] 
+    [InlineData(-10)]
     public void Create_InvalidFuelLevel_ReturnsError(decimal invalidFuel)
     {
-        var (car, error) = Car.Create(1, (int)CarStatusEnum.Available, 1, 1, 1, "Center", 53.900634, 
-            27.558973,invalidFuel, null);
+        var (car, error) = Car.Create(1, (int)CarStatusEnum.Available, 1, 1, 1, "Center", 53.900634,
+            27.558973, invalidFuel, null);
 
         Assert.Null(car);
         Assert.NotEmpty(error);
@@ -41,8 +41,8 @@ public class CarTests
     [Fact]
     public void Create_EmptyLocation_ReturnsError()
     {
-        var (car, error) = Car.Create(1, (int)CarStatusEnum.Available, 1, 1, 1, "", 53.900634, 
-            27.558973,50m, null);
+        var (car, error) = Car.Create(1, (int)CarStatusEnum.Available, 1, 1, 1, "", 53.900634,
+            27.558973, 50m, null);
 
         Assert.Null(car);
         Assert.Equal("Car location can't be empty", error);

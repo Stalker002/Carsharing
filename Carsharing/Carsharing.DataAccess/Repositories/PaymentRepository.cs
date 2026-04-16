@@ -123,9 +123,10 @@ public class PaymentRepository : IPaymentRepository
         return paymentEntity.Id;
     }
 
-    public async Task<int> Update(int id, int? billId, decimal? sum, string? method, DateTime? date, CancellationToken cancellationToken)
+    public async Task<int> Update(int id, int? billId, decimal? sum, string? method, DateTime? date,
+        CancellationToken cancellationToken)
     {
-        var payment = await _context.Payment.FirstOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken)
+        var payment = await _context.Payment.FirstOrDefaultAsync(p => p.Id == id, cancellationToken)
                       ?? throw new Exception("Payment not found");
 
         if (billId.HasValue)

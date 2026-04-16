@@ -11,7 +11,8 @@ public interface ITripService
 
     Task<int> GetCountTrips(CancellationToken cancellationToken);
 
-    Task<(List<TripHistoryDto> Items, int TotalCount)> GetPagedHistoryByUserId(int clientId, int page, int limit, CancellationToken cancellationToken);
+    Task<(List<TripHistoryDto> Items, int TotalCount)> GetPagedHistoryByUserId(int clientId, int page, int limit,
+        CancellationToken cancellationToken);
 
     Task<List<TripWithInfoDto>> GetTripWithInfo(int id, CancellationToken cancellationToken);
 

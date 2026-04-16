@@ -8,8 +8,8 @@ namespace Carsharing.Application.Services;
 
 public class ReviewsService : IReviewsService
 {
-    private readonly IReviewRepository _reviewRepository;
     private readonly IClientRepository _clientRepository;
+    private readonly IReviewRepository _reviewRepository;
 
     public ReviewsService(IReviewRepository reviewRepository, IClientRepository clientRepository)
     {
@@ -37,12 +37,14 @@ public class ReviewsService : IReviewsService
         return await _reviewRepository.GetById(id, cancellationToken);
     }
 
-    public async Task<List<ReviewWithClientInfo>> GetReviewsByCarId(int carId, CancellationToken cancellationToken = default)
+    public async Task<List<ReviewWithClientInfo>> GetReviewsByCarId(int carId,
+        CancellationToken cancellationToken = default)
     {
         return await _reviewRepository.GetByCarId(carId, cancellationToken);
     }
 
-    public async Task<List<ReviewWithClientInfo>> GetPagedReviewsByCarId(int carId, int page, int limit, CancellationToken cancellationToken = default)
+    public async Task<List<ReviewWithClientInfo>> GetPagedReviewsByCarId(int carId, int page, int limit,
+        CancellationToken cancellationToken = default)
     {
         return await _reviewRepository.GetPagedByCarId(carId, page, limit, cancellationToken);
     }
@@ -52,7 +54,8 @@ public class ReviewsService : IReviewsService
         return await _reviewRepository.GetCountByCarId(carId, cancellationToken);
     }
 
-    public async Task<int> CreateReview(int userId, int carId, short rating, string comment, DateTime date, CancellationToken cancellationToken = default)
+    public async Task<int> CreateReview(int userId, int carId, short rating, string comment, DateTime date,
+        CancellationToken cancellationToken = default)
     {
         var client = await _clientRepository.GetClientByUserId(userId, cancellationToken);
         var clientId = client.Select(c => c.Id).FirstOrDefault();
@@ -78,7 +81,7 @@ public class ReviewsService : IReviewsService
             throw new NotFoundException("Client not found");
 
         var review = (await _reviewRepository.GetById(id, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Review not found");
+                     ?? throw new NotFoundException("Review not found");
 
         if (review.ClientId != clientId)
             throw new UnauthorizedAccessException("Review does not belong to current user");

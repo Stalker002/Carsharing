@@ -7,11 +7,11 @@ namespace Carsharing.Application.Services;
 
 public class ClientsService : IClientsService
 {
-    private readonly IClientRepository _clientRepository;
     private readonly IClientDocumentRepository _clientDocumentRepository;
+    private readonly IClientRepository _clientRepository;
     private readonly IPasswordHasher _passwordHasher;
-    private readonly IUsersRepository _usersRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUsersRepository _usersRepository;
 
     public ClientsService(IClientRepository clientRepository, IClientDocumentRepository clientDocumentRepository,
         IUsersRepository usersRepository, IUnitOfWork unitOfWork, IPasswordHasher passwordHasher)
@@ -70,7 +70,7 @@ public class ClientsService : IClientsService
     {
         var userExists = await _usersRepository.GetByLogin(user.Login, cancellationToken);
         if (userExists != null)
-            throw new ConflictException($"Пользователь с таким логином уже существует");
+            throw new ConflictException("Пользователь с таким логином уже существует");
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
@@ -92,15 +92,17 @@ public class ClientsService : IClientsService
         }
     }
 
-    public async Task<int> UpdateClient(int id, int userId, string? name, string? surname, string? phoneNumber, string? email, CancellationToken cancellationToken)
+    public async Task<int> UpdateClient(int id, int userId, string? name, string? surname, string? phoneNumber,
+        string? email, CancellationToken cancellationToken)
     {
         return await _clientRepository.Update(id, userId, name, surname, phoneNumber, email, cancellationToken);
     }
 
-    public async Task<int> UpdateOwnClient(int userId, string? name, string? surname, string? phoneNumber, string? email, CancellationToken cancellationToken)
+    public async Task<int> UpdateOwnClient(int userId, string? name, string? surname, string? phoneNumber,
+        string? email, CancellationToken cancellationToken)
     {
         var client = (await _clientRepository.GetClientByUserId(userId, cancellationToken)).SingleOrDefault()
-            ?? throw new NotFoundException("Client not found");
+                     ?? throw new NotFoundException("Client not found");
 
         return await _clientRepository.Update(client.Id, null, name, surname, phoneNumber, email, cancellationToken);
     }

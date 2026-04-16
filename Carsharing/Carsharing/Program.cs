@@ -3,13 +3,13 @@ using Carsharing.Application;
 using Carsharing.Application.Abstractions;
 using Carsharing.Application.Extensions;
 using Carsharing.Application.Services;
+using Carsharing.Core.Abstractions;
 using Carsharing.DataAccess;
+using Carsharing.Extensions;
 using Carsharing.Middleware;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.DataProtection;
-using Carsharing.Extensions;
-using Carsharing.Core.Abstractions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing;
 
@@ -23,7 +23,7 @@ public class Program
 
         if (builder.Environment.IsEnvironment("Testing"))
         {
-            builder.Configuration.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: false);
+            builder.Configuration.AddJsonFile("appsettings.Development.json", false, false);
             builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 [$"{nameof(JwtOptions)}:SecretKey"] = "TestingSecretKey_ChangeMe_1234567890",
@@ -46,18 +46,18 @@ public class Program
             options.AddPolicy("Frontend", policy =>
             {
                 policy.WithOrigins("http://localhost:5173")
-                      .AllowAnyMethod()
-                      .AllowAnyHeader()
-                      .AllowCredentials()
-                      .WithExposedHeaders("x-total-count");
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .WithExposedHeaders("x-total-count");
             });
             options.AddPolicy("AllowAllOriginsDevelopment",
                 policy =>
                 {
                     policy.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader()
-                          .WithExposedHeaders("x-total-count");
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithExposedHeaders("x-total-count");
                 });
         });
 
@@ -81,12 +81,10 @@ public class Program
         builder.Services.Configure<FileUploadOptions>(builder.Configuration.GetSection("FileUpload"));
 
         if (!builder.Environment.IsEnvironment("Testing"))
-        {
             builder.Services.AddDbContext<CarsharingDbContext>(options =>
                 options.UseNpgsql(
                     builder.Configuration.GetConnectionString(ConnectionStringName),
                     npgsqlOptions => npgsqlOptions.UseNetTopologySuite()));
-        }
 
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
         builder.Services.AddScoped<IJwtProvider, JwtProvider>();
@@ -111,10 +109,7 @@ public class Program
         using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<CarsharingDbContext>();
-            if (dbContext.Database.IsRelational())
-            {
-                dbContext.Database.Migrate();
-            }
+            if (dbContext.Database.IsRelational()) dbContext.Database.Migrate();
         }
 
         if (!app.Environment.IsEnvironment("Testing"))

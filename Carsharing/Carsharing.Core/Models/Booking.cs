@@ -47,10 +47,7 @@ public class Booking
         if (startTime > endTime)
             error = "Start time can not exceed end time";
 
-        if (error.Length != 0)
-        {
-            return (null, error)!;
-        }
+        if (error.Length != 0) return (null, error)!;
 
         var booking = new Booking(id, statusId, carId, clientId, startTime, endTime);
         return (booking, error);

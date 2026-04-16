@@ -24,7 +24,8 @@ public class Maintenance
 
     public DateOnly Date { get; }
 
-    public static (Maintenance maintenance, string error) Create(int id, int carId, string? workType, string? description,
+    public static (Maintenance maintenance, string error) Create(int id, int carId, string? workType,
+        string? description,
         decimal cost, DateOnly date)
     {
         var error = string.Empty;
@@ -39,11 +40,8 @@ public class Maintenance
 
         if (cost < 0)
             error = "Cost must be positive";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var maintenance = new Maintenance(id, carId, workType, description, cost, date);
 

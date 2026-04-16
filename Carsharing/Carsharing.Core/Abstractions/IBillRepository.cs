@@ -15,7 +15,8 @@ public interface IBillRepository
 
     Task<BillWithInfoDto?> GetInfoById(int id, CancellationToken cancellationToken);
 
-    Task<List<BillWithMinInfoDto>> GetPagedMinInfoByUserId(int userId, int page, int limit, CancellationToken cancellationToken);
+    Task<List<BillWithMinInfoDto>> GetPagedMinInfoByUserId(int userId, int page, int limit,
+        CancellationToken cancellationToken);
 
     Task<int> GetCountByUserId(int userId, CancellationToken cancellationToken);
 

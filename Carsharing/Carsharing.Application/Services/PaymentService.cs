@@ -69,7 +69,8 @@ public class PaymentService : IPaymentService
         return await _paymentRepository.Create(payment, cancellationToken);
     }
 
-    public async Task<int> UpdatePayment(int id, int? billId, decimal? sum, string? method, DateTime? date, CancellationToken cancellationToken)
+    public async Task<int> UpdatePayment(int id, int? billId, decimal? sum, string? method, DateTime? date,
+        CancellationToken cancellationToken)
     {
         return await _paymentRepository.Update(id, billId, sum, method, date, cancellationToken);
     }
@@ -82,16 +83,16 @@ public class PaymentService : IPaymentService
     private async Task EnsureBillBelongsToUser(int userId, int billId, CancellationToken cancellationToken)
     {
         var client = (await _clientRepository.GetClientByUserId(userId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Client not found");
+                     ?? throw new NotFoundException("Client not found");
 
         var bill = await _billRepository.GetById(billId, cancellationToken)
-            ?? throw new NotFoundException("Bill not found");
+                   ?? throw new NotFoundException("Bill not found");
 
         var trip = (await _tripRepository.GetById(bill.TripId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Trip not found");
+                   ?? throw new NotFoundException("Trip not found");
 
         var booking = (await _bookingRepository.GetById(trip.BookingId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Booking not found");
+                      ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != client.Id)
             throw new UnauthorizedAccessException("Bill does not belong to current user");

@@ -53,11 +53,8 @@ public class Fine
 
         if (date > DateTime.Now)
             error = "Fine date can not be in the future";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var fine = new Fine(id, tripId, statusId, type, amount, date);
         return (fine, error);
