@@ -155,7 +155,7 @@ public class FineRepository : IFineRepository
     public async Task<int> Update(int id, int? tripId, int? statusId, string? type, decimal? amount,
         DateTime? date, CancellationToken cancellationToken)
     {
-        var fine = await _context.Fine.FirstOrDefaultAsync(f => f.Id == id, cancellationToken: cancellationToken)
+        var fine = await _context.Fine.FirstOrDefaultAsync(f => f.Id == id, cancellationToken)
                    ?? throw new Exception("Fine not found");
 
         if (tripId.HasValue)

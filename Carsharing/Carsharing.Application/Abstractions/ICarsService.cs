@@ -20,7 +20,8 @@ public interface ICarsService
 
     Task<List<CarWithInfoAdminDto>> GetCarWithInfoAdmin(int id, CancellationToken cancellationToken);
 
-    Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit, CancellationToken cancellationToken);
+    Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit,
+        CancellationToken cancellationToken);
 
     Task<int> GetCountByCategory(List<int> categoryIds, CancellationToken cancellationToken);
 
@@ -28,7 +29,8 @@ public interface ICarsService
 
     Task<(int? Id, string Error)> CreateCarFullAsync(CarsCreateRequest request, CancellationToken cancellationToken);
 
-    Task<(bool IsSuccess, string Error)> UpdateCarFullAsync(int id, CarUpdateDto request, CancellationToken cancellationToken);
+    Task<(bool IsSuccess, string Error)> UpdateCarFullAsync(int id, CarUpdateDto request,
+        CancellationToken cancellationToken);
 
     Task MarkCarAsUnavailableAsync(int? carId, CancellationToken cancellationToken);
 

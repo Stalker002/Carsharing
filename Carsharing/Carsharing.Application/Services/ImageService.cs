@@ -1,10 +1,10 @@
+using System.Text.Json;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
 using Carsharing.Application.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
 
 namespace Carsharing.Application.Services;
 
@@ -29,10 +29,10 @@ public class ImageService(
     {
         return await SaveFileInternalAsync(
             file,
-            bucketName: _minioOptions.BucketName,
-            baseUrl: _minioOptions.PublicURL,
-            subFolder: "cars",
-            maxBytes: _fileUploadOptions.MaxCarImageBytes,
+            _minioOptions.BucketName,
+            _minioOptions.PublicURL,
+            "cars",
+            _fileUploadOptions.MaxCarImageBytes,
             cancellationToken);
     }
 
@@ -40,11 +40,32 @@ public class ImageService(
     {
         return await SaveFileInternalAsync(
             file,
-            bucketName: _minioOptions.BucketName,
-            baseUrl: _minioOptions.PublicURL,
-            subFolder: "documents",
-            maxBytes: _fileUploadOptions.MaxDocumentImageBytes,
+            _minioOptions.BucketName,
+            _minioOptions.PublicURL,
+            "documents",
+            _fileUploadOptions.MaxDocumentImageBytes,
             cancellationToken);
+    }
+
+    public async Task DeleteFile(string fileUrl, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(fileUrl))
+            return;
+
+        try
+        {
+            var (bucketName, key) = ParseStoredFileReference(fileUrl);
+
+            await s3Client.DeleteObjectAsync(new DeleteObjectRequest
+            {
+                BucketName = bucketName,
+                Key = key
+            }, cancellationToken);
+        }
+        catch
+        {
+            // Ignore cleanup failures to avoid masking the original business error.
+        }
     }
 
     private async Task<string> SaveFileInternalAsync(
@@ -58,7 +79,8 @@ public class ImageService(
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
         if (!AllowedExtensions.Contains(extension))
-            throw new ArgumentException($"Неподдерживаемый формат файла. Разрешены: {string.Join(", ", AllowedExtensions)}");
+            throw new ArgumentException(
+                $"Неподдерживаемый формат файла. Разрешены: {string.Join(", ", AllowedExtensions)}");
 
         if (file.Length <= 0)
             throw new ArgumentException("Файл пустой.");
@@ -89,38 +111,15 @@ public class ImageService(
         return $"{baseUrl.TrimEnd('/')}/{bucketName}/{objectKey}";
     }
 
-    public async Task DeleteFile(string fileUrl, CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrWhiteSpace(fileUrl))
-            return;
-
-        try
-        {
-            var (bucketName, key) = ParseStoredFileReference(fileUrl);
-
-            await s3Client.DeleteObjectAsync(new DeleteObjectRequest
-            {
-                BucketName = bucketName,
-                Key = key
-            }, cancellationToken);
-        }
-        catch
-        {
-            // Ignore cleanup failures to avoid masking the original business error.
-        }
-    }
-
     private async Task EnsureBucketExistsAsync(string bucketName, CancellationToken cancellationToken)
     {
         var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName);
         if (!bucketExists)
-        {
             await s3Client.PutBucketAsync(new PutBucketRequest
             {
                 BucketName = bucketName,
                 UseClientRegion = true
             }, cancellationToken);
-        }
 
         await ApplyPublicReadPolicyAsync(bucketName, cancellationToken);
     }
@@ -156,9 +155,7 @@ public class ImageService(
 
         if (!AllowedMimeTypes.TryGetValue(extension, out var allowedMimeTypes) ||
             !allowedMimeTypes.Contains(contentType, StringComparer.OrdinalIgnoreCase))
-        {
             throw new ArgumentException("Неподдерживаемый MIME-тип файла.");
-        }
     }
 
     private static (string BucketName, string Key) ParseStoredFileReference(string fileUrl)

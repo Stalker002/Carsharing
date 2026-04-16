@@ -7,8 +7,8 @@ namespace Carsharing.Application.Services;
 
 public class TripDetailsService : ITripDetailsService
 {
-    private readonly ITripDetailRepository _tripDetailRepository;
     private readonly IInsuranceRepository _insuranceRepository;
+    private readonly ITripDetailRepository _tripDetailRepository;
 
     public TripDetailsService(ITripDetailRepository tripDetailRepository, IInsuranceRepository insuranceRepository)
     {

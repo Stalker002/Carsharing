@@ -16,7 +16,8 @@ public interface IPaymentRepository
 
     Task<int> Create(Payment payment, CancellationToken cancellationToken);
 
-    Task<int> Update(int id, int? billId, decimal? sum, string? method, DateTime? date, CancellationToken cancellationToken);
+    Task<int> Update(int id, int? billId, decimal? sum, string? method, DateTime? date,
+        CancellationToken cancellationToken);
 
     Task<int> Delete(int id, CancellationToken cancellationToken);
 }

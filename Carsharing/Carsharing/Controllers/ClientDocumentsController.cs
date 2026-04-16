@@ -30,7 +30,8 @@ public class ClientDocumentsController(IClientDocumentsService clientDocumentsSe
 
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<IActionResult> CreateClientDocument([FromForm] ClientDocumentsRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateClientDocument([FromForm] ClientDocumentsRequest request,
+        CancellationToken cancellationToken)
     {
         var userId = User.GetRequiredUserId();
         var (id, error) = await clientDocumentsService.CreateClientDocumentAsync(userId, request, cancellationToken);
@@ -42,10 +43,12 @@ public class ClientDocumentsController(IClientDocumentsService clientDocumentsSe
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<IActionResult> UpdateClientDocument(int id, [FromForm] ClientDocumentsRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateClientDocument(int id, [FromForm] ClientDocumentsRequest request,
+        CancellationToken cancellationToken)
     {
         var userId = User.GetRequiredUserId();
-        var (isSuccess, error) = await clientDocumentsService.UpdateClientDocumentAsync(userId, id, request, cancellationToken);
+        var (isSuccess, error) =
+            await clientDocumentsService.UpdateClientDocumentAsync(userId, id, request, cancellationToken);
 
         if (isSuccess) return Ok(new { message = "Документ успешно обновлен" });
         if (error == "Document not found") return NotFound(new { message = "Документ не найден" });

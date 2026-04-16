@@ -1,7 +1,6 @@
 ﻿namespace Shared.Contracts.Trip;
 
-public record TripHistoryDto
-(
+public record TripHistoryDto(
     int Id,
     string? CarBrand,
     int CarId,

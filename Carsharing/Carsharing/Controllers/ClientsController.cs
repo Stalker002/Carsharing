@@ -52,7 +52,8 @@ public class ClientsController(IClientsService clientsService) : ControllerBase
 
     [HttpGet("ByUserId/{userId:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<ClientsResponse>>> GetClientByUserId(int userId, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<ClientsResponse>>> GetClientByUserId(int userId,
+        CancellationToken cancellationToken)
     {
         var clients = await clientsService.GetClientByUserId(userId, cancellationToken);
         var response = clients.Select(cl =>
@@ -129,7 +130,8 @@ public class ClientsController(IClientsService clientsService) : ControllerBase
     }
 
     [HttpPost("with-user")]
-    public async Task<ActionResult<int>> CreateClientWithUser([FromBody] ClientRegistrationRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateClientWithUser([FromBody] ClientRegistrationRequest request,
+        CancellationToken cancellationToken)
     {
         var (user, userError) = Core.Models.User.Create(
             0,
@@ -158,7 +160,8 @@ public class ClientsController(IClientsService clientsService) : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> UpdateClient(int id, [FromBody] ClientsRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateClient(int id, [FromBody] ClientsRequest request,
+        CancellationToken cancellationToken)
     {
         int clientId;
 

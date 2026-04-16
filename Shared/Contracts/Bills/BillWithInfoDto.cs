@@ -11,4 +11,4 @@ public record BillWithInfoDto(
     decimal? Duration,
     decimal? Distance,
     string? TariffType
-    );
+);

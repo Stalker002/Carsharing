@@ -44,12 +44,14 @@ public class Car
     public string? ImagePath { get; }
 
     public static (Car car, string error) Create(int id, int carStatusId, int tariffId,
-        int categoryId, int specificationId, string? location, double? latitude, double? longitude, decimal fuelLevel, string? imagePath)
+        int categoryId, int specificationId, string? location, double? latitude, double? longitude, decimal fuelLevel,
+        string? imagePath)
     {
         var error = string.Empty;
 
         if (!Enum.IsDefined(typeof(CarStatusEnum), carStatusId))
-            error = "Invalid insurance type. Allowed: \"1.Доступен\", \"2. Недоступен\", \"3. На обслуживании\", \"4. В ремонте\"";
+            error =
+                "Invalid insurance type. Allowed: \"1.Доступен\", \"2. Недоступен\", \"3. На обслуживании\", \"4. В ремонте\"";
 
         if (tariffId < 0)
             error = "Tariff Id must be positive";
@@ -80,13 +82,11 @@ public class Car
             < MinFuelLevelLength => "The fuel in the car must be positive",
             _ => error
         };
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
 
-        var car = new Car(id, carStatusId, tariffId, categoryId, specificationId, location, latitude, longitude, fuelLevel, imagePath);
+        if (error.Length != 0) return (null, error)!;
+
+        var car = new Car(id, carStatusId, tariffId, categoryId, specificationId, location, latitude, longitude,
+            fuelLevel, imagePath);
 
         return (car, error);
     }

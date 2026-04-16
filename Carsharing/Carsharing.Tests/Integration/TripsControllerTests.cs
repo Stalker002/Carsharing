@@ -19,7 +19,7 @@ public class TripsControllerTests(CustomWebApplicationFactory factory) : IClassF
         const int testTripId = 100;
         const int testBookingId = 50;
         const int testCarId = 10;
-        
+
         var token = factory.GenerateTestToken(testUserId, 2);
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -36,35 +36,37 @@ public class TripsControllerTests(CustomWebApplicationFactory factory) : IClassF
                 PhoneNumber = "+375291112233",
                 Email = "trip@test.com"
             });
-            
+
             db.Tariff.Add(new TariffEntity { Id = 1, PricePerMinute = 5, Name = "Basic" });
-            
-            var car = new CarEntity { Id = testCarId, StatusId = (int)CarStatusEnum.Reserved, Location = "Old Location", FuelLevel = 50 };
+
+            var car = new CarEntity
+                { Id = testCarId, StatusId = (int)CarStatusEnum.Reserved, Location = "Old Location", FuelLevel = 50 };
             db.Car.Add(car);
 
-            var booking = new BookingEntity { Id = testBookingId, CarId = testCarId, ClientId = 1, StatusId = (int)BookingStatusEnum.Active };
+            var booking = new BookingEntity
+                { Id = testBookingId, CarId = testCarId, ClientId = 1, StatusId = (int)BookingStatusEnum.Active };
             db.Booking.Add(booking);
 
-            var trip = new TripEntity 
-            { 
-                Id = testTripId, 
-                BookingId = testBookingId, 
-                StatusId = (int)TripStatusEnum.EnRoute, 
+            var trip = new TripEntity
+            {
+                Id = testTripId,
+                BookingId = testBookingId,
+                StatusId = (int)TripStatusEnum.EnRoute,
                 StartTime = DateTime.UtcNow.AddMinutes(-30),
                 TariffType = "per_minute"
             };
             db.Trip.Add(trip);
-            
+
             await db.SaveChangesAsync();
         }
 
         var finishRequest = new FinishTripRequest(
-            TripId: testTripId,
-            Distance: 15.5m,
-            EndLocation: "New Location",
-            CarLatitude: 53.900634, 
-            CarLongitude: 27.558973,
-            FuelLevel: 45m
+            testTripId,
+            15.5m,
+            "New Location",
+            53.900634,
+            27.558973,
+            45m
         );
 
         var response = await _client.PostAsJsonAsync("/Trips/finish", finishRequest);
@@ -74,7 +76,7 @@ public class TripsControllerTests(CustomWebApplicationFactory factory) : IClassF
             var errorText = await response.Content.ReadAsStringAsync();
             throw new Exception($"Сервер вернул 500. Детали: {errorText}");
         }
-        
+
         var result = await response.Content.ReadFromJsonAsync<TripFinishResult>();
         Assert.NotNull(result);
         Assert.Equal("Поездка успешно завершена", result.Message);
@@ -82,15 +84,15 @@ public class TripsControllerTests(CustomWebApplicationFactory factory) : IClassF
         using (var scope = factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<CarsharingDbContext>();
-            
+
             var updatedTrip = await db.Trip.FindAsync(testTripId);
             Assert.NotNull(updatedTrip!.EndTime);
             Assert.Equal((int)TripStatusEnum.Finished, updatedTrip.StatusId);
             Assert.Equal(15.5m, updatedTrip.Distance);
-            
+
             var updatedBooking = await db.Booking.FindAsync(testBookingId);
             Assert.Equal((int)BookingStatusEnum.Completed, updatedBooking!.StatusId);
-            
+
             var updatedCar = await db.Car.FindAsync(testCarId);
             Assert.Equal((int)CarStatusEnum.Available, updatedCar!.StatusId);
             Assert.Equal("New Location", updatedCar.Location);

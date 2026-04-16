@@ -91,7 +91,8 @@ public class TripsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> CreateTrip([FromBody] TripCreateRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateTrip([FromBody] TripCreateRequest request,
+        CancellationToken cancellationToken)
     {
         var userId = User.GetRequiredUserId();
         var tripId = await _tripService.CreateTripAsync(userId, request, cancellationToken);
@@ -100,7 +101,8 @@ public class TripsController : ControllerBase
 
     [HttpPost("finish")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<TripFinishResult>> FinishTrip([FromBody] FinishTripRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<TripFinishResult>> FinishTrip([FromBody] FinishTripRequest request,
+        CancellationToken cancellationToken)
     {
         var userId = User.GetRequiredUserId();
         var result = await _tripService.FinishTripAsync(userId, request, cancellationToken);
@@ -117,7 +119,8 @@ public class TripsController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateTrip(int id, [FromBody] TripUpdateRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateTrip(int id, [FromBody] TripUpdateRequest request,
+        CancellationToken cancellationToken)
     {
         var tripId = await _tripService.UpdateTrip(id, request, cancellationToken);
         return Ok(tripId);

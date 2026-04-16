@@ -27,7 +27,8 @@ public interface IBookingsService
 
     Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int userId, int id, CancellationToken cancellationToken);
 
-    Task<int> CreateBooking(int userId, int statusId, int carId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
+    Task<int> CreateBooking(int userId, int statusId, int carId, DateTime startTime, DateTime endTime,
+        CancellationToken cancellationToken);
 
     Task<int> UpdateBooking(int id, int? statusId, int? carId, int? clientId,
         DateTime? startTime, DateTime? endTime, CancellationToken cancellationToken);

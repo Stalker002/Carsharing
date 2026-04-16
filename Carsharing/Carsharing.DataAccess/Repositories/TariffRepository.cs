@@ -82,7 +82,7 @@ public class TariffRepository : ITariffRepository
     public async Task<int> Update(int id, string? name, decimal? pricePerMinute, decimal? pricePerKm,
         decimal? pricePerDay, CancellationToken cancellationToken)
     {
-        var tariff = await _context.Tariff.FirstOrDefaultAsync(t => t.Id == id, cancellationToken: cancellationToken)
+        var tariff = await _context.Tariff.FirstOrDefaultAsync(t => t.Id == id, cancellationToken)
                      ?? throw new Exception("Tariff not found");
 
         if (!string.IsNullOrWhiteSpace(name))

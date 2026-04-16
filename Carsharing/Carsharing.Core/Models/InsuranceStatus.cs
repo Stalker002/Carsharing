@@ -23,10 +23,7 @@ public class InsuranceStatus
             nameError = $"Status name can't be longer than {MaxStatusName} symbols";
         if (!string.IsNullOrEmpty(nameError)) errors.Add(nameError);
 
-        if (errors.Count > 0)
-        {
-            return (null, errors)!;
-        }
+        if (errors.Count > 0) return (null, errors)!;
 
         var insuranceStatus = new InsuranceStatus(id, name);
 

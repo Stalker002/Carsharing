@@ -40,15 +40,12 @@ public class User
             < MinPasswordLength => $"Password can't be shoter than {MinPasswordLength} symbols",
             _ => error
         };
-        
+
         if (string.IsNullOrWhiteSpace(password))
-                      error = "Password can't be empty";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
-        
+            error = "Password can't be empty";
+
+        if (error.Length != 0) return (null, error)!;
+
         var user = new User(id, roleId, login, password);
 
         return (user, error);

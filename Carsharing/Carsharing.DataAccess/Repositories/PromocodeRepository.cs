@@ -126,7 +126,8 @@ public class PromocodeRepository : IPromocodeRepository
 
     public async Task<int> GetCountActive(CancellationToken cancellationToken)
     {
-        return await _context.Promocode.Where(pr => pr.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow)).CountAsync(cancellationToken);
+        return await _context.Promocode.Where(pr => pr.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow))
+            .CountAsync(cancellationToken);
     }
 
     public async Task<List<Promocode>> GetByCode(string code, CancellationToken cancellationToken)
@@ -181,7 +182,7 @@ public class PromocodeRepository : IPromocodeRepository
     public async Task<int> Update(int id, int? statusId, string? code, decimal? discount, DateOnly? startDate,
         DateOnly? endDate, CancellationToken cancellationToken)
     {
-        var promocode = await _context.Promocode.FirstOrDefaultAsync(pr => pr.Id == id, cancellationToken: cancellationToken)
+        var promocode = await _context.Promocode.FirstOrDefaultAsync(pr => pr.Id == id, cancellationToken)
                         ?? throw new Exception("Promocode not found");
 
         if (statusId.HasValue)

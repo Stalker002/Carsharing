@@ -39,7 +39,8 @@ public class InsurancesService : IInsurancesService
     }
 
     public async Task<int> UpdateInsurance(int id, int? carId, int? statusId, string type, string? company,
-        string? policyNumber, DateOnly? startDate, DateOnly? endDate, decimal? cost, CancellationToken cancellationToken)
+        string? policyNumber, DateOnly? startDate, DateOnly? endDate, decimal? cost,
+        CancellationToken cancellationToken)
     {
         return await _insuranceRepository.Update(id, carId, statusId, type, company, policyNumber, startDate, endDate,
             cost, cancellationToken);

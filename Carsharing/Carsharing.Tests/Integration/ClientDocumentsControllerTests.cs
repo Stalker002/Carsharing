@@ -7,7 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Carsharing.Tests.Integration;
 
-public class ClientDocumentsControllerTests(CustomWebApplicationFactory factory) : IClassFixture<CustomWebApplicationFactory>
+public class ClientDocumentsControllerTests(CustomWebApplicationFactory factory)
+    : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
 

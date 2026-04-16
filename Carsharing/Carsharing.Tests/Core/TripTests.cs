@@ -12,14 +12,14 @@ public class TripTests
         var endTime = DateTime.UtcNow;
 
         var (trip, error) = Trip.Create(
-            id: 1,
-            bookingId: 10,
-            statusId: (int)TripStatusEnum.Finished,
-            tariffType: "per_minute",
-            startTime: startTime,
-            endTime: endTime,
-            duration: 30m,
-            distance: 15.5m
+            1,
+            10,
+            (int)TripStatusEnum.Finished,
+            "per_minute",
+            startTime,
+            endTime,
+            30m,
+            15.5m
         );
 
         Assert.NotNull(trip);

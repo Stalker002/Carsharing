@@ -105,11 +105,8 @@ public partial class SpecificationCar
 
         if (fuelPerKm < 0)
             error = "Fuel per km must be positive";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var specificationCar = new SpecificationCar(id, fuelType, brand, model, transmission, year, vinNumber,
             stateNumber, mileage, maxFuel, fuelPerKm);

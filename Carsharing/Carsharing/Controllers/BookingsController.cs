@@ -79,7 +79,8 @@ public class BookingsController : ControllerBase
 
     [HttpGet("byCar/{carId:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<BookingsResponse>>> GetBookingByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<BookingsResponse>>> GetBookingByCarId(int carId,
+        CancellationToken cancellationToken)
     {
         var bookings = User.IsAdmin()
             ? await _bookingsService.GetBookingsByCarId(carId, cancellationToken)
@@ -92,7 +93,8 @@ public class BookingsController : ControllerBase
 
     [HttpGet("withInfo/{id:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<BookingWithFullInfoDto>>> GetBookingsWithInfo(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<BookingWithFullInfoDto>>> GetBookingsWithInfo(int id,
+        CancellationToken cancellationToken)
     {
         var response = User.IsAdmin()
             ? await _bookingsService.GetBookingWithInfo(id, cancellationToken)
@@ -102,7 +104,8 @@ public class BookingsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> CreateBooking([FromBody] BookingsRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateBooking([FromBody] BookingsRequest request,
+        CancellationToken cancellationToken)
     {
         var userId = User.GetRequiredUserId();
         var bookingId = await _bookingsService.CreateBooking(
@@ -110,7 +113,7 @@ public class BookingsController : ControllerBase
             request.StatusId,
             request.CarId,
             request.StartTime,
-            request.EndTime, 
+            request.EndTime,
             cancellationToken);
 
         return Ok(bookingId);
@@ -118,7 +121,8 @@ public class BookingsController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateBooking(int id, [FromBody] BookingsRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateBooking(int id, [FromBody] BookingsRequest request,
+        CancellationToken cancellationToken)
     {
         var bookingId = await _bookingsService.UpdateBooking(id, request.StatusId, request.CarId, request.ClientId,
             request.StartTime, request.EndTime, cancellationToken);

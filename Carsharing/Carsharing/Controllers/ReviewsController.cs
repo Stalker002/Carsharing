@@ -58,7 +58,8 @@ public class ReviewsController : ControllerBase
 
     [HttpGet("byCar/{carId:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<ReviewWithClientInfo>>> GetReviewsByCar(int carId, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<ReviewWithClientInfo>>> GetReviewsByCar(int carId,
+        CancellationToken cancellationToken)
     {
         var reviews = await _reviewsService.GetReviewsByCarId(carId, cancellationToken);
 
@@ -88,7 +89,8 @@ public class ReviewsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> CreateReview([FromBody] ReviewRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateReview([FromBody] ReviewRequest request,
+        CancellationToken cancellationToken)
     {
         var userId = User.GetRequiredUserId();
         var reviewId = await _reviewsService.CreateReview(
@@ -104,7 +106,8 @@ public class ReviewsController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> UpdateReview(int id, [FromBody] ReviewRequest request, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<int>> UpdateReview(int id, [FromBody] ReviewRequest request,
+        CancellationToken cancellationToken = default)
     {
         var userId = User.GetRequiredUserId();
         var reviewId = await _reviewsService.UpdateReview(

@@ -50,13 +50,13 @@ public class TripService(
     public async Task<List<TripWithInfoDto>> GetTripWithInfo(int userId, int id, CancellationToken cancellationToken)
     {
         var client = (await clientRepository.GetClientByUserId(userId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Client not found");
+                     ?? throw new NotFoundException("Client not found");
 
         var trip = (await tripRepository.GetById(id, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Trip not found");
+                   ?? throw new NotFoundException("Trip not found");
 
         var booking = (await bookingRepository.GetById(trip.BookingId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Booking not found");
+                      ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != client.Id)
             throw new UnauthorizedAccessException("Trip does not belong to current user");
@@ -72,15 +72,16 @@ public class TripService(
         return await tripRepository.GetActiveTripDtoByClientId(clientId, cancellationToken);
     }
 
-    public async Task<TripFinishResult> FinishTripAsync(int userId, FinishTripRequest request, CancellationToken cancellationToken)
+    public async Task<TripFinishResult> FinishTripAsync(int userId, FinishTripRequest request,
+        CancellationToken cancellationToken)
     {
         var client = await clientRepository.GetClientByUserId(userId, cancellationToken);
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
         var trip = (await tripRepository.GetById(request.TripId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Trip not found");
+                   ?? throw new NotFoundException("Trip not found");
         var booking = (await bookingRepository.GetById(trip.BookingId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Booking not found");
+                      ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != clientId)
             throw new UnauthorizedAccessException("Trip does not belong to current user");
@@ -121,7 +122,7 @@ public class TripService(
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
         var booking = (await bookingRepository.GetById(request.BookingId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Booking not found");
+                      ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != clientId)
             throw new UnauthorizedAccessException("Booking does not belong to current user");

@@ -84,7 +84,8 @@ public class UsersController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> CreateUser([FromBody] UsersRequest request, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<int>> CreateUser([FromBody] UsersRequest request,
+        CancellationToken cancellationToken = default)
     {
         var (user, error) = Core.Models.User.Create(
             0,
@@ -101,9 +102,11 @@ public class UsersController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateUser(int id, [FromBody] UsersRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateUser(int id, [FromBody] UsersRequest request,
+        CancellationToken cancellationToken)
     {
-        var userId = await _usersService.UpdateUser(id, request.RoleId, request.Login, request.Password, cancellationToken);
+        var userId =
+            await _usersService.UpdateUser(id, request.RoleId, request.Login, request.Password, cancellationToken);
         return Ok(userId);
     }
 

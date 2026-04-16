@@ -81,11 +81,6 @@ public class ClientDocumentRepository : IClientDocumentRepository
         return documents;
     }
 
-    public async Task<int> GetCount(CancellationToken cancellationToken)
-    {
-        return await _context.ClientDocument.CountAsync(cancellationToken);
-    }
-
     public async Task<int> Create(ClientDocument document, CancellationToken cancellationToken)
     {
         var (_, error) = ClientDocument.Create(
@@ -121,7 +116,7 @@ public class ClientDocumentRepository : IClientDocumentRepository
     public async Task<int> Update(int id, int? clientId, string? licenseCategory, string? type, string? number,
         DateOnly? issueDate, DateOnly? expiryDate, string? filePath, CancellationToken cancellationToken)
     {
-        var document = await _context.ClientDocument.FirstOrDefaultAsync(d => d.Id == id, cancellationToken: cancellationToken)
+        var document = await _context.ClientDocument.FirstOrDefaultAsync(d => d.Id == id, cancellationToken)
                        ?? throw new Exception("Client document not found");
 
         if (clientId.HasValue)
@@ -168,5 +163,10 @@ public class ClientDocumentRepository : IClientDocumentRepository
         return await _context.ClientDocument
             .Where(d => d.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
+    }
+
+    public async Task<int> GetCount(CancellationToken cancellationToken)
+    {
+        return await _context.ClientDocument.CountAsync(cancellationToken);
     }
 }

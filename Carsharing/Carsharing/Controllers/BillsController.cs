@@ -106,7 +106,8 @@ public class BillsController : ControllerBase
 
     [HttpGet("info/{id:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<BillsResponse>>> GetBillWithInfoById(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<BillsResponse>>> GetBillWithInfoById(int id,
+        CancellationToken cancellationToken)
     {
         var bill = User.IsAdmin()
             ? await _billsService.GetBillWithInfoById(id, cancellationToken)
@@ -120,7 +121,8 @@ public class BillsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> CreateBill([FromBody] BillsRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateBill([FromBody] BillsRequest request,
+        CancellationToken cancellationToken)
     {
         var userId = User.GetRequiredUserId();
         var (bill, error) = Bill.Create(
@@ -141,7 +143,8 @@ public class BillsController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateBill(int id, [FromBody] BillsRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateBill(int id, [FromBody] BillsRequest request,
+        CancellationToken cancellationToken)
     {
         var billId = await _billsService.UpdateBill(
             id,
@@ -157,7 +160,8 @@ public class BillsController : ControllerBase
 
     [HttpPost("{id:int}/promocode")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<IActionResult> ApplyPromocode(int id, [FromBody] ApplyPromocodeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> ApplyPromocode(int id, [FromBody] ApplyPromocodeRequest request,
+        CancellationToken cancellationToken)
     {
         try
         {

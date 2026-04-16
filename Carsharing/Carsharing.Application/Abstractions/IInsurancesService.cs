@@ -15,7 +15,8 @@ public interface IInsurancesService
     Task<int> CreateInsurance(Insurance insurance, CancellationToken cancellationToken);
 
     Task<int> UpdateInsurance(int id, int? carId, int? statusId, string type, string? company,
-        string? policyNumber, DateOnly? startDate, DateOnly? endDate, decimal? cost, CancellationToken cancellationToken);
+        string? policyNumber, DateOnly? startDate, DateOnly? endDate, decimal? cost,
+        CancellationToken cancellationToken);
 
     Task<int> DeleteInsurance(int id, CancellationToken cancellationToken);
 }

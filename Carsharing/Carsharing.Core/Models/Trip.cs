@@ -36,7 +36,8 @@ public class Trip
             error = "Booking Id must be positive";
 
         if (!Enum.IsDefined(typeof(TripStatusEnum), statusId))
-            error = $"Invalid insurance type. Allowed: \"8. Ожидание начала\", \"9. В пути\", \"10. Завершена\", \"11. Отменена\", \"12. Требуется оплата\" ";
+            error =
+                "Invalid insurance type. Allowed: \"8. Ожидание начала\", \"9. В пути\", \"10. Завершена\", \"11. Отменена\", \"12. Требуется оплата\" ";
 
         if (string.IsNullOrWhiteSpace(tariffType))
             error = "Tariff type can't be empty";
@@ -51,11 +52,8 @@ public class Trip
 
         if (distance < 0)
             error = "Distance must be positive";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var trip = new Trip(id, bookingId, statusId, tariffType, startTime, endTime, duration, distance);
         return (trip, error);
