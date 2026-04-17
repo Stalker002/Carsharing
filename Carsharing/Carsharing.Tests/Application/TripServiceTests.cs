@@ -13,7 +13,7 @@ public class TripServiceTests
     public TripServiceTests()
     {
         _tripRepoMock = new Mock<ITripRepository>();
-        
+
         var mockDetail = new Mock<ITripDetailRepository>();
         var mockClient = new Mock<IClientRepository>();
         var mockCars = new Mock<ICarsService>();
@@ -21,11 +21,11 @@ public class TripServiceTests
         var mockBill = new Mock<IBillRepository>();
 
         _tripService = new TripService(
-            _tripRepoMock.Object, 
-            mockDetail.Object, 
-            mockClient.Object, 
+            _tripRepoMock.Object,
+            mockDetail.Object,
+            mockClient.Object,
             null!,
-            mockCars.Object, 
+            mockCars.Object,
             mockBooking.Object,
             mockBill.Object);
     }
@@ -35,15 +35,16 @@ public class TripServiceTests
     {
         const int tripIdToCancel = 5;
 
-        _tripRepoMock.Setup(x => x.CancelTripAsync(tripIdToCancel, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        _tripRepoMock.Setup(x => x.CancelTripAsync(tripIdToCancel, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
         using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
+        var specificToken = cts.Token;
 
         var result = await _tripService.CancelTripAsync(tripIdToCancel, specificToken);
 
         Assert.True(result);
-        
+
         _tripRepoMock.Verify(x => x.CancelTripAsync(tripIdToCancel, specificToken), Times.Once);
     }
 }

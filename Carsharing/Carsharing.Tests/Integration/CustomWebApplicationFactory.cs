@@ -1,5 +1,4 @@
 using Carsharing.Application.Abstractions;
-using Carsharing.Application.Extensions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess;
 using Microsoft.AspNetCore.Hosting;
@@ -19,10 +18,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
-        builder.ConfigureLogging(logging =>
-        {
-            logging.ClearProviders();
-        });
+        builder.ConfigureLogging(logging => { logging.ClearProviders(); });
         builder.ConfigureAppConfiguration((_, configBuilder) =>
         {
             configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
@@ -43,31 +39,28 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         {
             var descriptors = services
                 .Where(d => d.ServiceType == typeof(DbContextOptions<CarsharingDbContext>)
-                    || d.ServiceType == typeof(CarsharingDbContext))
+                            || d.ServiceType == typeof(CarsharingDbContext))
                 .ToList();
 
-            foreach (var descriptor in descriptors)
-            {
-                services.Remove(descriptor);
-            }
-            
+            foreach (var descriptor in descriptors) services.Remove(descriptor);
+
             services.AddDbContext<CarsharingDbContext>(options =>
             {
                 options.UseInMemoryDatabase(_databaseName);
-        
-                options.ConfigureWarnings(warnings => 
+
+                options.ConfigureWarnings(warnings =>
                     warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning));
             });
         });
     }
-    
+
     public string GenerateTestToken(int userId, int roleId)
     {
         using var scope = Services.CreateScope();
         var jwtProvider = scope.ServiceProvider.GetRequiredService<IJwtProvider>();
-        
-        var testUser = User.Create(userId, roleId, "testuser", "password").user!;
-        
+
+        var testUser = User.Create(userId, roleId, "testuser", "password").user;
+
         return jwtProvider.GenerateToken(testUser);
     }
 }

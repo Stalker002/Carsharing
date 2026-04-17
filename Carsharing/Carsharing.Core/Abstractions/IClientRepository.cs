@@ -16,7 +16,8 @@ public interface IClientRepository
 
     Task<int> Create(Client client, CancellationToken cancellationToken);
 
-    Task<int> Update(int id, int? userId, string? name, string? surname, string? phoneNumber, string? email, CancellationToken cancellationToken);
+    Task<int> Update(int id, int? userId, string? name, string? surname, string? phoneNumber, string? email,
+        CancellationToken cancellationToken);
 
     Task<int> Delete(int id, CancellationToken cancellationToken);
 }

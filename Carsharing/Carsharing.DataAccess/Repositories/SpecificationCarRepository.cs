@@ -104,9 +104,10 @@ public class SpecificationCarRepository : ISpecificationCarRepository
     }
 
     public async Task<int> Update(int id, string? fuelType, string? brand, string? model, string? transmission,
-        int? year, string? vinNumber, string? stateNumber, int? mileage, decimal? maxFuel, decimal? fuelPerKm, CancellationToken cancellationToken)
+        int? year, string? vinNumber, string? stateNumber, int? mileage, decimal? maxFuel, decimal? fuelPerKm,
+        CancellationToken cancellationToken)
     {
-        var specification = await _context.SpecificationCar.FirstOrDefaultAsync(sp => sp.Id == id, cancellationToken: cancellationToken)
+        var specification = await _context.SpecificationCar.FirstOrDefaultAsync(sp => sp.Id == id, cancellationToken)
                             ?? throw new Exception("Specification not found");
 
         specification.FuelType = fuelType;
@@ -161,10 +162,8 @@ public class SpecificationCarRepository : ISpecificationCarRepository
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var specificationEntity = await _context.SpecificationCar
+        return await _context.SpecificationCar
             .Where(sp => sp.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

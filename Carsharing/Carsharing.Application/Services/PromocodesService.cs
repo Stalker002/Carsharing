@@ -38,7 +38,8 @@ public class PromocodesService : IPromocodesService
         return await _promocodeRepository.GetActive(cancellationToken);
     }
 
-    public async Task<List<Promocode>> GetPagedActivePromocodes(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Promocode>> GetPagedActivePromocodes(int page, int limit,
+        CancellationToken cancellationToken)
     {
         return await _promocodeRepository.GetPagedActive(page, limit, cancellationToken);
     }

@@ -6,10 +6,7 @@ public static class BuildQueryExtension
 {
     public static string BuildQuery<T>(T filter)
     {
-        if (filter == null)
-        {
-            return string.Empty;
-        }
+        if (filter == null) return string.Empty;
 
         var properties = filter.GetType().GetProperties();
         var queryParams = new List<string>();
@@ -17,16 +14,13 @@ public static class BuildQueryExtension
         foreach (var prop in properties)
         {
             var value = prop.GetValue(filter);
-            
+
             if (value == null) continue;
-            
+
             switch (value)
             {
                 case string str:
-                    if (string.IsNullOrWhiteSpace(str))
-                    {
-                        continue;
-                    }
+                    if (string.IsNullOrWhiteSpace(str)) continue;
 
                     queryParams.Add($"{prop.Name}={Uri.EscapeDataString(str)}");
                     break;

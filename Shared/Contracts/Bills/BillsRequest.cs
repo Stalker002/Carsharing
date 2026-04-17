@@ -7,4 +7,4 @@ public record BillsRequest(
     DateTime IssueDate,
     decimal Amount,
     decimal RemainingAmount
-    );
+);

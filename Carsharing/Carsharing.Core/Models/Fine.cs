@@ -40,7 +40,7 @@ public class Fine
         if (tripId < 0)
             error = "Trip Id must be positive";
 
-        if (!System.Enum.IsDefined(typeof(FineStatusEnum), statusId))
+        if (!Enum.IsDefined(typeof(FineStatusEnum), statusId))
             error = "Invalid fine status type. Allowed: \"17. Начислен\", \"18. Ожидает оплаты\", \"19. Оплачен\" ";
 
         if (string.IsNullOrWhiteSpace(type))
@@ -53,11 +53,8 @@ public class Fine
 
         if (date > DateTime.Now)
             error = "Fine date can not be in the future";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var fine = new Fine(id, tripId, statusId, type, amount, date);
         return (fine, error);

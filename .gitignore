@@ -84,3 +84,4 @@ Carsharing/.dotnet/.dotnet/
 /Mobile/CarsharingMobile/LocalSecrets.props.example
 /Mobile/CarsharingMobile/LocalSecrets.props
 *.env
+/Carsharing/qodana.yaml

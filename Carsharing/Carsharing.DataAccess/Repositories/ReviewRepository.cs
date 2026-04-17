@@ -79,7 +79,8 @@ public class ReviewRepository : IReviewRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<ReviewWithClientInfo>> GetPagedByCarId(int carId, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<ReviewWithClientInfo>> GetPagedByCarId(int carId, int page, int limit,
+        CancellationToken cancellationToken)
     {
         return await _context.Review
             .AsNoTracking()
@@ -175,7 +176,7 @@ public class ReviewRepository : IReviewRepository
     public async Task<int> Update(int id, int? clientId, int? carId, short? rating, string? comment,
         DateTime? date, CancellationToken cancellationToken)
     {
-        var review = await _context.Review.FirstOrDefaultAsync(r => r.Id == id, cancellationToken: cancellationToken)
+        var review = await _context.Review.FirstOrDefaultAsync(r => r.Id == id, cancellationToken)
                      ?? throw new Exception("Review not found");
 
         if (clientId.HasValue)
@@ -209,10 +210,8 @@ public class ReviewRepository : IReviewRepository
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var reviewEntity = await _context.Review
+        return await _context.Review
             .Where(r => r.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

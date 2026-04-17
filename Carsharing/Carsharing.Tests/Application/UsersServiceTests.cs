@@ -8,9 +8,9 @@ namespace Carsharing.Tests.Application;
 
 public class UsersServiceTests
 {
-    private readonly Mock<IUsersRepository> _userRepositoryMock;
-    private readonly Mock<IPasswordHasher> _passwordHasherMock;
     private readonly Mock<IJwtProvider> _jwtProviderMock;
+    private readonly Mock<IPasswordHasher> _passwordHasherMock;
+    private readonly Mock<IUsersRepository> _userRepositoryMock;
     private readonly UsersService _usersService;
 
     public UsersServiceTests()
@@ -85,7 +85,7 @@ public class UsersServiceTests
             .Returns(expectedToken);
 
         using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
+        var specificToken = cts.Token;
 
         var (token, error) = await _usersService.Login(login, password, specificToken);
 
@@ -99,7 +99,7 @@ public class UsersServiceTests
     [Fact]
     public async Task CreateUser_HashesPasswordInServiceBeforeSaving()
     {
-        var plainUser = User.Create(0, 2, "new_user", "StrongPassword123!").user!;
+        var plainUser = User.Create(0, 2, "new_user", "StrongPassword123!").user;
 
         _passwordHasherMock
             .Setup(x => x.Generate("StrongPassword123!"))
@@ -110,7 +110,7 @@ public class UsersServiceTests
             .ReturnsAsync(10);
 
         using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
+        var specificToken = cts.Token;
 
         var userId = await _usersService.CreateUser(plainUser, specificToken);
 
@@ -142,7 +142,7 @@ public class UsersServiceTests
             .ReturnsAsync(7);
 
         using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
+        var specificToken = cts.Token;
 
         var userId = await _usersService.UpdateUser(7, 2, "updated_user", "NewStrongPassword123!", specificToken);
 
@@ -165,7 +165,7 @@ public class UsersServiceTests
             .ReturnsAsync(8);
 
         using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
+        var specificToken = cts.Token;
 
         var userId = await _usersService.UpdateUser(8, 1, "renamed_user", null, specificToken);
 

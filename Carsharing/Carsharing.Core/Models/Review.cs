@@ -40,11 +40,8 @@ public class Review
 
         if (date > DateTime.UtcNow)
             error = "Review date cannot be in the future";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var review = new Review(id, clientId, carId, rating, comment, date);
         return (review, error);

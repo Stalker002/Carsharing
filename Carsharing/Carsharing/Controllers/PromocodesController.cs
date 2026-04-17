@@ -49,7 +49,8 @@ public class PromocodesController : ControllerBase
 
     [HttpGet("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodeById(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodeById(int id,
+        CancellationToken cancellationToken)
     {
         var promocodes = await _promocodesService.GetPromocodeById(id, cancellationToken);
 
@@ -91,7 +92,8 @@ public class PromocodesController : ControllerBase
 
     [HttpGet("byCode/{code}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodeByCode(string code, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<PromocodeResponse>>> GetPromocodeByCode(string code,
+        CancellationToken cancellationToken)
     {
         var promocodes = await _promocodesService.GetPromocodeByCode(code, cancellationToken);
 
@@ -103,7 +105,8 @@ public class PromocodesController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> CreatePromocode([FromBody] PromocodeRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreatePromocode([FromBody] PromocodeRequest request,
+        CancellationToken cancellationToken)
     {
         var (promocode, error) = Promocode.Create(
             0,
@@ -122,7 +125,8 @@ public class PromocodesController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdatePromocode(int id, [FromBody] PromocodeRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdatePromocode(int id, [FromBody] PromocodeRequest request,
+        CancellationToken cancellationToken)
     {
         var promocodeId = await _promocodesService.UpdatePromocode(id, request.StatusId, request.Code, request.Discount,
             request.StartDate, request.EndDate, cancellationToken);

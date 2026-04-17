@@ -4,8 +4,8 @@ namespace Carsharing.Middleware;
 
 public class CustomExceptionMiddleware
 {
-    private readonly RequestDelegate _next;
     private readonly ILogger<CustomExceptionMiddleware> _logger;
+    private readonly RequestDelegate _next;
 
     public CustomExceptionMiddleware(
         RequestDelegate next,
@@ -47,8 +47,7 @@ public class CustomExceptionMiddleware
 
         var response = new
         {
-            StatusCode = statusCode,
-            Message = exception.Message,
+            StatusCode = statusCode, exception.Message
         };
 
         return context.Response.WriteAsJsonAsync(response);

@@ -30,7 +30,8 @@ public class InsurancesController : ControllerBase
 
     [HttpGet("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<InsurancesResponse>>> GetInsuranceById(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<InsurancesResponse>>> GetInsuranceById(int id,
+        CancellationToken cancellationToken)
     {
         var insurances = await _insurancesService.GetInsuranceById(id, cancellationToken);
         var response = insurances.Select(i => new InsurancesResponse(i.Id, i.CarId, i.StatusId, i.Type, i.Company,
@@ -41,7 +42,8 @@ public class InsurancesController : ControllerBase
 
     [HttpGet("byCarId/{carId:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<InsurancesResponse>>> GetInsuranceByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<InsurancesResponse>>> GetInsuranceByCarId(int carId,
+        CancellationToken cancellationToken)
     {
         var insurances = await _insurancesService.GetInsuranceByCarId(carId, cancellationToken);
         var response = insurances.Select(i => new InsurancesResponse(i.Id, i.CarId, i.StatusId, i.Type, i.Company,
@@ -52,7 +54,8 @@ public class InsurancesController : ControllerBase
 
     [HttpGet("ActiveByCarId/{carId:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<InsurancesResponse>>> GetActiveInsuranceByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<InsurancesResponse>>> GetActiveInsuranceByCarId(int carId,
+        CancellationToken cancellationToken)
     {
         var insurances = await _insurancesService.GetActiveInsuranceByCarId(carId, cancellationToken);
         var response = insurances.Select(i => new InsurancesResponse(i.Id, i.CarId, i.StatusId, i.Type, i.Company,
@@ -63,7 +66,8 @@ public class InsurancesController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> CreateInsurance([FromBody] InsurancesRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateInsurance([FromBody] InsurancesRequest request,
+        CancellationToken cancellationToken)
     {
         var (insurance, error) = Insurance.Create(
             0,
@@ -85,7 +89,8 @@ public class InsurancesController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateInsurance(int id, [FromBody] InsurancesRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateInsurance(int id, [FromBody] InsurancesRequest request,
+        CancellationToken cancellationToken)
     {
         var insuranceId = await _insurancesService.UpdateInsurance(id, request.CarId, request.StatusId, request.Type,
             request.Company, request.PolicyNumber, request.StartDate, request.EndDate, request.Cost, cancellationToken);

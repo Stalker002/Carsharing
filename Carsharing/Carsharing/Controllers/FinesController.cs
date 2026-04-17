@@ -59,7 +59,8 @@ public class FinesController : ControllerBase
 
     [HttpGet("byTrip/{tripId:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<FinesResponse>>> GetFinesByTripId(int tripId, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<FinesResponse>>> GetFinesByTripId(int tripId,
+        CancellationToken cancellationToken)
     {
         var fines = User.IsAdmin()
             ? await _finesService.GetFinesByTripId(tripId, cancellationToken)
@@ -72,7 +73,8 @@ public class FinesController : ControllerBase
 
     [HttpGet("byStatus/{statusId:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<FinesResponse>>> GetFinesByStatusId(int statusId, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<FinesResponse>>> GetFinesByStatusId(int statusId,
+        CancellationToken cancellationToken)
     {
         var fines = await _finesService.GetFinesByStatusId(statusId, cancellationToken);
 
@@ -83,7 +85,8 @@ public class FinesController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> CreateFine([FromBody] FinesRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateFine([FromBody] FinesRequest request,
+        CancellationToken cancellationToken)
     {
         var (fines, error) = Fine.Create(
             0,
@@ -102,7 +105,8 @@ public class FinesController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateFine(int id, [FromBody] FinesRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateFine(int id, [FromBody] FinesRequest request,
+        CancellationToken cancellationToken)
     {
         var fineId = await _finesService.UpdateFine(id, request.TripId, request.StatusId, request.Type, request.Amount,
             request.Date, cancellationToken);

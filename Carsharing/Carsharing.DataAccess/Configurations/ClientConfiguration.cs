@@ -47,7 +47,7 @@ public class ClientConfiguration : IEntityTypeConfiguration<ClientEntity>
             .IsUnique();
 
         builder.HasIndex(cl => cl.UserId)
-             .IsUnique();
+            .IsUnique();
 
         builder.HasOne(cl => cl.User)
             .WithOne(u => u.Client)

@@ -21,8 +21,10 @@ public class CarMappingProfile : Profile
             .ForMember(dest => dest.Year, opt => opt.MapFrom(src => src.SpecificationCar!.Year))
             .ForMember(dest => dest.StateNumber, opt => opt.MapFrom(src => src.SpecificationCar!.StateNumber))
             .ForMember(dest => dest.MaxFuel, opt => opt.MapFrom(src => src.SpecificationCar!.MaxFuel))
-            .ForMember(dest => dest.Latitude, opt => opt.MapFrom(src => src.Coordinates != null ? src.Coordinates.Y : (double?)null))
-            .ForMember(dest => dest.Longitude, opt => opt.MapFrom(src => src.Coordinates != null ? src.Coordinates.X : (double?)null));
+            .ForMember(dest => dest.Latitude,
+                opt => opt.MapFrom(src => src.Coordinates != null ? src.Coordinates.Y : (double?)null))
+            .ForMember(dest => dest.Longitude,
+                opt => opt.MapFrom(src => src.Coordinates != null ? src.Coordinates.X : (double?)null));
 
         CreateMap<CarEntity, CarWithMinInfoDto>()
             .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.CarStatus!.Name))
@@ -33,7 +35,9 @@ public class CarMappingProfile : Profile
             .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.SpecificationCar!.Brand))
             .ForMember(dest => dest.Model, opt => opt.MapFrom(src => src.SpecificationCar!.Model))
             .ForMember(dest => dest.Transmission, opt => opt.MapFrom(src => src.SpecificationCar!.Transmission))
-            .ForMember(dest => dest.Latitude, opt => opt.MapFrom(src => src.Coordinates != null ? src.Coordinates.Y : (double?)null))
-            .ForMember(dest => dest.Longitude, opt => opt.MapFrom(src => src.Coordinates != null ? src.Coordinates.X : (double?)null));
+            .ForMember(dest => dest.Latitude,
+                opt => opt.MapFrom(src => src.Coordinates != null ? src.Coordinates.Y : (double?)null))
+            .ForMember(dest => dest.Longitude,
+                opt => opt.MapFrom(src => src.Coordinates != null ? src.Coordinates.X : (double?)null));
     }
 }

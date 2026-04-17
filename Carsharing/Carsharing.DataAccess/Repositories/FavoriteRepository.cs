@@ -23,19 +23,20 @@ public class FavoriteRepository : IFavoriteRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<CarWithMinInfoDto>> GetFavoriteCarsDtoByClientIdAsync(int clientId, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<CarWithMinInfoDto>> GetFavoriteCarsDtoByClientIdAsync(int clientId, int page, int limit,
+        CancellationToken cancellationToken)
     {
         return await _context.Favorites
             .AsNoTracking()
             .Where(f => f.ClientId == clientId)
             .Include(f => f.Car)
-                .ThenInclude(c => c!.CarStatus)
+            .ThenInclude(c => c!.CarStatus)
             .Include(f => f.Car)
-                .ThenInclude(c => c!.Tariff)
+            .ThenInclude(c => c!.Tariff)
             .Include(f => f.Car)
-                .ThenInclude(c => c!.SpecificationCar)
+            .ThenInclude(c => c!.SpecificationCar)
             .Include(f => f.Car)
-                .ThenInclude(c => c!.Category)
+            .ThenInclude(c => c!.Category)
             .OrderByDescending(f => f.Id)
             .Skip((page - 1) * limit)
             .Take(limit)
@@ -43,14 +44,18 @@ public class FavoriteRepository : IFavoriteRepository
                 f.Car!.Id,
                 f.Car.CarStatus!.Name!,
                 f.Car.Tariff!.PricePerDay,
+                f.Car.Tariff.PricePerMinute,
+                f.Car.Tariff.PricePerKm,
                 f.Car.Category!.Name!,
                 f.Car.SpecificationCar!.FuelType!,
                 f.Car.SpecificationCar.MaxFuel,
+                f.Car.FuelLevel,
                 f.Car.SpecificationCar.Brand!,
                 f.Car.SpecificationCar.Model!,
                 f.Car.SpecificationCar.Transmission!,
                 f.Car.Coordinates!.Y,
                 f.Car.Coordinates.X,
+                f.Car.SpecificationCar.StateNumber,
                 f.Car.ImagePath
             ))
             .ToListAsync(cancellationToken);

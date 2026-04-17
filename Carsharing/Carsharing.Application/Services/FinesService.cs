@@ -52,13 +52,13 @@ public class FinesService : IFinesService
     public async Task<List<Fine>> GetFinesByTripId(int userId, int tripId, CancellationToken cancellationToken)
     {
         var client = (await _clientRepository.GetClientByUserId(userId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Client not found");
+                     ?? throw new NotFoundException("Client not found");
 
         var trip = (await _tripRepository.GetById(tripId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Trip not found");
+                   ?? throw new NotFoundException("Trip not found");
 
         var booking = (await _bookingRepository.GetById(trip.BookingId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Booking not found");
+                      ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != client.Id)
             throw new UnauthorizedAccessException("Trip does not belong to current user");

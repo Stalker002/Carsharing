@@ -13,7 +13,8 @@ public interface IBillsService
 
     Task<Bill?> GetBillById(int id, CancellationToken cancellationToken);
 
-    Task<List<BillWithMinInfoDto>> GetPagedBillWithMinInfoByUserId(int userId, int page, int limit, CancellationToken cancellationToken);
+    Task<List<BillWithMinInfoDto>> GetPagedBillWithMinInfoByUserId(int userId, int page, int limit,
+        CancellationToken cancellationToken);
 
     Task<int> GetCountPagedBillWithMinInfoByUser(int userId, CancellationToken cancellationToken);
 

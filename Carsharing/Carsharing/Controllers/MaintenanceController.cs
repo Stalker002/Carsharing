@@ -29,7 +29,8 @@ public class MaintenanceController : ControllerBase
 
     [HttpGet("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceById(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceById(int id,
+        CancellationToken cancellationToken)
     {
         var maintenances = await _maintenancesService.GetMaintenanceById(id, cancellationToken);
         var response = maintenances.Select(m =>
@@ -39,7 +40,8 @@ public class MaintenanceController : ControllerBase
 
     [HttpGet("byCar/{carId:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceByCarId(int carId, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<MaintenanceResponse>>> GetMaintenanceByCarId(int carId,
+        CancellationToken cancellationToken)
     {
         var maintenances = await _maintenancesService.GetMaintenanceByCarId(carId, cancellationToken);
         var response = maintenances.Select(m =>
@@ -64,7 +66,8 @@ public class MaintenanceController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> CreateMaintenance([FromBody] MaintenanceRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateMaintenance([FromBody] MaintenanceRequest request,
+        CancellationToken cancellationToken)
     {
         var (maintenance, error) = Maintenance.Create(
             0,
@@ -83,7 +86,8 @@ public class MaintenanceController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateMaintenance(int id, [FromBody] MaintenanceRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateMaintenance(int id, [FromBody] MaintenanceRequest request,
+        CancellationToken cancellationToken)
     {
         var maintenanceId = await _maintenancesService.UpdateMaintenance(id, request.CarId, request.WorkType,
             request.Description, request.Cost, request.Date, cancellationToken);

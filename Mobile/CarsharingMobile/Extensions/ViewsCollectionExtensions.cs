@@ -8,7 +8,7 @@ public static class ViewsCollectionExtensions
     {
         services.AddSingleton<AppShell>();
         services.AddSingleton<App>();
-        
+
         services.AddTransient<LoginPage>();
         services.AddTransient<RegistrationPage>();
         services.AddTransient<CurrentTripPage>();

@@ -20,10 +20,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddApiClient<TService>(this IServiceCollection services)
         where TService : class
     {
-        services.AddHttpClient<TService>(client => 
-            { 
-                client.BaseAddress = new Uri(ApiConfig.BaseUrl); 
-            })
+        services.AddHttpClient<TService>(client => { client.BaseAddress = new Uri(ApiConfig.BaseUrl); })
             .AddHttpMessageHandler<AuthHttpMessageHandler>();
 
         return services;

@@ -8,4 +8,4 @@ public record BillsResponse(
     DateTime IssueDate,
     decimal? Amount,
     decimal? RemainingAmount
-    );
+);

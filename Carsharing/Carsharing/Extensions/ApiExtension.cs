@@ -1,7 +1,7 @@
+using System.Text;
 using Carsharing.Application.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace Carsharing.Extensions;
 
@@ -52,20 +52,11 @@ public static class ApiExtension
 
         service.AddAuthorization(options =>
         {
-            options.AddPolicy("AdminClientPolicy", policy =>
-            {
-                policy.RequireClaim("userRoleId", "1", "2");
-            });
+            options.AddPolicy("AdminClientPolicy", policy => { policy.RequireClaim("userRoleId", "1", "2"); });
 
-            options.AddPolicy("ClientPolicy", policy =>
-            {
-                policy.RequireClaim("userRoleId", "2");
-            });
+            options.AddPolicy("ClientPolicy", policy => { policy.RequireClaim("userRoleId", "2"); });
 
-            options.AddPolicy("AdminPolicy", policy =>
-            {
-                policy.RequireClaim("userRoleId", "1");
-            });
+            options.AddPolicy("AdminPolicy", policy => { policy.RequireClaim("userRoleId", "1"); });
         });
     }
 }

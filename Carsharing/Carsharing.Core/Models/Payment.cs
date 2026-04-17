@@ -36,11 +36,8 @@ public class Payment
             error = "Method can't be empty";
         if (!allowedMethod.Contains(method))
             error = $"Invalid method. Allowed: {string.Join(", ", allowedMethod)}";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var payment = new Payment(id, billId, sum, method, date);
         return (payment, error);

@@ -27,9 +27,9 @@ public class Client
 
     public string? Surname { get; }
 
-    public string? PhoneNumber { get; } = string.Empty;
+    public string? PhoneNumber { get; }
 
-    public string? Email { get; } = string.Empty;
+    public string? Email { get; }
 
     public static (Client client, string error) Create(int id, int userId, string? name, string? surname,
         string? phoneNumber, string? email)
@@ -62,11 +62,8 @@ public class Client
             error = $"Email can't be longer than {MaxEmailLength} symbols";
         if (email != null && !Regex.IsMatch(email, @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"))
             error = "Invalid email format";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var client = new Client(id, userId, name?.Trim(), surname?.Trim(), phoneNumber?.Trim(), email?.Trim());
 

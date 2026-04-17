@@ -32,7 +32,7 @@ public class Booking
     {
         var error = string.Empty;
 
-        if (!System.Enum.IsDefined(typeof(BookingStatusEnum), statusId))
+        if (!Enum.IsDefined(typeof(BookingStatusEnum), statusId))
             error = "Invalid booking status type. Allowed: \"5.Активно\", \"6. Завершено\", \"7. Отменено\" ";
 
         if (carId < 0)
@@ -47,10 +47,7 @@ public class Booking
         if (startTime > endTime)
             error = "Start time can not exceed end time";
 
-        if (error.Length != 0)
-        {
-            return (null, error)!;
-        }
+        if (error.Length != 0) return (null, error)!;
 
         var booking = new Booking(id, statusId, carId, clientId, startTime, endTime);
         return (booking, error);

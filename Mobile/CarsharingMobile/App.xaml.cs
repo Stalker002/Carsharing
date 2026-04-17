@@ -4,16 +4,16 @@ namespace CarsharingMobile;
 
 public partial class App
 {
-    private readonly AppShell _shell;
     private readonly IdentityService _identityService;
+    private readonly AppShell _shell;
 
     public App(AppShell shell, IdentityService identityService)
     {
         InitializeComponent();
-        
+
         _shell = shell;
         _identityService = identityService;
-        
+
         _ = CheckAutoLogin();
     }
 
@@ -31,7 +31,7 @@ public partial class App
                 return;
             }
         }
-        
+
         SecureStorage.Default.Remove("tasty");
     }
 

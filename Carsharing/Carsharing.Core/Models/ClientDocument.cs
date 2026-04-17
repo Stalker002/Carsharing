@@ -25,12 +25,12 @@ public class ClientDocument
 
     public int Id { get; }
     public int ClientId { get; }
-    public string? Type { get; } = string.Empty;
-    public string? LicenseCategory { get; } = string.Empty;
-    public string? Number { get; } = string.Empty;
+    public string? Type { get; }
+    public string? LicenseCategory { get; }
+    public string? Number { get; }
     public DateOnly IssueDate { get; }
     public DateOnly ExpiryDate { get; }
-    public string? FilePath { get; } = string.Empty;
+    public string? FilePath { get; }
 
     public static (ClientDocument clientDocument, string error) Create(int id, int clientId, string? type,
         string? licenseCategory, string? number, DateOnly issueDate, DateOnly expiryDate, string? filePath)
@@ -78,11 +78,8 @@ public class ClientDocument
             error = "File path can't be empty";
         if (filePath is { Length: > MaxFilePathLength })
             error = $"Type can't be longer than {MaxFilePathLength} symbols";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var clientDocument =
             new ClientDocument(id, clientId, type, licenseCategory, number?.ToUpper(), issueDate, expiryDate, filePath);

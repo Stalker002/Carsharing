@@ -12,7 +12,7 @@ public partial class LoginViewModel(AuthService authService, IdentityService ide
     [ObservableProperty] public partial string? UserLogin { get; set; }
 
     [ObservableProperty] public partial string? UserPassword { get; set; }
-    
+
     [ObservableProperty] public partial bool IsPasswordHidden { get; set; } = true;
 
     [ObservableProperty] public partial string PasswordIcon { get; set; } = "eye_hide.png";
@@ -23,7 +23,7 @@ public partial class LoginViewModel(AuthService authService, IdentityService ide
     private void TogglePassword()
     {
         IsPasswordHidden = !IsPasswordHidden;
-        PasswordIcon = IsPasswordHidden ? "eye_hide.png" : "eye_visible.png"; 
+        PasswordIcon = IsPasswordHidden ? "eye_hide.png" : "eye_visible.png";
     }
 
     [RelayCommand]
@@ -38,7 +38,7 @@ public partial class LoginViewModel(AuthService authService, IdentityService ide
         IsBusy = true;
 
         var request = new LoginRequest(UserLogin, UserPassword);
-        
+
         var errorMessage = await authService.LoginAsync(request);
 
         IsBusy = false;

@@ -10,10 +10,6 @@ namespace Carsharing.DataAccess.Repositories;
 
 public class CarRepository(CarsharingDbContext context) : ICarRepository
 {
-    private static double? GetLatitude(Point? point) => point?.Y;
-
-    private static double? GetLongitude(Point? point) => point?.X;
-
     public async Task<List<Car>> Get(CancellationToken cancellationToken)
     {
         var carEntities = await context.Car
@@ -116,7 +112,8 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
         return cars;
     }
 
-    public async Task<List<Car>> GetPagedByCategoryId(List<int> categoryIds, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Car>> GetPagedByCategoryId(List<int> categoryIds, int page, int limit,
+        CancellationToken cancellationToken)
     {
         var carEntities = await context.Car
             .Where(c => categoryIds.Contains(c.CategoryId) && c.StatusId == (int)CarStatusEnum.Available)
@@ -209,7 +206,8 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit,
+        CancellationToken cancellationToken)
     {
         return await context.Car
             .AsNoTracking()
@@ -220,20 +218,25 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
                 c.Id,
                 c.CarStatus!.Name!,
                 c.Tariff!.PricePerDay,
+                c.Tariff.PricePerMinute,
+                c.Tariff.PricePerKm,
                 c.Category!.Name!,
                 c.SpecificationCar!.FuelType!,
                 c.SpecificationCar.MaxFuel,
+                c.FuelLevel,
                 c.SpecificationCar.Brand!,
                 c.SpecificationCar.Model!,
                 c.SpecificationCar.Transmission!,
                 GetLatitude(c.Coordinates),
                 GetLongitude(c.Coordinates),
+                c.SpecificationCar.StateNumber,
                 c.ImagePath
             ))
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page,
+        int limit, CancellationToken cancellationToken)
     {
         return await context.Car
             .AsNoTracking()
@@ -246,14 +249,18 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
                 c.Id,
                 c.CarStatus!.Name!,
                 c.Tariff!.PricePerDay,
+                c.Tariff.PricePerMinute,
+                c.Tariff.PricePerKm,
                 c.Category!.Name!,
                 c.SpecificationCar!.FuelType!,
                 c.SpecificationCar.MaxFuel,
+                c.FuelLevel,
                 c.SpecificationCar.Brand!,
                 c.SpecificationCar.Model!,
                 c.SpecificationCar.Transmission!,
                 GetLatitude(c.Coordinates),
                 GetLongitude(c.Coordinates),
+                c.SpecificationCar.StateNumber,
                 c.ImagePath
             ))
             .ToListAsync(cancellationToken);
@@ -322,9 +329,10 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
     }
 
     public async Task<int> Update(int id, int? statusId, int? tariffId, int? categoryId, int? specificationId,
-        string? location, double? latitude, double? longitude, decimal? fuelLevel, string? imagePath, CancellationToken cancellationToken)
+        string? location, double? latitude, double? longitude, decimal? fuelLevel, string? imagePath,
+        CancellationToken cancellationToken)
     {
-        var car = await context.Car.FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken)
+        var car = await context.Car.FirstOrDefaultAsync(c => c.Id == id, cancellationToken)
                   ?? throw new Exception("Car not found");
 
         if (statusId.HasValue)
@@ -376,7 +384,7 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
 
     public async Task UpdateStatus(int? carId, int statusId, CancellationToken cancellationToken)
     {
-        var car = await context.Car.FindAsync([carId], cancellationToken: cancellationToken);
+        var car = await context.Car.FindAsync([carId], cancellationToken);
         if (car == null)
             throw new Exception("Автомобиль не найден");
 
@@ -385,11 +393,13 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<bool> TryUpdateStatus(int carId, int currentStatusId, int newStatusId, CancellationToken cancellationToken)
+    public async Task<bool> TryUpdateStatus(int carId, int currentStatusId, int newStatusId,
+        CancellationToken cancellationToken)
     {
         if (!context.Database.IsRelational())
         {
-            var car = await context.Car.FirstOrDefaultAsync(c => c.Id == carId && c.StatusId == currentStatusId, cancellationToken: cancellationToken);
+            var car = await context.Car.FirstOrDefaultAsync(c => c.Id == carId && c.StatusId == currentStatusId,
+                cancellationToken);
             if (car == null)
                 return false;
 
@@ -402,7 +412,7 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
         var affectedRows = await context.Car
             .Where(c => c.Id == carId && c.StatusId == currentStatusId)
             .ExecuteUpdateAsync(setters => setters
-                .SetProperty(c => c.StatusId, newStatusId), cancellationToken: cancellationToken);
+                .SetProperty(c => c.StatusId, newStatusId), cancellationToken);
 
         return affectedRows > 0;
     }
@@ -414,5 +424,15 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
             .ExecuteDeleteAsync(cancellationToken);
 
         return id;
+    }
+
+    private static double? GetLatitude(Point? point)
+    {
+        return point?.Y;
+    }
+
+    private static double? GetLongitude(Point? point)
+    {
+        return point?.X;
     }
 }
