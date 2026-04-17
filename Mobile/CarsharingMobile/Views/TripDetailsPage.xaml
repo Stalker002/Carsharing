@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CarsharingMobile.Views.TripDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
+    x:DataType="vm:TripDetailsViewModel"
+    BackgroundColor="{StaticResource BgLight}"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid
+            Grid.Row="0"
+            Padding="15,20"
+            ColumnDefinitions="Auto,*"
+            HeightRequest="80">
+            <ImageButton
+                BackgroundColor="Transparent"
+                Command="{Binding GoBackCommand}"
+                HeightRequest="24"
+                HorizontalOptions="Start"
+                Source="back_icon_dark.png"
+                WidthRequest="24" />
+            <Label
+                Grid.Column="1"
+                Margin="-24,0,0,0"
+                FontAttributes="Bold"
+                FontSize="20"
+                HorizontalOptions="Center"
+                Text="Детализация поездки"
+                TextColor="{StaticResource TextDark}"
+                VerticalOptions="Center" />
+        </Grid>
+
+        <RefreshView
+            Grid.Row="1"
+            Command="{Binding RefreshCommand}"
+            IsRefreshing="{Binding IsRefreshing}">
+            <Grid>
+                <ScrollView>
+                    <VerticalStackLayout Padding="16,0,16,24" Spacing="16">
+                        <Border
+                            Padding="16"
+                            BackgroundColor="#FFF3F3"
+                            IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                            Stroke="#F1C6C6"
+                            StrokeShape="RoundRectangle 12"
+                            StrokeThickness="1">
+                            <Label
+                                FontSize="14"
+                                Text="{Binding ErrorMessage}"
+                                TextColor="#A33A3A" />
+                        </Border>
+
+                        <Border
+                            Padding="16"
+                            Style="{StaticResource CardBorderStyle}"
+                            IsVisible="{Binding HasDetails}"
+                            StrokeShape="RoundRectangle 18">
+                            <Grid ColumnDefinitions="88,*" ColumnSpacing="16">
+                                <Border
+                                    BackgroundColor="#EEF4FF"
+                                    HeightRequest="88"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 16"
+                                    WidthRequest="88">
+                                    <Grid>
+                                        <Image
+                                            Aspect="AspectFill"
+                                            Source="{Binding Details.CarCard.ImageUrl}" />
+                                        <Image
+                                            Aspect="AspectFit"
+                                            Opacity="0.5"
+                                            Source="car_icon.svg" />
+                                    </Grid>
+                                </Border>
+
+                                <VerticalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="18"
+                                        LineBreakMode="WordWrap"
+                                        Text="{Binding Details.CarCard.Title}"
+                                        TextColor="{StaticResource TextDark}" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="{Binding Details.CarCard.Transmission}"
+                                        TextColor="{StaticResource TextGray}" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Text="{Binding Details.CarCard.RegistrationNumber}"
+                                        TextColor="{StaticResource Primary}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <Border
+                            Padding="18,14"
+                            Style="{StaticResource CardBorderStyle}"
+                            IsVisible="{Binding HasDetails}"
+                            StrokeShape="RoundRectangle 16">
+                            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="18"
+                                    LineBreakMode="WordWrap"
+                                    Text="{Binding Details.Overview.DistanceText}" />
+                                <Label
+                                    Grid.Column="1"
+                                    FontAttributes="Bold"
+                                    FontSize="20"
+                                    HorizontalTextAlignment="End"
+                                    Text="{Binding Details.Overview.AmountText}"
+                                    TextColor="{StaticResource TextDark}" />
+                                <Label
+                                    Grid.Row="1"
+                                    Margin="0,6,0,0"
+                                    FontSize="13"
+                                    Text="{Binding Details.Overview.DurationText}"
+                                    TextColor="{StaticResource TextGray}" />
+                            </Grid>
+                        </Border>
+
+                        <VerticalStackLayout IsVisible="{Binding HasDetails}" Spacing="10">
+                            <Label
+                                Style="{StaticResource SectionTitleLabelStyle}"
+                                Text="Краткая сводка"
+                                 />
+
+                            <Border
+                                Padding="0"
+                                Style="{StaticResource CardBorderStyle}">
+                                <VerticalStackLayout
+                                    BindableLayout.ItemsSource="{Binding Details.SummaryRows}"
+                                    Spacing="0">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:TripSummaryRowUiModel">
+                                            <Grid Padding="16,14" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                                <Label
+                                                    Style="{StaticResource SummaryKeyLabelStyle}"
+                                                    Text="{Binding Title}"
+                                                     />
+                                                <Label
+                                                    Grid.Column="1"
+                                                    Style="{StaticResource SummaryValueLabelStyle}"
+                                                    HorizontalTextAlignment="End"
+                                                    Text="{Binding Value}" />
+                                                <BoxView
+                                                    Grid.ColumnSpan="2"
+                                                    Margin="0,40,0,0"
+                                                    HeightRequest="1"
+                                                    Color="{StaticResource BorderLight}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout IsVisible="{Binding HasPayments}" Spacing="10">
+                            <Label
+                                Style="{StaticResource SectionTitleLabelStyle}"
+                                Text="Платежи"
+                                 />
+
+                            <Border
+                                Padding="0"
+                                Style="{StaticResource CardBorderStyle}">
+                                <VerticalStackLayout
+                                    BindableLayout.ItemsSource="{Binding Details.Payments}"
+                                    Spacing="0">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:TripPaymentUiModel">
+                                            <Grid Padding="16,14" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                                <VerticalStackLayout Spacing="2">
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="14"
+                                                        Text="{Binding Title}"
+                                                        TextColor="{StaticResource TextDark}" />
+                                                    <Label
+                                                        FontSize="12"
+                                                        Text="{Binding DateText}"
+                                                        TextColor="{StaticResource TextGray}" />
+                                                    <Label
+                                                        FontSize="12"
+                                                        Text="{Binding MethodText}"
+                                                        TextColor="{StaticResource TextGray}" />
+                                                </VerticalStackLayout>
+
+                                                <Label
+                                                    Grid.Column="1"
+                                                    FontAttributes="Bold"
+                                                    FontSize="15"
+                                                    HorizontalTextAlignment="End"
+                                                    Text="{Binding AmountText}"
+                                                    TextColor="{StaticResource TextDark}"
+                                                    VerticalOptions="Center" />
+
+                                                <BoxView
+                                                    Grid.ColumnSpan="2"
+                                                    Margin="0,56,0,0"
+                                                    HeightRequest="1"
+                                                    Color="{StaticResource BorderLight}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout
+                            Padding="20,40"
+                            IsVisible="{Binding IsEmptyStateVisible}"
+                            Spacing="8">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                HorizontalTextAlignment="Center"
+                                Text="Детали поездки недоступны"
+                                TextColor="{StaticResource TextDark}" />
+                            <Label
+                                FontSize="14"
+                                HorizontalTextAlignment="Center"
+                                Text="Попробуйте обновить экран позже."
+                                TextColor="{StaticResource TextGray}" />
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <ActivityIndicator
+                    HorizontalOptions="Center"
+                    IsRunning="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}"
+                    VerticalOptions="Center"
+                    Color="{StaticResource Primary}" />
+            </Grid>
+        </RefreshView>
+    </Grid>
+</ContentPage>
