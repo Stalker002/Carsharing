@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using CarsharingMobile.Resources.Fonts;
 using CarsharingMobile.Services;
 using CarsharingMobile.Views;
@@ -114,12 +115,16 @@ public partial class TripHistoryViewModel(TripService tripService) : ObservableO
         if (trip == null)
             return;
 
-        var navigationParameter = new Dictionary<string, object>
-        {
-            ["TripContext"] = trip.ToNavigationContext()
-        };
+        var route = $"{nameof(TripDetailsPage)}" +
+                    $"?TripId={trip.Id.ToString(CultureInfo.InvariantCulture)}" +
+                    $"&CarTitle={Uri.EscapeDataString(trip.CarTitle)}";
 
-        await Shell.Current.GoToAsync(nameof(TripDetailsPage), navigationParameter);
+        if (!string.IsNullOrWhiteSpace(trip.CarImage))
+        {
+            route += $"&CarImageUrl={Uri.EscapeDataString(trip.CarImage)}";
+        }
+
+        await Shell.Current.GoToAsync(route);
     }
 
     private async Task LoadPageAsync()
@@ -201,17 +206,6 @@ public class TripHistoryListItem
     public decimal DistanceKm { get; }
     public decimal DurationMinutes { get; }
     public IAsyncRelayCommand<TripHistoryListItem?> OpenCommand { get; }
-
-    public TripDetailsNavigationContext ToNavigationContext()
-    {
-        return new TripDetailsNavigationContext(
-            Id,
-            null,
-            CarTitle,
-            CarImage,
-            null,
-            null);
-    }
 
     private static string FormatPeriod(DateTime startTime, DateTime? endTime)
     {
