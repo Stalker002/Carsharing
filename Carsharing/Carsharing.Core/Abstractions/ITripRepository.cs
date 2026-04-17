@@ -31,8 +31,11 @@ public interface ITripRepository
 
     Task<CurrentTripDto?> GetActiveTripDtoByClientId(int clientId, CancellationToken cancellationToken);
 
-    Task<int> FinishTripAsync(int tripId, decimal distance, string endLocation, decimal fuelLevel,
+    Task UpdateTripLocationAsync(int tripId, string location, double latitude, double longitude,
         CancellationToken cancellationToken);
+
+    Task<int> FinishTripAsync(int tripId, decimal distance, string endLocation, decimal fuelLevel,
+        double carLatitude, double carLongitude, CancellationToken cancellationToken);
 
     Task CancelTripAsync(int tripId, CancellationToken cancellationToken);
 }

@@ -104,7 +104,7 @@ public class BookingsService : IBookingsService
     {
         var clientId = await GetRequiredClientId(userId, cancellationToken);
 
-        var (booking, error) = Booking.Create(0, statusId, carId, clientId, startTime, endTime);
+        var (booking, error) = Booking.Create(0, (int)BookingStatusEnum.Active, carId, clientId, startTime, endTime);
 
         if (!string.IsNullOrWhiteSpace(error))
             throw new ArgumentException(error);
