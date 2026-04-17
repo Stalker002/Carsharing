@@ -8,6 +8,7 @@ public static class ViewModelsCollectionExtensions
     {
         services.AddSingleton<AppShellViewModel>();
 
+        services.AddTransient<LoadingViewModel>();
         services.AddTransient<LoginViewModel>();
         services.AddTransient<RegistrationViewModel>();
         services.AddTransient<MainViewModel>();

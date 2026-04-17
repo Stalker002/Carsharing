@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CarsharingMobile.Views.LoadingPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
+    x:DataType="vm:LoadingViewModel"
+    BackgroundColor="#FFFFFF"
+    Shell.NavBarIsVisible="False">
+
+    <VerticalStackLayout
+        HorizontalOptions="Center"
+        Spacing="30"
+        VerticalOptions="Center">
+        <Image
+            Margin="0,0,0,30"
+            HeightRequest="180"
+            HorizontalOptions="Center"
+            Source="logo.png"
+            WidthRequest="180" />
+
+        <ActivityIndicator
+            HorizontalOptions="Center"
+            IsRunning="True"
+            Color="#3296F8" />
+
+    </VerticalStackLayout>
+</ContentPage>

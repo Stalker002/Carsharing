@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Shell
     x:Class="CarsharingMobile.AppShell"
@@ -143,6 +143,8 @@
             </VerticalStackLayout>
         </Grid>
     </Shell.FlyoutContent>
+
+    <ShellContent ContentTemplate="{DataTemplate views:LoadingPage}" Route="LoadingPage" />
 
     <ShellContent
         ContentTemplate="{DataTemplate views:LoginPage}"
