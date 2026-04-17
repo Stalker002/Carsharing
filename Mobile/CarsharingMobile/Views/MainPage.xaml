@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <ContentPage
     x:Class="CarsharingMobile.Views.MainPage"
@@ -137,18 +137,31 @@
             <Border.GestureRecognizers>
                 <SwipeGestureRecognizer Command="{Binding CloseCardCommand}" Direction="Down" />
             </Border.GestureRecognizers>
+
             <VerticalStackLayout Spacing="15">
-                <BoxView
-                    Margin="0,0,0,10"
-                    CornerRadius="2"
-                    HeightRequest="4"
-                    HorizontalOptions="Center"
-                    WidthRequest="40"
-                    Color="#E1E1E1">
-                    <BoxView.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding CloseCardCommand}" />
-                    </BoxView.GestureRecognizers>
-                </BoxView>
+                <Grid Margin="0,0,0,0" ColumnDefinitions="*, Auto">
+                    <BoxView
+                        Grid.ColumnSpan="2"
+                        CornerRadius="2"
+                        HeightRequest="4"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        WidthRequest="40"
+                        Color="#E1E1E1" />
+
+                    <Label
+                        Grid.Column="1"
+                        Padding="0"
+                        FontAttributes="Bold"
+                        FontSize="22"
+                        Text="✕"
+                        TextColor="#999"
+                        VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding CloseCardCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
                 <Grid ColumnDefinitions="120, *" ColumnSpacing="15">
                     <Image
                         Grid.Column="0"

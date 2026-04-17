@@ -15,38 +15,25 @@ public partial class MainPage : ContentPage
         InitializeComponent();
         _viewModel = viewModel;
         BindingContext = _viewModel;
+
+        _viewModel.PropertyChanged += OnViewModelPropertyChanged;
     }
 
-    private double _startY;
-
-    private async void OnCardPanUpdated(object sender, PanUpdatedEventArgs e)
+    private async void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        switch (e.StatusType)
+        if (e.PropertyName == nameof(MainViewModel.IsCardVisible))
         {
-            case GestureStatus.Started:
-                _startY = BottomSheetBorder.TranslationY;
-                break;
-
-            case GestureStatus.Running:
-                var newY = _startY + e.TotalY;
-
-                if (newY > 0)
-                {
-                    BottomSheetBorder.TranslationY = newY;
-                }
-                break;
-
-            case GestureStatus.Completed:
-            case GestureStatus.Canceled:
-                if (BottomSheetBorder.TranslationY > 100)
-                {
-                    _viewModel.CloseCardCommand.Execute(null);
-                }
-                else
-                {
-                    await BottomSheetBorder.TranslateTo(0, 0, 250, Easing.SpringOut);
-                }
-                break;
+            if (_viewModel.IsCardVisible)
+            {
+                BottomSheetBorder.TranslationY = 500;
+                BottomSheetBorder.IsVisible = true;
+                await BottomSheetBorder.TranslateTo(0, 0, 300, Easing.CubicOut);
+            }
+            else
+            {
+                await BottomSheetBorder.TranslateTo(0, 500, 250, Easing.CubicIn);
+                BottomSheetBorder.IsVisible = false;
+            }
         }
     }
 
@@ -62,7 +49,7 @@ public partial class MainPage : ContentPage
             await _viewModel.LoadInitialCommand.ExecuteAsync(null);
     }
 
-    private void OnCarPinClicked(object sender, PinClickedEventArgs e)
+    public void OnCarPinClicked(object sender, PinClickedEventArgs e)
     {
         e.HideInfoWindow = true;
 
@@ -71,7 +58,7 @@ public partial class MainPage : ContentPage
                 _viewModel.SelectCarCommand.Execute(clickedCar);
     }
 
-    private void OnMapClicked(object sender, MapClickedEventArgs e)
+    public void OnMapClicked(object sender, MapClickedEventArgs e)
     {
         if (_viewModel.IsCardVisible) _viewModel.CloseCardCommand.Execute(null);
     }
