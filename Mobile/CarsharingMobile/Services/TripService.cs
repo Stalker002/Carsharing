@@ -27,7 +27,12 @@ public class TripService(HttpClient httpClient)
         try
         {
             var response = await httpClient.GetAsync("Trips/current");
-            if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<CurrentTripDto>();
+            if (response.IsSuccessStatusCode)
+            {
+                var trip = await response.Content.ReadFromJsonAsync<CurrentTripDto>();
+                return trip is null ? null : NormalizeCurrentTrip(trip);
+            }
+
             return null;
         }
         catch (Exception ex)
@@ -53,6 +58,15 @@ public class TripService(HttpClient httpClient)
         return (items, totalCount);
     }
 
+    public async Task<string?> UpdateTripLocationAsync(int tripId, UpdateTripLocationRequest request)
+    {
+        var response = await httpClient.PutAsJsonAsync($"Trips/{tripId}/location", request);
+        if (response.IsSuccessStatusCode)
+            return null;
+
+        return await response.Content.ReadAsStringAsync();
+    }
+
     public async Task<(TripFinishResult? Result, string? Error)> FinishTripAsync(FinishTripRequest request)
     {
         var response = await httpClient.PostAsJsonAsync("Trips/finish", request);
@@ -67,6 +81,14 @@ public class TripService(HttpClient httpClient)
         return (null, error);
     }
 
+    private static CurrentTripDto NormalizeCurrentTrip(CurrentTripDto trip)
+    {
+        return trip with
+        {
+            CarImage = NormalizeImageUrl(trip.CarImage)
+        };
+    }
+
     private static string? NormalizeImageUrl(string? imageUrl)
     {
         return imageUrl?
@@ -74,3 +96,9 @@ public class TripService(HttpClient httpClient)
             .Replace("http://minio:9000", $"http://{ApiConfig.HostIp}:9000");
     }
 }
+
+public record UpdateTripLocationRequest(
+    string Location,
+    double CarLatitude,
+    double CarLongitude
+);

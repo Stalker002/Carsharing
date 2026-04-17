@@ -38,6 +38,22 @@
 
                     <HorizontalStackLayout Spacing="15">
                         <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCurrentTripClicked" />
+                        </HorizontalStackLayout.GestureRecognizers>
+                        <Image
+                            HeightRequest="24"
+                            Source="car_icon.png"
+                            VerticalOptions="Center"
+                            WidthRequest="24" />
+                        <Label
+                            FontSize="16"
+                            Text="АКТИВНАЯ ПОЕЗДКА"
+                            TextColor="White"
+                            VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="15">
+                        <HorizontalStackLayout.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnTipsClicked" />
                         </HorizontalStackLayout.GestureRecognizers>
                         <Image

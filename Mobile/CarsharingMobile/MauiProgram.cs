@@ -2,11 +2,11 @@ using CarsharingMobile.Extensions;
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Maps.Handlers;
-using Object = Java.Lang.Object;
 #if ANDROID
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
 using Android.Graphics;
+using Object = Java.Lang.Object;
 #endif
 
 namespace CarsharingMobile;
@@ -47,7 +47,6 @@ public static class MauiProgram
     }
 
 #if ANDROID
-
     private static void ConfigureAndroidMapHandlers()
     {
         MapHandler.Mapper.AppendToMapping("HideNativeControls",
@@ -55,7 +54,6 @@ public static class MauiProgram
 
         MapPinHandler.Mapper.AppendToMapping("CustomPinIcon", (handler, pin) =>
         {
-#if ANDROID
             if (pin is not CarPin carPin || string.IsNullOrWhiteSpace(carPin.ImageUrl)) return;
 
             var markerOptions = handler.PlatformView;
@@ -81,9 +79,7 @@ public static class MauiProgram
             }
             catch
             {
-                /* Игнорируем ошибки, будет показана стандартная булавка */
             }
-#endif
         });
     }
 #endif

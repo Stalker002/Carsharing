@@ -1,14 +1,14 @@
-using Android.Content.Res;
-using Microsoft.Maui.Handlers;
-using Microsoft.Maui.LifecycleEvents;
-using Color = Android.Graphics.Color;
 #if ANDROID
+using Android.Content.Res;
 using Android.OS;
 using AndroidX.Core.View;
+using Color = Android.Graphics.Color;
 #endif
 #if IOS
 using UIKit;
 #endif
+using Microsoft.Maui.Handlers;
+using Microsoft.Maui.LifecycleEvents;
 
 namespace CarsharingMobile.Extensions;
 
@@ -40,7 +40,7 @@ public static class PlatformConfigExtensions
             events.AddiOS(iOS => iOS.FinishedLaunching((application, launchOptions) =>
             {
                 UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.LightContent, false);
-                
+
                 return true;
             }));
         });
@@ -55,8 +55,7 @@ public static class PlatformConfigExtensions
 #if ANDROID
             handler.PlatformView.Background = null;
             handler.PlatformView.SetBackgroundColor(Color.Transparent);
-            handler.PlatformView.BackgroundTintList =
-                ColorStateList.ValueOf(Color.Transparent);
+            handler.PlatformView.BackgroundTintList = ColorStateList.ValueOf(Color.Transparent);
 #endif
         });
         return builder;

@@ -12,6 +12,7 @@ public static class ViewModelsCollectionExtensions
         services.AddTransient<LoginViewModel>();
         services.AddTransient<RegistrationViewModel>();
         services.AddTransient<MainViewModel>();
+        services.AddTransient<CurrentTripViewModel>();
         services.AddTransient<TripHistoryViewModel>();
 
         return services;
