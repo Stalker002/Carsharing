@@ -18,6 +18,10 @@ public interface ITripService
 
     Task<List<TripWithInfoDto>> GetTripWithInfo(int userId, int id, CancellationToken cancellationToken);
 
+    Task<TripDetailsDto?> GetTripFullDetails(int id, CancellationToken cancellationToken);
+
+    Task<TripDetailsDto?> GetTripFullDetails(int userId, int id, CancellationToken cancellationToken);
+
     Task<CurrentTripDto?> GetActiveTripByClientId(int clientId, CancellationToken cancellationToken);
 
     Task<int> CreateTripAsync(int userId, TripCreateRequest request, CancellationToken cancellationToken);

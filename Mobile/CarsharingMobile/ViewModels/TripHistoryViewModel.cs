@@ -111,7 +111,12 @@ public partial class TripHistoryViewModel(TripService tripService) : ObservableO
         if (trip == null)
             return;
 
-        await Shell.Current.DisplayAlert("Скоро", $"Детали поездки #{trip.Id} будут подключены следующим этапом.", "ОК");
+        var navigationParameter = new Dictionary<string, object>
+        {
+            ["TripContext"] = trip.ToNavigationContext()
+        };
+
+        await Shell.Current.GoToAsync("TripDetailsPage", navigationParameter);
     }
 
     private async Task LoadPageAsync()
@@ -193,6 +198,17 @@ public class TripHistoryListItem
     public decimal DistanceKm { get; }
     public decimal DurationMinutes { get; }
     public IAsyncRelayCommand<TripHistoryListItem?> OpenCommand { get; }
+
+    public TripDetailsNavigationContext ToNavigationContext()
+    {
+        return new TripDetailsNavigationContext(
+            Id,
+            null,
+            CarTitle,
+            CarImage,
+            null,
+            null);
+    }
 
     private static string FormatPeriod(DateTime startTime, DateTime? endTime)
     {

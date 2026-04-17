@@ -1,6 +1,9 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
 using CarsharingMobile.Extensions;
+using Shared.Contracts.Bills;
+using Shared.Contracts.Bookings;
+using Shared.Contracts.Payments;
 using Shared.Contracts.Trip;
 
 namespace CarsharingMobile.Services;
@@ -64,6 +67,59 @@ public class TripService(HttpClient httpClient)
             return null;
 
         return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task<TripWithInfoDto?> GetTripDetailsAsync(int tripId)
+    {
+        try
+        {
+            var response = await httpClient.GetAsync($"Trips/{tripId}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var trips = await response.Content.ReadFromJsonAsync<List<TripWithInfoDto>>();
+            return trips?.FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+            return null;
+        }
+    }
+
+    public async Task<BillWithInfoDto?> GetBillInfoAsync(int billId)
+    {
+        try
+        {
+            var response = await httpClient.GetAsync($"Bills/info/{billId}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var bills = await response.Content.ReadFromJsonAsync<List<BillWithInfoDto>>();
+            return bills?.FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+            return null;
+        }
+    }
+
+    public async Task<IReadOnlyList<PaymentsResponse>> GetPaymentsByBillAsync(int billId)
+    {
+        try
+        {
+            var response = await httpClient.GetAsync($"Payments/byBill/{billId}");
+            if (!response.IsSuccessStatusCode)
+                return [];
+
+            return await response.Content.ReadFromJsonAsync<List<PaymentsResponse>>() ?? [];
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+            return [];
+        }
     }
 
     public async Task<(TripFinishResult? Result, string? Error)> FinishTripAsync(FinishTripRequest request)
