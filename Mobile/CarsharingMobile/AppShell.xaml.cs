@@ -16,6 +16,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
         Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
         Routing.RegisterRoute(nameof(CurrentTripPage), typeof(CurrentTripPage));
+        Routing.RegisterRoute(nameof(TripHistoryPage), typeof(TripHistoryPage));
         Routing.RegisterRoute(nameof(TipsPage), typeof(TipsPage));
         //Routing.RegisterRoute(nameof(CarDetailsPage), typeof(CarDetailsPage));
         //Routing.RegisterRoute(nameof(DocumentsPage), typeof(DocumentsPage));
@@ -36,7 +37,7 @@ public partial class AppShell : Shell
     private async void OnTripsClicked(object sender, EventArgs e)
     {
         Current.FlyoutIsPresented = false;
-        await Current.DisplayAlert("В разработке", "История поездок появится скоро!", "ОК");
+        await Current.GoToAsync(nameof(TripHistoryPage));
     }
 
     private async void OnLogoutClicked(object sender, EventArgs e)
