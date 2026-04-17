@@ -2,6 +2,7 @@ using Carsharing.Core.Abstractions;
 using Carsharing.Core.Models;
 using Carsharing.DataAccess.Entites;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using Shared.Contracts.Trip;
 using Shared.Enums;
 
@@ -216,8 +217,30 @@ public class TripRepository : ITripRepository
         );
     }
 
-    public async Task<int> FinishTripAsync(int tripId, decimal distance, string endLocation, decimal fuelLevel,
+    public async Task UpdateTripLocationAsync(int tripId, string location, double latitude, double longitude,
         CancellationToken cancellationToken)
+    {
+        var trip = await _context.Trip
+            .Include(t => t.Booking)
+            .ThenInclude(b => b!.Car)
+            .FirstOrDefaultAsync(t => t.Id == tripId, cancellationToken);
+
+        if (trip is not { EndTime: null })
+            throw new Exception("Поездка не найдена или уже завершена");
+
+        var car = trip.Booking?.Car ?? throw new Exception("Автомобиль для поездки не найден");
+
+        car.Location = location;
+        car.Coordinates = new Point(longitude, latitude) { SRID = 4326 };
+
+        if (trip.StatusId == (int)TripStatusEnum.WaitingStart)
+            trip.StatusId = (int)TripStatusEnum.EnRoute;
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<int> FinishTripAsync(int tripId, decimal distance, string endLocation, decimal fuelLevel,
+        double carLatitude, double carLongitude, CancellationToken cancellationToken)
     {
         var trip = await _context.Trip
             .Include(t => t.Booking)
@@ -263,6 +286,7 @@ public class TripRepository : ITripRepository
 
             car.StatusId = (int)CarStatusEnum.Available;
             car.Location = endLocation;
+            car.Coordinates = new Point(carLongitude, carLatitude) { SRID = 4326 };
             car.FuelLevel = fuelLevel;
         }
 

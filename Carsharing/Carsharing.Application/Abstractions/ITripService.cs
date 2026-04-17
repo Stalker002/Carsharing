@@ -22,6 +22,9 @@ public interface ITripService
 
     Task<int> CreateTripAsync(int userId, TripCreateRequest request, CancellationToken cancellationToken);
 
+    Task UpdateTripLocationAsync(int userId, int tripId, string location, double latitude, double longitude,
+        CancellationToken cancellationToken);
+
     Task<TripFinishResult> FinishTripAsync(int userId, FinishTripRequest request, CancellationToken cancellationToken);
 
     Task<bool> CancelTripAsync(int tripId, CancellationToken cancellationToken);
