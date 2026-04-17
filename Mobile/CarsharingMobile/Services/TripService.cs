@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
+using CarsharingMobile.Extensions;
 using Shared.Contracts.Bookings;
 using Shared.Contracts.Trip;
 
@@ -39,6 +40,22 @@ public class TripService(HttpClient httpClient)
         }
     }
 
+    public async Task<(List<TripHistoryDto>? Items, int TotalCount)> GetHistoryAsync(int page = 1, int limit = 10)
+    {
+        var url = $"Trips/history?page={page}&limit={limit}";
+        var (items, totalCount) = await httpClient.GetPagedAsync<TripHistoryDto>(url);
+
+        if (items != null)
+        {
+            items = [.. items.Select(trip => trip with
+            {
+                CarImage = NormalizeImageUrl(trip.CarImage)
+            })];
+        }
+
+        return (items, totalCount);
+    }
+
     public async Task<(TripFinishResult? Result, string? Error)> FinishTripAsync(FinishTripRequest request)
     {
         var response = await httpClient.PostAsJsonAsync("Trips/finish", request);
@@ -51,5 +68,12 @@ public class TripService(HttpClient httpClient)
 
         var error = await response.Content.ReadAsStringAsync();
         return (null, error);
+    }
+
+    private static string? NormalizeImageUrl(string? imageUrl)
+    {
+        return imageUrl?
+            .Replace("http://localhost:9000", $"http://{ApiConfig.HostIp}:9000")
+            .Replace("http://minio:9000", $"http://{ApiConfig.HostIp}:9000");
     }
 }
