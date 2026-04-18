@@ -43,8 +43,6 @@ public class TripDetail
         if (startLocation is { Length: > MaxLocationLength })
             error = $"Start location can't be longer than {MaxLocationLength} symbols";
 
-        if (string.IsNullOrWhiteSpace(endLocation))
-            error = "End location can't be empty";
         if (endLocation is { Length: > MaxLocationLength })
             error = $"End location can't be longer than {MaxLocationLength} symbols";
 

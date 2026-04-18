@@ -1,16 +1,15 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
 using CarsharingMobile.Extensions;
-using Shared.Contracts.Bookings;
 using Shared.Contracts.Trip;
 
 namespace CarsharingMobile.Services;
 
 public class TripService(HttpClient httpClient)
 {
-    public async Task<(int? BookingId, string? Error)> CreateBookingAsync(BookingsRequest request)
+    public async Task<(int? TripId, string? Error)> StartTripAsync(TripCreateRequest request)
     {
-        var response = await httpClient.PostAsJsonAsync("Bookings", request);
+        var response = await httpClient.PostAsJsonAsync("Trips", request);
 
         if (response.IsSuccessStatusCode)
         {
@@ -96,9 +95,3 @@ public class TripService(HttpClient httpClient)
             .Replace("http://minio:9000", $"http://{ApiConfig.HostIp}:9000");
     }
 }
-
-public record UpdateTripLocationRequest(
-    string Location,
-    double CarLatitude,
-    double CarLongitude
-);
