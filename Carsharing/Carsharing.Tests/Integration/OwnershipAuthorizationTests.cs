@@ -36,7 +36,7 @@ public class OwnershipAuthorizationTests(CustomWebApplicationFactory factory)
     }
 
     [Fact]
-    public async Task GetBillInfo_ForeignBill_ReturnsNotFound()
+    public async Task GetBillInfo_ForeignBill_ReturnsUnauthorized()
     {
         const int currentUserId = 1101;
         const int currentClientId = 2101;
@@ -50,11 +50,11 @@ public class OwnershipAuthorizationTests(CustomWebApplicationFactory factory)
 
         var response = await _client.GetAsync($"/Bills/info/{foreignBillId}");
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
-    public async Task CreatePayment_ForForeignBill_ReturnsNotFound()
+    public async Task CreatePayment_ForForeignBill_ReturnsUnauthorized()
     {
         const int currentUserId = 1201;
         const int currentClientId = 2201;
@@ -70,7 +70,7 @@ public class OwnershipAuthorizationTests(CustomWebApplicationFactory factory)
 
         var response = await _client.PostAsJsonAsync("/Payments", request);
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]

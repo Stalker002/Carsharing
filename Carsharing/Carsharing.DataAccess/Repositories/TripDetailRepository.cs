@@ -35,6 +35,24 @@ public class TripDetailRepository : ITripDetailRepository
         return details;
     }
 
+    public async Task<TripDetail?> GetByTripId(int tripId, CancellationToken cancellationToken)
+    {
+        var detailEntity = await _context.TripDetail
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d => d.TripId == tripId, cancellationToken);
+
+        return detailEntity == null
+            ? null
+            : TripDetail.Create(
+                detailEntity.Id,
+                detailEntity.TripId,
+                detailEntity.StartLocation,
+                detailEntity.EndLocation,
+                detailEntity.InsuranceActive,
+                detailEntity.FuelUsed,
+                detailEntity.Refueled).tripDetail;
+    }
+
     public async Task<int> GetCarIdByTripId(int tripId, CancellationToken cancellationToken)
     {
         var carId = await _context.Trip

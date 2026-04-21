@@ -6,6 +6,8 @@ public interface ITripDetailRepository
 {
     Task<List<TripDetail>> Get(CancellationToken cancellationToken);
 
+    Task<TripDetail?> GetByTripId(int tripId, CancellationToken cancellationToken);
+
     Task<int> GetCarIdByTripId(int tripId, CancellationToken cancellationToken);
 
     Task<int> Create(TripDetail tripDetail, CancellationToken cancellationToken);
