@@ -103,6 +103,32 @@ public class TripService(
         }
     }
 
+    public async Task UpdateTripLocationAsync(int userId, int tripId, UpdateTripLocationRequest request,
+        CancellationToken cancellationToken)
+    {
+        var client = (await clientRepository.GetClientByUserId(userId, cancellationToken)).FirstOrDefault()
+                     ?? throw new NotFoundException("Client not found");
+
+        var trip = (await tripRepository.GetById(tripId, cancellationToken)).FirstOrDefault()
+                   ?? throw new NotFoundException("Trip not found");
+
+        var booking = (await bookingRepository.GetById(trip.BookingId, cancellationToken)).FirstOrDefault()
+                      ?? throw new NotFoundException("Booking not found");
+
+        if (booking.ClientId != client.Id)
+            throw new UnauthorizedAccessException("Trip does not belong to current user");
+
+        if (trip.EndTime != null || trip.StatusId != (int)TripStatusEnum.EnRoute)
+            throw new ArgumentException("Only active trips in en route status can update car location");
+
+        await carsService.UpdateCarLocationAsync(
+            booking.CarId,
+            request.Location,
+            request.CarLatitude,
+            request.CarLongitude,
+            cancellationToken);
+    }
+
     public async Task<bool> CancelTripAsync(int tripId, CancellationToken cancellationToken)
     {
         await tripRepository.CancelTripAsync(tripId, cancellationToken);
@@ -205,27 +231,5 @@ public class TripService(
     public async Task<int> DeleteTrip(int id, CancellationToken cancellationToken)
     {
         return await tripRepository.Delete(id, cancellationToken);
-    }
-
-    private async Task<int> GetRequiredClientIdAsync(int userId, CancellationToken cancellationToken)
-    {
-        var clientId = (await clientRepository.GetClientByUserId(userId, cancellationToken))
-            .Select(c => c.Id)
-            .FirstOrDefault();
-
-        return clientId == 0 ? throw new NotFoundException("Client not found") : clientId;
-    }
-
-    private async Task EnsureTripBelongsToUserAsync(int userId, int tripId, CancellationToken cancellationToken)
-    {
-        var clientId = await GetRequiredClientIdAsync(userId, cancellationToken);
-
-        var trip = (await tripRepository.GetById(tripId, cancellationToken)).FirstOrDefault()
-                   ?? throw new NotFoundException("Trip not found");
-        var booking = (await bookingRepository.GetById(trip.BookingId, cancellationToken)).FirstOrDefault()
-                      ?? throw new NotFoundException("Booking not found");
-
-        if (booking.ClientId != clientId)
-            throw new UnauthorizedAccessException("Trip does not belong to current user");
     }
 }

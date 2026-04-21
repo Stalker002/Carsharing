@@ -1,16 +1,15 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
 using CarsharingMobile.Extensions;
-using Shared.Contracts.Bookings;
 using Shared.Contracts.Trip;
 
 namespace CarsharingMobile.Services;
 
 public class TripService(HttpClient httpClient)
 {
-    public async Task<(int? BookingId, string? Error)> CreateBookingAsync(BookingsRequest request)
+    public async Task<(int? TripId, string? Error)> StartTripAsync(TripCreateRequest request)
     {
-        var response = await httpClient.PostAsJsonAsync("Bookings", request);
+        var response = await httpClient.PostAsJsonAsync("Trips", request);
 
         if (response.IsSuccessStatusCode)
         {
@@ -27,7 +26,12 @@ public class TripService(HttpClient httpClient)
         try
         {
             var response = await httpClient.GetAsync("Trips/current");
-            if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<CurrentTripDto>();
+            if (response.IsSuccessStatusCode)
+            {
+                var trip = await response.Content.ReadFromJsonAsync<CurrentTripDto>();
+                return trip is null ? null : NormalizeCurrentTrip(trip);
+            }
+
             return null;
         }
         catch (Exception ex)
@@ -53,6 +57,15 @@ public class TripService(HttpClient httpClient)
         return (items, totalCount);
     }
 
+    public async Task<string?> UpdateTripLocationAsync(int tripId, UpdateTripLocationRequest request)
+    {
+        var response = await httpClient.PostAsJsonAsync($"Trips/{tripId}/location", request);
+        if (response.IsSuccessStatusCode)
+            return null;
+
+        return await response.Content.ReadAsStringAsync();
+    }
+
     public async Task<(TripFinishResult? Result, string? Error)> FinishTripAsync(FinishTripRequest request)
     {
         var response = await httpClient.PostAsJsonAsync("Trips/finish", request);
@@ -65,6 +78,14 @@ public class TripService(HttpClient httpClient)
 
         var error = await response.Content.ReadAsStringAsync();
         return (null, error);
+    }
+
+    private static CurrentTripDto NormalizeCurrentTrip(CurrentTripDto trip)
+    {
+        return trip with
+        {
+            CarImage = NormalizeImageUrl(trip.CarImage)
+        };
     }
 
     private static string? NormalizeImageUrl(string? imageUrl)

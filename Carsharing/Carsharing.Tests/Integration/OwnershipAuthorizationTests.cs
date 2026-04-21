@@ -6,6 +6,7 @@ using Carsharing.DataAccess.Entites;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Contracts.Clients;
 using Shared.Contracts.Payments;
+using Shared.Contracts.Trip;
 using Shared.Enums;
 
 namespace Carsharing.Tests.Integration;
@@ -103,6 +104,32 @@ public class OwnershipAuthorizationTests(CustomWebApplicationFactory factory)
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var response = await _client.GetAsync($"/Bookings/withInfo/{foreignBookingId}");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task UpdateTripLocation_ForeignTrip_ReturnsUnauthorized()
+    {
+        const int currentUserId = 1601;
+        const int currentClientId = 2601;
+        const int foreignClientId = 2602;
+
+        var (_, foreignTripId, _) = SeedOwnershipData(
+            factory,
+            currentUserId,
+            currentClientId,
+            foreignClientId,
+            null,
+            null,
+            false);
+
+        var token = factory.GenerateTestToken(currentUserId, 2);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _client.PostAsJsonAsync(
+            $"/Trips/{foreignTripId}/location",
+            new UpdateTripLocationRequest("Remote", 53.9, 27.56));
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }

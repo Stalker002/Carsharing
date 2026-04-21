@@ -128,6 +128,16 @@ public class TripsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("{id:int}/location")]
+    [Authorize(Policy = "AdminClientPolicy")]
+    public async Task<IActionResult> UpdateTripLocation(int id, [FromBody] UpdateTripLocationRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = User.GetRequiredUserId();
+        await _tripService.UpdateTripLocationAsync(userId, id, request, cancellationToken);
+        return NoContent();
+    }
+
     [HttpPost("cancel/{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> CancelTrip(int id, CancellationToken cancellationToken)

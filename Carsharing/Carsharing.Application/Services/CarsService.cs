@@ -235,6 +235,23 @@ public class CarsService : ICarsService
         await _carRepository.UpdateStatus(carId, (int)CarStatusEnum.Available, cancellationToken);
     }
 
+    public async Task UpdateCarLocationAsync(int carId, string location, double latitude, double longitude,
+        CancellationToken cancellationToken)
+    {
+        await _carRepository.Update(
+            carId,
+            statusId: null,
+            tariffId: null,
+            categoryId: null,
+            specificationId: null,
+            location: location,
+            latitude: latitude,
+            longitude: longitude,
+            fuelLevel: null,
+            imagePath: null,
+            cancellationToken: cancellationToken);
+    }
+
     public async Task<int> DeleteCar(int id, CancellationToken cancellationToken)
     {
         return await _carRepository.Delete(id, cancellationToken);

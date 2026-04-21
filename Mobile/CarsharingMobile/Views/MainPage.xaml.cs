@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
+using CarsharingMobile.Services;
 using CarsharingMobile.ViewModels;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
@@ -9,17 +10,20 @@ namespace CarsharingMobile.Views;
 public partial class MainPage : ContentPage
 {
     private readonly MainViewModel _viewModel;
+    private readonly TripService _tripService;
+    private bool _isRedirectingToCurrentTrip;
 
-    public MainPage(MainViewModel viewModel)
+    public MainPage(MainViewModel viewModel, TripService tripService)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _tripService = tripService;
         BindingContext = _viewModel;
 
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
     }
 
-    private async void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private async void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(MainViewModel.IsCardVisible))
         {
@@ -40,6 +44,9 @@ public partial class MainPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+
+        if (await TryRedirectToCurrentTripAsync())
+            return;
 
         DrawServiceArea();
 
@@ -63,6 +70,27 @@ public partial class MainPage : ContentPage
         if (_viewModel.IsCardVisible) _viewModel.CloseCardCommand.Execute(null);
     }
 
+    private async Task<bool> TryRedirectToCurrentTripAsync()
+    {
+        if (_isRedirectingToCurrentTrip)
+            return true;
+
+        var currentTrip = await _tripService.GetCurrentTripAsync();
+        if (currentTrip == null)
+            return false;
+
+        _isRedirectingToCurrentTrip = true;
+        try
+        {
+            await Shell.Current.GoToAsync(nameof(CurrentTripPage));
+            return true;
+        }
+        finally
+        {
+            _isRedirectingToCurrentTrip = false;
+        }
+    }
+
     private void DrawServiceArea()
     {
         CarMap.MapElements.Clear();
@@ -79,8 +107,6 @@ public partial class MainPage : ContentPage
             new(53.9632, 27.6245),
             new(53.9610, 27.6380),
             new(53.9585, 27.6490),
-
-            // --- СЕВЕРО-ВОСТОК (Выступ Уручье / Копище) ---
             new(53.9555, 27.6650),
             new(53.9560, 27.6850),
             new(53.9530, 27.7050),
@@ -88,42 +114,30 @@ public partial class MainPage : ContentPage
             new(53.9380, 27.7250),
             new(53.9300, 27.7120),
             new(53.9230, 27.6980),
-
-            // --- ВОСТОК (Степянка / Дражня) ---
             new(53.9150, 27.6900),
             new(53.9050, 27.6860),
             new(53.8950, 27.6810),
             new(53.8850, 27.6760),
             new(53.8750, 27.6740),
-
-            // --- ЮГО-ВОСТОК (Выступ Шабаны) ---
             new(53.8650, 27.6850),
             new(53.8580, 27.7000),
             new(53.8480, 27.7100),
             new(53.8400, 27.7000),
             new(53.8350, 27.6850),
             new(53.8380, 27.6650),
-
-            // --- ЮГО-ВОСТОК (МКАД Чижовка) ---
             new(53.8350, 27.6520),
             new(53.8300, 27.6350),
             new(53.8260, 27.6150),
             new(53.8210, 27.5950),
-
-            // --- ЮГ (Лошица) ---
             new(53.8180, 27.5750),
             new(53.8180, 27.5550),
             new(53.8220, 27.5350),
             new(53.8260, 27.5150),
-
-            // --- ЮГО-ЗАПАД (Курасовщина / Малиновка) ---
             new(53.8320, 27.4950),
             new(53.8360, 27.4750),
             new(53.8400, 27.4550),
             new(53.8450, 27.4400),
             new(53.8520, 27.4300),
-
-            // --- ЗАПАД (Сухарево / Каменная горка) ---
             new(53.8620, 27.4240),
             new(53.8720, 27.4190),
             new(53.8820, 27.4150),
@@ -131,14 +145,10 @@ public partial class MainPage : ContentPage
             new(53.9020, 27.4120),
             new(53.9120, 27.4140),
             new(53.9220, 27.4180),
-
-            // --- СЕВЕРО-ЗАПАД (Ждановичи / Лебяжий) ---
             new(53.9320, 27.4260),
             new(53.9400, 27.4360),
             new(53.9470, 27.4500),
             new(53.9530, 27.4680),
-
-            // --- СЕВЕР (Дрозды / Новинки / Цнянка) ---
             new(53.9580, 27.4880),
             new(53.9620, 27.5100),
             new(53.9640, 27.5300),

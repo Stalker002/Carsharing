@@ -213,7 +213,9 @@ public class TripRepository : ITripRepository
             car.Coordinates?.X,
             car.Tariff!.PricePerMinute,
             car.Tariff.PricePerKm,
-            car.Tariff.PricePerDay
+            car.Tariff.PricePerDay,
+            tripEntity.Distance,
+            car.FuelLevel
         );
     }
 

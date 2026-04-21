@@ -15,6 +15,7 @@ public static class ViewsCollectionExtensions
         services.AddTransient<CurrentTripPage>();
         services.AddTransient<MainPage>();
         services.AddTransient<ProfilePage>();
+        services.AddTransient<CarDetailsPage>();
         services.AddTransient<TripHistoryPage>();
 
         return services;

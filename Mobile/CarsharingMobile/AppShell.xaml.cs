@@ -1,4 +1,4 @@
-﻿using CarsharingMobile.ViewModels;
+using CarsharingMobile.ViewModels;
 using CarsharingMobile.Views;
 
 namespace CarsharingMobile;
@@ -17,9 +17,14 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
         Routing.RegisterRoute(nameof(CurrentTripPage), typeof(CurrentTripPage));
         Routing.RegisterRoute(nameof(TripHistoryPage), typeof(TripHistoryPage));
+        Routing.RegisterRoute(nameof(CarDetailsPage), typeof(CarDetailsPage));
         Routing.RegisterRoute(nameof(TipsPage), typeof(TipsPage));
-        //Routing.RegisterRoute(nameof(CarDetailsPage), typeof(CarDetailsPage));
-        //Routing.RegisterRoute(nameof(DocumentsPage), typeof(DocumentsPage));
+    }
+
+    private async void OnCurrentTripClicked(object sender, EventArgs e)
+    {
+        Current.FlyoutIsPresented = false;
+        await Current.GoToAsync(nameof(CurrentTripPage));
     }
 
     private async void OnTipsClicked(object sender, EventArgs e)
@@ -31,7 +36,6 @@ public partial class AppShell : Shell
     private async void OnCardsClicked(object sender, EventArgs e)
     {
         Current.FlyoutIsPresented = false;
-        // await Current.GoToAsync(nameof(CardsPage));
     }
 
     private async void OnTripsClicked(object sender, EventArgs e)

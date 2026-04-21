@@ -36,5 +36,8 @@ public interface ICarsService
 
     Task MarkCarAsAvailableAsync(int? carId, CancellationToken cancellationToken);
 
+    Task UpdateCarLocationAsync(int carId, string location, double latitude, double longitude,
+        CancellationToken cancellationToken);
+
     Task<int> DeleteCar(int id, CancellationToken cancellationToken);
 }
