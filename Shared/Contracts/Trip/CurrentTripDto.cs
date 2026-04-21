@@ -13,7 +13,9 @@ public record CurrentTripDto(
     double? CarLongitude,
     decimal PricePerMinute,
     decimal PricePerKm,
-    decimal PricePerDay
+    decimal PricePerDay,
+    decimal Distance,
+    decimal FuelLevel
 );
 
 public record FinishTripRequest(

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="CarsharingMobile.Views.CurrentTripPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -10,6 +9,8 @@
     Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="Auto,*">
+
+        <!--  HEADER  -->
         <Grid
             Grid.Row="0"
             Padding="15,20"
@@ -40,6 +41,7 @@
             <Grid>
                 <ScrollView>
                     <VerticalStackLayout Padding="16,0,16,24" Spacing="16">
+
                         <Border
                             Padding="18"
                             BackgroundColor="{StaticResource Surface}"
@@ -47,65 +49,169 @@
                             StrokeShape="RoundRectangle 18"
                             StrokeThickness="1">
                             <VerticalStackLayout Spacing="16">
+
                                 <VerticalStackLayout Spacing="4">
                                     <Label
                                         FontAttributes="Bold"
                                         FontSize="22"
                                         Text="{Binding CarTitle}"
                                         TextColor="{StaticResource TextDark}" />
+
+                                    <!--  Выводим русский тариф  -->
                                     <Label
                                         FontSize="14"
-                                        Text="{Binding TariffText}"
+                                        Text="{Binding TranslatedTariffType, StringFormat='Тариф: {0}'}"
                                         TextColor="{StaticResource TextGray}" />
                                 </VerticalStackLayout>
 
-                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                                <!--  НОВАЯ СЕТКА ПОКАЗАТЕЛЕЙ ПОЕЗДКИ  -->
+                                <Grid
+                                    ColumnDefinitions="*, *"
+                                    ColumnSpacing="10"
+                                    RowDefinitions="Auto, Auto, Auto"
+                                    RowSpacing="10">
+
+                                    <!--  1. Время старта (Исправлено наложение текста!)  -->
                                     <Border
+                                        Grid.Row="0"
                                         Grid.Column="0"
+                                        Grid.ColumnSpan="2"
                                         Padding="12"
                                         BackgroundColor="#EEF4FF"
-                                        StrokeThickness="0"
-                                        StrokeShape="RoundRectangle 14">
-                                        <VerticalStackLayout Spacing="4">
-                                            <Label FontSize="12" Text="Старт" TextColor="{StaticResource TextGray}" />
-                                            <Label FontAttributes="Bold" FontSize="14" Text="{Binding StartedAtText}" />
-                                        </VerticalStackLayout>
+                                        StrokeShape="RoundRectangle 14"
+                                        StrokeThickness="0">
+                                        <Grid ColumnDefinitions="Auto, *">
+                                            <!--  Обязательно указываем Grid.Column="0" и Grid.Column="1"  -->
+                                            <Label
+                                                Grid.Column="0"
+                                                FontSize="13"
+                                                Text="Время старта:"
+                                                TextColor="{StaticResource TextGray}"
+                                                VerticalOptions="Center" />
+                                            <Label
+                                                Grid.Column="1"
+                                                FontAttributes="Bold"
+                                                FontSize="14"
+                                                HorizontalOptions="End"
+                                                Text="{Binding StartedAtText}"
+                                                TextColor="{StaticResource TextDark}"
+                                                VerticalOptions="Center" />
+                                        </Grid>
                                     </Border>
+
+                                    <!--  2. Активный тариф  -->
                                     <Border
-                                        Grid.Column="1"
+                                        Grid.Row="1"
+                                        Grid.Column="0"
                                         Padding="12"
                                         BackgroundColor="#EEF9F1"
-                                        StrokeThickness="0"
-                                        StrokeShape="RoundRectangle 14">
+                                        StrokeShape="RoundRectangle 14"
+                                        StrokeThickness="0">
                                         <VerticalStackLayout Spacing="4">
-                                            <Label FontSize="12" Text="Минуты" TextColor="{StaticResource TextGray}" />
-                                            <Label FontAttributes="Bold" FontSize="14" Text="{Binding PricePerMinuteText}" />
+                                            <Label
+                                                FontSize="12"
+                                                Text="Ставка"
+                                                TextColor="{StaticResource TextGray}" />
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="14"
+                                                Text="{Binding ActiveTariffPriceText}"
+                                                TextColor="{StaticResource TextDark}" />
                                         </VerticalStackLayout>
                                     </Border>
+
+                                    <!--  3. Таймер поездки  -->
                                     <Border
-                                        Grid.Column="2"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
                                         Padding="12"
                                         BackgroundColor="#FFF6EA"
-                                        StrokeThickness="0"
-                                        StrokeShape="RoundRectangle 14">
+                                        StrokeShape="RoundRectangle 14"
+                                        StrokeThickness="0">
                                         <VerticalStackLayout Spacing="4">
-                                            <Label FontSize="12" Text="Километры" TextColor="{StaticResource TextGray}" />
-                                            <Label FontAttributes="Bold" FontSize="14" Text="{Binding PricePerKmText}" />
+                                            <Label
+                                                FontSize="12"
+                                                Text="В пути"
+                                                TextColor="{StaticResource TextGray}" />
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="14"
+                                                Text="{Binding ElapsedTimeText}"
+                                                TextColor="{StaticResource TextDark}" />
                                         </VerticalStackLayout>
                                     </Border>
+
+                                    <!--  4. Текущая стоимость  -->
+                                    <Border
+                                        Grid.Row="2"
+                                        Grid.Column="0"
+                                        Padding="12"
+                                        BackgroundColor="#F7F9FC"
+                                        StrokeShape="RoundRectangle 14"
+                                        StrokeThickness="0">
+                                        <VerticalStackLayout Spacing="4">
+                                            <Label
+                                                FontSize="12"
+                                                Text="Стоимость"
+                                                TextColor="{StaticResource TextGray}" />
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="16"
+                                                Text="{Binding CurrentCostText}"
+                                                TextColor="{StaticResource Primary}" />
+                                        </VerticalStackLayout>
+                                    </Border>
+
+                                    <!--  5. Пробег (Километраж)  -->
+                                    <Border
+                                        Grid.Row="2"
+                                        Grid.Column="1"
+                                        Padding="12"
+                                        BackgroundColor="#F7F9FC"
+                                        StrokeShape="RoundRectangle 14"
+                                        StrokeThickness="0">
+                                        <VerticalStackLayout Spacing="4">
+                                            <Label
+                                                FontSize="12"
+                                                Text="Пробег"
+                                                TextColor="{StaticResource TextGray}" />
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="14"
+                                                Text="{Binding DistanceText}"
+                                                TextColor="{StaticResource TextDark}" />
+                                        </VerticalStackLayout>
+                                    </Border>
+
                                 </Grid>
 
                                 <Border
                                     Padding="14"
                                     BackgroundColor="#F7F9FC"
-                                    StrokeThickness="0"
-                                    StrokeShape="RoundRectangle 14">
+                                    StrokeShape="RoundRectangle 14"
+                                    StrokeThickness="0">
                                     <VerticalStackLayout Spacing="8">
-                                        <Label FontAttributes="Bold" FontSize="16" Text="Текущее местоположение" />
-                                        <Label FontSize="14" Text="{Binding CurrentLocationText}" TextColor="{StaticResource TextDark}" />
-                                        <Label FontSize="12" Text="{Binding CoordinatesText}" TextColor="{StaticResource TextGray}" />
-                                        <Label FontSize="12" Text="{Binding LastSyncText}" TextColor="{StaticResource Primary}" />
-                                        <Label FontSize="12" Text="{Binding TrackingStatusText}" TextColor="{StaticResource TextGray}" />
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            Text="Текущее местоположение"
+                                            TextColor="{StaticResource TextDark}" />
+                                        <Label
+                                            FontSize="14"
+                                            Text="{Binding CurrentLocationText}"
+                                            TextColor="{StaticResource TextDark}" />
+                                        <Label
+                                            FontSize="12"
+                                            Text="{Binding CoordinatesText}"
+                                            TextColor="{StaticResource TextGray}" />
+                                        <Label
+                                            FontSize="12"
+                                            Text="{Binding LastSyncText}"
+                                            TextColor="{StaticResource Primary}" />
+                                        <Label
+                                            FontSize="12"
+                                            Text="{Binding TrackingStatusText}"
+                                            TextColor="{StaticResource TextGray}" />
                                     </VerticalStackLayout>
                                 </Border>
 
@@ -122,25 +228,18 @@
                                         TextColor="#A33A3A" />
                                 </Border>
 
-                                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                                    <Border
-                                        Grid.Column="0"
-                                        Padding="12"
-                                        BackgroundColor="#F7F9FC"
-                                        StrokeThickness="0"
-                                        StrokeShape="RoundRectangle 14">
-                                        <VerticalStackLayout Spacing="4">
-                                            <Label FontSize="12" Text="Сутки" TextColor="{StaticResource TextGray}" />
-                                            <Label FontAttributes="Bold" FontSize="14" Text="{Binding PricePerDayText}" />
-                                        </VerticalStackLayout>
-                                    </Border>
-
+                                <VerticalStackLayout Margin="0,15,0,0" Spacing="10">
                                     <Button
-                                        Grid.Column="1"
                                         Command="{Binding FinishTripCommand}"
+                                        CornerRadius="12"
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        HeightRequest="55"
                                         IsEnabled="{Binding HasActiveTrip}"
-                                        Text="Завершить поездку" />
-                                </Grid>
+                                        Text="ЗАВЕРШИТЬ ПОЕЗДКУ"
+                                        TextColor="White" />
+                                </VerticalStackLayout>
+
                             </VerticalStackLayout>
                         </Border>
                     </VerticalStackLayout>
@@ -153,12 +252,10 @@
                     VerticalOptions="Center"
                     Color="{StaticResource Primary}" />
 
-                <Grid
-                    BackgroundColor="#66000000"
-                    IsVisible="{Binding IsFinishing}">
+                <Grid BackgroundColor="#99000000" IsVisible="{Binding IsFinishing}">
                     <VerticalStackLayout
                         HorizontalOptions="Center"
-                        Spacing="12"
+                        Spacing="15"
                         VerticalOptions="Center">
                         <ActivityIndicator
                             IsRunning="{Binding IsFinishing}"
@@ -166,11 +263,12 @@
                             Color="White" />
                         <Label
                             FontAttributes="Bold"
-                            FontSize="16"
+                            FontSize="18"
                             Text="Завершаем поездку..."
                             TextColor="White" />
                     </VerticalStackLayout>
                 </Grid>
+
             </Grid>
         </RefreshView>
     </Grid>

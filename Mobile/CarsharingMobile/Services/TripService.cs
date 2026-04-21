@@ -59,7 +59,7 @@ public class TripService(HttpClient httpClient)
 
     public async Task<string?> UpdateTripLocationAsync(int tripId, UpdateTripLocationRequest request)
     {
-        var response = await httpClient.PutAsJsonAsync($"Trips/{tripId}/location", request);
+        var response = await httpClient.PostAsJsonAsync($"Trips/{tripId}/location", request);
         if (response.IsSuccessStatusCode)
             return null;
 

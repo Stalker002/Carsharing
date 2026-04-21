@@ -99,4 +99,76 @@ public class TripsControllerTests(CustomWebApplicationFactory factory) : IClassF
             Assert.Equal(45m, updatedCar.FuelLevel);
         }
     }
+
+    [Fact]
+    public async Task UpdateTripLocation_EnRouteTrip_UpdatesCarCoordinates()
+    {
+        const int testUserId = 2;
+        const int testTripId = 200;
+        const int testBookingId = 150;
+        const int testCarId = 110;
+
+        var token = factory.GenerateTestToken(testUserId, 2);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        using (var scope = factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CarsharingDbContext>();
+
+            db.Client.Add(new ClientEntity
+            {
+                Id = 2,
+                UserId = testUserId,
+                Name = "Trip",
+                Surname = "Tracker",
+                PhoneNumber = "+375291112244",
+                Email = "tracker@test.com"
+            });
+
+            db.Car.Add(new CarEntity
+            {
+                Id = testCarId,
+                StatusId = (int)CarStatusEnum.Reserved,
+                Location = "Old Point",
+                FuelLevel = 60
+            });
+
+            db.Booking.Add(new BookingEntity
+            {
+                Id = testBookingId,
+                CarId = testCarId,
+                ClientId = 2,
+                StatusId = (int)BookingStatusEnum.Active
+            });
+
+            db.Trip.Add(new TripEntity
+            {
+                Id = testTripId,
+                BookingId = testBookingId,
+                StatusId = (int)TripStatusEnum.EnRoute,
+                StartTime = DateTime.UtcNow.AddMinutes(-5),
+                TariffType = "per_minute"
+            });
+
+            await db.SaveChangesAsync();
+        }
+
+        var request = new UpdateTripLocationRequest("Prospekt Nezavisimosti 1", 53.893009, 27.567444);
+
+        var response = await _client.PostAsJsonAsync($"/Trips/{testTripId}/location", request);
+
+        Assert.Equal(System.Net.HttpStatusCode.NoContent, response.StatusCode);
+
+        using (var scope = factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CarsharingDbContext>();
+            var updatedCar = await db.Car.FindAsync(testCarId);
+
+            Assert.NotNull(updatedCar);
+            Assert.Equal(request.Location, updatedCar!.Location);
+            Assert.NotNull(updatedCar.Coordinates);
+            Assert.Equal(request.CarLatitude, updatedCar.Coordinates!.Y, 6);
+            Assert.Equal(request.CarLongitude, updatedCar.Coordinates.X, 6);
+        }
+    }
 }

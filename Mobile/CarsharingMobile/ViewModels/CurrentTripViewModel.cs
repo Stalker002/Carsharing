@@ -11,8 +11,10 @@ namespace CarsharingMobile.ViewModels;
 public partial class CurrentTripViewModel(TripService tripService) : ObservableObject
 {
     private static readonly TimeSpan TrackingInterval = TimeSpan.FromSeconds(12);
+    private const double MinDistanceForSyncMeters = 15;
     private CancellationTokenSource? _trackingCts;
-    private bool _isInitialized;
+    private IDispatcherTimer? _dashboardTimer;
+    private Location? _lastSentLocation;
 
     [ObservableProperty] public partial bool IsBusy { get; set; }
     [ObservableProperty] public partial bool IsRefreshing { get; set; }
@@ -35,19 +37,14 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
 
     public async Task InitializeAsync()
     {
-        if (_isInitialized)
-        {
-            StartTracking();
-            return;
-        }
-
-        _isInitialized = true;
         await LoadCurrentTripAsync();
         StartTracking();
+        StartDashboardTimer();
     }
 
     public void StopTracking()
     {
+        StopDashboardTimer();
         _trackingCts?.Cancel();
         _trackingCts?.Dispose();
         _trackingCts = null;
@@ -98,11 +95,11 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
             var locationLabel = await ResolveLocationLabelAsync(currentLocation.Latitude, currentLocation.Longitude);
             var request = new FinishTripRequest(
                 CurrentTrip.Id,
-                0,
+                CurrentTrip.Distance,
                 locationLabel,
                 currentLocation.Latitude,
                 currentLocation.Longitude,
-                0);
+                CurrentTrip.FuelLevel);
 
             var (result, error) = await tripService.FinishTripAsync(request);
             if (result == null)
@@ -138,11 +135,23 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
 
             if (CurrentTrip == null)
             {
+                _lastSentLocation = null;
                 Title = "Активной поездки нет";
                 CarTitle = "Поездка не найдена";
                 TariffText = "Вернитесь на карту и начните новую поездку.";
+                StartedAtText = "-";
+                PricePerMinuteText = "-";
+                PricePerKmText = "-";
+                PricePerDayText = "-";
+                CurrentLocationText = "Ожидание геопозиции";
+                CoordinatesText = "Координаты недоступны";
+                ElapsedTimeText = "00:00:00";
+                CurrentCostText = "0.00 BYN";
+                DistanceText = "0.00 км";
                 TrackingStatusText = "Нет активной поездки";
                 LastSyncText = "Синхронизация не требуется";
+                OnPropertyChanged(nameof(TranslatedTariffType));
+                OnPropertyChanged(nameof(ActiveTariffPriceText));
                 return;
             }
 
@@ -162,6 +171,13 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
                 : CurrentTrip.CarLocation!;
             CoordinatesText = FormatCoordinates(CurrentTrip.CarLatitude, CurrentTrip.CarLongitude);
             TrackingStatusText = "Трекинг готов к запуску";
+            _lastSentLocation = CurrentTrip.CarLatitude.HasValue && CurrentTrip.CarLongitude.HasValue
+                ? new Location(CurrentTrip.CarLatitude.Value, CurrentTrip.CarLongitude.Value)
+                : null;
+
+            UpdateDashboard();
+            OnPropertyChanged(nameof(TranslatedTariffType));
+            OnPropertyChanged(nameof(ActiveTariffPriceText));
         }
         catch (Exception ex)
         {
@@ -176,6 +192,10 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
 
     private void StartTracking()
     {
+        _trackingCts?.Cancel();
+        _trackingCts?.Dispose();
+        _trackingCts = null;
+
         if (!HasActiveTrip || CurrentTrip == null || _trackingCts != null)
             return;
 
@@ -222,6 +242,15 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
             return;
         }
 
+        if (ShouldSkipSync(location))
+        {
+            UpdateCurrentTripLocation(location, null, 0m);
+            TrackingStatusText = "Ожидание заметного смещения";
+            CoordinatesText = FormatCoordinates(location.Latitude, location.Longitude);
+            return;
+        }
+
+        var travelledDistanceKm = CalculateIncrementalDistance(location);
         var locationLabel = await ResolveLocationLabelAsync(location.Latitude, location.Longitude);
         var error = await tripService.UpdateTripLocationAsync(CurrentTrip.Id,
             new UpdateTripLocationRequest(locationLabel, location.Latitude, location.Longitude));
@@ -234,6 +263,7 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
         }
 
         ErrorMessage = null;
+        _lastSentLocation = location;
         CurrentLocationText = locationLabel;
         CoordinatesText = FormatCoordinates(location.Latitude, location.Longitude);
         LastSyncText = $"Последняя синхронизация: {DateTime.Now:HH:mm:ss}";
@@ -241,15 +271,7 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
 
         await MainThread.InvokeOnMainThreadAsync(() =>
         {
-            if (CurrentTrip != null)
-            {
-                CurrentTrip = CurrentTrip with
-                {
-                    CarLocation = locationLabel,
-                    CarLatitude = location.Latitude,
-                    CarLongitude = location.Longitude
-                };
-            }
+            UpdateCurrentTripLocation(location, locationLabel, travelledDistanceKm);
         });
     }
 
@@ -267,19 +289,33 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
                    new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(10)));
     }
 
-    private static async Task<string> ResolveLocationLabelAsync(double latitude, double longitude)
+    private void UpdateDashboard()
+    {
+        if (CurrentTrip == null) return;
+
+        var timePassed = DateTime.UtcNow - CurrentTrip.StartTime;
+        if (timePassed < TimeSpan.Zero)
+            timePassed = TimeSpan.Zero;
+
+        ElapsedTimeText = $"{(int)timePassed.TotalHours:00}:{timePassed.Minutes:00}:{timePassed.Seconds:00}";
+        DistanceText = $"{CurrentTrip.Distance:0.00} км";
+        CurrentCostText = $"{CalculateCurrentCost(CurrentTrip, timePassed):0.00} BYN";
+    }
+
+    private async Task<string> ResolveLocationLabelAsync(double latitude, double longitude)
     {
         try
         {
             var placemarks = await Geocoding.Default.GetPlacemarksAsync(latitude, longitude);
-            var place = placemarks?.FirstOrDefault();
-            if (place != null)
+            var placemark = placemarks?.FirstOrDefault();
+
+            if (placemark != null)
             {
                 var parts = new[]
                 {
-                    place.Thoroughfare,
-                    place.SubThoroughfare,
-                    place.Locality
+                    placemark.Thoroughfare,
+                    placemark.SubThoroughfare,
+                    placemark.Locality
                 };
 
                 var label = string.Join(", ", parts.Where(static value => !string.IsNullOrWhiteSpace(value)));
@@ -289,10 +325,91 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex);
+            System.Diagnostics.Debug.WriteLine($"Ошибка геокодера: {ex.Message}");
         }
 
-        return $"{latitude:0.000000}, {longitude:0.000000}";
+        return $"{latitude:0.0000}, {longitude:0.0000}";
+    }
+
+    private bool ShouldSkipSync(Location location)
+    {
+        if (_lastSentLocation == null)
+            return false;
+
+        return Location.CalculateDistance(_lastSentLocation, location, DistanceUnits.Kilometers) * 1000
+               < MinDistanceForSyncMeters;
+    }
+
+    private decimal CalculateIncrementalDistance(Location location)
+    {
+        if (_lastSentLocation == null)
+            return 0m;
+
+        var distanceKm = Location.CalculateDistance(_lastSentLocation, location, DistanceUnits.Kilometers);
+        return distanceKm <= 0 ? 0m : decimal.Round((decimal)distanceKm, 3, MidpointRounding.AwayFromZero);
+    }
+
+    private void UpdateCurrentTripLocation(Location location, string? locationLabel, decimal travelledDistanceKm)
+    {
+        if (CurrentTrip == null)
+            return;
+
+        CurrentTrip = CurrentTrip with
+        {
+            CarLocation = locationLabel ?? CurrentTrip.CarLocation,
+            CarLatitude = location.Latitude,
+            CarLongitude = location.Longitude,
+            Distance = CurrentTrip.Distance + travelledDistanceKm
+        };
+
+        UpdateDashboard();
+    }
+
+    private void StartDashboardTimer()
+    {
+        if (!HasActiveTrip || CurrentTrip == null)
+        {
+            StopDashboardTimer();
+            return;
+        }
+
+        if (_dashboardTimer != null)
+            return;
+
+        _dashboardTimer = Application.Current?.Dispatcher.CreateTimer();
+        if (_dashboardTimer == null)
+            return;
+
+        _dashboardTimer.Interval = TimeSpan.FromSeconds(1);
+        _dashboardTimer.Tick += OnDashboardTimerTick;
+        _dashboardTimer.Start();
+    }
+
+    private void StopDashboardTimer()
+    {
+        if (_dashboardTimer == null)
+            return;
+
+        _dashboardTimer.Stop();
+        _dashboardTimer.Tick -= OnDashboardTimerTick;
+        _dashboardTimer = null;
+    }
+
+    private void OnDashboardTimerTick(object? sender, EventArgs e)
+    {
+        UpdateDashboard();
+    }
+
+    private static decimal CalculateCurrentCost(CurrentTripDto trip, TimeSpan timePassed)
+    {
+        return trip.TariffType switch
+        {
+            "per_km" => decimal.Round(trip.Distance * trip.PricePerKm, 2, MidpointRounding.AwayFromZero),
+            "per_day" => decimal.Round(Math.Max(1m, (decimal)Math.Ceiling(timePassed.TotalDays)) * trip.PricePerDay,
+                2, MidpointRounding.AwayFromZero),
+            _ => decimal.Round((decimal)timePassed.TotalMinutes * trip.PricePerMinute, 2,
+                MidpointRounding.AwayFromZero)
+        };
     }
 
     private static string FormatCoordinates(double? latitude, double? longitude)
@@ -302,4 +419,24 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
 
         return $"{latitude.Value:0.000000}, {longitude.Value:0.000000}";
     }
+
+    public string TranslatedTariffType => CurrentTrip?.TariffType switch
+    {
+        "per_minute" => "Поминутный",
+        "per_km" => "Покилометровый",
+        "per_day" => "Посуточный",
+        _ => "Стандартный"
+    };
+
+    public string ActiveTariffPriceText => CurrentTrip?.TariffType switch
+    {
+        "per_minute" => $"{CurrentTrip?.PricePerMinute:0.00} BYN / мин",
+        "per_km" => $"{CurrentTrip?.PricePerKm:0.00} BYN / км",
+        "per_day" => $"{CurrentTrip?.PricePerDay:0.00} BYN / сутки",
+        _ => ""
+    };
+
+    [ObservableProperty] public partial string ElapsedTimeText { get; set; } = "00:00:00";
+    [ObservableProperty] public partial string CurrentCostText { get; set; } = "0.00 BYN";
+    [ObservableProperty] public partial string DistanceText { get; set; } = "0.00 км";
 }

@@ -7,7 +7,7 @@ using Shared.Contracts.Cars;
 namespace CarsharingMobile.ViewModels;
 
 [QueryProperty(nameof(Car), "Car")]
-public partial class CarDetailsViewModel(TripService tripService, BookingService bookingService) : ObservableObject, IQueryAttributable
+public partial class CarDetailsViewModel(BookingService bookingService) : ObservableObject, IQueryAttributable
 {
     [ObservableProperty]
     public partial CarWithMinInfoDto? Car { get; set; }
