@@ -14,7 +14,8 @@ public class TripService(
     IUnitOfWork unitOfWork,
     ICarsService carsService,
     IBookingRepository bookingRepository,
-    IBillRepository billRepository)
+    IBillRepository billRepository,
+    IBillingLifecycleService billingLifecycleService)
     : ITripService
 {
     public async Task<List<Trip>> GetTrips(CancellationToken cancellationToken)
@@ -80,7 +81,7 @@ public class TripService(
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            var billId = await tripRepository.FinishTripAsync(
+            await tripRepository.FinishTripAsync(
                 request.TripId,
                 request.Distance,
                 request.EndLocation,
@@ -89,6 +90,8 @@ public class TripService(
                 request.CarLongitude,
                 cancellationToken
             );
+
+            var billId = await billingLifecycleService.EnsureBillForTripAsync(request.TripId, cancellationToken);
 
             await unitOfWork.CommitTransactionAsync(cancellationToken);
 
@@ -224,6 +227,9 @@ public class TripService(
                       ?? throw new NotFoundException("Booking not found for this trip");
 
         await carsService.MarkCarAsAvailableAsync(booking.CarId, cancellationToken);
+
+        if (request.EndTime != null)
+            await billingLifecycleService.EnsureBillForTripAsync(id, cancellationToken);
 
         return tripId;
     }

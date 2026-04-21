@@ -1,3 +1,4 @@
+using Carsharing.Application.Abstractions;
 using Carsharing.Application.Services;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Exceptions;
@@ -8,6 +9,7 @@ namespace Carsharing.Tests.Application;
 
 public class TripDetailsServiceTests
 {
+    private readonly Mock<IBillingLifecycleService> _billingLifecycleMock;
     private readonly Mock<IInsuranceRepository> _insuranceRepoMock;
     private readonly TripDetailsService _service;
     private readonly Mock<ITripDetailRepository> _tripDetailRepoMock;
@@ -16,10 +18,12 @@ public class TripDetailsServiceTests
     {
         _tripDetailRepoMock = new Mock<ITripDetailRepository>();
         _insuranceRepoMock = new Mock<IInsuranceRepository>();
+        _billingLifecycleMock = new Mock<IBillingLifecycleService>();
 
         _service = new TripDetailsService(
             _tripDetailRepoMock.Object,
-            _insuranceRepoMock.Object);
+            _insuranceRepoMock.Object,
+            _billingLifecycleMock.Object);
     }
 
     [Fact]
@@ -48,6 +52,8 @@ public class TripDetailsServiceTests
 
         _tripDetailRepoMock.Setup(x => x.GetCarIdByTripId(tripDetail.TripId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(carId);
+        _billingLifecycleMock.Setup(x => x.NormalizeTripDetailAsync(tripDetail, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(tripDetail);
 
         _insuranceRepoMock.Setup(x => x.GetActiveByCarId(carId, It.IsAny<CancellationToken>())).ReturnsAsync([]);
 
@@ -69,6 +75,8 @@ public class TripDetailsServiceTests
 
         _tripDetailRepoMock.Setup(x => x.GetCarIdByTripId(tripDetail.TripId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(carId);
+        _billingLifecycleMock.Setup(x => x.NormalizeTripDetailAsync(tripDetail, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(tripDetail);
 
         _tripDetailRepoMock.Setup(x => x.Create(tripDetail, It.IsAny<CancellationToken>())).ReturnsAsync(99);
 
@@ -80,6 +88,7 @@ public class TripDetailsServiceTests
         Assert.Equal(99, resultId);
 
         _tripDetailRepoMock.Verify(x => x.Create(tripDetail, specificToken), Times.Once);
+        _billingLifecycleMock.Verify(x => x.SyncCarFuelLevelAsync(tripDetail.TripId, specificToken), Times.Once);
 
         _insuranceRepoMock.Verify(x => x.GetActiveByCarId(It.IsAny<int>(), specificToken), Times.Never);
     }

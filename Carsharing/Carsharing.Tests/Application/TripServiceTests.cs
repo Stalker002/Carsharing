@@ -25,6 +25,7 @@ public class TripServiceTests
         _carsServiceMock = new Mock<ICarsService>();
         _bookingRepoMock = new Mock<IBookingRepository>();
         var mockBill = new Mock<IBillRepository>();
+        var billingLifecycleMock = new Mock<IBillingLifecycleService>();
 
         _tripService = new TripService(
             _tripRepoMock.Object,
@@ -33,7 +34,8 @@ public class TripServiceTests
             null!,
             _carsServiceMock.Object,
             _bookingRepoMock.Object,
-            mockBill.Object);
+            mockBill.Object,
+            billingLifecycleMock.Object);
     }
 
     [Fact]

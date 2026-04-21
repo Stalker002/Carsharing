@@ -1,3 +1,4 @@
+using Carsharing.Application.Abstractions;
 using Carsharing.Application.Services;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Exceptions;
@@ -19,12 +20,14 @@ public class BillsServiceTests
         var clientRepoMock = new Mock<IClientRepository>();
         _promoRepoMock = new Mock<IPromocodeRepository>();
         var tripRepoMock = new Mock<ITripRepository>();
+        var billingLifecycleMock = new Mock<IBillingLifecycleService>();
         _billsService = new BillsService(
             _billRepoMock.Object,
             _promoRepoMock.Object,
             tripRepoMock.Object,
             bookingRepoMock.Object,
-            clientRepoMock.Object);
+            clientRepoMock.Object,
+            billingLifecycleMock.Object);
     }
 
     [Fact]
@@ -67,8 +70,7 @@ public class BillsServiceTests
 
         var validPromo = Promocode.Create(10, 20, code, 10, today, today.AddDays(2)).promocode;
 
-        var futureDate = DateTime.Now.AddDays(1);
-        var validBill = Bill.Create(billId, 1, null, 13, futureDate, 100, 100).bill;
+        var validBill = Bill.Create(billId, 1, null, 13, DateTime.UtcNow, 100, 100).bill;
 
         _promoRepoMock.Setup(x => x.GetByCode(code, It.IsAny<CancellationToken>())).ReturnsAsync([validPromo]);
         _billRepoMock.Setup(x => x.GetById(billId, It.IsAny<CancellationToken>())).ReturnsAsync(validBill);

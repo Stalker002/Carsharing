@@ -9,14 +9,17 @@ namespace Carsharing.Application.Services;
 public class BillsService : IBillsService
 {
     private readonly IBillRepository _billRepository;
+    private readonly IBillingLifecycleService _billingLifecycleService;
     private readonly IBookingRepository _bookingRepository;
     private readonly IClientRepository _clientRepository;
     private readonly IPromocodeRepository _promocodeRepository;
     private readonly ITripRepository _tripRepository;
 
     public BillsService(IBillRepository billRepository, IPromocodeRepository promocodeRepository,
-        ITripRepository tripRepository, IBookingRepository bookingRepository, IClientRepository clientRepository)
+        ITripRepository tripRepository, IBookingRepository bookingRepository, IClientRepository clientRepository,
+        IBillingLifecycleService billingLifecycleService)
     {
+        _billingLifecycleService = billingLifecycleService;
         _clientRepository = clientRepository;
         _bookingRepository = bookingRepository;
         _tripRepository = tripRepository;
@@ -86,7 +89,10 @@ public class BillsService : IBillsService
         if (booking.ClientId != clientId)
             throw new UnauthorizedAccessException("Trip does not belong to current user");
 
-        return await _billRepository.Create(bill, cancellationToken);
+        var billId = await _billRepository.Create(bill, cancellationToken);
+        await _billingLifecycleService.RecalculateBillAsync(billId, cancellationToken);
+
+        return billId;
     }
 
     public async Task ApplyPromocode(int billId, string code, CancellationToken cancellationToken)
@@ -103,8 +109,11 @@ public class BillsService : IBillsService
     public async Task<int> UpdateBill(int id, int? tripId, int? promocodeId, int? statusId, DateTime? issueDate,
         decimal? amount, decimal? remainingAmount, CancellationToken cancellationToken)
     {
-        return await _billRepository.Update(id, tripId, promocodeId, statusId, issueDate, amount, remainingAmount,
+        var billId = await _billRepository.Update(id, tripId, promocodeId, statusId, issueDate, amount, remainingAmount,
             cancellationToken);
+        await _billingLifecycleService.RecalculateBillAsync(billId, cancellationToken);
+
+        return billId;
     }
 
     public async Task<int> DeleteBill(int id, CancellationToken cancellationToken)
@@ -134,6 +143,8 @@ public class BillsService : IBillsService
             null,
             cancellationToken
         );
+
+        await _billingLifecycleService.RecalculateBillAsync(bill.Id, cancellationToken);
     }
 
     private async Task EnsureBillBelongsToUser(int userId, int billId, CancellationToken cancellationToken)

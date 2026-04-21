@@ -214,7 +214,7 @@ public class TripRepository : ITripRepository
             car.Tariff!.PricePerMinute,
             car.Tariff.PricePerKm,
             car.Tariff.PricePerDay,
-            tripEntity.Distance,
+            tripEntity.Distance.GetValueOrDefault(),
             car.FuelLevel
         );
     }
@@ -328,6 +328,11 @@ public class TripRepository : ITripRepository
 
     public async Task<int> Create(Trip trip, CancellationToken cancellationToken)
     {
+        var calculatedDuration = trip.Duration;
+        if (trip.StartTime != default && trip.EndTime.HasValue)
+            calculatedDuration = decimal.Round((decimal)(trip.EndTime.Value - trip.StartTime).TotalMinutes, 2,
+                MidpointRounding.AwayFromZero);
+
         var (_, error) = Trip.Create(
             trip.Id,
             trip.BookingId,
@@ -335,7 +340,7 @@ public class TripRepository : ITripRepository
             trip.TariffType,
             trip.StartTime,
             trip.EndTime,
-            trip.Duration,
+            calculatedDuration,
             trip.Distance);
 
         if (!string.IsNullOrEmpty(error))
@@ -349,7 +354,7 @@ public class TripRepository : ITripRepository
             TariffType = trip.TariffType,
             StartTime = trip.StartTime,
             EndTime = trip.EndTime,
-            Duration = trip.Duration,
+            Duration = calculatedDuration,
             Distance = trip.Distance
         };
 
@@ -380,8 +385,15 @@ public class TripRepository : ITripRepository
         if (endTime.HasValue)
             trip.EndTime = endTime.Value;
 
-        if (duration.HasValue)
+        if (trip.StartTime != default && trip.EndTime.HasValue)
+        {
+            trip.Duration = decimal.Round((decimal)(trip.EndTime.Value - trip.StartTime).TotalMinutes, 2,
+                MidpointRounding.AwayFromZero);
+        }
+        else if (duration.HasValue)
+        {
             trip.Duration = duration.Value;
+        }
 
         if (distance.HasValue)
             trip.Distance = distance.Value;

@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Carsharing.DataAccess;
 using Carsharing.DataAccess.Entites;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Contracts.Trip;
 using Shared.Enums;
@@ -37,10 +38,23 @@ public class TripsControllerTests(CustomWebApplicationFactory factory) : IClassF
                 Email = "trip@test.com"
             });
 
-            db.Tariff.Add(new TariffEntity { Id = 1, PricePerMinute = 5, Name = "Basic" });
+            db.Tariff.Add(new TariffEntity
+            {
+                Id = 1,
+                Name = "Basic",
+                PricePerMinute = 5,
+                PricePerKm = 7,
+                PricePerDay = 120
+            });
 
             var car = new CarEntity
-                { Id = testCarId, StatusId = (int)CarStatusEnum.Reserved, Location = "Old Location", FuelLevel = 50 };
+            {
+                Id = testCarId,
+                StatusId = (int)CarStatusEnum.Reserved,
+                TariffId = 1,
+                Location = "Old Location",
+                FuelLevel = 50
+            };
             db.Car.Add(car);
 
             var booking = new BookingEntity
@@ -80,6 +94,7 @@ public class TripsControllerTests(CustomWebApplicationFactory factory) : IClassF
         var result = await response.Content.ReadFromJsonAsync<TripFinishResult>();
         Assert.NotNull(result);
         Assert.Equal("Поездка успешно завершена", result.Message);
+        Assert.True(result.BillId > 0);
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -97,6 +112,14 @@ public class TripsControllerTests(CustomWebApplicationFactory factory) : IClassF
             Assert.Equal((int)CarStatusEnum.Available, updatedCar!.StatusId);
             Assert.Equal("New Location", updatedCar.Location);
             Assert.Equal(45m, updatedCar.FuelLevel);
+
+            var bill = await db.Bill.FirstOrDefaultAsync(b => b.TripId == testTripId);
+            Assert.NotNull(bill);
+            var expectedAmount = decimal.Round(updatedTrip.Duration!.Value * 5m, 2, MidpointRounding.AwayFromZero);
+            Assert.Equal(expectedAmount, result.TotalAmount);
+            Assert.Equal(expectedAmount, bill!.Amount);
+            Assert.Equal(expectedAmount, bill.RemainingAmount);
+            Assert.Equal((int)BillStatusEnum.Unpaid, bill.StatusId);
         }
     }
 
