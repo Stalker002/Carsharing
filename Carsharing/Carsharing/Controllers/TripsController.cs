@@ -1,5 +1,4 @@
 using Carsharing.Application.Abstractions;
-using Carsharing.Contracts;
 using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -102,18 +101,12 @@ public class TripsController : ControllerBase
 
     [HttpPut("{id:int}/location")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<IActionResult> UpdateTripLocation(int id, [FromBody] UpdateTripLocationRequest request,
+    public async Task<IActionResult> UpdateTripLocationPut(int id, [FromBody] UpdateTripLocationRequest request,
         CancellationToken cancellationToken)
     {
         var userId = User.GetRequiredUserId();
 
-        await _tripService.UpdateTripLocationAsync(
-            userId,
-            id,
-            request.Location,
-            request.CarLatitude,
-            request.CarLongitude,
-            cancellationToken);
+        await _tripService.UpdateTripLocationAsync(userId, id, request, cancellationToken);
 
         return Ok(new { message = "Позиция поездки обновлена" });
     }

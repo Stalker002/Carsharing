@@ -238,4 +238,26 @@ public class TripService(
     {
         return await tripRepository.Delete(id, cancellationToken);
     }
+
+    private async Task<int> GetRequiredClientIdAsync(int userId, CancellationToken cancellationToken)
+    {
+        var client = (await clientRepository.GetClientByUserId(userId, cancellationToken)).FirstOrDefault()
+                     ?? throw new NotFoundException("Client not found");
+
+        return client.Id;
+    }
+
+    private async Task EnsureTripBelongsToUserAsync(int userId, int tripId, CancellationToken cancellationToken)
+    {
+        var clientId = await GetRequiredClientIdAsync(userId, cancellationToken);
+
+        var trip = (await tripRepository.GetById(tripId, cancellationToken)).FirstOrDefault()
+                   ?? throw new NotFoundException("Trip not found");
+
+        var booking = (await bookingRepository.GetById(trip.BookingId, cancellationToken)).FirstOrDefault()
+                      ?? throw new NotFoundException("Booking not found");
+
+        if (booking.ClientId != clientId)
+            throw new UnauthorizedAccessException("Trip does not belong to current user");
+    }
 }

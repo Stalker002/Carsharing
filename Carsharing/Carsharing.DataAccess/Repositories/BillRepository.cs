@@ -88,7 +88,7 @@ public class BillRepository : IBillRepository
     public async Task<List<Bill>> GetByTripId(List<int> tripIds, CancellationToken cancellationToken)
     {
         var billEntities = await _context.Bill
-            .Where(b => tripIds.Contains(b.Id))
+            .Where(b => tripIds.Contains(b.TripId))
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
