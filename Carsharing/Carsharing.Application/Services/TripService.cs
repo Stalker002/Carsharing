@@ -65,6 +65,28 @@ public class TripService(
         return await tripRepository.GetTripWithDetailsById(id, cancellationToken);
     }
 
+    public async Task<TripDetailsDto?> GetTripFullDetails(int id, CancellationToken cancellationToken)
+    {
+        return await tripRepository.GetFullDetailsById(id, cancellationToken);
+    }
+
+    public async Task<TripDetailsDto?> GetTripFullDetails(int userId, int id, CancellationToken cancellationToken)
+    {
+        var client = (await clientRepository.GetClientByUserId(userId, cancellationToken)).FirstOrDefault()
+                     ?? throw new NotFoundException("Client not found");
+
+        var trip = (await tripRepository.GetById(id, cancellationToken)).FirstOrDefault()
+                   ?? throw new NotFoundException("Trip not found");
+
+        var booking = (await bookingRepository.GetById(trip.BookingId, cancellationToken)).FirstOrDefault()
+                      ?? throw new NotFoundException("Booking not found");
+
+        if (booking.ClientId != client.Id)
+            throw new UnauthorizedAccessException("Trip does not belong to current user");
+
+        return await tripRepository.GetFullDetailsById(id, cancellationToken);
+    }
+
     public async Task<CurrentTripDto?> GetActiveTripByClientId(int userId, CancellationToken cancellationToken)
     {
         var client = await clientRepository.GetClientByUserId(userId, cancellationToken);

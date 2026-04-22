@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using CarsharingMobile.Resources.Fonts;
 using CarsharingMobile.Services;
+using CarsharingMobile.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Shared.Contracts.Trip;
@@ -70,10 +72,12 @@ public partial class TripHistoryViewModel(TripService tripService) : ObservableO
     [RelayCommand]
     private async Task RefreshAsync()
     {
-        if (IsBusy || IsRefreshing)
+        if (IsBusy)
             return;
 
-        IsRefreshing = true;
+        if (!IsRefreshing)
+            IsRefreshing = true;
+
         await LoadInitialAsync();
     }
 
@@ -111,7 +115,16 @@ public partial class TripHistoryViewModel(TripService tripService) : ObservableO
         if (trip == null)
             return;
 
-        await Shell.Current.DisplayAlert("Скоро", $"Детали поездки #{trip.Id} будут подключены следующим этапом.", "ОК");
+        var route = $"{nameof(TripDetailsPage)}" +
+                    $"?TripId={trip.Id.ToString(CultureInfo.InvariantCulture)}" +
+                    $"&CarTitle={Uri.EscapeDataString(trip.CarTitle)}";
+
+        if (!string.IsNullOrWhiteSpace(trip.CarImage))
+        {
+            route += $"&CarImageUrl={Uri.EscapeDataString(trip.CarImage)}";
+        }
+
+        await Shell.Current.GoToAsync(route);
     }
 
     private async Task LoadPageAsync()
