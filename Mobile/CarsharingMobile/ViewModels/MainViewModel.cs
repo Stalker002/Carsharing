@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Shared.Contracts.Bookings;
 using Shared.Contracts.Cars;
 using Shared.Contracts.Trip;
+using Shared.Enums;
 using System.Collections.ObjectModel;
 
 namespace CarsharingMobile.ViewModels;
@@ -76,10 +77,11 @@ public partial class MainViewModel(CarService carService, BookingService booking
 
         IsBusy = true;
 
-        // Формируем запрос на начало поездки (статус 9 - В пути)
+        // Поездка создается в состоянии ожидания старта и становится активной
+        // после первой успешной отправки геопозиции.
         var request = new TripCreateRequest(
             BookingId: ActiveBooking.Id,
-            StatusId: 9,
+            StatusId: (int)TripStatusEnum.WaitingStart,
             CarId: ActiveBooking.CarId,
             StartLocation: BookedCarDetails.Location ?? "Неизвестно",
             EndLocation: "",

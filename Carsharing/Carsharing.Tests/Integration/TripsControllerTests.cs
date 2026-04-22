@@ -124,7 +124,7 @@ public class TripsControllerTests(CustomWebApplicationFactory factory) : IClassF
     }
 
     [Fact]
-    public async Task UpdateTripLocation_EnRouteTrip_UpdatesCarCoordinates()
+    public async Task UpdateTripLocation_WaitingStartTrip_UpdatesCarCoordinatesAndTransitionsStatus()
     {
         const int testUserId = 2;
         const int testTripId = 200;
@@ -168,7 +168,7 @@ public class TripsControllerTests(CustomWebApplicationFactory factory) : IClassF
             {
                 Id = testTripId,
                 BookingId = testBookingId,
-                StatusId = (int)TripStatusEnum.EnRoute,
+                StatusId = (int)TripStatusEnum.WaitingStart,
                 StartTime = DateTime.UtcNow.AddMinutes(-5),
                 TariffType = "per_minute"
             });
@@ -185,8 +185,11 @@ public class TripsControllerTests(CustomWebApplicationFactory factory) : IClassF
         using (var scope = factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<CarsharingDbContext>();
+            var updatedTrip = await db.Trip.FindAsync(testTripId);
             var updatedCar = await db.Car.FindAsync(testCarId);
 
+            Assert.NotNull(updatedTrip);
+            Assert.Equal((int)TripStatusEnum.EnRoute, updatedTrip!.StatusId);
             Assert.NotNull(updatedCar);
             Assert.Equal(request.Location, updatedCar!.Location);
             Assert.NotNull(updatedCar.Coordinates);
