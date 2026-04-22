@@ -8,6 +8,7 @@ using Shared.Contracts.Payments;
 namespace CarsharingMobile.ViewModels;
 
 [QueryProperty(nameof(BillId), "BillId")]
+[QueryProperty(nameof(ReturnRoute), "ReturnRoute")]
 public partial class BillPaymentViewModel(BillService billService, PaymentService paymentService) : ObservableObject
 {
     private static readonly string[] PaymentMethods = ["Картой", "ЕРИП", "Наличными"];
@@ -16,6 +17,7 @@ public partial class BillPaymentViewModel(BillService billService, PaymentServic
     [ObservableProperty] public partial bool IsBusy { get; set; }
     [ObservableProperty] public partial bool IsPaying { get; set; }
     [ObservableProperty] public partial string? ErrorMessage { get; set; }
+    [ObservableProperty] public partial string? ReturnRoute { get; set; }
     [ObservableProperty] public partial string? PromoCode { get; set; }
     [ObservableProperty] public partial string SelectedPaymentMethod { get; set; } = PaymentMethods[0];
     [ObservableProperty] public partial BillWithInfoDto? Bill { get; set; }
@@ -96,8 +98,8 @@ public partial class BillPaymentViewModel(BillService billService, PaymentServic
         {
             await LoadAsync();
             await Shell.Current.DisplayAlert("Оплата прошла", "Счет успешно оплачен.", "ОК");
-            if (IsFullyPaid)
-                await Shell.Current.GoToAsync("//MainPage");
+            if (IsFullyPaid && !string.IsNullOrWhiteSpace(ReturnRoute))
+                await Shell.Current.GoToAsync(ReturnRoute);
 
             return;
         }
@@ -106,9 +108,15 @@ public partial class BillPaymentViewModel(BillService billService, PaymentServic
     }
 
     [RelayCommand]
-    private static async Task GoBackAsync()
+    private async Task GoBackAsync()
     {
-        await Shell.Current.GoToAsync("//MainPage");
+        if (!string.IsNullOrWhiteSpace(ReturnRoute))
+        {
+            await Shell.Current.GoToAsync(ReturnRoute);
+            return;
+        }
+
+        await Shell.Current.GoToAsync("..");
     }
 
     private async Task LoadAsync()

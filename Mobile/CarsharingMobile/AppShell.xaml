@@ -85,6 +85,9 @@
                     </HorizontalStackLayout>
 
                     <HorizontalStackLayout Spacing="15">
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnBillsClicked" />
+                        </HorizontalStackLayout.GestureRecognizers>
                         <Image
                             HeightRequest="24"
                             Source="gift_icon.png"
@@ -92,7 +95,7 @@
                             WidthRequest="24" />
                         <Label
                             FontSize="16"
-                            Text="ПРОМОКОДЫ"
+                            Text="МОИ СЧЕТА"
                             TextColor="White"
                             VerticalOptions="Center" />
                     </HorizontalStackLayout>

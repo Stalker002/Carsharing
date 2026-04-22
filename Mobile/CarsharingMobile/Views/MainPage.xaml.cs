@@ -1,9 +1,9 @@
-using System.ComponentModel;
 using CarsharingMobile.Services;
 using CarsharingMobile.ViewModels;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using Shared.Contracts.Cars;
+using System.ComponentModel;
 
 namespace CarsharingMobile.Views;
 
@@ -50,10 +50,21 @@ public partial class MainPage : ContentPage
 
         DrawServiceArea();
 
-        await MoveMapToUserLocationAsync();
-
-        if (_viewModel.Cars.Count == 0 && _viewModel.LoadInitialCommand.CanExecute(null))
+        if (_viewModel.LoadInitialCommand.CanExecute(null))
+        {
             await _viewModel.LoadInitialCommand.ExecuteAsync(null);
+        }
+
+        await _viewModel.RefreshBookingStateAsync();
+
+        _viewModel.StartCarsPolling();
+        _ = Task.Run(MoveMapToUserLocationAsync);
+    }
+
+    protected override void OnDisappearing()
+    {
+        _viewModel.StopCarsPolling();
+        base.OnDisappearing();
     }
 
     public void OnCarPinClicked(object sender, PinClickedEventArgs e)
@@ -178,7 +189,12 @@ public partial class MainPage : ContentPage
                                    new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(5)));
 
                 if (location != null)
-                    CarMap.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(1)));
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        CarMap.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(1.5)));
+                    });
+                }
             }
         }
         catch (Exception ex)

@@ -127,7 +127,7 @@ public partial class TripHistoryViewModel(TripService tripService) : ObservableO
 
         foreach (var trip in items)
         {
-            Trips.Add(new TripHistoryListItem(trip));
+            Trips.Add(new TripHistoryListItem(trip, OpenTripDetailsCommand));
         }
 
         _currentPage++;
@@ -158,7 +158,7 @@ public partial class TripHistoryViewModel(TripService tripService) : ObservableO
 
 public class TripHistoryListItem
 {
-    public TripHistoryListItem(TripHistoryDto trip)
+    public TripHistoryListItem(TripHistoryDto trip, IAsyncRelayCommand<TripHistoryListItem?> openCommand)
     {
         Id = trip.Id;
         CarTitle = string.Join(" ", new[] { trip.CarBrand, trip.CarModel }.Where(static value => !string.IsNullOrWhiteSpace(value)));
@@ -175,6 +175,7 @@ public class TripHistoryListItem
         StatusText = trip.StatusName;
         DistanceKm = trip.Distance.GetValueOrDefault();
         DurationMinutes = trip.Duration.GetValueOrDefault();
+        OpenCommand = openCommand;
     }
 
     public int Id { get; }
@@ -191,6 +192,7 @@ public class TripHistoryListItem
     public string StatusText { get; }
     public decimal DistanceKm { get; }
     public decimal DurationMinutes { get; }
+    public IAsyncRelayCommand<TripHistoryListItem?> OpenCommand { get; }
 
     private static string FormatPeriod(DateTime startTime, DateTime? endTime)
     {

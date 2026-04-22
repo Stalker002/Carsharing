@@ -8,6 +8,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<AuthHttpMessageHandler>();
         services.AddSingleton<IdentityService>();
+        services.AddSingleton<BookingStateService>();
 
         services.AddApiClient<AuthService>();
         services.AddApiClient<CarService>();

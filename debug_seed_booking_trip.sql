@@ -176,7 +176,7 @@ BEGIN
         booking_end_time
     )
     VALUES (
-        5,
+        1,
         v_car_id,
         v_client_id,
         NOW() - INTERVAL '35 minutes',
@@ -195,7 +195,7 @@ BEGIN
     )
     VALUES (
         v_booking_id,
-        9,
+        1,
         'per_minute',
         NOW() - INTERVAL '20 minutes',
         NULL,

@@ -120,7 +120,11 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
             if (result.BillId > 0)
             {
                 await Shell.Current.GoToAsync(nameof(BillPaymentPage),
-                    new Dictionary<string, object> { { "BillId", result.BillId } });
+                    new Dictionary<string, object>
+                    {
+                        { "BillId", result.BillId },
+                        { "ReturnRoute", "//MainPage" }
+                    });
                 return;
             }
 

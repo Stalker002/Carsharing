@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
+using CarsharingMobile.Extensions;
 using Shared.Contracts.Bills;
 using Shared.Contracts.Promocodes;
 
@@ -7,6 +8,11 @@ namespace CarsharingMobile.Services;
 
 public class BillService(HttpClient httpClient)
 {
+    public async Task<(List<BillWithMinInfoDto>? Items, int TotalCount)> GetMyBillsAsync(int page = 1, int limit = 20)
+    {
+        return await httpClient.GetPagedAsync<BillWithMinInfoDto>($"Bills/pagedByUser?_page={page}&_limit={limit}");
+    }
+
     public async Task<BillWithInfoDto?> GetBillInfoAsync(int billId)
     {
         try

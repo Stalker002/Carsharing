@@ -330,10 +330,25 @@
 
                 <Grid
                     Margin="0,5"
-                    ColumnDefinitions="*, *"
+                    ColumnDefinitions="*, Auto, Auto"
                     ColumnSpacing="10">
-                    <Button
+                    <VerticalStackLayout
                         Grid.Column="0"
+                        Spacing="2"
+                        VerticalOptions="Center">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="{Binding SelectedTariffTitle, StringFormat='Тариф: {0}'}"
+                            TextColor="White" />
+                        <Label
+                            FontSize="13"
+                            Text="{Binding SelectedTariffPriceText}"
+                            TextColor="#ACACAC" />
+                    </VerticalStackLayout>
+
+                    <Button
+                        Grid.Column="1"
                         Padding="0"
                         BackgroundColor="Transparent"
                         BorderColor="#FF3333"
@@ -345,7 +360,7 @@
                         Text="ОТМЕНИТЬ"
                         TextColor="#FF3333" />
                     <Button
-                        Grid.Column="1"
+                        Grid.Column="2"
                         Padding="0"
                         BackgroundColor="#213868"
                         CornerRadius="8"
@@ -367,6 +382,27 @@
                     TextColor="White" />
 
             </VerticalStackLayout>
+        </Border>
+        <Border
+            BackgroundColor="White"
+            HeightRequest="50"
+            HorizontalOptions="Center"
+            IsVisible="{Binding IsBusy}"
+            StrokeShape="RoundRectangle 25"
+            StrokeThickness="0"
+            VerticalOptions="Center"
+            WidthRequest="50">
+            <Border.Shadow>
+                <Shadow
+                    Brush="Black"
+                    Opacity="0.2"
+                    Radius="5"
+                    Offset="0,2" />
+            </Border.Shadow>
+            <ActivityIndicator
+                Margin="10"
+                IsRunning="{Binding IsBusy}"
+                Color="#3296F8" />
         </Border>
     </Grid>
 </ContentPage>

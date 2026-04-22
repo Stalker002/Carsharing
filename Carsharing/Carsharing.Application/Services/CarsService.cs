@@ -46,6 +46,11 @@ public class CarsService : ICarsService
         return await _carRepository.GetCount(cancellationToken);
     }
 
+    public async Task<int> GetAvailableCount(CancellationToken cancellationToken)
+    {
+        return await _carRepository.GetAvailableCount(cancellationToken);
+    }
+
     public async Task<List<Car>> GetCarById(int id, CancellationToken cancellationToken)
     {
         return await _carRepository.GetById(id, cancellationToken);
@@ -70,6 +75,11 @@ public class CarsService : ICarsService
     public async Task<int> GetCountByCategory(List<int> categoryIds, CancellationToken cancellationToken)
     {
         return await _carRepository.GetCountByCategory(categoryIds, cancellationToken);
+    }
+
+    public async Task<int> GetAvailableCountByCategory(List<int> categoryIds, CancellationToken cancellationToken)
+    {
+        return await _carRepository.GetAvailableCountByCategory(categoryIds, cancellationToken);
     }
 
     public async Task<int> CreateCar(Car car, CancellationToken cancellationToken)
