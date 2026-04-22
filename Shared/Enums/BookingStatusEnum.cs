@@ -2,7 +2,7 @@
 
 public enum BookingStatusEnum
 {
-    Active = 5,
-    Completed = 6,
-    Cancelled = 7
+    Active = 1,
+    Completed = 2,
+    Cancelled = 3
 }

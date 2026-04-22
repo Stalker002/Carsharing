@@ -52,13 +52,16 @@ public partial class SpecificationCar
         decimal maxFuel, decimal fuelPerKm)
     {
         var error = string.Empty;
-        var allowedFuelType = new[] { "Бензин", "Дизель", "Электро", "Гибрид", "Газ" };
         var allowedTransmissionType = new[] { "Автомат", "Механика", "Робот" };
 
         if (string.IsNullOrWhiteSpace(fuelType))
             error = "Fuel type can't be empty";
-        if (!allowedFuelType.Contains(fuelType))
-            error = $"Invalid fuel type. Allowed: {string.Join(", ", allowedFuelType)}";
+        if (!Enum.TryParse<Shared.Enums.FuelType>(fuelType, true, out _))
+        {
+            var allowedFuelTypes = Enum.GetNames(typeof(Shared.Enums.FuelType));
+            
+            error = $"Invalid fuel type. Allowed: {string.Join(", ", allowedFuelTypes)}";
+        }
 
         if (string.IsNullOrWhiteSpace(brand))
             error = "Brand can't be empty";

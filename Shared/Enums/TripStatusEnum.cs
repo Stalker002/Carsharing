@@ -2,9 +2,9 @@
 
 public enum TripStatusEnum
 {
-    WaitingStart = 8,
-    EnRoute = 9,
-    Finished = 10,
-    Cancelled = 11,
-    PaymentRequired = 12
+    WaitingStart = 1,
+    EnRoute = 2,
+    Finished = 3,
+    Cancelled = 4,
+    PaymentRequired = 5
 }
