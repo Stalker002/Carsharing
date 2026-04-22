@@ -26,8 +26,6 @@ public interface ITripRepository
 
     Task<List<TripWithInfoDto>> GetTripWithDetailsById(int id, CancellationToken cancellationToken);
 
-    Task<TripDetailsDto?> GetFullDetailsById(int id, CancellationToken cancellationToken);
-
     Task<(List<TripHistoryDto> Items, int TotalCount)> GetHistoryByClientId(int clientId, int page, int limit,
         CancellationToken cancellationToken);
 

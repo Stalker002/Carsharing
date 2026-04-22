@@ -15,7 +15,6 @@ public static class ViewModelsCollectionExtensions
         services.AddTransient<CarDetailsViewModel>();
         services.AddTransient<CurrentTripViewModel>();
         services.AddTransient<TripHistoryViewModel>();
-        services.AddTransient<TripDetailsViewModel>();
 
         return services;
     }

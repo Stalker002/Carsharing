@@ -143,55 +143,6 @@ public class TripRepository : ITripRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<TripDetailsDto?> GetFullDetailsById(int id, CancellationToken cancellationToken)
-    {
-        return await _context.Trip
-            .AsNoTracking()
-            .Where(t => t.Id == id)
-            .Select(t => new TripDetailsDto(
-                new TripHeaderDto(
-                    t.Id,
-                    t.Bill != null ? t.Bill.Id : null,
-                    t.Booking != null && t.Booking.Car != null && t.Booking.Car.SpecificationCar != null
-                        ? $"{t.Booking.Car.SpecificationCar.Brand} {t.Booking.Car.SpecificationCar.Model}".Trim()
-                        : $"Поездка #{t.Id}",
-                    t.Booking != null && t.Booking.Car != null ? t.Booking.Car.ImagePath : null,
-                    t.Booking != null && t.Booking.Car != null && t.Booking.Car.SpecificationCar != null
-                        ? t.Booking.Car.SpecificationCar.Transmission
-                        : null,
-                    t.Booking != null && t.Booking.Car != null && t.Booking.Car.SpecificationCar != null
-                        ? t.Booking.Car.SpecificationCar.StateNumber
-                        : null,
-                    t.TariffType,
-                    t.StartTime,
-                    t.EndTime,
-                    t.TripDetail != null ? t.TripDetail.StartLocation : null,
-                    t.TripDetail != null ? t.TripDetail.EndLocation : null),
-                new TripSummaryDto(
-                    t.Distance,
-                    t.Duration,
-                    t.Bill != null ? t.Bill.Amount : null,
-                    t.Bill != null ? t.Bill.RemainingAmount : null,
-                    t.TripDetail != null && t.TripDetail.InsuranceActive,
-                    t.TripDetail != null ? t.TripDetail.FuelUsed : null,
-                    t.TripDetail != null ? t.TripDetail.Refueled : null),
-                new List<TripChargeBreakdownDto>(),
-                new List<TripEventDto>(),
-                t.Bill != null
-                    ? t.Bill.Payments
-                        .OrderByDescending(p => p.Date)
-                        .Select(p => new TripPaymentDto(
-                            p.Id,
-                            "Списание",
-                            p.Date,
-                            p.Sum,
-                            p.Method))
-                        .ToList()
-                    : new List<TripPaymentDto>()
-            ))
-            .FirstOrDefaultAsync(cancellationToken);
-    }
-
     public async Task<(List<TripHistoryDto> Items, int TotalCount)> GetHistoryByClientId(int clientId, int page,
         int limit, CancellationToken cancellationToken)
     {
