@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
-    x:Class="CarsharingMobile.Views.TripHistoryPage"
+    x:Class="CarsharingMobile.Views.BillsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
-    x:DataType="vm:TripHistoryViewModel"
+    x:DataType="vm:BillsViewModel"
     BackgroundColor="{StaticResource BgLight}"
     Shell.NavBarIsVisible="False">
 
@@ -27,7 +27,7 @@
                 FontAttributes="Bold"
                 FontSize="20"
                 HorizontalOptions="Center"
-                Text="Мои поездки"
+                Text="Мои счета"
                 TextColor="{StaticResource TextDark}"
                 VerticalOptions="Center" />
         </Grid>
@@ -51,12 +51,12 @@
                                         FontAttributes="Bold"
                                         FontSize="22"
                                         HorizontalTextAlignment="Center"
-                                        Text="{Binding TripsCountText}"
+                                        Text="{Binding UnpaidCountText}"
                                         TextColor="{StaticResource TextDark}" />
                                     <Label
                                         FontSize="12"
                                         HorizontalTextAlignment="Center"
-                                        Text="Поездки"
+                                        Text="Не оплачено"
                                         TextColor="{StaticResource TextGray}" />
                                 </VerticalStackLayout>
 
@@ -71,12 +71,12 @@
                                         FontAttributes="Bold"
                                         FontSize="22"
                                         HorizontalTextAlignment="Center"
-                                        Text="{Binding TotalDistanceText}"
+                                        Text="{Binding PaidCountText}"
                                         TextColor="{StaticResource TextDark}" />
                                     <Label
                                         FontSize="12"
                                         HorizontalTextAlignment="Center"
-                                        Text="Пробег"
+                                        Text="Оплачено"
                                         TextColor="{StaticResource TextGray}" />
                                 </VerticalStackLayout>
 
@@ -91,12 +91,12 @@
                                         FontAttributes="Bold"
                                         FontSize="22"
                                         HorizontalTextAlignment="Center"
-                                        Text="{Binding TotalDurationText}"
+                                        Text="{Binding TotalOutstandingText}"
                                         TextColor="{StaticResource TextDark}" />
                                     <Label
                                         FontSize="12"
                                         HorizontalTextAlignment="Center"
-                                        Text="Длительность"
+                                        Text="К оплате"
                                         TextColor="{StaticResource TextGray}" />
                                 </VerticalStackLayout>
                             </Grid>
@@ -116,8 +116,7 @@
                         </Border>
 
                         <CollectionView
-                            x:Name="TripsCollectionView"
-                            ItemsSource="{Binding Trips}"
+                            ItemsSource="{Binding Bills}"
                             RemainingItemsThreshold="2"
                             RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
                             SelectionMode="None">
@@ -130,18 +129,18 @@
                                         FontAttributes="Bold"
                                         FontSize="18"
                                         HorizontalTextAlignment="Center"
-                                        Text="Поездок пока нет"
+                                        Text="Счетов пока нет"
                                         TextColor="{StaticResource TextDark}" />
                                     <Label
                                         FontSize="14"
                                         HorizontalTextAlignment="Center"
-                                        Text="Когда вы завершите первую поездку, история появится здесь."
+                                        Text="После завершения поездок счета появятся здесь."
                                         TextColor="{StaticResource TextGray}" />
                                 </VerticalStackLayout>
                             </CollectionView.EmptyView>
 
                             <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="vm:TripHistoryListItem">
+                                <DataTemplate x:DataType="vm:BillListItem">
                                     <Border
                                         Margin="0,0,0,12"
                                         Padding="16"
@@ -155,86 +154,77 @@
                                                 CommandParameter="{Binding .}" />
                                         </Border.GestureRecognizers>
 
-                                        <Grid ColumnDefinitions="64,*,Auto" ColumnSpacing="12">
-                                            <Border
-                                                Grid.Column="0"
-                                                BackgroundColor="#EDF6E8"
-                                                HeightRequest="64"
-                                                StrokeThickness="0"
-                                                StrokeShape="RoundRectangle 14"
-                                                VerticalOptions="Start"
-                                                WidthRequest="64">
-                                                <Grid>
-                                                    <VerticalStackLayout
-                                                        HorizontalOptions="Center"
-                                                        Spacing="0"
-                                                        VerticalOptions="Center">
+                                        <VerticalStackLayout Spacing="12">
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                                <VerticalStackLayout Spacing="4">
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="16"
+                                                        Text="{Binding TariffText}"
+                                                        TextColor="{StaticResource TextDark}" />
+                                                    <Label
+                                                        FontSize="12"
+                                                        Text="{Binding IssueDateText, StringFormat='Выставлен: {0}'}"
+                                                        TextColor="{StaticResource TextGray}" />
+                                                </VerticalStackLayout>
+
+                                                <Border
+                                                    Padding="10,4"
+                                                    BackgroundColor="{Binding AccentColor}"
+                                                    HorizontalOptions="End"
+                                                    StrokeShape="RoundRectangle 12"
+                                                    StrokeThickness="0"
+                                                    VerticalOptions="Start">
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        Text="{Binding StatusText}"
+                                                        TextColor="{Binding StatusColor}" />
+                                                </Border>
+                                            </Grid>
+
+                                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                                <Border
+                                                    Padding="12"
+                                                    BackgroundColor="#F7F9FC"
+                                                    StrokeShape="RoundRectangle 14"
+                                                    StrokeThickness="0">
+                                                    <VerticalStackLayout Spacing="4">
                                                         <Label
-                                                            FontFamily="FluentUI"
-                                                            FontSize="18"
-                                                            HorizontalTextAlignment="Center"
-                                                            Text="{Binding CalendarGlyph}"
-                                                            TextColor="#76C54A" />
+                                                            FontSize="12"
+                                                            Text="Сумма счета"
+                                                            TextColor="{StaticResource TextGray}" />
                                                         <Label
                                                             FontAttributes="Bold"
                                                             FontSize="15"
-                                                            HorizontalTextAlignment="Center"
-                                                            Text="{Binding CalendarDayText}"
-                                                            TextColor="{StaticResource TextDark}" />
-                                                        <Label
-                                                            FontSize="10"
-                                                            HorizontalTextAlignment="Center"
-                                                            Text="{Binding CalendarMonthText}"
-                                                            TextColor="{StaticResource TextGray}" />
+                                                            Text="{Binding AmountText}" />
                                                     </VerticalStackLayout>
-                                                </Grid>
-                                            </Border>
+                                                </Border>
 
-                                            <VerticalStackLayout Grid.Column="1" Spacing="4">
-                                                <Label
-                                                    FontAttributes="Bold"
-                                                    FontSize="16"
-                                                    LineBreakMode="TailTruncation"
-                                                    Text="{Binding CarTitle}"
-                                                    TextColor="{StaticResource TextDark}" />
-                                                <Label
-                                                    FontSize="12"
-                                                    LineBreakMode="TailTruncation"
-                                                    Text="{Binding CarSubtitle}"
-                                                    TextColor="{StaticResource TextGray}" />
-                                                <Label
-                                                    FontSize="12"
-                                                    LineBreakMode="WordWrap"
-                                                    Text="{Binding PeriodText}"
-                                                    TextColor="{StaticResource TextGray}" />
-                                                <Label
-                                                    FontSize="12"
-                                                    Text="{Binding StatusText}"
-                                                    TextColor="{StaticResource Primary}" />
-                                            </VerticalStackLayout>
+                                                <Border
+                                                    Padding="12"
+                                                    BackgroundColor="#F7F9FC"
+                                                    StrokeShape="RoundRectangle 14"
+                                                    StrokeThickness="0">
+                                                    <VerticalStackLayout Spacing="4">
+                                                        <Label
+                                                            FontSize="12"
+                                                            Text="Остаток"
+                                                            TextColor="{StaticResource TextGray}" />
+                                                        <Label
+                                                            FontAttributes="Bold"
+                                                            FontSize="15"
+                                                            Text="{Binding RemainingText}"
+                                                            TextColor="{Binding StatusColor}" />
+                                                    </VerticalStackLayout>
+                                                </Border>
+                                            </Grid>
 
-                                            <VerticalStackLayout
-                                                Grid.Column="2"
-                                                HorizontalOptions="End"
-                                                Spacing="4">
-                                                <Label
-                                                    FontAttributes="Bold"
-                                                    FontSize="16"
-                                                    HorizontalTextAlignment="End"
-                                                    Text="{Binding TotalAmountText}"
-                                                    TextColor="{StaticResource TextDark}" />
-                                                <Label
-                                                    FontSize="12"
-                                                    HorizontalTextAlignment="End"
-                                                    Text="{Binding DurationText}"
-                                                    TextColor="{StaticResource TextGray}" />
-                                                <Label
-                                                    FontSize="12"
-                                                    HorizontalTextAlignment="End"
-                                                    Text="{Binding DistanceText}"
-                                                    TextColor="{StaticResource TextGray}" />
-                                            </VerticalStackLayout>
-                                        </Grid>
+                                            <Button
+                                                Command="{Binding OpenCommand}"
+                                                CommandParameter="{Binding .}"
+                                                Text="{Binding ActionText}" />
+                                        </VerticalStackLayout>
                                     </Border>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>

@@ -2,7 +2,7 @@
 
 public enum InsuranceStatusEnum
 {
-    Active = 23, // Активна
-    Expired = 24, // Истекла
-    Annulled = 25 // Аннулирована
+    Active = 1, 
+    Expired = 2, 
+    Annulled = 3
 }

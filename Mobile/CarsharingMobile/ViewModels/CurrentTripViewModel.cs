@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Devices.Sensors;
 using Shared.Contracts.Trip;
+using CarsharingMobile.Views;
 
 namespace CarsharingMobile.ViewModels;
 
@@ -115,6 +116,18 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
             TrackingStatusText = "Поездка завершена";
             await Shell.Current.DisplayAlert("Поездка завершена",
                 $"{result.Message}\nСумма: {result.TotalAmount.GetValueOrDefault():0.00} BYN", "ОК");
+
+            if (result.BillId > 0)
+            {
+                await Shell.Current.GoToAsync(nameof(BillPaymentPage),
+                    new Dictionary<string, object>
+                    {
+                        { "BillId", result.BillId },
+                        { "ReturnRoute", "//MainPage" }
+                    });
+                return;
+            }
+
             await Shell.Current.GoToAsync("//MainPage");
         }
         finally

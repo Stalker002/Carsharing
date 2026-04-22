@@ -1,5 +1,6 @@
-﻿using Shared.Contracts.Bookings;
+using System.Diagnostics;
 using System.Net.Http.Json;
+using Shared.Contracts.Bookings;
 
 namespace CarsharingMobile.Services;
 
@@ -7,16 +8,24 @@ public class BookingService(HttpClient httpClient)
 {
     public async Task<(int? BookingId, string? Error)> CreateBookingAsync(BookingsRequest request)
     {
-        var response = await httpClient.PostAsJsonAsync("Bookings", request);
-
-        if (response.IsSuccessStatusCode)
+        try
         {
-            var id = await response.Content.ReadFromJsonAsync<int>();
-            return (id, null);
-        }
+            var response = await httpClient.PostAsJsonAsync("Bookings", request);
 
-        var error = await response.Content.ReadAsStringAsync();
-        return (null, error);
+            if (response.IsSuccessStatusCode)
+            {
+                var id = await response.Content.ReadFromJsonAsync<int>();
+                return (id, null);
+            }
+
+            var error = await response.Content.ReadAsStringAsync();
+            return (null, error);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+            return (null, "Ошибка подключения к серверу");
+        }
     }
 
     public async Task<BookingsResponse?> GetMyActiveBookingAsync()

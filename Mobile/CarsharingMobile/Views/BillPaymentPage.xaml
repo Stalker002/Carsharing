@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CarsharingMobile.Views.BillPaymentPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:payments="clr-namespace:Shared.Contracts.Payments;assembly=Shared"
+    xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
+    x:DataType="vm:BillPaymentViewModel"
+    BackgroundColor="{StaticResource BgLight}"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid
+            Grid.Row="0"
+            Padding="15,20"
+            ColumnDefinitions="Auto,*"
+            HeightRequest="80">
+            <ImageButton
+                BackgroundColor="Transparent"
+                Command="{Binding GoBackCommand}"
+                HeightRequest="24"
+                HorizontalOptions="Start"
+                Source="back_icon_dark.png"
+                WidthRequest="24" />
+            <Label
+                Grid.Column="1"
+                Margin="-24,0,0,0"
+                FontAttributes="Bold"
+                FontSize="20"
+                HorizontalOptions="Center"
+                Text="{Binding BillTitle}"
+                TextColor="{StaticResource TextDark}"
+                VerticalOptions="Center" />
+        </Grid>
+
+        <RefreshView
+            Grid.Row="1"
+            Command="{Binding RefreshCommand}"
+            IsRefreshing="{Binding IsBusy}">
+            <ScrollView>
+                <VerticalStackLayout Padding="16,0,16,24" Spacing="16">
+                    <Border
+                        Padding="18"
+                        BackgroundColor="{StaticResource Surface}"
+                        Stroke="{StaticResource BorderLight}"
+                        StrokeShape="RoundRectangle 18"
+                        StrokeThickness="1">
+                        <VerticalStackLayout Spacing="14">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                Text="Итог поездки"
+                                TextColor="{StaticResource TextDark}" />
+
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="10">
+                                <Label Grid.Row="0" Text="Статус" TextColor="{StaticResource TextGray}" />
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    FontAttributes="Bold"
+                                    Text="{Binding StatusText}" />
+
+                                <Label Grid.Row="1" Text="Сумма счета" TextColor="{StaticResource TextGray}" />
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    FontAttributes="Bold"
+                                    Text="{Binding AmountText}" />
+
+                                <Label Grid.Row="2" Text="К оплате" TextColor="{StaticResource TextGray}" />
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    FontAttributes="Bold"
+                                    FontSize="18"
+                                    Text="{Binding RemainingText}"
+                                    TextColor="{StaticResource Primary}" />
+                            </Grid>
+
+                            <Border
+                                Padding="12"
+                                BackgroundColor="#EEF4FF"
+                                StrokeShape="RoundRectangle 14"
+                                StrokeThickness="0">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="14"
+                                        Text="Детали поездки" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="{Binding TripInfoText}"
+                                        TextColor="{StaticResource TextGray}" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="{Binding Bill.PromocodeName, StringFormat='Промокод: {0}', TargetNullValue='Промокод не применен'}"
+                                        TextColor="{StaticResource TextGray}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border
+                        Padding="18"
+                        BackgroundColor="{StaticResource Surface}"
+                        Stroke="{StaticResource BorderLight}"
+                        StrokeShape="RoundRectangle 18"
+                        StrokeThickness="1">
+                        <VerticalStackLayout Spacing="12">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                Text="Промокод" />
+
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                <Entry
+                                    Grid.Column="0"
+                                    Placeholder="Введите промокод"
+                                    Text="{Binding PromoCode}" />
+                                <Button
+                                    Grid.Column="1"
+                                    Command="{Binding ApplyPromocodeCommand}"
+                                    FontSize="14"
+                                    Text="Применить" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border
+                        Padding="18"
+                        BackgroundColor="{StaticResource Surface}"
+                        Stroke="{StaticResource BorderLight}"
+                        StrokeShape="RoundRectangle 18"
+                        StrokeThickness="1">
+                        <VerticalStackLayout Spacing="12">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                Text="Оплата" />
+
+                            <Picker
+                                Title="Способ оплаты"
+                                ItemsSource="{Binding AvailablePaymentMethods}"
+                                SelectedItem="{Binding SelectedPaymentMethod}" />
+
+                            <Label
+                                FontSize="13"
+                                Text="{Binding RemainingText, StringFormat='Будет списано: {0}'}"
+                                TextColor="{StaticResource TextGray}" />
+
+                            <Button
+                                Command="{Binding PayCommand}"
+                                IsEnabled="{Binding CanPay}"
+                                Text="ОПЛАТИТЬ СЧЕТ" />
+
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="14"
+                                IsVisible="{Binding IsFullyPaid}"
+                                Text="Счет полностью оплачен"
+                                TextColor="#2F855A" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border
+                        Padding="18"
+                        BackgroundColor="{StaticResource Surface}"
+                        Stroke="{StaticResource BorderLight}"
+                        StrokeShape="RoundRectangle 18"
+                        StrokeThickness="1">
+                        <VerticalStackLayout Spacing="12">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                Text="Платежи" />
+
+                            <VerticalStackLayout IsVisible="{Binding HasPayments}" Spacing="10">
+                                <BindableLayout.ItemsSource>
+                                    <Binding Path="Payments" />
+                                </BindableLayout.ItemsSource>
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="payments:PaymentsResponse">
+                                        <Border
+                                            Padding="12"
+                                            BackgroundColor="#F7F9FC"
+                                            StrokeShape="RoundRectangle 14"
+                                            StrokeThickness="0">
+                                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="2">
+                                                <Label
+                                                    Grid.Row="0"
+                                                    FontAttributes="Bold"
+                                                    Text="{Binding Method}" />
+                                                <Label
+                                                    Grid.Row="0"
+                                                    Grid.Column="1"
+                                                    FontAttributes="Bold"
+                                                    Text="{Binding Sum, StringFormat='{0:0.00} BYN'}" />
+                                                <Label
+                                                    Grid.Row="1"
+                                                    FontSize="12"
+                                                    Grid.ColumnSpan="2"
+                                                    Text="{Binding Date, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
+                                                    TextColor="{StaticResource TextGray}" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+
+                            <Label
+                                FontSize="13"
+                                IsVisible="{Binding HasPayments, Converter={StaticResource InverseBoolConverter}}"
+                                Text="Платежей пока нет."
+                                TextColor="{StaticResource TextGray}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border
+                        Padding="14"
+                        BackgroundColor="#FFF3F3"
+                        IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                        Stroke="#F1C6C6"
+                        StrokeShape="RoundRectangle 12"
+                        StrokeThickness="1">
+                        <Label
+                            FontSize="14"
+                            Text="{Binding ErrorMessage}"
+                            TextColor="#A33A3A" />
+                    </Border>
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+
+        <Grid BackgroundColor="#99000000" IsVisible="{Binding IsPaying}">
+            <VerticalStackLayout
+                HorizontalOptions="Center"
+                Spacing="15"
+                VerticalOptions="Center">
+                <ActivityIndicator
+                    IsRunning="{Binding IsPaying}"
+                    IsVisible="{Binding IsPaying}"
+                    Color="White" />
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Проводим оплату..."
+                    TextColor="White" />
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

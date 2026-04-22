@@ -70,7 +70,7 @@ public class CarsController : ControllerBase
     {
         if (ids == null || ids.Count == 0)
         {
-            var totalCount = await _carsService.GetCount(cancellationToken);
+            var totalCount = await _carsService.GetAvailableCount(cancellationToken);
             var cars = await _carsService.GetPagedCarsByClients(page, limit, cancellationToken);
 
             var response = cars
@@ -85,7 +85,7 @@ public class CarsController : ControllerBase
         }
         else
         {
-            var totalCount = await _carsService.GetCountByCategory(ids, cancellationToken);
+            var totalCount = await _carsService.GetAvailableCountByCategory(ids, cancellationToken);
             var cars = await _carsService.GetCarWithMinInfoByCategoryIds(ids, page, limit, cancellationToken);
 
             var response = cars.Select(c =>

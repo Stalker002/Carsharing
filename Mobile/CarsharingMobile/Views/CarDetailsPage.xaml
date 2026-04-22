@@ -129,6 +129,30 @@
                         <VerticalStackLayout Grid.Row="1" Grid.Column="1">
                             <Label
                                 FontSize="12"
+                                Text="Километр"
+                                TextColor="#999" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="{Binding Car.PricePerKm, StringFormat='{0:0.00} BYN'}"
+                                TextColor="#3296F8" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="0">
+                            <Label
+                                FontSize="12"
+                                Text="Сутки"
+                                TextColor="#999" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="{Binding Car.PricePerDay, StringFormat='{0:0.00} BYN'}"
+                                TextColor="#3296F8" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="1">
+                            <Label
+                                FontSize="12"
                                 Text="Категория"
                                 TextColor="#999" />
                             <Label
@@ -139,6 +163,128 @@
                         </VerticalStackLayout>
                     </Grid>
                 </Border>
+
+                <VerticalStackLayout Spacing="10">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        Text="Выберите тариф"
+                        TextColor="#112347" />
+
+                    <Grid
+                        ColumnDefinitions="*,*,*"
+                        ColumnSpacing="10">
+                        <Border
+                            Grid.Column="0"
+                            Padding="12"
+                            BackgroundColor="White"
+                            Stroke="#D9DDE5"
+                            StrokeShape="RoundRectangle 12"
+                            StrokeThickness="1">
+                            <Border.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsPerMinuteTariffSelected}"
+                                    TargetType="Border"
+                                    Value="True">
+                                    <Setter Property="BackgroundColor" Value="#EAF4FF" />
+                                    <Setter Property="Stroke" Value="#3296F8" />
+                                    <Setter Property="StrokeThickness" Value="2" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding SelectTariffCommand}"
+                                    CommandParameter="per_minute" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="4">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="14"
+                                    Text="Мин"
+                                    TextColor="#112347" />
+                                <Label
+                                    FontSize="12"
+                                    Text="{Binding Car.PricePerMinute, StringFormat='{0:0.00} BYN/мин'}"
+                                    TextColor="#6E6E6E" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border
+                            Grid.Column="1"
+                            Padding="12"
+                            BackgroundColor="White"
+                            Stroke="#D9DDE5"
+                            StrokeShape="RoundRectangle 12"
+                            StrokeThickness="1">
+                            <Border.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsPerKmTariffSelected}"
+                                    TargetType="Border"
+                                    Value="True">
+                                    <Setter Property="BackgroundColor" Value="#EAF4FF" />
+                                    <Setter Property="Stroke" Value="#3296F8" />
+                                    <Setter Property="StrokeThickness" Value="2" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding SelectTariffCommand}"
+                                    CommandParameter="per_km" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="4">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="14"
+                                    Text="Км"
+                                    TextColor="#112347" />
+                                <Label
+                                    FontSize="12"
+                                    Text="{Binding Car.PricePerKm, StringFormat='{0:0.00} BYN/км'}"
+                                    TextColor="#6E6E6E" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border
+                            Grid.Column="2"
+                            Padding="12"
+                            BackgroundColor="White"
+                            Stroke="#D9DDE5"
+                            StrokeShape="RoundRectangle 12"
+                            StrokeThickness="1">
+                            <Border.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsPerDayTariffSelected}"
+                                    TargetType="Border"
+                                    Value="True">
+                                    <Setter Property="BackgroundColor" Value="#EAF4FF" />
+                                    <Setter Property="Stroke" Value="#3296F8" />
+                                    <Setter Property="StrokeThickness" Value="2" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding SelectTariffCommand}"
+                                    CommandParameter="per_day" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="4">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="14"
+                                    Text="Сутки"
+                                    TextColor="#112347" />
+                                <Label
+                                    FontSize="12"
+                                    Text="{Binding Car.PricePerDay, StringFormat='{0:0.00} BYN/сутки'}"
+                                    TextColor="#6E6E6E" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <Label
+                        FontSize="13"
+                        Text="{Binding SelectedTariffTitle, StringFormat='Будет использован: {0}'}"
+                        TextColor="#3296F8" />
+                </VerticalStackLayout>
 
                 <Grid
                     Margin="0,10"

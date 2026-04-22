@@ -18,7 +18,9 @@ public interface ICarRepository
         CancellationToken cancellationToken);
 
     Task<int> GetCount(CancellationToken cancellationToken);
+    Task<int> GetAvailableCount(CancellationToken cancellationToken);
     Task<int> GetCountByCategory(List<int> categoryIds, CancellationToken cancellationToken);
+    Task<int> GetAvailableCountByCategory(List<int> categoryIds, CancellationToken cancellationToken);
     Task<List<Car>> GetPaged(int page, int limit, CancellationToken cancellationToken);
 
     Task<List<Car>> GetPagedByCategoryId(List<int> categoryIds, int page, int limit,

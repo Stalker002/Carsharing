@@ -102,8 +102,61 @@ public class TripServiceTests
 
         await _tripService.UpdateTripLocationAsync(userId, tripId, request, CancellationToken.None);
 
-        _carsServiceMock.Verify(x => x.UpdateCarLocationAsync(
-            carId,
+        _tripRepoMock.Verify(x => x.UpdateTripLocationAsync(
+            tripId,
+            request.Location,
+            request.CarLatitude,
+            request.CarLongitude,
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateTripLocationAsync_WaitingStartTrip_TransitionsThroughRepository()
+    {
+        const int userId = 15;
+        const int clientId = 25;
+        const int tripId = 35;
+        const int bookingId = 45;
+
+        var (trip, tripError) = Trip.Create(
+            tripId,
+            bookingId,
+            (int)TripStatusEnum.WaitingStart,
+            "per_minute",
+            DateTime.UtcNow.AddMinutes(-1),
+            null,
+            null,
+            null);
+        Assert.True(string.IsNullOrEmpty(tripError));
+
+        var (client, clientError) = Client.Create(
+            clientId,
+            userId,
+            "Start",
+            "Client",
+            "+375291112255",
+            "start.client@test.com");
+        Assert.True(string.IsNullOrEmpty(clientError));
+
+        _clientRepoMock.Setup(x => x.GetClientByUserId(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([client]);
+        _tripRepoMock.Setup(x => x.GetById(tripId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([trip]);
+        _bookingRepoMock.Setup(x => x.GetById(bookingId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([Booking.Create(
+                bookingId,
+                (int)BookingStatusEnum.Active,
+                55,
+                clientId,
+                DateTime.UtcNow.AddMinutes(-20),
+                DateTime.UtcNow.AddHours(1)).booking]);
+
+        var request = new UpdateTripLocationRequest("Minsk, Start Point", 53.91, 27.55);
+
+        await _tripService.UpdateTripLocationAsync(userId, tripId, request, CancellationToken.None);
+
+        _tripRepoMock.Verify(x => x.UpdateTripLocationAsync(
+            tripId,
             request.Location,
             request.CarLatitude,
             request.CarLongitude,
@@ -158,7 +211,7 @@ public class TripServiceTests
             new UpdateTripLocationRequest("Minsk", 53.9, 27.56),
             CancellationToken.None));
 
-        _carsServiceMock.Verify(x => x.UpdateCarLocationAsync(
+        _tripRepoMock.Verify(x => x.UpdateTripLocationAsync(
             It.IsAny<int>(),
             It.IsAny<string>(),
             It.IsAny<double>(),

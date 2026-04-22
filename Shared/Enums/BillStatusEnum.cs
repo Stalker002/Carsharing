@@ -2,8 +2,8 @@
 
 public enum BillStatusEnum
 {
-    Unpaid = 13,
-    PartiallyPaid = 14,
-    Paid = 15,
-    Cancelled = 16
+    Unpaid = 1,
+    PartiallyPaid = 2,
+    Paid = 3,
+    Cancelled = 4
 }

@@ -64,6 +64,13 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
         return await context.Car.CountAsync(cancellationToken);
     }
 
+    public async Task<int> GetAvailableCount(CancellationToken cancellationToken)
+    {
+        return await context.Car
+            .Where(c => c.StatusId == (int)CarStatusEnum.Available)
+            .CountAsync(cancellationToken);
+    }
+
     public async Task<List<Car>> GetById(int id, CancellationToken cancellationToken)
     {
         var carEntities = await context.Car
@@ -146,6 +153,13 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
             .CountAsync(cancellationToken);
     }
 
+    public async Task<int> GetAvailableCountByCategory(List<int> categoryIds, CancellationToken cancellationToken)
+    {
+        return await context.Car
+            .Where(c => categoryIds.Contains(c.CategoryId) && c.StatusId == (int)CarStatusEnum.Available)
+            .CountAsync(cancellationToken);
+    }
+
     public async Task<List<CarWithInfoDto>> GetCarWithInfo(int id, CancellationToken cancellationToken)
     {
         return await context.Car
@@ -211,6 +225,7 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
     {
         return await context.Car
             .AsNoTracking()
+            .Where(c => c.StatusId == (int)CarStatusEnum.Available)
             .OrderBy(c => c.Id)
             .Skip((page - 1) * limit)
             .Take(limit)

@@ -121,11 +121,12 @@ public class TripService(
         if (booking.ClientId != client.Id)
             throw new UnauthorizedAccessException("Trip does not belong to current user");
 
-        if (trip.EndTime != null || trip.StatusId != (int)TripStatusEnum.EnRoute)
-            throw new ArgumentException("Only active trips in en route status can update car location");
+        if (trip.EndTime != null ||
+            (trip.StatusId != (int)TripStatusEnum.WaitingStart && trip.StatusId != (int)TripStatusEnum.EnRoute))
+            throw new ArgumentException("Only active trips in waiting start or en route status can update car location");
 
-        await carsService.UpdateCarLocationAsync(
-            booking.CarId,
+        await tripRepository.UpdateTripLocationAsync(
+            tripId,
             request.Location,
             request.CarLatitude,
             request.CarLongitude,
@@ -169,7 +170,9 @@ public class TripService(
             var (trip, error) = Trip.Create(
                 0,
                 request.BookingId,
-                (int)TripStatusEnum.WaitingStart,
+                request.StatusId is (int)TripStatusEnum.WaitingStart or (int)TripStatusEnum.EnRoute
+                    ? request.StatusId
+                    : (int)TripStatusEnum.WaitingStart,
                 request.TariffType,
                 request.StartTime,
                 request.EndTime,

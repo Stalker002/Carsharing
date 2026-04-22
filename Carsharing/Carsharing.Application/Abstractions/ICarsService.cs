@@ -13,6 +13,7 @@ public interface ICarsService
     Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit, CancellationToken cancellationToken);
 
     Task<int> GetCount(CancellationToken cancellationToken);
+    Task<int> GetAvailableCount(CancellationToken cancellationToken);
 
     Task<List<Car>> GetCarById(int id, CancellationToken cancellationToken);
 
@@ -24,6 +25,7 @@ public interface ICarsService
         CancellationToken cancellationToken);
 
     Task<int> GetCountByCategory(List<int> categoryIds, CancellationToken cancellationToken);
+    Task<int> GetAvailableCountByCategory(List<int> categoryIds, CancellationToken cancellationToken);
 
     Task<int> CreateCar(Car car, CancellationToken cancellationToken);
 
