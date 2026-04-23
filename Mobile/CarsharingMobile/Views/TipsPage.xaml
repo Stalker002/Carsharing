@@ -5,14 +5,14 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="Подсказки"
-    BackgroundColor="#F4F5F7"
+    BackgroundColor="{StaticResource BgLight}"
     Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto,*">
         <Grid
             Grid.Row="0"
             Padding="15,20"
-            ColumnDefinitions="Auto, *"
+            ColumnDefinitions="Auto,*"
             HeightRequest="80">
             <ImageButton
                 BackgroundColor="Transparent"
@@ -28,67 +28,306 @@
                 FontSize="20"
                 HorizontalOptions="Center"
                 Text="Подсказки"
-                TextColor="#112347"
+                TextColor="{StaticResource TextDark}"
                 VerticalOptions="Center" />
         </Grid>
 
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="20" Spacing="15">
+            <VerticalStackLayout Padding="16,0,16,24" Spacing="16">
 
                 <Border
-                    Padding="20"
-                    BackgroundColor="White"
-                    Stroke="#E1E1E1"
-                    StrokeShape="RoundRectangle 12"
+                    Padding="18"
+                    BackgroundColor="#EEF4FF"
+                    Stroke="#D6E4FF"
+                    StrokeShape="RoundRectangle 18"
                     StrokeThickness="1">
-                    <VerticalStackLayout Spacing="5">
+                    <VerticalStackLayout Spacing="8">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="20"
+                            Text="Как пользоваться каршерингом без сюрпризов"
+                            TextColor="{StaticResource TextDark}" />
+                        <Label
+                            FontSize="14"
+                            LineBreakMode="WordWrap"
+                            Text="Собрали короткие ответы на частые вопросы: что проверить перед стартом, где завершать поездку, как проходит оплата и что делать в экстренной ситуации."
+                            TextColor="{StaticResource TextGray}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Border
+                        Grid.Column="0"
+                        Padding="14"
+                        BackgroundColor="{StaticResource Surface}"
+                        Stroke="{StaticResource BorderLight}"
+                        StrokeShape="RoundRectangle 16"
+                        StrokeThickness="1">
+                        <VerticalStackLayout Spacing="4">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="15"
+                                Text="До старта"
+                                TextColor="{StaticResource TextDark}" />
+                            <Label
+                                FontSize="13"
+                                Text="Осмотр, фото, документы"
+                                TextColor="{StaticResource TextGray}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border
+                        Grid.Column="1"
+                        Padding="14"
+                        BackgroundColor="{StaticResource Surface}"
+                        Stroke="{StaticResource BorderLight}"
+                        StrokeShape="RoundRectangle 16"
+                        StrokeThickness="1">
+                        <VerticalStackLayout Spacing="4">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="15"
+                                Text="Во время"
+                                TextColor="{StaticResource TextDark}" />
+                            <Label
+                                FontSize="13"
+                                Text="Поездка, парковка, заправка"
+                                TextColor="{StaticResource TextGray}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <Border
+                    Padding="18"
+                    BackgroundColor="{StaticResource Surface}"
+                    Stroke="{StaticResource BorderLight}"
+                    StrokeShape="RoundRectangle 18"
+                    StrokeThickness="1">
+                    <VerticalStackLayout Spacing="12">
                         <Label
                             FontAttributes="Bold"
                             FontSize="18"
-                            Text="Как начать аренду?"
-                            TextColor="#1E1E1E" />
+                            Text="Перед началом аренды"
+                            TextColor="{StaticResource TextDark}" />
+
                         <Label
                             FontSize="14"
-                            Text="Подойдите к автомобилю, осмотрите его на наличие повреждений и нажмите кнопку 'Открыть' в приложении. Ключи и документы уже в салоне."
-                            TextColor="#6E6E6E" />
+                            Text="1. Найдите автомобиль на карте и подойдите к нему."
+                            TextColor="{StaticResource TextDark}" />
+                        <Label
+                            FontSize="14"
+                            Text="2. Осмотрите кузов, стёкла, колёса и салон. Если есть повреждения или грязный салон, зафиксируйте это до начала поездки."
+                            TextColor="{StaticResource TextDark}" />
+                        <Label
+                            FontSize="14"
+                            Text="3. Проверьте документы, уровень топлива и наличие нужных вещей в салоне."
+                            TextColor="{StaticResource TextDark}" />
+                        <Label
+                            FontSize="14"
+                            Text="4. После проверки открывайте машину из приложения и начинайте поездку."
+                            TextColor="{StaticResource TextDark}" />
                     </VerticalStackLayout>
                 </Border>
 
                 <Border
-                    Padding="20"
-                    BackgroundColor="White"
-                    Stroke="#E1E1E1"
-                    StrokeShape="RoundRectangle 12"
+                    Padding="18"
+                    BackgroundColor="{StaticResource Surface}"
+                    Stroke="{StaticResource BorderLight}"
+                    StrokeShape="RoundRectangle 18"
                     StrokeThickness="1">
-                    <VerticalStackLayout Spacing="5">
+                    <VerticalStackLayout Spacing="12">
                         <Label
                             FontAttributes="Bold"
                             FontSize="18"
-                            Text="Что делать при ДТП?"
-                            TextColor="#1E1E1E" />
-                        <Label
-                            FontSize="14"
-                            Text="Сразу же вызовите ГАИ и свяжитесь с нашей службой поддержки. Не покидайте место происшествия!"
-                            TextColor="#6E6E6E" />
+                            Text="Частые ситуации"
+                            TextColor="{StaticResource TextDark}" />
+
+                        <Border
+                            Padding="14"
+                            BackgroundColor="#F9FAFB"
+                            StrokeShape="RoundRectangle 14"
+                            StrokeThickness="0">
+                            <VerticalStackLayout Spacing="6">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    Text="Как начать аренду?"
+                                    TextColor="{StaticResource TextDark}" />
+                                <Label
+                                    FontSize="14"
+                                    Text="Подойдите к автомобилю, убедитесь, что всё в порядке, и откройте его через приложение. Ключ и документы уже находятся в салоне."
+                                    TextColor="{StaticResource TextGray}" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border
+                            Padding="14"
+                            BackgroundColor="#F9FAFB"
+                            StrokeShape="RoundRectangle 14"
+                            StrokeThickness="0">
+                            <VerticalStackLayout Spacing="6">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    Text="Что делать, если машина не открывается?"
+                                    TextColor="{StaticResource TextDark}" />
+                                <Label
+                                    FontSize="14"
+                                    Text="Проверьте интернет, Bluetooth и геолокацию на телефоне. Если проблема остаётся, попробуйте ещё раз через несколько секунд и свяжитесь с поддержкой."
+                                    TextColor="{StaticResource TextGray}" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border
+                            Padding="14"
+                            BackgroundColor="#F9FAFB"
+                            StrokeShape="RoundRectangle 14"
+                            StrokeThickness="0">
+                            <VerticalStackLayout Spacing="6">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    Text="Можно ли делать промежуточные остановки?"
+                                    TextColor="{StaticResource TextDark}" />
+                                <Label
+                                    FontSize="14"
+                                    Text="Да. Во время поездки можно останавливаться и парковаться по правилам ПДД. Главное — не завершать аренду вне разрешённой зоны."
+                                    TextColor="{StaticResource TextGray}" />
+                            </VerticalStackLayout>
+                        </Border>
                     </VerticalStackLayout>
                 </Border>
 
                 <Border
-                    Padding="20"
-                    BackgroundColor="White"
-                    Stroke="#E1E1E1"
-                    StrokeShape="RoundRectangle 12"
+                    Padding="18"
+                    BackgroundColor="{StaticResource Surface}"
+                    Stroke="{StaticResource BorderLight}"
+                    StrokeShape="RoundRectangle 18"
                     StrokeThickness="1">
-                    <VerticalStackLayout Spacing="5">
+                    <VerticalStackLayout Spacing="12">
                         <Label
                             FontAttributes="Bold"
                             FontSize="18"
-                            Text="Как завершить поездку?"
-                            TextColor="#1E1E1E" />
+                            Text="Завершение поездки"
+                            TextColor="{StaticResource TextDark}" />
                         <Label
                             FontSize="14"
-                            Text="Припаркуйтесь по правилам ПДД внутри фиолетовой зоны на карте. Выключите двигатель, закройте двери и нажмите 'Завершить' в приложении."
-                            TextColor="#6E6E6E" />
+                            Text="Завершайте аренду только в разрешённой зоне и в месте, где автомобиль можно оставить без нарушения ПДД."
+                            TextColor="{StaticResource TextGray}" />
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="•"
+                                TextColor="{StaticResource Primary}" />
+                            <Label
+                                Grid.Column="1"
+                                FontSize="14"
+                                Text="Припаркуйтесь ровно, выключите двигатель и заберите личные вещи."
+                                TextColor="{StaticResource TextDark}" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="•"
+                                TextColor="{StaticResource Primary}" />
+                            <Label
+                                Grid.Column="1"
+                                FontSize="14"
+                                Text="Проверьте, что фары выключены, окна закрыты, двери заперты."
+                                TextColor="{StaticResource TextDark}" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="•"
+                                TextColor="{StaticResource Primary}" />
+                            <Label
+                                Grid.Column="1"
+                                FontSize="14"
+                                Text="После этого нажмите «Завершить поездку» в приложении и дождитесь подтверждения."
+                                TextColor="{StaticResource TextDark}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border
+                    Padding="18"
+                    BackgroundColor="{StaticResource Surface}"
+                    Stroke="{StaticResource BorderLight}"
+                    StrokeShape="RoundRectangle 18"
+                    StrokeThickness="1">
+                    <VerticalStackLayout Spacing="12">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            Text="Оплата и тарифы"
+                            TextColor="{StaticResource TextDark}" />
+
+                        <Label
+                            FontSize="14"
+                            Text="Стоимость зависит от выбранного тарифа, длительности поездки и пробега. После завершения аренды итоговая сумма появится в разделе счетов."
+                            TextColor="{StaticResource TextGray}" />
+                        <Label
+                            FontSize="14"
+                            Text="Если по поездке выставлен счёт, его можно открыть в приложении, посмотреть детали и оплатить полностью или частично."
+                            TextColor="{StaticResource TextGray}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border
+                    Padding="18"
+                    BackgroundColor="#FFF4EC"
+                    Stroke="#FFD7BF"
+                    StrokeShape="RoundRectangle 18"
+                    StrokeThickness="1">
+                    <VerticalStackLayout Spacing="10">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            Text="Если случилось ДТП или поломка"
+                            TextColor="{StaticResource TextDark}" />
+                        <Label
+                            FontSize="14"
+                            Text="1. Остановитесь в безопасном месте и включите аварийную сигнализацию."
+                            TextColor="{StaticResource TextDark}" />
+                        <Label
+                            FontSize="14"
+                            Text="2. При ДТП вызовите ГАИ и не покидайте место происшествия."
+                            TextColor="{StaticResource TextDark}" />
+                        <Label
+                            FontSize="14"
+                            Text="3. Сообщите в поддержку и следуйте инструкциям оператора."
+                            TextColor="{StaticResource TextDark}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border
+                    Padding="18"
+                    BackgroundColor="{StaticResource Surface}"
+                    Stroke="{StaticResource BorderLight}"
+                    StrokeShape="RoundRectangle 18"
+                    StrokeThickness="1">
+                    <VerticalStackLayout Spacing="8">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            Text="Поддержка"
+                            TextColor="{StaticResource TextDark}" />
+                        <Label
+                            FontSize="14"
+                            Text="Если вопрос не решается на месте, обратитесь в поддержку через приложение или по телефону горячей линии."
+                            TextColor="{StaticResource TextGray}" />
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            Text="Горячая линия: +375 (29) 000-00-00"
+                            TextColor="{StaticResource Primary}" />
                     </VerticalStackLayout>
                 </Border>
 
