@@ -15,7 +15,7 @@ public record CarWithInfoDto(
     string StateNumber,
     decimal MaxFuel,
     string? Location,
-    double? Latitude,
-    double? Longitude,
+    double Latitude,
+    double Longitude,
     decimal FuelLevel,
     string? ImagePath);

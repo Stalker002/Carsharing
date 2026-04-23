@@ -209,13 +209,30 @@ public partial class MainViewModel : ObservableObject, IRecipient<BookingCreated
 
         IsBusy = true;
 
-        // Поездка создается в состоянии ожидания старта и становится активной
-        // после первой успешной отправки геопозиции.
+        string startAddress = BookedCarDetails.Location ?? "";
+        if (string.IsNullOrWhiteSpace(startAddress) || startAddress == "Неизвестно")
+        {
+            try
+            {
+                var placemarks = await Geocoding.Default.GetPlacemarksAsync(BookedCarDetails.Latitude, BookedCarDetails.Longitude);
+                var placemark = placemarks?.FirstOrDefault();
+                if (placemark != null)
+                {
+                    // Собираем адрес (например: "ул. Козлова, 4")
+                    startAddress = $"{placemark.Thoroughfare}, {placemark.SubThoroughfare}".Trim(',', ' ');
+                }
+            }
+            catch { /* Игнорируем, если гугл-сервисы недоступны */ }
+        }
+
+        if (string.IsNullOrWhiteSpace(startAddress))
+            startAddress = $"{BookedCarDetails.Latitude:0.000}, {BookedCarDetails.Longitude:0.000}";
+
         var request = new TripCreateRequest(
             BookingId: ActiveBooking.Id,
             StatusId: (int)TripStatusEnum.WaitingStart,
             CarId: ActiveBooking.CarId,
-            StartLocation: BookedCarDetails.Location ?? "Неизвестно",
+            StartLocation: startAddress,
             EndLocation: "",
             InsuranceActive: true, // Включаем базовую страховку
             FuelUsed: 0,
