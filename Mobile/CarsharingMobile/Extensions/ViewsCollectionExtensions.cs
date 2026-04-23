@@ -19,6 +19,7 @@ public static class ViewsCollectionExtensions
         services.AddTransient<TripHistoryPage>();
         services.AddTransient<BillsPage>();
         services.AddTransient<BillPaymentPage>();
+        services.AddTransient<TripDetailsPage>();
 
         return services;
     }

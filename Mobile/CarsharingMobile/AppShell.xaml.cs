@@ -5,20 +5,31 @@ namespace CarsharingMobile;
 
 public partial class AppShell : Shell
 {
+    private static bool _routesRegistered;
+
     public AppShell(AppShellViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;
 
+        RegisterRoutesOnce();
+    }
+
+    private static void RegisterRoutesOnce()
+    {
+        if (_routesRegistered)
+            return;
+
+        _routesRegistered = true;
+
         Routing.RegisterRoute(nameof(RegistrationPage), typeof(RegistrationPage));
-        Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
 
         Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
-        Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
         Routing.RegisterRoute(nameof(CurrentTripPage), typeof(CurrentTripPage));
         Routing.RegisterRoute(nameof(TripHistoryPage), typeof(TripHistoryPage));
         Routing.RegisterRoute(nameof(BillsPage), typeof(BillsPage));
         Routing.RegisterRoute(nameof(CarDetailsPage), typeof(CarDetailsPage));
+        Routing.RegisterRoute(nameof(TripDetailsPage), typeof(TripDetailsPage));
         Routing.RegisterRoute(nameof(TipsPage), typeof(TipsPage));
         Routing.RegisterRoute(nameof(BillPaymentPage), typeof(BillPaymentPage));
     }

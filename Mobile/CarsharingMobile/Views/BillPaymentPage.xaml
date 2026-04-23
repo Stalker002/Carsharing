@@ -52,22 +52,34 @@
                                 Text="Итог поездки"
                                 TextColor="{StaticResource TextDark}" />
 
-                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="10">
-                                <Label Grid.Row="0" Text="Статус" TextColor="{StaticResource TextGray}" />
+                            <Grid
+                                ColumnDefinitions="*,Auto"
+                                RowDefinitions="Auto,Auto,Auto"
+                                RowSpacing="10">
+                                <Label
+                                    Grid.Row="0"
+                                    Text="Статус"
+                                    TextColor="{StaticResource TextGray}" />
                                 <Label
                                     Grid.Row="0"
                                     Grid.Column="1"
                                     FontAttributes="Bold"
                                     Text="{Binding StatusText}" />
 
-                                <Label Grid.Row="1" Text="Сумма счета" TextColor="{StaticResource TextGray}" />
+                                <Label
+                                    Grid.Row="1"
+                                    Text="Сумма счета"
+                                    TextColor="{StaticResource TextGray}" />
                                 <Label
                                     Grid.Row="1"
                                     Grid.Column="1"
                                     FontAttributes="Bold"
                                     Text="{Binding AmountText}" />
 
-                                <Label Grid.Row="2" Text="К оплате" TextColor="{StaticResource TextGray}" />
+                                <Label
+                                    Grid.Row="2"
+                                    Text="К оплате"
+                                    TextColor="{StaticResource TextGray}" />
                                 <Label
                                     Grid.Row="2"
                                     Grid.Column="1"
@@ -127,38 +139,86 @@
                     </Border>
 
                     <Border
-                        Padding="18"
-                        BackgroundColor="{StaticResource Surface}"
-                        Stroke="{StaticResource BorderLight}"
-                        StrokeShape="RoundRectangle 18"
+                        Margin="0,15"
+                        Padding="20"
+                        BackgroundColor="White"
+                        IsVisible="{Binding CanEditPayment}"
+                        Stroke="#E1E1E1"
+                        StrokeShape="RoundRectangle 12"
                         StrokeThickness="1">
-                        <VerticalStackLayout Spacing="12">
+                        <VerticalStackLayout Spacing="15">
+
                             <Label
                                 FontAttributes="Bold"
                                 FontSize="18"
-                                Text="Оплата" />
+                                Text="Оплата"
+                                TextColor="#112347" />
 
-                            <Picker
-                                Title="Способ оплаты"
-                                ItemsSource="{Binding AvailablePaymentMethods}"
-                                SelectedItem="{Binding SelectedPaymentMethod}" />
+                            <!--  1. Поле: Сумма платежа  -->
+                            <VerticalStackLayout Spacing="5">
+                                <Label
+                                    FontSize="12"
+                                    Text="Сумма к оплате (BYN)"
+                                    TextColor="#6E6E6E" />
+                                <Border
+                                    BackgroundColor="White"
+                                    HeightRequest="50"
+                                    Stroke="#E1E1E1"
+                                    StrokeShape="RoundRectangle 8"
+                                    StrokeThickness="1">
+                                    <Entry
+                                        Margin="15,0"
+                                        FontSize="16"
+                                        Keyboard="Numeric"
+                                        Text="{Binding PaymentAmount, Mode=TwoWay}"
+                                        TextColor="#1E1E1E" />
+                                </Border>
+                            </VerticalStackLayout>
 
+                            <!--  2. Выпадающий список: Способ оплаты  -->
+                            <VerticalStackLayout Spacing="5">
+                                <Label
+                                    FontSize="12"
+                                    Text="Способ оплаты"
+                                    TextColor="#6E6E6E" />
+                                <Border
+                                    BackgroundColor="White"
+                                    HeightRequest="50"
+                                    Stroke="#E1E1E1"
+                                    StrokeShape="RoundRectangle 8"
+                                    StrokeThickness="1">
+                                    <!--  Выбор карты, наличных или ЕРИП  -->
+                                    <Picker
+                                        Title="Выберите способ"
+                                        Margin="10,0"
+                                        FontSize="16"
+                                        ItemsSource="{Binding AvailablePaymentMethods}"
+                                        SelectedItem="{Binding SelectedPaymentMethod}"
+                                        TextColor="#1E1E1E"
+                                        TitleColor="#ACACAC" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!--  Подсказка об остатке  -->
                             <Label
+                                Margin="0,5,0,0"
                                 FontSize="13"
-                                Text="{Binding RemainingText, StringFormat='Будет списано: {0}'}"
-                                TextColor="{StaticResource TextGray}" />
+                                Text="{Binding PaymentHintText}"
+                                TextColor="#6E6E6E" />
 
+                            <!--  Кнопка оплаты  -->
                             <Button
+                                Margin="0,10,0,0"
+                                BackgroundColor="#3296F8"
                                 Command="{Binding PayCommand}"
-                                IsEnabled="{Binding CanPay}"
-                                Text="ОПЛАТИТЬ СЧЕТ" />
-
-                            <Label
+                                CornerRadius="8"
                                 FontAttributes="Bold"
-                                FontSize="14"
-                                IsVisible="{Binding IsFullyPaid}"
-                                Text="Счет полностью оплачен"
-                                TextColor="#2F855A" />
+                                FontSize="16"
+                                HeightRequest="50"
+                                IsEnabled="{Binding CanPay}"
+                                Text="ОПЛАТИТЬ СЧЕТ"
+                                TextColor="White" />
+
                         </VerticalStackLayout>
                     </Border>
 
@@ -185,7 +245,10 @@
                                             BackgroundColor="#F7F9FC"
                                             StrokeShape="RoundRectangle 14"
                                             StrokeThickness="0">
-                                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="2">
+                                            <Grid
+                                                ColumnDefinitions="*,Auto"
+                                                RowDefinitions="Auto,Auto"
+                                                RowSpacing="2">
                                                 <Label
                                                     Grid.Row="0"
                                                     FontAttributes="Bold"
@@ -197,8 +260,8 @@
                                                     Text="{Binding Sum, StringFormat='{0:0.00} BYN'}" />
                                                 <Label
                                                     Grid.Row="1"
-                                                    FontSize="12"
                                                     Grid.ColumnSpan="2"
+                                                    FontSize="12"
                                                     Text="{Binding Date, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
                                                     TextColor="{StaticResource TextGray}" />
                                             </Grid>

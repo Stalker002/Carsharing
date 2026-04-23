@@ -76,6 +76,20 @@ public class TripsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{id:int}/details")]
+    [Authorize(Policy = "AdminClientPolicy")]
+    public async Task<ActionResult<TripDetailsDto>> GetTripFullDetails(int id, CancellationToken cancellationToken)
+    {
+        var tripDetails = User.IsAdmin()
+            ? await _tripService.GetTripFullDetails(id, cancellationToken)
+            : await _tripService.GetTripFullDetails(User.GetRequiredUserId(), id, cancellationToken);
+
+        if (tripDetails == null)
+            return NotFound("Поездка не найдена");
+
+        return Ok(tripDetails);
+    }
+
     [HttpGet("current")]
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<CurrentTripDto>> GetCurrentTrip(CancellationToken cancellationToken)

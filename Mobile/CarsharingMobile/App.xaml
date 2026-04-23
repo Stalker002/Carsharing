@@ -13,6 +13,30 @@
             </ResourceDictionary.MergedDictionaries>
             <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+
+            <Style x:Key="SectionTitleLabelStyle" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{StaticResource TextGray}" />
+            </Style>
+
+            <Style x:Key="CardBorderStyle" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="{StaticResource Surface}" />
+                <Setter Property="Stroke" Value="{StaticResource BorderLight}" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+                <Setter Property="StrokeThickness" Value="1" />
+            </Style>
+
+            <Style x:Key="SummaryKeyLabelStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{StaticResource TextDark}" />
+            </Style>
+
+            <Style x:Key="SummaryValueLabelStyle" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{StaticResource TextDark}" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

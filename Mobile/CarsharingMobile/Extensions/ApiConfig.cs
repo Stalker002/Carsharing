@@ -4,7 +4,7 @@ public static class ApiConfig
 {
     public const string Port = "5078";
 
-    public const string LocalIpAddress = "172.23.201.129";
+    public const string LocalIpAddress = "172.23.201.52";
 
     public static string HostIp =>
         DeviceInfo.Platform == DevicePlatform.Android && DeviceInfo.DeviceType == DeviceType.Virtual
