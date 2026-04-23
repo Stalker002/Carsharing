@@ -197,7 +197,12 @@ public class TripRepository : ITripRepository
     {
         var query = _context.Trip
             .AsNoTracking()
-            .Where(t => t.Booking != null && t.Booking.ClientId == clientId && t.EndTime != null);
+            .Where(t => t.Booking != null &&
+                        t.Booking.ClientId == clientId &&
+                        (t.EndTime != null ||
+                         t.StatusId == (int)TripStatusEnum.Finished ||
+                         t.StatusId == (int)TripStatusEnum.Cancelled ||
+                         t.StatusId == (int)TripStatusEnum.PaymentRequired));
 
         var totalCount = await query.CountAsync(cancellationToken);
 

@@ -154,9 +154,7 @@
                                 StrokeShape="RoundRectangle 16"
                                 StrokeThickness="1">
                                 <Border.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding Source={x:Reference TripHistoryRoot}, Path=BindingContext.OpenTripDetailsCommand}"
-                                        CommandParameter="{Binding .}" />
+                                    <TapGestureRecognizer Command="{Binding OpenCommand}" CommandParameter="{Binding .}" />
                                 </Border.GestureRecognizers>
 
                                 <Grid ColumnDefinitions="64,*,Auto" ColumnSpacing="12">
@@ -164,8 +162,8 @@
                                         Grid.Column="0"
                                         BackgroundColor="#EDF6E8"
                                         HeightRequest="64"
-                                        StrokeThickness="0"
                                         StrokeShape="RoundRectangle 14"
+                                        StrokeThickness="0"
                                         VerticalOptions="Start"
                                         WidthRequest="64">
                                         <Grid>
@@ -203,7 +201,7 @@
                                             TextColor="{StaticResource TextDark}" />
                                         <Label
                                             FontSize="12"
-                                            LineBreakMode="TailTruncation"
+                                            LineBreakMode="WordWrap"
                                             Text="{Binding CarSubtitle}"
                                             TextColor="{StaticResource TextGray}" />
                                         <Label

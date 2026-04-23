@@ -1,9 +1,8 @@
 using System.Diagnostics;
+using CarsharingMobile.Extensions;
 using CarsharingMobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Shared.Contracts.Bills;
-using Shared.Contracts.Payments;
 using Shared.Contracts.Trip;
 
 namespace CarsharingMobile.ViewModels;
@@ -60,27 +59,15 @@ public partial class TripDetailsViewModel(TripService tripService) : ObservableO
             IsBusy = true;
             ErrorMessage = null;
 
-            var trip = await tripService.GetTripDetailsAsync(_context.TripId);
-            if (trip == null)
+            var details = await tripService.GetTripFullDetailsAsync(_context.TripId);
+            if (details == null)
             {
                 Details = null;
                 ErrorMessage = "Не удалось загрузить детали поездки.";
                 return;
             }
 
-            BillWithInfoDto? bill = null;
-            IReadOnlyList<PaymentsResponse> payments = [];
-
-            if (_context.BillId is int billId and > 0)
-            {
-                bill = await tripService.GetBillInfoAsync(billId);
-                if (bill != null)
-                {
-                    payments = await tripService.GetPaymentsByBillAsync(bill.Id);
-                }
-            }
-
-            Details = TripDetailsUiModelFactory.Create(trip, bill, payments, _context);
+            Details = TripDetailsUiModelFactory.Create(details, _context);
         }
         catch (Exception ex)
         {
@@ -115,61 +102,67 @@ public partial class TripDetailsViewModel(TripService tripService) : ObservableO
 internal static class TripDetailsUiModelFactory
 {
     public static TripDetailsUiModel Create(
-        TripWithInfoDto trip,
-        BillWithInfoDto? bill,
-        IReadOnlyList<PaymentsResponse> payments,
+        TripDetailsDto trip,
         TripDetailsNavigationContext context)
     {
+        var header = trip.Header;
+        var summary = trip.Summary;
+
+        var carTitle = FirstNotBlank(context.CarTitle, header.CarTitle) ?? $"Поездка #{header.TripId}";
+        var imageUrl = NormalizeImageUrl(FirstNotBlank(context.CarImageUrl, header.CarImage));
+
         var carCard = new TripCarCardUiModel(
-            context.CarTitle ?? $"Поездка #{trip.Id}",
-            context.Transmission ?? "КПП не указана",
-            context.RegistrationNumber ?? "Госномер не указан",
-            context.CarImageUrl);
+            carTitle,
+            context.Transmission ?? header.Transmission ?? "КПП не указана",
+            context.RegistrationNumber ?? header.RegistrationNumber ?? "Госномер не указан",
+            imageUrl);
 
         var overview = new TripOverviewUiModel(
-            FormatDistance(trip.Distance),
-            FormatDuration(trip.Duration),
-            FormatAmount(bill?.Amount));
+            FormatDistance(summary.Distance),
+            FormatDuration(summary.Duration),
+            FormatAmount(summary.TotalAmount));
 
-        var summaryRows = BuildSummaryRows(trip, bill);
-        var paymentRows = payments.Select(BuildPayment).ToList();
+        var summaryRows = BuildSummaryRows(trip);
+        var paymentRows = trip.Payments.Select(BuildPayment).ToList();
 
         return new TripDetailsUiModel(carCard, overview, summaryRows, paymentRows);
     }
 
-    private static IReadOnlyList<TripSummaryRowUiModel> BuildSummaryRows(TripWithInfoDto trip, BillWithInfoDto? bill)
+    private static List<TripSummaryRowUiModel> BuildSummaryRows(TripDetailsDto trip)
     {
+        var header = trip.Header;
+        var summary = trip.Summary;
         var rows = new List<TripSummaryRowUiModel>
         {
-            new("Период", FormatPeriod(trip.StartTime, trip.EndTime)),
-            new("Маршрут", FormatRoute(trip.StartLocation, trip.EndLocation)),
-            new("Тариф", string.IsNullOrWhiteSpace(trip.TariffType) ? "Не указан" : trip.TariffType!),
-            new("Пробег", FormatDistance(trip.Distance)),
-            new("Длительность", FormatDuration(trip.Duration)),
-            new("Страхование", trip.InsuranceActive ? "Подключено" : "Не подключено")
+            new("Период", FormatPeriod(header.StartTime, header.EndTime)),
+            new("Маршрут", FormatRoute(header.StartLocation, header.EndLocation)),
+            new("Тариф", TranslateTariff(header.TariffType)),
+            new("Пробег", FormatDistance(summary.Distance)),
+            new("Длительность", FormatDuration(summary.Duration)),
+            new("Страхование", summary.InsuranceActive ? "Подключено" : "Не подключено")
         };
 
-        if (trip.FuelUsed is > 0)
-            rows.Add(new TripSummaryRowUiModel("Расход топлива", FormatLiters(trip.FuelUsed)));
+        if (summary.FuelUsed is > 0)
+            rows.Add(new TripSummaryRowUiModel("Расход топлива", FormatLiters(summary.FuelUsed)));
 
-        if (trip.Refueled is > 0)
-            rows.Add(new TripSummaryRowUiModel("Дозаправка", FormatLiters(trip.Refueled)));
+        if (summary.Refueled is > 0)
+            rows.Add(new TripSummaryRowUiModel("Дозаправка", FormatLiters(summary.Refueled)));
 
-        if (bill?.Amount is not null)
-            rows.Add(new TripSummaryRowUiModel("Сумма счета", FormatAmount(bill.Amount)));
+        if (summary.TotalAmount is not null)
+            rows.Add(new TripSummaryRowUiModel("Сумма счета", FormatAmount(summary.TotalAmount)));
 
-        if (bill?.RemainingAmount is not null)
-            rows.Add(new TripSummaryRowUiModel("Остаток к оплате", FormatAmount(bill.RemainingAmount)));
+        if (summary.RemainingAmount is not null)
+            rows.Add(new TripSummaryRowUiModel("Остаток к оплате", FormatAmount(summary.RemainingAmount)));
 
         return rows;
     }
 
-    private static TripPaymentUiModel BuildPayment(PaymentsResponse payment)
+    private static TripPaymentUiModel BuildPayment(TripPaymentDto payment)
     {
         return new TripPaymentUiModel(
-            "Списание",
+            payment.Title,
             payment.Date.ToLocalTime().ToString("dd.MM.yyyy HH:mm"),
-            $"-{payment.Sum:0.00} BYN",
+            $"-{payment.Amount:0.00} BYN",
             FormatPaymentMethod(payment.Method));
     }
 
@@ -237,4 +230,33 @@ internal static class TripDetailsUiModelFactory
             _ => method
         };
     }
+
+    private static string? FirstNotBlank(params string?[] values)
+    {
+        foreach (var value in values)
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+                return Uri.UnescapeDataString(value);
+        }
+
+        return null;
+    }
+
+    private static string? NormalizeImageUrl(string? imageUrl)
+    {
+        if (string.IsNullOrWhiteSpace(imageUrl))
+            return null;
+
+        return imageUrl
+            .Replace("http://localhost:9000", $"http://{ApiConfig.HostIp}:9000")
+            .Replace("http://minio:9000", $"http://{ApiConfig.HostIp}:9000");
+    }
+
+    private static string TranslateTariff(string? tariffType) => tariffType switch
+    {
+        "per_minute" => "Поминутный",
+        "per_km" => "Покилометровый",
+        "per_day" => "Посуточный",
+        _ => "Стандартный"
+    };
 }

@@ -238,11 +238,23 @@ public class TripHistoryListItem
         var parts = new List<string>();
 
         if (!string.IsNullOrWhiteSpace(trip.TariffType))
-            parts.Add(trip.TariffType!);
+            parts.Add(TranslateTariff(trip.TariffType));
 
         if (!string.IsNullOrWhiteSpace(trip.StartLocation))
             parts.Add(trip.StartLocation!);
 
         return parts.Count == 0 ? "История поездки" : string.Join(" • ", parts);
     }
+    private static string TranslateTariff(string? tariffType)
+    {
+        return tariffType switch
+        {
+            "per_minute" => "Поминутный",
+            "per_km" => "Покилометровый",
+            "per_day" => "Посуточный",
+            _ => "Стандартный"
+        };
+    }
 }
+
+
