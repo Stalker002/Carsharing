@@ -20,7 +20,7 @@ public class AuthHttpMessageHandler : DelegatingHandler
 
         SecureStorage.Default.Remove("tasty");
 
-        MainThread.BeginInvokeOnMainThread(() => { Shell.Current.GoToAsync("//LoginPage"); });
+        MainThread.BeginInvokeOnMainThread(() => { Shell.Current?.GoToAsync("//LoginPage"); });
 
         return response;
     }
