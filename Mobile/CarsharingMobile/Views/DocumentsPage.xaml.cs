@@ -2,11 +2,11 @@ using CarsharingMobile.ViewModels;
 
 namespace CarsharingMobile.Views;
 
-public partial class ProfilePage : ContentPage
+public partial class DocumentsPage : ContentPage
 {
-    private readonly ProfileViewModel _viewModel;
+    private readonly DocumentsViewModel _viewModel;
 
-    public ProfilePage(ProfileViewModel viewModel)
+    public DocumentsPage(DocumentsViewModel viewModel)
     {
         InitializeComponent();
         _viewModel = viewModel;

@@ -25,6 +25,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(RegistrationPage), typeof(RegistrationPage));
 
         Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
+        Routing.RegisterRoute(nameof(DocumentsPage), typeof(DocumentsPage));
         Routing.RegisterRoute(nameof(CurrentTripPage), typeof(CurrentTripPage));
         Routing.RegisterRoute(nameof(TripHistoryPage), typeof(TripHistoryPage));
         Routing.RegisterRoute(nameof(BillsPage), typeof(BillsPage));
@@ -61,6 +62,12 @@ public partial class AppShell : Shell
     {
         Current.FlyoutIsPresented = false;
         await Current.GoToAsync(nameof(BillsPage));
+    }
+
+    private async void OnDocumentsClicked(object sender, EventArgs e)
+    {
+        Current.FlyoutIsPresented = false;
+        await Current.GoToAsync(nameof(DocumentsPage));
     }
 
     private async void OnLogoutClicked(object sender, EventArgs e)

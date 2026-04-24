@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
         services.AddApiClient<TripService>();
         services.AddApiClient<BookingService>();
         services.AddApiClient<ClientService>();
+        services.AddApiClient<ClientDocumentsService>();
         services.AddApiClient<BillService>();
         services.AddApiClient<PaymentService>();
 
