@@ -123,8 +123,8 @@ public class BillsService : IBillsService
 
     private async Task ApplyPromocodeInternal(int billId, string code, CancellationToken cancellationToken)
     {
-        var promos = await _promocodeRepository.GetByCode(code, cancellationToken);
-        var promo = promos.FirstOrDefault(p =>
+        var promos = await _promocodeRepository.GetByCode(code, cancellationToken) ?? [];
+        var promo = promos.Where(static p => p != null).FirstOrDefault(p =>
             p.StartDate <= DateOnly.FromDateTime(DateTime.UtcNow) &&
             p.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow));
 

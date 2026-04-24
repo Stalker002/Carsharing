@@ -19,13 +19,15 @@ public class ClientDocumentsService(
     public async Task<(int? Id, string Error)> CreateClientDocumentAsync(int userId, ClientDocumentsRequest request,
         CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
         string? savedFilePath = null;
 
         try
         {
             if (request.File is { Length: > 0 })
+            {
+                await unitOfWork.BeginTransactionAsync(cancellationToken);
                 savedFilePath = await imageService.SaveDocumentImageAsync(request.File, cancellationToken);
+            }
             else
                 return (null, "Файл документа обязателен");
 
@@ -33,7 +35,13 @@ public class ClientDocumentsService(
             var clientId = client.Select(c => c.Id).FirstOrDefault();
 
             if (clientId == 0)
+            {
+                if (savedFilePath != null)
+                    await imageService.DeleteFile(savedFilePath, cancellationToken);
+
+                await unitOfWork.RollbackTransactionAsync(cancellationToken);
                 return (null, "Клиент не найден");
+            }
 
             var (document, errorDocument) = ClientDocument.Create(
                 0,
@@ -48,6 +56,7 @@ public class ClientDocumentsService(
             if (!string.IsNullOrEmpty(errorDocument))
             {
                 await imageService.DeleteFile(savedFilePath, cancellationToken);
+                await unitOfWork.RollbackTransactionAsync(cancellationToken);
                 return (null, errorDocument);
             }
 

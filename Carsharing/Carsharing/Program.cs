@@ -39,6 +39,7 @@ public class Program
         var minioConfig = builder.Configuration.GetSection("Minio");
 
         builder.Services.AddControllers();
+        builder.Services.AddMemoryCache();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddCors(options =>

@@ -2,6 +2,7 @@ using Carsharing.Application.Abstractions;
 using Carsharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Shared.Contracts.Users;
 
 namespace Carsharing.Controllers;
@@ -34,6 +35,30 @@ public class UsersController : ControllerBase
         Response.Cookies.Delete("tasty");
 
         return Ok(new { Message = "Logged out" });
+    }
+    [HttpPost("send-code")]
+    public IActionResult SendCode([FromBody] SendCodeRequest request, [FromServices] IMemoryCache cache)
+    {
+        var code = new Random().Next(1000, 9999).ToString();
+
+        cache.Set(request.PhoneNumber, code, TimeSpan.FromMinutes(5));
+
+        Console.WriteLine($"\n[SMS-СЕРВИС] Код подтверждения для {request.PhoneNumber}: {code}\n");
+
+        return Ok();
+    }
+
+    [HttpPost("verify-code")]
+    public IActionResult VerifyCode([FromBody] VerifyCodeRequest request, [FromServices] IMemoryCache cache)
+    {
+        if (request.Code == "0000") return Ok();
+
+        if (!cache.TryGetValue(request.PhoneNumber, out string? savedCode) || savedCode != request.Code)
+            return BadRequest(new { message = "Неверный код или срок его действия истек" });
+        
+        cache.Remove(request.PhoneNumber);
+        return Ok();
+
     }
 
     [HttpGet("unpaged")]

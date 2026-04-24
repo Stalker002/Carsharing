@@ -87,3 +87,5 @@ Carsharing/.dotnet/.dotnet/
 /Carsharing/qodana.yaml
 /.dotnet/.dotnet
 /docs
+/Mobile/carsharing-tests.binlog
+/Mobile/dotnet-test-output.txt

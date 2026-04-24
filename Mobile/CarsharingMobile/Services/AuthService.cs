@@ -47,4 +47,28 @@ public class AuthService(HttpClient httpClient)
             return "Ошибка подключения к серверу";
         }
     }
+
+    public async Task<string?> SendSmsAsync(string phoneNumber)
+    {
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync("Users/send-code", new { PhoneNumber = phoneNumber });
+            return response.IsSuccessStatusCode ? null : "Ошибка отправки SMS";
+        }
+        catch { return "Нет связи с сервером"; }
+    }
+
+    public async Task<string?> VerifySmsAsync(string phoneNumber, string code)
+    {
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync("Users/verify-code", new { PhoneNumber = phoneNumber, Code = code });
+
+            if (response.IsSuccessStatusCode) return null;
+
+            var error = await response.Content.ReadAsStringAsync();
+            return string.IsNullOrWhiteSpace(error) ? "Неверный код" : error;
+        }
+        catch { return "Нет связи с сервером"; }
+    }
 }

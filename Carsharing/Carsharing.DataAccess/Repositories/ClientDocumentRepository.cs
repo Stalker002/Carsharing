@@ -113,7 +113,7 @@ public class ClientDocumentRepository : IClientDocumentRepository
         return clientDocumentEntities.Id;
     }
 
-    public async Task<int> Update(int id, int? clientId, string? licenseCategory, string? type, string? number,
+    public async Task<int> Update(int id, int? clientId, string? type, string? licenseCategory, string? number,
         DateOnly? issueDate, DateOnly? expiryDate, string? filePath, CancellationToken cancellationToken)
     {
         var document = await _context.ClientDocument.FirstOrDefaultAsync(d => d.Id == id, cancellationToken)
