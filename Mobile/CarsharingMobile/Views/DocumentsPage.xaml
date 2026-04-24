@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CarsharingMobile.Views.DocumentsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
+    x:DataType="vm:DocumentsViewModel"
+    BackgroundColor="{StaticResource BgLight}"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid
+            Grid.Row="0"
+            Padding="15,20"
+            ColumnDefinitions="Auto,*"
+            HeightRequest="80">
+            <ImageButton
+                BackgroundColor="Transparent"
+                Command="{Binding GoBackCommand}"
+                HeightRequest="24"
+                HorizontalOptions="Start"
+                Source="back_icon_dark.png"
+                WidthRequest="24" />
+            <Label
+                Grid.Column="1"
+                Margin="-24,0,0,0"
+                FontAttributes="Bold"
+                FontSize="20"
+                HorizontalOptions="Center"
+                Text="Документы"
+                TextColor="{StaticResource TextDark}"
+                VerticalOptions="Center" />
+        </Grid>
+
+        <RefreshView
+            Grid.Row="1"
+            Command="{Binding RefreshCommand}"
+            IsRefreshing="{Binding IsRefreshing}">
+            <Grid>
+                <ScrollView>
+                    <VerticalStackLayout Padding="16,0,16,24" Spacing="16">
+                        <Border
+                            Padding="18"
+                            BackgroundColor="#112347"
+                            StrokeShape="RoundRectangle 24"
+                            StrokeThickness="0">
+                            <VerticalStackLayout Spacing="6">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="22"
+                                    Text="Ваши документы"
+                                    TextColor="White" />
+                                <Label
+                                    FontSize="13"
+                                    Text="Здесь отображаются документы, которые уже привязаны к вашему аккаунту."
+                                    TextColor="#D6E2FF" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border
+                            Padding="14"
+                            BackgroundColor="#FFF3F3"
+                            IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                            Stroke="#F1C6C6"
+                            StrokeShape="RoundRectangle 12"
+                            StrokeThickness="1">
+                            <Label
+                                FontSize="14"
+                                Text="{Binding ErrorMessage}"
+                                TextColor="#A33A3A" />
+                        </Border>
+
+                        <CollectionView ItemsSource="{Binding Documents}" SelectionMode="None">
+                            <CollectionView.EmptyView>
+                                <VerticalStackLayout
+                                    Padding="20,40"
+                                    IsVisible="{Binding IsEmptyStateVisible}"
+                                    Spacing="8">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="18"
+                                        HorizontalTextAlignment="Center"
+                                        Text="Документов пока нет"
+                                        TextColor="{StaticResource TextDark}" />
+                                    <Label
+                                        FontSize="14"
+                                        HorizontalTextAlignment="Center"
+                                        Text="Когда документы будут добавлены в профиль, они появятся здесь."
+                                        TextColor="{StaticResource TextGray}" />
+                                </VerticalStackLayout>
+                            </CollectionView.EmptyView>
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="vm:DocumentListItem">
+                                    <Border
+                                        Margin="0,0,0,12"
+                                        Padding="16"
+                                        Style="{StaticResource CardBorderStyle}">
+                                        <VerticalStackLayout Spacing="14">
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                                <VerticalStackLayout Spacing="4">
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="17"
+                                                        Text="{Binding Title}"
+                                                        TextColor="{StaticResource TextDark}" />
+                                                    <Label
+                                                        FontSize="13"
+                                                        Text="{Binding CategoryText}"
+                                                        TextColor="{StaticResource TextGray}" />
+                                                </VerticalStackLayout>
+
+                                                <Border
+                                                    Padding="10,4"
+                                                    BackgroundColor="{Binding StatusBackground}"
+                                                    StrokeShape="RoundRectangle 12"
+                                                    StrokeThickness="0"
+                                                    VerticalOptions="Start">
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        Text="{Binding StatusText}"
+                                                        TextColor="{Binding StatusColor}" />
+                                                </Border>
+                                            </Grid>
+
+                                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                                <Border
+                                                    Padding="12"
+                                                    BackgroundColor="#F7F9FC"
+                                                    StrokeShape="RoundRectangle 14"
+                                                    StrokeThickness="0">
+                                                    <VerticalStackLayout Spacing="4">
+                                                        <Label
+                                                            FontSize="12"
+                                                            Text="Дата выдачи"
+                                                            TextColor="{StaticResource TextGray}" />
+                                                        <Label
+                                                            FontAttributes="Bold"
+                                                            FontSize="15"
+                                                            Text="{Binding IssueDateText}"
+                                                            TextColor="{StaticResource TextDark}" />
+                                                    </VerticalStackLayout>
+                                                </Border>
+
+                                                <Border
+                                                    Padding="12"
+                                                    BackgroundColor="#F7F9FC"
+                                                    StrokeShape="RoundRectangle 14"
+                                                    StrokeThickness="0">
+                                                    <VerticalStackLayout Spacing="4">
+                                                        <Label
+                                                            FontSize="12"
+                                                            Text="Действителен до"
+                                                            TextColor="{StaticResource TextGray}" />
+                                                        <Label
+                                                            FontAttributes="Bold"
+                                                            FontSize="15"
+                                                            Text="{Binding ExpiryDateText}"
+                                                            TextColor="{Binding StatusColor}" />
+                                                    </VerticalStackLayout>
+                                                </Border>
+                                            </Grid>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <ActivityIndicator
+                    HorizontalOptions="Center"
+                    IsRunning="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}"
+                    VerticalOptions="Center"
+                    Color="{StaticResource Primary}" />
+            </Grid>
+        </RefreshView>
+    </Grid>
+</ContentPage>

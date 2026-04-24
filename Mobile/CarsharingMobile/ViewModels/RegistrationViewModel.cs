@@ -4,12 +4,13 @@ using CarsharingMobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Maui.Storage;
 using Shared.Contracts.Clients;
 using Shared.Contracts.Users;
 
 namespace CarsharingMobile.ViewModels;
 
-public partial class RegistrationViewModel(AuthService authService) : ObservableObject
+public partial class RegistrationViewModel(AuthService authService, ClientDocumentsService clientDocumentsService) : ObservableObject
 {
     [ObservableProperty] public partial bool IsBusy { get; set; }
 
@@ -17,11 +18,13 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
     [NotifyPropertyChangedFor(nameof(IsStep1))]
     [NotifyPropertyChangedFor(nameof(IsStep2))]
     [NotifyPropertyChangedFor(nameof(IsStep3))]
+    [NotifyPropertyChangedFor(nameof(IsStep4))]
     public partial int CurrentStep { get; set; } = 1;
 
     public bool IsStep1 => CurrentStep == 1;
     public bool IsStep2 => CurrentStep == 2;
     public bool IsStep3 => CurrentStep == 3;
+    public bool IsStep4 => CurrentStep == 4;
 
     [ObservableProperty] public partial string? PhoneNumber { get; set; }
     [ObservableProperty] public partial string? PhoneNumberError { get; set; }
@@ -38,9 +41,20 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
 
     [ObservableProperty] public partial string? UserPassword { get; set; }
     [ObservableProperty] public partial string? UserPasswordError { get; set; }
+    [ObservableProperty] public partial string? DriverLicenseNumber { get; set; }
+    [ObservableProperty] public partial string? DriverLicenseNumberError { get; set; }
+    [ObservableProperty] public partial string? DriverLicenseCategory { get; set; }
+    [ObservableProperty] public partial string? DriverLicenseCategoryError { get; set; }
+    [ObservableProperty] public partial DateTime DriverLicenseIssueDate { get; set; } = DateTime.Today.AddYears(-1);
+    [ObservableProperty] public partial DateTime DriverLicenseExpiryDate { get; set; } = DateTime.Today.AddYears(9);
+    [ObservableProperty] public partial string? DriverLicenseExpiryDateError { get; set; }
+    [ObservableProperty] public partial string? DriverLicenseFileName { get; set; }
+    [ObservableProperty] public partial string? DriverLicenseFileError { get; set; }
 
     [ObservableProperty] public partial bool IsPasswordHidden { get; set; } = true;
     [ObservableProperty] public partial string PasswordIcon { get; set; } = "eye_hide.png";
+
+    private FileResult? _driverLicenseFile;
 
     [GeneratedRegex(@"^(\+375|80)(29|44|33|25)\d{7}$")]
     private static partial Regex MyRegex { get; }
@@ -113,6 +127,36 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
             UserPasswordError = null;
     }
 
+    partial void OnDriverLicenseNumberChanged(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            DriverLicenseNumberError = "Введите номер водительских прав.";
+        else
+            DriverLicenseNumberError = null;
+    }
+
+    partial void OnDriverLicenseCategoryChanged(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            DriverLicenseCategoryError = "Укажите категорию прав.";
+        else
+            DriverLicenseCategoryError = null;
+    }
+
+    partial void OnDriverLicenseExpiryDateChanged(DateTime value)
+    {
+        DriverLicenseExpiryDateError = value.Date <= DriverLicenseIssueDate.Date
+            ? "Срок действия должен быть позже даты выдачи."
+            : null;
+    }
+
+    partial void OnDriverLicenseIssueDateChanged(DateTime value)
+    {
+        DriverLicenseExpiryDateError = DriverLicenseExpiryDate.Date <= value.Date
+            ? "Срок действия должен быть позже даты выдачи."
+            : null;
+    }
+
     [RelayCommand]
     private void TogglePassword()
     {
@@ -127,10 +171,21 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
         if (PhoneNumberError != null) return;
 
         IsBusy = true;
-        await Task.Delay(1000);
+
+        var cleanPhone = PhoneNumber!.Replace(" ", "").Replace("-", "");
+
+        var error = await authService.SendSmsAsync(cleanPhone);
+
         IsBusy = false;
 
-        CurrentStep = 2;
+        if (error == null)
+        {
+            CurrentStep = 2;
+        }
+        else
+        {
+            await Shell.Current.DisplayAlert("Ошибка", error, "ОК");
+        }
     }
 
     [RelayCommand]
@@ -139,17 +194,67 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
         OnSmsCodeChanged(SmsCode);
         if (SmsCodeError != null) return;
 
-        if (SmsCode != "0000")
-        {
-            SmsCodeError = "Неверный код (для теста введите 0000)";
-            return;
-        }
-
         IsBusy = true;
-        await Task.Delay(500);
+
+        var cleanPhone = PhoneNumber!.Replace(" ", "").Replace("-", "");
+
+        var error = await authService.VerifySmsAsync(cleanPhone, SmsCode!);
+
         IsBusy = false;
 
-        CurrentStep = 3;
+        if (error == null)
+        {
+            CurrentStep = 3;
+        }
+        else
+        {
+            SmsCodeError = "Неверный код подтверждения";
+        }
+    }
+
+    [RelayCommand]
+    private void ContinueToLicenseStep()
+    {
+        OnNameChanged(Name);
+        OnSurnameChanged(Surname);
+        OnEmailChanged(Email);
+        OnUserPasswordChanged(UserPassword);
+
+        if (NameError != null || SurnameError != null || EmailError != null || UserPasswordError != null)
+            return;
+
+        CurrentStep = 4;
+    }
+
+    [RelayCommand]
+    private async Task PickDriverLicenseFileAsync()
+    {
+        try
+        {
+            var file = await FilePicker.Default.PickAsync(new PickOptions
+            {
+                PickerTitle = "Выберите фото или PDF водительских прав",
+                FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+                {
+                    { DevicePlatform.iOS, ["public.image", "com.adobe.pdf"] },
+                    { DevicePlatform.Android, ["image/*", "application/pdf"] },
+                    { DevicePlatform.WinUI, [".jpg", ".jpeg", ".png", ".pdf"] },
+                    { DevicePlatform.macOS, ["public.image", "com.adobe.pdf"] },
+                    { DevicePlatform.MacCatalyst, ["public.image", "com.adobe.pdf"] }
+                })
+            });
+
+            if (file == null)
+                return;
+
+            _driverLicenseFile = file;
+            DriverLicenseFileName = file.FileName;
+            DriverLicenseFileError = null;
+        }
+        catch (Exception)
+        {
+            DriverLicenseFileError = "Не удалось выбрать файл.";
+        }
     }
 
     [RelayCommand]
@@ -159,8 +264,16 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
         OnSurnameChanged(Surname);
         OnEmailChanged(Email);
         OnUserPasswordChanged(UserPassword);
+        OnDriverLicenseNumberChanged(DriverLicenseNumber);
+        OnDriverLicenseCategoryChanged(DriverLicenseCategory);
+        OnDriverLicenseIssueDateChanged(DriverLicenseIssueDate);
 
-        if (NameError != null || EmailError != null || UserPasswordError != null)
+        if (_driverLicenseFile == null)
+            DriverLicenseFileError = "Добавьте файл водительских прав.";
+
+        if (NameError != null || SurnameError != null || EmailError != null || UserPasswordError != null ||
+            DriverLicenseNumberError != null || DriverLicenseCategoryError != null ||
+            DriverLicenseExpiryDateError != null || DriverLicenseFileError != null)
             return;
 
         IsBusy = true;
@@ -180,12 +293,31 @@ public partial class RegistrationViewModel(AuthService authService) : Observable
         if (errorMessage == null)
         {
             var loginError = await authService.LoginAsync(new LoginRequest(login, UserPassword!));
-            IsBusy = false;
 
             if (loginError == null)
             {
+                var licenseError = await clientDocumentsService.CreateDriverLicenseAsync(
+                    _driverLicenseFile!,
+                    DriverLicenseNumber!.Trim(),
+                    DriverLicenseCategory!.Trim().ToUpperInvariant(),
+                    DateOnly.FromDateTime(DriverLicenseIssueDate),
+                    DateOnly.FromDateTime(DriverLicenseExpiryDate));
+
+                IsBusy = false;
+
+                if (licenseError != null)
+                {
+                    await Shell.Current.DisplayAlert("Не удалось добавить права", licenseError, "ОК");
+                    return;
+                }
+
                 WeakReferenceMessenger.Default.Send(new UserLoggedInMessage());
                 await Shell.Current.GoToAsync("//MainPage");
+            }
+            else
+            {
+                IsBusy = false;
+                await Shell.Current.DisplayAlert("Ошибка входа", loginError, "ОК");
             }
         }
         else
