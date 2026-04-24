@@ -128,7 +128,7 @@ public class MaintenanceRepository : IMaintenanceRepository
     public async Task<int> Update(int id, int? carId, string? workType, string? description, decimal? cost,
         DateOnly? date, CancellationToken cancellationToken)
     {
-        var maintenance = await _context.Maintenance.FirstOrDefaultAsync(m => m.Id == id, cancellationToken: cancellationToken)
+        var maintenance = await _context.Maintenance.FirstOrDefaultAsync(m => m.Id == id, cancellationToken)
                           ?? throw new Exception("Maintenance not found");
 
         if (carId.HasValue)
@@ -164,10 +164,8 @@ public class MaintenanceRepository : IMaintenanceRepository
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var maintenanceEntity = await _context.Maintenance
+        return await _context.Maintenance
             .Where(m => m.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

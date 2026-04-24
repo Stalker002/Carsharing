@@ -10,10 +10,10 @@ namespace Carsharing.Tests.Application;
 public class BookingsServiceTests
 {
     private readonly Mock<IBookingRepository> _bookingRepositoryMock;
-    private readonly Mock<IClientRepository> _clientRepositoryMock;
-    private readonly Mock<ICarRepository> _carRepositoryMock;
-    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly BookingsService _bookingsService;
+    private readonly Mock<ICarRepository> _carRepositoryMock;
+    private readonly Mock<IClientRepository> _clientRepositoryMock;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
 
     public BookingsServiceTests()
     {
@@ -37,13 +37,14 @@ public class BookingsServiceTests
         var startTime = DateTime.UtcNow;
         var endTime = DateTime.UtcNow.AddHours(1);
 
-        var client = Client.Create(clientId, userId, "Test", "User", "+375291234567", "test@example.com").client!;
+        var client = Client.Create(clientId, userId, "Test", "User", "+375291234567", "test@example.com").client;
         _clientRepositoryMock
             .Setup(x => x.GetClientByUserId(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync([client]);
 
         _carRepositoryMock
-            .Setup(x => x.TryUpdateStatus(5, (int)CarStatusEnum.Available, (int)CarStatusEnum.Reserved, It.IsAny<CancellationToken>()))
+            .Setup(x => x.TryUpdateStatus(5, (int)CarStatusEnum.Available, (int)CarStatusEnum.Reserved,
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
         _bookingRepositoryMock
@@ -56,9 +57,10 @@ public class BookingsServiceTests
             .ReturnsAsync(55);
 
         using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
+        var specificToken = cts.Token;
 
-        var bookingId = await _bookingsService.CreateBooking(userId, (int)BookingStatusEnum.Active, 5, startTime, endTime, specificToken);
+        var bookingId = await _bookingsService.CreateBooking(userId, (int)BookingStatusEnum.Active, 5, startTime,
+            endTime, specificToken);
 
         Assert.Equal(55, bookingId);
         _unitOfWorkMock.Verify(x => x.BeginTransactionAsync(specificToken), Times.Once);
@@ -83,7 +85,7 @@ public class BookingsServiceTests
         var startTime = DateTime.UtcNow;
         var endTime = DateTime.UtcNow.AddHours(1);
 
-        var client = Client.Create(clientId, userId, "Test", "User", "+375291234567", "test@example.com").client!;
+        var client = Client.Create(clientId, userId, "Test", "User", "+375291234567", "test@example.com").client;
 
         var existingCar = Car.Create(
             5,
@@ -92,13 +94,14 @@ public class BookingsServiceTests
             1,
             1,
             "Center",
-            53.900634, 
+            53.900634,
             27.558973,
             50,
-            null).car!;
+            null).car;
 
         _carRepositoryMock
-            .Setup(x => x.TryUpdateStatus(5, (int)CarStatusEnum.Available, (int)CarStatusEnum.Reserved, It.IsAny<CancellationToken>()))
+            .Setup(x => x.TryUpdateStatus(5, (int)CarStatusEnum.Available, (int)CarStatusEnum.Reserved,
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
         _clientRepositoryMock
@@ -110,9 +113,11 @@ public class BookingsServiceTests
             .ReturnsAsync([existingCar]);
 
         using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
+        var specificToken = cts.Token;
 
-        await Assert.ThrowsAsync<ConflictException>(() => _bookingsService.CreateBooking(userId, (int)BookingStatusEnum.Active, 5, startTime, endTime, specificToken));
+        await Assert.ThrowsAsync<ConflictException>(() =>
+            _bookingsService.CreateBooking(userId, (int)BookingStatusEnum.Active, 5, startTime, endTime,
+                specificToken));
 
         _bookingRepositoryMock.Verify(x => x.Create(It.IsAny<Booking>(), specificToken), Times.Never);
         _unitOfWorkMock.Verify(x => x.RollbackTransactionAsync(specificToken), Times.Once);
@@ -127,10 +132,11 @@ public class BookingsServiceTests
         var startTime = DateTime.UtcNow;
         var endTime = DateTime.UtcNow.AddHours(1);
 
-        var client = Client.Create(clientId, userId, "Test", "User", "+375291234567", "test@example.com").client!;
+        var client = Client.Create(clientId, userId, "Test", "User", "+375291234567", "test@example.com").client;
 
         _carRepositoryMock
-            .Setup(x => x.TryUpdateStatus(5, (int)CarStatusEnum.Available, (int)CarStatusEnum.Reserved, It.IsAny<CancellationToken>()))
+            .Setup(x => x.TryUpdateStatus(5, (int)CarStatusEnum.Available, (int)CarStatusEnum.Reserved,
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
         _clientRepositoryMock
@@ -142,9 +148,11 @@ public class BookingsServiceTests
             .ThrowsAsync(new ArgumentException("booking create failed"));
 
         using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
+        var specificToken = cts.Token;
 
-        await Assert.ThrowsAsync<ArgumentException>(() => _bookingsService.CreateBooking(userId, (int)BookingStatusEnum.Active, 5, startTime, endTime, specificToken));
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _bookingsService.CreateBooking(userId, (int)BookingStatusEnum.Active, 5, startTime, endTime,
+                specificToken));
 
         _unitOfWorkMock.Verify(x => x.BeginTransactionAsync(specificToken), Times.Once);
         _unitOfWorkMock.Verify(x => x.CommitTransactionAsync(specificToken), Times.Never);

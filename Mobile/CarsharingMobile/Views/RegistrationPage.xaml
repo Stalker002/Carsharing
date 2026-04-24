@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage
     x:Class="CarsharingMobile.Views.RegistrationPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:sys="clr-namespace:System;assembly=netstandard"
     xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
     Title="Регистрация"
     x:DataType="vm:RegistrationViewModel"
@@ -282,13 +283,13 @@
                                     IsPassword="{Binding IsPasswordHidden}"
                                     Placeholder="Придумайте пароль *"
                                     PlaceholderColor="#ACACAC"
-                                    ReturnCommand="{Binding CompleteRegistrationCommand}"
+                                    ReturnCommand="{Binding ContinueToLicenseStepCommand}"
                                     ReturnType="Go"
                                     Text="{Binding UserPassword}"
                                     TextColor="#1E1E1E" />
                                 <ImageButton
                                     Grid.Column="1"
-                                    Padding="15"
+                                    Padding="6"
                                     BackgroundColor="Transparent"
                                     Command="{Binding TogglePasswordCommand}"
                                     Source="{Binding PasswordIcon}" />
@@ -302,6 +303,178 @@
                             <Label.Triggers>
                                 <DataTrigger
                                     Binding="{Binding UserPasswordError}"
+                                    TargetType="Label"
+                                    Value="{x:Null}">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </VerticalStackLayout>
+
+                    <Button
+                        Margin="0,20,0,0"
+                        BackgroundColor="#3296F8"
+                        Command="{Binding ContinueToLicenseStepCommand}"
+                        CornerRadius="8"
+                        FontAttributes="Bold"
+                        HeightRequest="55"
+                        Text="Продолжить"
+                        TextColor="White" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout IsVisible="{Binding IsStep4}" Spacing="15">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="24"
+                        Text="Водительские права"
+                        TextColor="#112347" />
+                    <Label
+                        FontSize="14"
+                        Text="Для завершения регистрации добавьте действующее водительское удостоверение."
+                        TextColor="#6E6E6E" />
+
+                    <VerticalStackLayout Spacing="0">
+                        <Border
+                            BackgroundColor="White"
+                            HeightRequest="50"
+                            Stroke="#E1E1E1"
+                            StrokeShape="RoundRectangle 8"
+                            StrokeThickness="1">
+                            <Entry
+                                Margin="15,0"
+                                Placeholder="Номер водительских прав *"
+                                PlaceholderColor="#ACACAC"
+                                Text="{Binding DriverLicenseNumber}"
+                                TextColor="#1E1E1E" />
+                        </Border>
+                        <Label
+                            Margin="5,4,0,0"
+                            FontSize="12"
+                            Text="{Binding DriverLicenseNumberError}"
+                            TextColor="#FF3333">
+                            <Label.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding DriverLicenseNumberError}"
+                                    TargetType="Label"
+                                    Value="{x:Null}">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="0">
+                        <Border
+                            BackgroundColor="White"
+                            HeightRequest="50"
+                            Stroke="#E1E1E1"
+                            StrokeShape="RoundRectangle 8"
+                            StrokeThickness="1">
+                            <Entry
+                                Margin="15,0"
+                                Placeholder="Категория прав, например B *"
+                                PlaceholderColor="#ACACAC"
+                                Text="{Binding DriverLicenseCategory}"
+                                TextColor="#1E1E1E" />
+                        </Border>
+                        <Label
+                            Margin="5,4,0,0"
+                            FontSize="12"
+                            Text="{Binding DriverLicenseCategoryError}"
+                            TextColor="#FF3333">
+                            <Label.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding DriverLicenseCategoryError}"
+                                    TargetType="Label"
+                                    Value="{x:Null}">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="6">
+                            <Label
+                                FontSize="13"
+                                Text="Дата выдачи"
+                                TextColor="#6E6E6E" />
+                            <Border
+                                BackgroundColor="White"
+                                HeightRequest="50"
+                                Stroke="#E1E1E1"
+                                StrokeShape="RoundRectangle 8"
+                                StrokeThickness="1">
+                                <DatePicker
+                                    Margin="12,0"
+                                    Date="{Binding DriverLicenseIssueDate}"
+                                    Format="dd.MM.yyyy"
+                                    MaximumDate="{x:Static sys:DateTime.Today}"
+                                    TextColor="#1E1E1E" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="6">
+                            <Label
+                                FontSize="13"
+                                Text="Действует до"
+                                TextColor="#6E6E6E" />
+                            <Border
+                                BackgroundColor="White"
+                                HeightRequest="50"
+                                Stroke="#E1E1E1"
+                                StrokeShape="RoundRectangle 8"
+                                StrokeThickness="1">
+                                <DatePicker
+                                    Margin="12,0"
+                                    Date="{Binding DriverLicenseExpiryDate}"
+                                    Format="dd.MM.yyyy"
+                                    MinimumDate="{Binding DriverLicenseIssueDate}"
+                                    TextColor="#1E1E1E" />
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Label
+                        Margin="5,-6,0,0"
+                        FontSize="12"
+                        Text="{Binding DriverLicenseExpiryDateError}"
+                        TextColor="#FF3333">
+                        <Label.Triggers>
+                            <DataTrigger
+                                Binding="{Binding DriverLicenseExpiryDateError}"
+                                TargetType="Label"
+                                Value="{x:Null}">
+                                <Setter Property="IsVisible" Value="False" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label
+                            FontSize="13"
+                            Text="Фото или PDF водительского удостоверения *"
+                            TextColor="#6E6E6E" />
+                        <Button
+                            BackgroundColor="#FFFFFF"
+                            BorderColor="#3296F8"
+                            BorderWidth="1"
+                            Command="{Binding PickDriverLicenseFileCommand}"
+                            CornerRadius="8"
+                            HeightRequest="50"
+                            Text="ВЫБРАТЬ ФАЙЛ"
+                            TextColor="#3296F8" />
+                        <Label
+                            FontSize="13"
+                            Text="{Binding DriverLicenseFileName, TargetNullValue='Файл не выбран'}"
+                            TextColor="#112347" />
+                        <Label
+                            FontSize="12"
+                            Text="{Binding DriverLicenseFileError}"
+                            TextColor="#FF3333">
+                            <Label.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding DriverLicenseFileError}"
                                     TargetType="Label"
                                     Value="{x:Null}">
                                     <Setter Property="IsVisible" Value="False" />

@@ -2,7 +2,7 @@
 
 namespace Carsharing.Core.Models;
 
-public class SpecificationCar
+public partial class SpecificationCar
 {
     public const int MaxBrandLength = 50;
     public const int MaxModelLength = 100;
@@ -52,13 +52,16 @@ public class SpecificationCar
         decimal maxFuel, decimal fuelPerKm)
     {
         var error = string.Empty;
-        var allowedFuelType = new[] { "Бензин", "Дизель", "Электро", "Гибрид", "Газ" };
         var allowedTransmissionType = new[] { "Автомат", "Механика", "Робот" };
 
         if (string.IsNullOrWhiteSpace(fuelType))
             error = "Fuel type can't be empty";
-        if (!allowedFuelType.Contains(fuelType))
-            error = $"Invalid fuel type. Allowed: {string.Join(", ", allowedFuelType)}";
+        if (!Enum.TryParse<Shared.Enums.FuelType>(fuelType, true, out _))
+        {
+            var allowedFuelTypes = Enum.GetNames(typeof(Shared.Enums.FuelType));
+            
+            error = $"Invalid fuel type. Allowed: {string.Join(", ", allowedFuelTypes)}";
+        }
 
         if (string.IsNullOrWhiteSpace(brand))
             error = "Brand can't be empty";
@@ -86,7 +89,7 @@ public class SpecificationCar
             error = "Vin Number can't be empty";
         if (vinNumber is { Length: > MaxVinNumberLength })
             error = $"Vin number name can't be longer than {MaxVinNumberLength} symbols";
-        if (!Regex.IsMatch(vinNumber, @"^[A-HJ-NPR-Z0-9]{17}$"))
+        if (vinNumber != null && !MyRegex().IsMatch(vinNumber))
             error = "VIN number in invalid";
 
         if (string.IsNullOrWhiteSpace(stateNumber))
@@ -105,15 +108,15 @@ public class SpecificationCar
 
         if (fuelPerKm < 0)
             error = "Fuel per km must be positive";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var specificationCar = new SpecificationCar(id, fuelType, brand, model, transmission, year, vinNumber,
             stateNumber, mileage, maxFuel, fuelPerKm);
 
         return (specificationCar, error);
     }
+
+    [GeneratedRegex(@"^[A-HJ-NPR-Z0-9]{17}$")]
+    private static partial Regex MyRegex();
 }

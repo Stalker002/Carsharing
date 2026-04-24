@@ -20,7 +20,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 
 		<LangVersion>preview</LangVersion>
-		
+
 		<Nullable>enable</Nullable>
 		<!-- https://github.com/CommunityToolkit/Maui/issues/2205 -->
 		<NoWarn>XC0103</NoWarn>
@@ -60,10 +60,10 @@
 	<ItemGroup>
 		<!-- App Icon -->
 
-		<MauiIcon Include="Resources\AppIcon\appicon.png" Color="#FFFFFF" BaseSize="1024,1024" />
+		<MauiIcon Include="Resources\AppIcon\appicon.png" Color="#FFFFFF" BaseSize="512,512" Scale="2.8"/>
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FFFFFF" BaseSize="256,256" />
-		
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FFFFFF" BaseSize="256,256" Scale="2.1"/>
+
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
 		<!-- Custom Fonts -->
@@ -74,7 +74,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiFont Include="Resources\Images\chat_icon.svg" />
+		<MauiFont Include="Resources\Images\chat_icon.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -92,13 +92,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\Shared\Shared.csproj" />
+		<ProjectReference Include="..\..\Shared\Shared.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Views\TipsPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
+		<MauiXaml Update="Views\CarDetailsPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\TipsPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 	</ItemGroup>
 
 </Project>

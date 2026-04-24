@@ -76,6 +76,20 @@ public class TripsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{id:int}/details")]
+    [Authorize(Policy = "AdminClientPolicy")]
+    public async Task<ActionResult<TripDetailsDto>> GetTripFullDetails(int id, CancellationToken cancellationToken)
+    {
+        var tripDetails = User.IsAdmin()
+            ? await _tripService.GetTripFullDetails(id, cancellationToken)
+            : await _tripService.GetTripFullDetails(User.GetRequiredUserId(), id, cancellationToken);
+
+        if (tripDetails == null)
+            return NotFound("Поездка не найдена");
+
+        return Ok(tripDetails);
+    }
+
     [HttpGet("current")]
     [Authorize(Policy = "AdminClientPolicy")]
     public async Task<ActionResult<CurrentTripDto>> GetCurrentTrip(CancellationToken cancellationToken)
@@ -91,20 +105,44 @@ public class TripsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> CreateTrip([FromBody] TripCreateRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateTrip([FromBody] TripCreateRequest request,
+        CancellationToken cancellationToken)
     {
         var userId = User.GetRequiredUserId();
         var tripId = await _tripService.CreateTripAsync(userId, request, cancellationToken);
         return Ok(tripId);
     }
 
+    [HttpPut("{id:int}/location")]
+    [Authorize(Policy = "AdminClientPolicy")]
+    public async Task<IActionResult> UpdateTripLocationPut(int id, [FromBody] UpdateTripLocationRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = User.GetRequiredUserId();
+
+        await _tripService.UpdateTripLocationAsync(userId, id, request, cancellationToken);
+
+        return Ok(new { message = "Позиция поездки обновлена" });
+    }
+
     [HttpPost("finish")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<TripFinishResult>> FinishTrip([FromBody] FinishTripRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<TripFinishResult>> FinishTrip([FromBody] FinishTripRequest request,
+        CancellationToken cancellationToken)
     {
         var userId = User.GetRequiredUserId();
         var result = await _tripService.FinishTripAsync(userId, request, cancellationToken);
         return Ok(result);
+    }
+
+    [HttpPost("{id:int}/location")]
+    [Authorize(Policy = "AdminClientPolicy")]
+    public async Task<IActionResult> UpdateTripLocation(int id, [FromBody] UpdateTripLocationRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = User.GetRequiredUserId();
+        await _tripService.UpdateTripLocationAsync(userId, id, request, cancellationToken);
+        return NoContent();
     }
 
     [HttpPost("cancel/{id:int}")]
@@ -117,7 +155,8 @@ public class TripsController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateTrip(int id, [FromBody] TripUpdateRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateTrip(int id, [FromBody] TripUpdateRequest request,
+        CancellationToken cancellationToken)
     {
         var tripId = await _tripService.UpdateTrip(id, request, cancellationToken);
         return Ok(tripId);

@@ -10,8 +10,8 @@ namespace Carsharing.Application.Services;
 public class BookingsService : IBookingsService
 {
     private readonly IBookingRepository _bookingRepository;
-    private readonly IClientRepository _clientRepository;
     private readonly ICarRepository _carRepository;
+    private readonly IClientRepository _clientRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public BookingsService(IBookingRepository bookingRepository, IClientRepository clientRepository,
@@ -51,7 +51,8 @@ public class BookingsService : IBookingsService
         return await _bookingRepository.GetByClientId(clientId, cancellationToken);
     }
 
-    public async Task<List<Booking>> GetPagedBookingsByClient(int userId, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetPagedBookingsByClient(int userId, int page, int limit,
+        CancellationToken cancellationToken)
     {
         var client = await _clientRepository.GetClientByUserId(userId, cancellationToken);
         var clientId = client.Select(c => c.Id).FirstOrDefault();
@@ -85,11 +86,12 @@ public class BookingsService : IBookingsService
         return await _bookingRepository.GetBookingWithInfo(id, cancellationToken);
     }
 
-    public async Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int userId, int id, CancellationToken cancellationToken)
+    public async Task<List<BookingWithFullInfoDto>> GetBookingWithInfo(int userId, int id,
+        CancellationToken cancellationToken)
     {
         var clientId = await GetRequiredClientId(userId, cancellationToken);
         var booking = (await _bookingRepository.GetById(id, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Booking not found");
+                      ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != clientId)
             throw new UnauthorizedAccessException("Booking does not belong to current user");
@@ -97,11 +99,12 @@ public class BookingsService : IBookingsService
         return await _bookingRepository.GetBookingWithInfo(id, cancellationToken);
     }
 
-    public async Task<int> CreateBooking(int userId, int statusId, int carId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
+    public async Task<int> CreateBooking(int userId, int statusId, int carId, DateTime startTime, DateTime endTime,
+        CancellationToken cancellationToken)
     {
         var clientId = await GetRequiredClientId(userId, cancellationToken);
 
-        var (booking, error) = Booking.Create(0, statusId, carId, clientId, startTime, endTime);
+        var (booking, error) = Booking.Create(0, (int)BookingStatusEnum.Active, carId, clientId, startTime, endTime);
 
         if (!string.IsNullOrWhiteSpace(error))
             throw new ArgumentException(error);
@@ -113,7 +116,7 @@ public class BookingsService : IBookingsService
             var wasReserved = await _carRepository.TryUpdateStatus(
                 booking.CarId,
                 (int)CarStatusEnum.Available,
-                (int)CarStatusEnum.Reserved, 
+                (int)CarStatusEnum.Reserved,
                 cancellationToken);
 
             if (!wasReserved)

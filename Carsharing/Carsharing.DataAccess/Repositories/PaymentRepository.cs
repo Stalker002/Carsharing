@@ -123,9 +123,10 @@ public class PaymentRepository : IPaymentRepository
         return paymentEntity.Id;
     }
 
-    public async Task<int> Update(int id, int? billId, decimal? sum, string? method, DateTime? date, CancellationToken cancellationToken)
+    public async Task<int> Update(int id, int? billId, decimal? sum, string? method, DateTime? date,
+        CancellationToken cancellationToken)
     {
-        var payment = await _context.Payment.FirstOrDefaultAsync(p => p.Id == id, cancellationToken: cancellationToken)
+        var payment = await _context.Payment.FirstOrDefaultAsync(p => p.Id == id, cancellationToken)
                       ?? throw new Exception("Payment not found");
 
         if (billId.HasValue)
@@ -157,10 +158,8 @@ public class PaymentRepository : IPaymentRepository
 
     public async Task<int> Delete(int id, CancellationToken cancellationToken)
     {
-        var paymentEntity = await _context.Payment
+        return await _context.Payment
             .Where(p => p.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
-
-        return id;
     }
 }

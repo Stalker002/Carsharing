@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
+
 <ContentPage
     x:Class="CarsharingMobile.Views.MainPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -6,7 +7,6 @@
     xmlns:cars="clr-namespace:Shared.Contracts.Cars;assembly=Shared"
     xmlns:controls="clr-namespace:CarsharingMobile.Extensions"
     xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
     x:DataType="vm:MainViewModel"
     Shell.NavBarIsVisible="False">
@@ -118,12 +118,14 @@
         </Grid>
 
         <Border
+            x:Name="BottomSheetBorder"
             Padding="20,10,20,30"
             BackgroundColor="White"
-            IsVisible="{Binding IsCardVisible}"
+            IsVisible="False"
             StrokeShape="RoundRectangle 20,20,0,0"
             StrokeThickness="0"
             VerticalOptions="End">
+
             <Border.Shadow>
                 <Shadow
                     Brush="Black"
@@ -131,30 +133,46 @@
                     Radius="10"
                     Offset="0,-2" />
             </Border.Shadow>
+
             <Border.GestureRecognizers>
                 <SwipeGestureRecognizer Command="{Binding CloseCardCommand}" Direction="Down" />
             </Border.GestureRecognizers>
+
             <VerticalStackLayout Spacing="15">
-                <BoxView
-                    Margin="0,0,0,10"
-                    CornerRadius="2"
-                    HeightRequest="4"
-                    HorizontalOptions="Center"
-                    WidthRequest="40"
-                    Color="#E1E1E1">
-                    <BoxView.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding CloseCardCommand}" />
-                    </BoxView.GestureRecognizers>
-                </BoxView>
+                <Grid Margin="0,0,0,0" ColumnDefinitions="*, Auto">
+                    <BoxView
+                        Grid.ColumnSpan="2"
+                        CornerRadius="2"
+                        HeightRequest="4"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        WidthRequest="40"
+                        Color="#E1E1E1" />
+
+                    <Label
+                        Grid.Column="1"
+                        Padding="0"
+                        FontAttributes="Bold"
+                        FontSize="22"
+                        Text="✕"
+                        TextColor="#999"
+                        VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding CloseCardCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
                 <Grid ColumnDefinitions="120, *" ColumnSpacing="15">
                     <Image
                         Grid.Column="0"
                         Aspect="AspectFit"
                         HeightRequest="80"
-                        Source="{Binding SelectedCar.ImagePath, TargetNullValue='car_placeholder.png'}" />
+                        Source="{Binding SelectedCar.ImagePath, TargetNullValue='car_placeholder.png'}"
+                        VerticalOptions="Start" />
+
                     <VerticalStackLayout
                         Grid.Column="1"
-                        Spacing="2"
+                        Spacing="4"
                         VerticalOptions="Center">
                         <Label
                             FontAttributes="Bold"
@@ -168,35 +186,80 @@
                                 </FormattedString>
                             </Label.FormattedText>
                         </Label>
-                        <Label
-                            FontSize="13"
-                            Text="{Binding SelectedCar.Transmission}"
-                            TextColor="#999" />
+
+                        <HorizontalStackLayout Spacing="5">
+                            <Label
+                                FontSize="13"
+                                Text="{Binding SelectedCar.Transmission, StringFormat='Коробка: {0}'}"
+                                TextColor="#6E6E6E"
+                                VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+
+                        <Border
+                            Margin="0,2,0,0"
+                            Padding="6,2"
+                            BackgroundColor="White"
+                            HorizontalOptions="Start"
+                            Stroke="#C8C8C8"
+                            StrokeShape="RoundRectangle 4"
+                            StrokeThickness="1">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                Text="{Binding SelectedCar.StateNumber}"
+                                TextColor="Black" />
+                        </Border>
                     </VerticalStackLayout>
                 </Grid>
+
+                <BoxView
+                    Margin="0,5"
+                    HeightRequest="1"
+                    Color="#E1E1E1" />
+
                 <Grid Padding="10,0" ColumnDefinitions="*, *">
-                    <VerticalStackLayout Grid.Column="0" Spacing="0">
+                    <VerticalStackLayout
+                        Grid.Column="0"
+                        Spacing="2"
+                        VerticalOptions="Center">
                         <Label
                             FontAttributes="Bold"
                             FontSize="18"
-                            HorizontalOptions="Center"
-                            Text="{Binding SelectedCar.PricePerDay, StringFormat='{0} byn/день'}"
+                            Text="{Binding SelectedCar.PricePerMinute, StringFormat='{0:0.##} byn / мин'}"
                             TextColor="Black" />
+                        <Label
+                            FontSize="13"
+                            Text="{Binding SelectedCar.PricePerKm, StringFormat='{0:0.##} byn / км'}"
+                            TextColor="#6E6E6E" />
+                        <Label
+                            FontSize="13"
+                            Text="{Binding SelectedCar.PricePerDay, StringFormat='{0:0.##} byn / день'}"
+                            TextColor="#6E6E6E" />
                     </VerticalStackLayout>
+
                     <VerticalStackLayout
                         Grid.Column="1"
                         Spacing="2"
                         VerticalOptions="Center">
                         <Label
                             FontAttributes="Bold"
-                            FontSize="16"
+                            FontSize="20"
                             HorizontalOptions="Center"
-                            Text="{Binding SelectedCar.MaxFuel, StringFormat='{0} л.'}"
-                            TextColor="Black" />
+                            Text="{Binding SelectedCar.FuelLevel, StringFormat='{0:0}%'}"
+                            TextColor="Black">
+                            <Label.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding SelectedCar.FuelLevel}"
+                                    TargetType="Label"
+                                    Value="15">
+                                    <Setter Property="TextColor" Value="#FF3333" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
                         <Label
-                            FontSize="11"
+                            FontSize="10"
                             HorizontalOptions="Center"
-                            Text="ОБЪЕМ БАКА"
+                            Text="ОСТАЛОСЬ ТОПЛИВА"
                             TextColor="#999" />
                     </VerticalStackLayout>
                 </Grid>
@@ -211,6 +274,135 @@
                     Text="ЗАБРОНИРОВАТЬ"
                     TextColor="White" />
             </VerticalStackLayout>
+        </Border>
+        <Border
+            Padding="20,15,20,25"
+            BackgroundColor="#112347"
+            IsVisible="{Binding IsBookingCardVisible}"
+            StrokeShape="RoundRectangle 20,20,0,0"
+            StrokeThickness="0"
+            VerticalOptions="End">
+
+            <Border.Shadow>
+                <Shadow
+                    Brush="Black"
+                    Opacity="0.4"
+                    Radius="10"
+                    Offset="0,-4" />
+            </Border.Shadow>
+
+            <VerticalStackLayout Spacing="12">
+
+                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                    <VerticalStackLayout
+                        Grid.Column="0"
+                        Spacing="0"
+                        VerticalOptions="Center">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="20"
+                            Text="Машина ждет вас"
+                            TextColor="White" />
+                        <Label
+                            FontSize="14"
+                            Text="{Binding BookedCarDetails.Brand, StringFormat='{0} • '}"
+                            TextColor="#ACACAC"
+                            VerticalOptions="Center">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{Binding BookedCarDetails.Brand}" />
+                                    <Span Text=" • " />
+                                    <Span
+                                        FontAttributes="Bold"
+                                        Text="{Binding BookedCarDetails.StateNumber}"
+                                        TextColor="#3296F8" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </VerticalStackLayout>
+
+                    <Image
+                        Grid.Column="1"
+                        Aspect="AspectFit"
+                        HeightRequest="45"
+                        Source="{Binding BookedCarDetails.ImagePath, TargetNullValue='car_placeholder.png'}" />
+                </Grid>
+
+                <Grid
+                    Margin="0,5"
+                    ColumnDefinitions="*, Auto, Auto"
+                    ColumnSpacing="10">
+                    <VerticalStackLayout
+                        Grid.Column="0"
+                        Spacing="2"
+                        VerticalOptions="Center">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="{Binding SelectedTariffTitle, StringFormat='Тариф: {0}'}"
+                            TextColor="White" />
+                        <Label
+                            FontSize="13"
+                            Text="{Binding SelectedTariffPriceText}"
+                            TextColor="#ACACAC" />
+                    </VerticalStackLayout>
+
+                    <Button
+                        Grid.Column="1"
+                        Padding="0"
+                        BackgroundColor="Transparent"
+                        BorderColor="#FF3333"
+                        BorderWidth="1"
+                        CornerRadius="8"
+                        FontAttributes="Bold"
+                        FontSize="12"
+                        HeightRequest="40"
+                        Text="ОТМЕНИТЬ"
+                        TextColor="#FF3333" />
+                    <Button
+                        Grid.Column="2"
+                        Padding="0"
+                        BackgroundColor="#213868"
+                        CornerRadius="8"
+                        FontAttributes="Bold"
+                        FontSize="12"
+                        HeightRequest="40"
+                        Text="МОРГНУТЬ"
+                        TextColor="White" />
+                </Grid>
+
+                <Button
+                    BackgroundColor="#76C54A"
+                    Command="{Binding StartTripCommand}"
+                    CornerRadius="8"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="50"
+                    Text="НАЧАТЬ ПОЕЗДКУ"
+                    TextColor="White" />
+
+            </VerticalStackLayout>
+        </Border>
+        <Border
+            BackgroundColor="White"
+            HeightRequest="50"
+            HorizontalOptions="Center"
+            IsVisible="{Binding IsBusy}"
+            StrokeShape="RoundRectangle 25"
+            StrokeThickness="0"
+            VerticalOptions="Center"
+            WidthRequest="50">
+            <Border.Shadow>
+                <Shadow
+                    Brush="Black"
+                    Opacity="0.2"
+                    Radius="5"
+                    Offset="0,2" />
+            </Border.Shadow>
+            <ActivityIndicator
+                Margin="10"
+                IsRunning="{Binding IsBusy}"
+                Color="#3296F8" />
         </Border>
     </Grid>
 </ContentPage>

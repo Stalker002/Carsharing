@@ -1,18 +1,19 @@
 using Microsoft.Maui.Controls.Maps;
-using Microsoft.Maui.Devices.Sensors;
 
 namespace CarsharingMobile.Extensions;
 
 public class CarPin : Pin
 {
     public static readonly BindableProperty ImageUrlProperty =
-        BindableProperty.Create(nameof(ImageUrl), typeof(string), typeof(CarPin), null);
+        BindableProperty.Create(nameof(ImageUrl), typeof(string), typeof(CarPin));
 
     public static readonly BindableProperty LatitudeProperty =
-        BindableProperty.Create(nameof(Latitude), typeof(double?), typeof(CarPin), null, propertyChanged: OnCoordinateChanged);
+        BindableProperty.Create(nameof(Latitude), typeof(double?), typeof(CarPin),
+            propertyChanged: OnCoordinateChanged);
 
     public static readonly BindableProperty LongitudeProperty =
-        BindableProperty.Create(nameof(Longitude), typeof(double?), typeof(CarPin), null, propertyChanged: OnCoordinateChanged);
+        BindableProperty.Create(nameof(Longitude), typeof(double?), typeof(CarPin),
+            propertyChanged: OnCoordinateChanged);
 
     public string? ImageUrl
     {

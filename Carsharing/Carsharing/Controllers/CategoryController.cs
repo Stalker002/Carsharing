@@ -29,7 +29,8 @@ public class CategoryController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> CreateCategory([FromBody] CategoriesRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreateCategory([FromBody] CategoriesRequest request,
+        CancellationToken cancellationToken)
     {
         var (category, error) = Category.Create(
             0,
@@ -44,7 +45,8 @@ public class CategoryController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdateCategory(int id, [FromBody] CategoriesRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdateCategory(int id, [FromBody] CategoriesRequest request,
+        CancellationToken cancellationToken)
     {
         var categoryId = await _categoriesService.UpdateCategory(id, request.Name, cancellationToken);
 

@@ -29,6 +29,7 @@ public class ReviewConfiguration : IEntityTypeConfiguration<ReviewEntity>
 
         builder.Property(r => r.Comment)
             .HasColumnName("review_comment")
+            .HasMaxLength(300)
             .IsRequired();
 
         builder.Property(r => r.Date)

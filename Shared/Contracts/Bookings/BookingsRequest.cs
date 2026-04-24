@@ -6,4 +6,4 @@ public record BookingsRequest(
     int ClientId,
     DateTime StartTime,
     DateTime EndTime
-    );
+);

@@ -10,10 +10,10 @@ namespace Carsharing.Application.Services;
 public class CarsService : ICarsService
 {
     private readonly ICarRepository _carRepository;
-    private readonly ITariffRepository _tariffRepository;
-    private readonly ISpecificationCarRepository _specificationCarRepository;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IImageService _imageService;
+    private readonly ISpecificationCarRepository _specificationCarRepository;
+    private readonly ITariffRepository _tariffRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     public CarsService(ICarRepository carRepository, ITariffRepository tariffRepository,
         ISpecificationCarRepository specificationCarRepository, IUnitOfWork unitOfWork, IImageService imageService)
@@ -35,7 +35,8 @@ public class CarsService : ICarsService
         return await _carRepository.GetPaged(page, limit, cancellationToken);
     }
 
-    public async Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit,
+        CancellationToken cancellationToken)
     {
         return await _carRepository.GetPagedCarsByClients(page, limit, cancellationToken);
     }
@@ -43,6 +44,11 @@ public class CarsService : ICarsService
     public async Task<int> GetCount(CancellationToken cancellationToken)
     {
         return await _carRepository.GetCount(cancellationToken);
+    }
+
+    public async Task<int> GetAvailableCount(CancellationToken cancellationToken)
+    {
+        return await _carRepository.GetAvailableCount(cancellationToken);
     }
 
     public async Task<List<Car>> GetCarById(int id, CancellationToken cancellationToken)
@@ -60,14 +66,10 @@ public class CarsService : ICarsService
         return await _carRepository.GetCarWithInfoAdmin(id, cancellationToken);
     }
 
-    public async Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page,
+        int limit, CancellationToken cancellationToken)
     {
         return await _carRepository.GetCarWithMinInfoByCategoryIds(categoryIds, page, limit, cancellationToken);
-    }
-
-    public async Task<List<Car>> GetPagedCarsByCategoryIds(List<int> categoryIds, int page, int limit, CancellationToken cancellationToken)
-    {
-        return await _carRepository.GetPagedByCategoryId(categoryIds, page, limit, cancellationToken);
     }
 
     public async Task<int> GetCountByCategory(List<int> categoryIds, CancellationToken cancellationToken)
@@ -75,12 +77,18 @@ public class CarsService : ICarsService
         return await _carRepository.GetCountByCategory(categoryIds, cancellationToken);
     }
 
+    public async Task<int> GetAvailableCountByCategory(List<int> categoryIds, CancellationToken cancellationToken)
+    {
+        return await _carRepository.GetAvailableCountByCategory(categoryIds, cancellationToken);
+    }
+
     public async Task<int> CreateCar(Car car, CancellationToken cancellationToken)
     {
         return await _carRepository.Create(car, cancellationToken);
     }
 
-    public async Task<(int? Id, string Error)> CreateCarFullAsync(CarsCreateRequest request, CancellationToken cancellationToken)
+    public async Task<(int? Id, string Error)> CreateCarFullAsync(CarsCreateRequest request,
+        CancellationToken cancellationToken)
     {
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
         string? savedImagePath = null;
@@ -114,9 +122,7 @@ public class CarsService : ICarsService
             var specificationId = await _specificationCarRepository.Create(spec, cancellationToken);
 
             if (request.Image is { Length: > 0 })
-            {
                 savedImagePath = await _imageService.SaveCarImageAsync(request.Image, cancellationToken);
-            }
 
             var (car, errorCar) = Car.Create(
                 0,
@@ -148,15 +154,14 @@ public class CarsService : ICarsService
             if (savedImagePath != null) await _imageService.DeleteFile(savedImagePath, cancellationToken);
 
             if (ex.InnerException?.Message.Contains("23505") == true)
-            {
                 return (null, "Машина с таким номером или VIN уже существует.");
-            }
 
             return (null, $"Internal error: {ex.Message}");
         }
     }
 
-    public async Task<(bool IsSuccess, string Error)> UpdateCarFullAsync(int id, CarUpdateDto request, CancellationToken cancellationToken)
+    public async Task<(bool IsSuccess, string Error)> UpdateCarFullAsync(int id, CarUpdateDto request,
+        CancellationToken cancellationToken)
     {
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
         string? newImagePathSystem = null;
@@ -200,14 +205,14 @@ public class CarsService : ICarsService
             }
 
             await _carRepository.Update(
-                id: id,
-                statusId: request.StatusId,
+                id,
+                request.StatusId,
                 categoryId: request.CategoryId,
                 tariffId: null,
                 specificationId: null,
                 location: request.Location,
-                latitude:  request.Latitude,
-                longitude:  request.Longitude,
+                latitude: request.Latitude,
+                longitude: request.Longitude,
                 fuelLevel: request.FuelLevel,
                 imagePath: imagePathToUpdate,
                 cancellationToken: cancellationToken
@@ -221,15 +226,10 @@ public class CarsService : ICarsService
         {
             await _unitOfWork.RollbackTransactionAsync(cancellationToken);
 
-            if (newImagePathSystem != null)
-            {
-                await _imageService.DeleteFile(newImagePathSystem, cancellationToken);
-            }
+            if (newImagePathSystem != null) await _imageService.DeleteFile(newImagePathSystem, cancellationToken);
 
             if (ex.InnerException?.Message.Contains("23505") == true)
-            {
                 return (false, "Дубликат данных: VIN или Гос. номер уже занят.");
-            }
 
             return ex is ArgumentException ? (false, ex.Message) : (false, $"Internal error: {ex.Message}");
         }
@@ -245,8 +245,31 @@ public class CarsService : ICarsService
         await _carRepository.UpdateStatus(carId, (int)CarStatusEnum.Available, cancellationToken);
     }
 
+    public async Task UpdateCarLocationAsync(int carId, string location, double latitude, double longitude,
+        CancellationToken cancellationToken)
+    {
+        await _carRepository.Update(
+            carId,
+            statusId: null,
+            tariffId: null,
+            categoryId: null,
+            specificationId: null,
+            location: location,
+            latitude: latitude,
+            longitude: longitude,
+            fuelLevel: null,
+            imagePath: null,
+            cancellationToken: cancellationToken);
+    }
+
     public async Task<int> DeleteCar(int id, CancellationToken cancellationToken)
     {
         return await _carRepository.Delete(id, cancellationToken);
+    }
+
+    public async Task<List<Car>> GetPagedCarsByCategoryIds(List<int> categoryIds, int page, int limit,
+        CancellationToken cancellationToken)
+    {
+        return await _carRepository.GetPagedByCategoryId(categoryIds, page, limit, cancellationToken);
     }
 }

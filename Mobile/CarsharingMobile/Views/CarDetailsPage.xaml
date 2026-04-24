@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CarsharingMobile.Views.CarDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
+    Title="Детали авто"
+    x:DataType="vm:CarDetailsViewModel"
+    BackgroundColor="#F4F5F7"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <Grid
+            Grid.Row="0"
+            Padding="15,20"
+            ColumnDefinitions="Auto, *"
+            HeightRequest="80">
+            <ImageButton
+                BackgroundColor="Transparent"
+                Command="{Binding GoBackCommand}"
+                HeightRequest="24"
+                HorizontalOptions="Start"
+                Source="back_icon_dark.png"
+                WidthRequest="24" />
+            <Label
+                Grid.Column="1"
+                Margin="-24,0,0,0"
+                FontAttributes="Bold"
+                FontSize="20"
+                HorizontalOptions="Center"
+                Text="Подтверждение"
+                TextColor="#112347"
+                VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20,0" Spacing="10">
+
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="10">
+                    <Label HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span
+                                    FontAttributes="Bold"
+                                    FontSize="28"
+                                    Text="{Binding Car.Brand}"
+                                    TextColor="#112347" />
+
+                                <Span Text="   " />
+
+                                <Span
+                                    FontSize="22"
+                                    Text="{Binding Car.Model}"
+                                    TextColor="#6E6E6E" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+
+                    <Image
+                        Margin="0,10"
+                        Aspect="AspectFit"
+                        HeightRequest="180"
+                        Source="{Binding Car.ImagePath, TargetNullValue='car_placeholder.png'}" />
+
+                    <Border
+                        Padding="15,5"
+                        BackgroundColor="White"
+                        HorizontalOptions="Center"
+                        Stroke="#C8C8C8"
+                        StrokeShape="RoundRectangle 6"
+                        StrokeThickness="1">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="{Binding Car.StateNumber}"
+                            TextColor="Black" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <Border
+                    Margin="0,10"
+                    Padding="20"
+                    BackgroundColor="White"
+                    Stroke="#E1E1E1"
+                    StrokeShape="RoundRectangle 12"
+                    StrokeThickness="1">
+                    <Grid
+                        ColumnDefinitions="*, *"
+                        RowDefinitions="Auto, Auto, Auto"
+                        RowSpacing="15">
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0">
+                            <Label
+                                FontSize="12"
+                                Text="Топливо"
+                                TextColor="#999" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="{Binding Car.FuelLevel, StringFormat='{0:0}%'}"
+                                TextColor="#112347" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1">
+                            <Label
+                                FontSize="12"
+                                Text="Коробка"
+                                TextColor="#999" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="{Binding Car.Transmission}"
+                                TextColor="#112347" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                            <Label
+                                FontSize="12"
+                                Text="Минута"
+                                TextColor="#999" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="{Binding Car.PricePerMinute, StringFormat='{0:0.00} BYN'}"
+                                TextColor="#3296F8" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+                            <Label
+                                FontSize="12"
+                                Text="Километр"
+                                TextColor="#999" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="{Binding Car.PricePerKm, StringFormat='{0:0.00} BYN'}"
+                                TextColor="#3296F8" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="0">
+                            <Label
+                                FontSize="12"
+                                Text="Сутки"
+                                TextColor="#999" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="{Binding Car.PricePerDay, StringFormat='{0:0.00} BYN'}"
+                                TextColor="#3296F8" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="1">
+                            <Label
+                                FontSize="12"
+                                Text="Категория"
+                                TextColor="#999" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="{Binding Car.CategoryName}"
+                                TextColor="#112347" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <VerticalStackLayout Spacing="10">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        Text="Выберите тариф"
+                        TextColor="#112347" />
+
+                    <Grid
+                        ColumnDefinitions="*,*,*"
+                        ColumnSpacing="10">
+                        <Border
+                            Grid.Column="0"
+                            Padding="12"
+                            BackgroundColor="White"
+                            Stroke="#D9DDE5"
+                            StrokeShape="RoundRectangle 12"
+                            StrokeThickness="1">
+                            <Border.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsPerMinuteTariffSelected}"
+                                    TargetType="Border"
+                                    Value="True">
+                                    <Setter Property="BackgroundColor" Value="#EAF4FF" />
+                                    <Setter Property="Stroke" Value="#3296F8" />
+                                    <Setter Property="StrokeThickness" Value="2" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding SelectTariffCommand}"
+                                    CommandParameter="per_minute" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="4">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="14"
+                                    Text="Мин"
+                                    TextColor="#112347" />
+                                <Label
+                                    FontSize="12"
+                                    Text="{Binding Car.PricePerMinute, StringFormat='{0:0.00} BYN/мин'}"
+                                    TextColor="#6E6E6E" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border
+                            Grid.Column="1"
+                            Padding="12"
+                            BackgroundColor="White"
+                            Stroke="#D9DDE5"
+                            StrokeShape="RoundRectangle 12"
+                            StrokeThickness="1">
+                            <Border.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsPerKmTariffSelected}"
+                                    TargetType="Border"
+                                    Value="True">
+                                    <Setter Property="BackgroundColor" Value="#EAF4FF" />
+                                    <Setter Property="Stroke" Value="#3296F8" />
+                                    <Setter Property="StrokeThickness" Value="2" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding SelectTariffCommand}"
+                                    CommandParameter="per_km" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="4">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="14"
+                                    Text="Км"
+                                    TextColor="#112347" />
+                                <Label
+                                    FontSize="12"
+                                    Text="{Binding Car.PricePerKm, StringFormat='{0:0.00} BYN/км'}"
+                                    TextColor="#6E6E6E" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border
+                            Grid.Column="2"
+                            Padding="12"
+                            BackgroundColor="White"
+                            Stroke="#D9DDE5"
+                            StrokeShape="RoundRectangle 12"
+                            StrokeThickness="1">
+                            <Border.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsPerDayTariffSelected}"
+                                    TargetType="Border"
+                                    Value="True">
+                                    <Setter Property="BackgroundColor" Value="#EAF4FF" />
+                                    <Setter Property="Stroke" Value="#3296F8" />
+                                    <Setter Property="StrokeThickness" Value="2" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding SelectTariffCommand}"
+                                    CommandParameter="per_day" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="4">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="14"
+                                    Text="Сутки"
+                                    TextColor="#112347" />
+                                <Label
+                                    FontSize="12"
+                                    Text="{Binding Car.PricePerDay, StringFormat='{0:0.00} BYN/сутки'}"
+                                    TextColor="#6E6E6E" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <Label
+                        FontSize="13"
+                        Text="{Binding SelectedTariffTitle, StringFormat='Будет использован: {0}'}"
+                        TextColor="#3296F8" />
+                </VerticalStackLayout>
+
+                <Grid
+                    Margin="0,10"
+                    ColumnDefinitions="Auto, *"
+                    ColumnSpacing="10">
+
+                    <Image
+                        Grid.Column="0"
+                        Margin="0,2,0,0"
+                        HeightRequest="20"
+                        Source="info_icon_dark.png"
+                        VerticalOptions="Start" />
+
+                    <Label
+                        Grid.Column="1"
+                        FontSize="12"
+                        LineBreakMode="WordWrap"
+                        Text="У вас будет 20 бесплатных минут, чтобы дойти до автомобиля и осмотреть его перед началом поездки."
+                        TextColor="#6E6E6E" />
+
+                </Grid>
+
+                <ActivityIndicator
+                    HorizontalOptions="Center"
+                    IsRunning="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}"
+                    Color="#76C54A" />
+
+                <Button
+                    Margin="0,10,0,30"
+                    BackgroundColor="#76C54A"
+                    Command="{Binding ConfirmBookingCommand}"
+                    CornerRadius="8"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="55"
+                    Text="ПОДТВЕРДИТЬ БРОНЬ"
+                    TextColor="White" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

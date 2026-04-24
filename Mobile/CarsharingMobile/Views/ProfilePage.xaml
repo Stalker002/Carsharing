@@ -3,15 +3,16 @@
     x:Class="CarsharingMobile.Views.ProfilePage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Мой профиль"
-    BackgroundColor="#F4F5F7"
+    xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
+    x:DataType="vm:ProfileViewModel"
+    BackgroundColor="{StaticResource BgLight}"
     Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto,*">
         <Grid
             Grid.Row="0"
             Padding="15,20"
-            ColumnDefinitions="Auto, *"
+            ColumnDefinitions="Auto,*"
             HeightRequest="80">
             <ImageButton
                 BackgroundColor="Transparent"
@@ -27,69 +28,195 @@
                 FontSize="20"
                 HorizontalOptions="Center"
                 Text="Профиль"
-                TextColor="#112347"
+                TextColor="{StaticResource TextDark}"
                 VerticalOptions="Center" />
         </Grid>
 
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="30" Spacing="20">
+        <RefreshView
+            Grid.Row="1"
+            Command="{Binding RefreshCommand}"
+            IsRefreshing="{Binding IsRefreshing}">
+            <Grid>
+                <ScrollView>
+                    <VerticalStackLayout Padding="16,0,16,24" Spacing="16">
+                        <Border
+                            Padding="20"
+                            BackgroundColor="#112347"
+                            StrokeShape="RoundRectangle 24"
+                            StrokeThickness="0">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                                <Border
+                                    BackgroundColor="#1F3B73"
+                                    HeightRequest="72"
+                                    StrokeShape="RoundRectangle 22"
+                                    StrokeThickness="0"
+                                    WidthRequest="72">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="28"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding Initials}"
+                                        TextColor="White"
+                                        VerticalTextAlignment="Center" />
+                                </Border>
 
-                <Border
-                    BackgroundColor="#E1E1E1"
-                    HeightRequest="100"
+                                <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="22"
+                                        Text="{Binding FullName}"
+                                        TextColor="White" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="Личный кабинет клиента"
+                                        TextColor="#D6E2FF" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="{Binding DocumentsSubtitle}"
+                                        TextColor="#AFC6F5" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <Border
+                            Padding="14"
+                            BackgroundColor="#FFF3F3"
+                            IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                            Stroke="#F1C6C6"
+                            StrokeShape="RoundRectangle 12"
+                            StrokeThickness="1">
+                            <Label
+                                FontSize="14"
+                                Text="{Binding ErrorMessage}"
+                                TextColor="#A33A3A" />
+                        </Border>
+
+                        <Border
+                            Padding="18,14"
+                            Style="{StaticResource CardBorderStyle}">
+                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="22"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding DocumentsCountText}"
+                                        TextColor="{StaticResource TextDark}" />
+                                    <Label
+                                        FontSize="12"
+                                        HorizontalTextAlignment="Center"
+                                        Text="Всего"
+                                        TextColor="{StaticResource TextGray}" />
+                                </VerticalStackLayout>
+
+                                <BoxView
+                                    Grid.Column="0"
+                                    HorizontalOptions="End"
+                                    WidthRequest="1"
+                                    Color="{StaticResource BorderLight}" />
+
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="22"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding ActiveDocumentsCountText}"
+                                        TextColor="{StaticResource TextDark}" />
+                                    <Label
+                                        FontSize="12"
+                                        HorizontalTextAlignment="Center"
+                                        Text="Действуют"
+                                        TextColor="{StaticResource TextGray}" />
+                                </VerticalStackLayout>
+
+                                <BoxView
+                                    Grid.Column="1"
+                                    HorizontalOptions="End"
+                                    WidthRequest="1"
+                                    Color="{StaticResource BorderLight}" />
+
+                                <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="22"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding ExpiringDocumentsCountText}"
+                                        TextColor="{StaticResource TextDark}" />
+                                    <Label
+                                        FontSize="12"
+                                        HorizontalTextAlignment="Center"
+                                        Text="Скоро истекут"
+                                        TextColor="{StaticResource TextGray}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <VerticalStackLayout Spacing="12">
+                            <Label Style="{StaticResource SectionTitleLabelStyle}" Text="Контактные данные" />
+
+                            <Border Padding="16" Style="{StaticResource CardBorderStyle}">
+                                <VerticalStackLayout Spacing="14">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                        <Border
+                                            BackgroundColor="#EEF4FF"
+                                            HeightRequest="40"
+                                            StrokeShape="RoundRectangle 12"
+                                            StrokeThickness="0"
+                                            WidthRequest="40" />
+                                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                            <Label FontSize="12" Text="Телефон" TextColor="{StaticResource TextGray}" />
+                                            <Label FontAttributes="Bold" FontSize="16" Text="{Binding PhoneNumber}" TextColor="{StaticResource TextDark}" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+
+                                    <BoxView HeightRequest="1" Color="{StaticResource BorderLight}" />
+
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                        <Border
+                                            BackgroundColor="#EEF4FF"
+                                            HeightRequest="40"
+                                            StrokeShape="RoundRectangle 12"
+                                            StrokeThickness="0"
+                                            WidthRequest="40" />
+                                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                            <Label FontSize="12" Text="Email" TextColor="{StaticResource TextGray}" />
+                                            <Label FontAttributes="Bold" FontSize="16" Text="{Binding Email}" TextColor="{StaticResource TextDark}" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="12">
+                            <Label Style="{StaticResource SectionTitleLabelStyle}" Text="Документы" />
+
+                            <Border Padding="16" Style="{StaticResource CardBorderStyle}">
+                                <VerticalStackLayout Spacing="12">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Text="Паспорт и водительские документы"
+                                        TextColor="{StaticResource TextDark}" />
+                                    <Label
+                                        FontSize="13"
+                                        Text="{Binding DocumentsSubtitle}"
+                                        TextColor="{StaticResource TextGray}" />
+                                    <Button
+                                        Command="{Binding OpenDocumentsCommand}"
+                                        Text="ОТКРЫТЬ ДОКУМЕНТЫ" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <ActivityIndicator
                     HorizontalOptions="Center"
-                    StrokeShape="RoundRectangle 50"
-                    StrokeThickness="0"
-                    WidthRequest="100">
-                    <Label
-                        FontSize="50"
-                        HorizontalOptions="Center"
-                        Text="👤"
-                        VerticalOptions="Center" />
-                </Border>
-
-                <VerticalStackLayout Spacing="5">
-                    <Label
-                        FontSize="12"
-                        Text="Имя"
-                        TextColor="#6E6E6E" />
-                    <Border
-                        Padding="15"
-                        BackgroundColor="White"
-                        Stroke="#E1E1E1"
-                        StrokeShape="RoundRectangle 8">
-                        <Label
-                            FontSize="16"
-                            Text="Михаил"
-                            TextColor="#112347" />
-                    </Border>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="5">
-                    <Label
-                        FontSize="12"
-                        Text="Телефон"
-                        TextColor="#6E6E6E" />
-                    <Border
-                        Padding="15"
-                        BackgroundColor="White"
-                        Stroke="#E1E1E1"
-                        StrokeShape="RoundRectangle 8">
-                        <Label
-                            FontSize="16"
-                            Text="+375 29 111 22 33"
-                            TextColor="#112347" />
-                    </Border>
-                </VerticalStackLayout>
-
-                <Button
-                    Margin="0,20,0,0"
-                    BackgroundColor="#3296F8"
-                    CornerRadius="8"
-                    HeightRequest="50"
-                    Text="Редактировать"
-                    TextColor="White" />
-            </VerticalStackLayout>
-        </ScrollView>
+                    IsRunning="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}"
+                    VerticalOptions="Center"
+                    Color="{StaticResource Primary}" />
+            </Grid>
+        </RefreshView>
     </Grid>
 </ContentPage>

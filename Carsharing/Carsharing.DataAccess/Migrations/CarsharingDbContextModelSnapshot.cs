@@ -100,22 +100,22 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 13,
+                            Id = 1,
                             Name = "Не оплачен"
                         },
                         new
                         {
-                            Id = 14,
+                            Id = 2,
                             Name = "Частично оплачен"
                         },
                         new
                         {
-                            Id = 15,
+                            Id = 3,
                             Name = "Оплачен"
                         },
                         new
                         {
-                            Id = 16,
+                            Id = 4,
                             Name = "Отменён"
                         });
                 });
@@ -185,17 +185,17 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 5,
+                            Id = 1,
                             Name = "Активно"
                         },
                         new
                         {
-                            Id = 6,
+                            Id = 2,
                             Name = "Завершено"
                         },
                         new
                         {
-                            Id = 7,
+                            Id = 3,
                             Name = "Отменено"
                         });
                 });
@@ -479,7 +479,8 @@ namespace Carsharing.DataAccess.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("fine_type");
 
                     b.HasKey("Id");
@@ -514,17 +515,17 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 17,
+                            Id = 1,
                             Name = "Начислен"
                         },
                         new
                         {
-                            Id = 18,
+                            Id = 2,
                             Name = "Ожидает оплаты"
                         },
                         new
                         {
-                            Id = 19,
+                            Id = 3,
                             Name = "Оплачен"
                         });
                 });
@@ -611,17 +612,17 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 23,
+                            Id = 1,
                             Name = "Активна"
                         },
                         new
                         {
-                            Id = 24,
+                            Id = 2,
                             Name = "Истекла"
                         },
                         new
                         {
-                            Id = 25,
+                            Id = 3,
                             Name = "Аннулирована"
                         });
                 });
@@ -649,7 +650,8 @@ namespace Carsharing.DataAccess.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
                         .HasColumnName("maintenance_description");
 
                     b.Property<string>("WorkType")
@@ -770,17 +772,17 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 20,
+                            Id = 1,
                             Name = "Активен"
                         },
                         new
                         {
-                            Id = 21,
+                            Id = 2,
                             Name = "Истёк"
                         },
                         new
                         {
-                            Id = 22,
+                            Id = 3,
                             Name = "Использован"
                         });
                 });
@@ -804,7 +806,8 @@ namespace Carsharing.DataAccess.Migrations
 
                     b.Property<string>("Comment")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
                         .HasColumnName("review_comment");
 
                     b.Property<DateTime>("Date")
@@ -1119,27 +1122,27 @@ namespace Carsharing.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 8,
+                            Id = 1,
                             Name = "Ожидание начала"
                         },
                         new
                         {
-                            Id = 9,
+                            Id = 2,
                             Name = "В пути"
                         },
                         new
                         {
-                            Id = 10,
+                            Id = 3,
                             Name = "Завершена"
                         },
                         new
                         {
-                            Id = 11,
+                            Id = 4,
                             Name = "Отменена системой"
                         },
                         new
                         {
-                            Id = 12,
+                            Id = 5,
                             Name = "Требуется оплата"
                         });
                 });

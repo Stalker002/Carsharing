@@ -13,6 +13,7 @@ public interface ICarsService
     Task<List<CarWithMinInfoDto>> GetPagedCarsByClients(int page, int limit, CancellationToken cancellationToken);
 
     Task<int> GetCount(CancellationToken cancellationToken);
+    Task<int> GetAvailableCount(CancellationToken cancellationToken);
 
     Task<List<Car>> GetCarById(int id, CancellationToken cancellationToken);
 
@@ -20,19 +21,25 @@ public interface ICarsService
 
     Task<List<CarWithInfoAdminDto>> GetCarWithInfoAdmin(int id, CancellationToken cancellationToken);
 
-    Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit, CancellationToken cancellationToken);
+    Task<List<CarWithMinInfoDto>> GetCarWithMinInfoByCategoryIds(List<int> categoryIds, int page, int limit,
+        CancellationToken cancellationToken);
 
     Task<int> GetCountByCategory(List<int> categoryIds, CancellationToken cancellationToken);
+    Task<int> GetAvailableCountByCategory(List<int> categoryIds, CancellationToken cancellationToken);
 
     Task<int> CreateCar(Car car, CancellationToken cancellationToken);
 
     Task<(int? Id, string Error)> CreateCarFullAsync(CarsCreateRequest request, CancellationToken cancellationToken);
 
-    Task<(bool IsSuccess, string Error)> UpdateCarFullAsync(int id, CarUpdateDto request, CancellationToken cancellationToken);
+    Task<(bool IsSuccess, string Error)> UpdateCarFullAsync(int id, CarUpdateDto request,
+        CancellationToken cancellationToken);
 
     Task MarkCarAsUnavailableAsync(int? carId, CancellationToken cancellationToken);
 
     Task MarkCarAsAvailableAsync(int? carId, CancellationToken cancellationToken);
+
+    Task UpdateCarLocationAsync(int carId, string location, double latitude, double longitude,
+        CancellationToken cancellationToken);
 
     Task<int> DeleteCar(int id, CancellationToken cancellationToken);
 }

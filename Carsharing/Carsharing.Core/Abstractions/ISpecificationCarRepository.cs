@@ -11,7 +11,8 @@ public interface ISpecificationCarRepository
     Task<int> Create(SpecificationCar specificationCar, CancellationToken cancellationToken);
 
     Task<int> Update(int id, string? fuelType, string? brand, string? model, string? transmission,
-        int? year, string? vinNumber, string? stateNumber, int? mileage, decimal? maxFuel, decimal? fuelPerKm, CancellationToken cancellationToken);
+        int? year, string? vinNumber, string? stateNumber, int? mileage, decimal? maxFuel, decimal? fuelPerKm,
+        CancellationToken cancellationToken);
 
     Task<int> Delete(int id, CancellationToken cancellationToken);
 }

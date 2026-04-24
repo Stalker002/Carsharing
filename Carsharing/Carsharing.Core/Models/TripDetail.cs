@@ -43,8 +43,6 @@ public class TripDetail
         if (startLocation is { Length: > MaxLocationLength })
             error = $"Start location can't be longer than {MaxLocationLength} symbols";
 
-        if (string.IsNullOrWhiteSpace(endLocation))
-            error = "End location can't be empty";
         if (endLocation is { Length: > MaxLocationLength })
             error = $"End location can't be longer than {MaxLocationLength} symbols";
 
@@ -53,11 +51,8 @@ public class TripDetail
 
         if (refueled < 0)
             error = "Refueled must be positive";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var tripDetail = new TripDetail(id, tripId, startLocation, endLocation, insuranceActive, fuelUsed, refueled);
         return (tripDetail, error);

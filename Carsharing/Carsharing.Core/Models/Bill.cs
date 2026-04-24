@@ -35,22 +35,20 @@ public class Bill
         if (promocodeId < 0)
             error = "Promo code Id must be positive";
 
-        if (!System.Enum.IsDefined(typeof(BillStatusEnum), statusId))
-            error = "Invalid insurance type. Allowed: \"13. Не оплачен\", \"14. Частично оплачен\", \"15. Оплачен\", \"16. Отменён\" ";
+        if (!Enum.IsDefined(typeof(BillStatusEnum), statusId))
+            error =
+                "Invalid insurance type. Allowed: \"13. Не оплачен\", \"14. Частично оплачен\", \"15. Оплачен\", \"16. Отменён\" ";
 
-        if (issueDate < DateTime.Now)
-            error = "End bill date can not be in the past";
+        if (issueDate > DateTime.UtcNow.AddMinutes(1))
+            error = "Issue bill date can not be in the future";
 
         if (amount < 0)
             error = "Amount must be positive";
 
         if (remainingAmount < 0)
             error = "Remaining amount must be positive";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var bill = new Bill(id, tripId, promocodeId, statusId, issueDate, amount, remainingAmount);
         return (bill, error);

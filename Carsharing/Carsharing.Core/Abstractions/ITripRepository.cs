@@ -26,11 +26,18 @@ public interface ITripRepository
 
     Task<List<TripWithInfoDto>> GetTripWithDetailsById(int id, CancellationToken cancellationToken);
 
-    Task<(List<TripHistoryDto> Items, int TotalCount)> GetHistoryByClientId(int clientId, int page, int limit, CancellationToken cancellationToken);
+    Task<TripDetailsDto?> GetFullDetailsById(int id, CancellationToken cancellationToken);
+
+    Task<(List<TripHistoryDto> Items, int TotalCount)> GetHistoryByClientId(int clientId, int page, int limit,
+        CancellationToken cancellationToken);
 
     Task<CurrentTripDto?> GetActiveTripDtoByClientId(int clientId, CancellationToken cancellationToken);
 
-    Task<int> FinishTripAsync(int tripId, decimal distance, string endLocation, decimal fuelLevel, CancellationToken cancellationToken);
+    Task UpdateTripLocationAsync(int tripId, string location, double latitude, double longitude,
+        CancellationToken cancellationToken);
+
+    Task<int> FinishTripAsync(int tripId, decimal distance, string endLocation, decimal fuelLevel,
+        double carLatitude, double carLongitude, CancellationToken cancellationToken);
 
     Task CancelTripAsync(int tripId, CancellationToken cancellationToken);
 }

@@ -48,7 +48,7 @@ public class Insurance
         if (carId < 0)
             error = "Car Id must be positive";
 
-        if (!System.Enum.IsDefined(typeof(InsuranceStatusEnum), statusId))
+        if (!Enum.IsDefined(typeof(InsuranceStatusEnum), statusId))
             error = "Invalid insurance type. Allowed: \"23. Активна\", \"24. Истекла\", \"25. Аннулирована\" ";
 
         if (string.IsNullOrWhiteSpace(type))
@@ -77,11 +77,8 @@ public class Insurance
 
         if (cost < 0)
             error = "Cost must be positive";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var insurance = new Insurance(id, carId, statusId, type, company, policyNumber, startDate, endDate, cost);
         return (insurance, error);

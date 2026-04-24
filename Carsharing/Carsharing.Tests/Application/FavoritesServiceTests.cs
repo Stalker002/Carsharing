@@ -8,8 +8,8 @@ namespace Carsharing.Tests.Application;
 
 public class FavoritesServiceTests
 {
-    private readonly Mock<IFavoriteRepository> _favoriteRepoMock;
     private readonly Mock<IClientRepository> _clientRepoMock;
+    private readonly Mock<IFavoriteRepository> _favoriteRepoMock;
     private readonly FavoriteService _favoriteService;
 
     public FavoritesServiceTests()
@@ -31,13 +31,13 @@ public class FavoritesServiceTests
             .ReturnsAsync([]);
 
         using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
+        var specificToken = cts.Token;
 
-        var exception = await Assert.ThrowsAsync<NotFoundException>(() => 
+        var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
             _favoriteService.AddToFavorites(userId, carId, specificToken));
 
         Assert.Equal("Клиент не найден для текущего пользователя", exception.Message);
-        
+
         _favoriteRepoMock.Verify(repo => repo.AddAsync(It.IsAny<int>(), It.IsAny<int>(), specificToken), Times.Never);
     }
 
@@ -55,7 +55,7 @@ public class FavoritesServiceTests
             .ReturnsAsync([client]);
 
         using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
+        var specificToken = cts.Token;
 
         await _favoriteService.AddToFavorites(userId, carId, specificToken);
 

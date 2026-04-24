@@ -96,7 +96,8 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
         return bookings;
     }
 
-    public async Task<List<Booking>> GetPagedByClientId(int clientId, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetPagedByClientId(int clientId, int page, int limit,
+        CancellationToken cancellationToken)
     {
         var bookingEntity = await context.Booking
             .Where(b => b.ClientId == clientId)
@@ -166,7 +167,7 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
         var hasActiveBooking = await context.Booking
             .AnyAsync(b =>
                 b.ClientId == booking.ClientId &&
-                b.StatusId == (int)BookingStatusEnum.Active, cancellationToken: cancellationToken);
+                b.StatusId == (int)BookingStatusEnum.Active, cancellationToken);
 
         if (hasActiveBooking)
             throw new ArgumentException(
@@ -201,7 +202,7 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
     public async Task<int> Update(int id, int? statusId, int? carId, int? clientId,
         DateTime? startTime, DateTime? endTime, CancellationToken cancellationToken)
     {
-        var booking = await context.Booking.FirstOrDefaultAsync(b => b.Id == id, cancellationToken: cancellationToken)
+        var booking = await context.Booking.FirstOrDefaultAsync(b => b.Id == id, cancellationToken)
                       ?? throw new Exception("Booking not found");
 
         if (statusId.HasValue)

@@ -94,9 +94,10 @@ public class UsersRepository : IUsersRepository
         return userEntity.Id;
     }
 
-    public async Task<int> UpdateUser(int id, int? roleId, string? login, string? passwordHash, CancellationToken cancellationToken)
+    public async Task<int> UpdateUser(int id, int? roleId, string? login, string? passwordHash,
+        CancellationToken cancellationToken)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken: cancellationToken)
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken)
                    ?? throw new Exception("User not found");
 
         if (roleId.HasValue)

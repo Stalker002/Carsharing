@@ -33,7 +33,7 @@ public class Promocode
     {
         var error = string.Empty;
 
-        if (!System.Enum.IsDefined(typeof(PromocodeStatusEnum), statusId))
+        if (!Enum.IsDefined(typeof(PromocodeStatusEnum), statusId))
             error = "Invalid insurance type. Allowed: \"20. Активен\", \"21. Истек\", \"22. Использован\" ";
 
         if (string.IsNullOrWhiteSpace(code))
@@ -52,11 +52,8 @@ public class Promocode
 
         if (startDate > endDate)
             error = "Start date can not exceed end date ";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var promocode = new Promocode(id, statusId, code, discount, startDate, endDate);
         return (promocode, error);

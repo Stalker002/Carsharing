@@ -10,17 +10,17 @@ public class SpecificationCarTests
         const string validStateNumber = "1234 AB-7";
 
         var (spec, error) = SpecificationCar.Create(
-            id: 1,
-            fuelType: "Бензин",
-            brand: "Toyota",
-            model: "Camry",
-            transmission: "Автомат",
-            year: 2020,
-            vinNumber: "1HGCM82633A004111",
-            stateNumber: validStateNumber,
-            mileage: 15000,
-            maxFuel: 60m,
-            fuelPerKm: 0.08m
+            1,
+            "Бензин",
+            "Toyota",
+            "Camry",
+            "Автомат",
+            2020,
+            "1HGCM82633A004111",
+            validStateNumber,
+            15000,
+            60m,
+            0.08m
         );
 
         Assert.NotNull(spec);

@@ -1,33 +1,34 @@
+using Carsharing.Application.Abstractions;
 using Carsharing.Application.Services;
 using Carsharing.Core.Abstractions;
 using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
 using Moq;
+using Shared.Enums;
 
 namespace Carsharing.Tests.Application;
 
 public class BillsServiceTests
 {
     private readonly Mock<IBillRepository> _billRepoMock;
-    private readonly Mock<IBookingRepository> _bookingRepoMock;
-    private readonly Mock<IClientRepository> _clientRepoMock;
-    private readonly Mock<IPromocodeRepository> _promoRepoMock;
-    private readonly Mock<ITripRepository> _tripRepoMock;
     private readonly BillsService _billsService;
+    private readonly Mock<IPromocodeRepository> _promoRepoMock;
 
     public BillsServiceTests()
     {
         _billRepoMock = new Mock<IBillRepository>();
-        _bookingRepoMock = new Mock<IBookingRepository>();
-        _clientRepoMock = new Mock<IClientRepository>();
+        var bookingRepoMock = new Mock<IBookingRepository>();
+        var clientRepoMock = new Mock<IClientRepository>();
         _promoRepoMock = new Mock<IPromocodeRepository>();
-        _tripRepoMock = new Mock<ITripRepository>();
+        var tripRepoMock = new Mock<ITripRepository>();
+        var billingLifecycleMock = new Mock<IBillingLifecycleService>();
         _billsService = new BillsService(
             _billRepoMock.Object,
             _promoRepoMock.Object,
-            _tripRepoMock.Object,
-            _bookingRepoMock.Object,
-            _clientRepoMock.Object);
+            tripRepoMock.Object,
+            bookingRepoMock.Object,
+            clientRepoMock.Object,
+            billingLifecycleMock.Object);
     }
 
     [Fact]
@@ -38,7 +39,8 @@ public class BillsServiceTests
 
         _promoRepoMock.Setup(x => x.GetByCode(code, It.IsAny<CancellationToken>())).ReturnsAsync([]);
 
-        var ex = await Assert.ThrowsAsync<NotFoundException>(() => _billsService.ApplyPromocode(billId, code, CancellationToken.None));
+        var ex = await Assert.ThrowsAsync<NotFoundException>(() =>
+            _billsService.ApplyPromocode(billId, code, CancellationToken.None));
         Assert.Equal("Промокод не найден или истек", ex.Message);
     }
 
@@ -47,15 +49,19 @@ public class BillsServiceTests
     {
         const int billId = 99;
         const string code = "VALID";
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        
-        var validPromo = Promocode.Create(1, 20, code, 10, today, today.AddDays(2)).promocode;
-        
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var activeStart = today.AddDays(-1);
+        var activeEnd = today.AddDays(2);
+
+        var validPromo = Promocode.Create(1, (int)PromocodeStatusEnum.Active, code, 10, activeStart, activeEnd).promocode;
+        Assert.NotNull(validPromo);
+
         _promoRepoMock.Setup(x => x.GetByCode(code, It.IsAny<CancellationToken>())).ReturnsAsync([validPromo]);
-        
+
         _billRepoMock.Setup(x => x.GetById(billId, It.IsAny<CancellationToken>())).ReturnsAsync((Bill?)null);
 
-        var ex = await Assert.ThrowsAsync<NotFoundException>(() => _billsService.ApplyPromocode(billId, code, CancellationToken.None));
+        var ex = await Assert.ThrowsAsync<NotFoundException>(() =>
+            _billsService.ApplyPromocode(billId, code, CancellationToken.None));
         Assert.Equal("Счет не найден", ex.Message);
     }
 
@@ -64,18 +70,23 @@ public class BillsServiceTests
     {
         const int billId = 1;
         const string code = "VALID";
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
-    
-        var validPromo = Promocode.Create(10, 20, code, 10, today, today.AddDays(2)).promocode;
-    
-        var futureDate = DateTime.Now.AddDays(1);
-        var validBill = Bill.Create(billId, 1, null, 13, futureDate, 100, 100).bill;
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var activeStart = today.AddDays(-1);
+        var activeEnd = today.AddDays(2);
+
+        var validPromo = Promocode.Create(10, (int)PromocodeStatusEnum.Active, code, 10, activeStart, activeEnd).promocode;
+        Assert.NotNull(validPromo);
+
+        var validBill = Bill.Create(billId, 1, null, (int)BillStatusEnum.Unpaid, DateTime.UtcNow, 100, 100).bill;
+        Assert.NotNull(validBill);
 
         _promoRepoMock.Setup(x => x.GetByCode(code, It.IsAny<CancellationToken>())).ReturnsAsync([validPromo]);
-        _billRepoMock.Setup(x => x.GetById(billId, It.IsAny<CancellationToken>())).ReturnsAsync(validBill);
+        _billRepoMock
+            .Setup(x => x.GetById(It.Is<int>(id => id == billId), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(validBill!);
 
         using var cts = new CancellationTokenSource();
-        CancellationToken specificToken = cts.Token;
+        var specificToken = cts.Token;
 
         await _billsService.ApplyPromocode(billId, code, specificToken);
 

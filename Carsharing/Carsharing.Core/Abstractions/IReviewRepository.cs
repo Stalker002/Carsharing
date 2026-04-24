@@ -13,7 +13,8 @@ public interface IReviewRepository
 
     Task<List<ReviewWithClientInfo>> GetByCarId(int carId, CancellationToken cancellationToken);
 
-    Task<List<ReviewWithClientInfo>> GetPagedByCarId(int carId, int page, int limit, CancellationToken cancellationToken);
+    Task<List<ReviewWithClientInfo>> GetPagedByCarId(int carId, int page, int limit,
+        CancellationToken cancellationToken);
 
     Task<int> GetCountByCarId(int carId, CancellationToken cancellationToken);
 

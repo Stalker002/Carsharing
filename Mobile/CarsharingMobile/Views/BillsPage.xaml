@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CarsharingMobile.Views.BillsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:CarsharingMobile.ViewModels"
+    x:DataType="vm:BillsViewModel"
+    BackgroundColor="{StaticResource BgLight}"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid
+            Grid.Row="0"
+            Padding="15,20"
+            ColumnDefinitions="Auto,*"
+            HeightRequest="80">
+            <ImageButton
+                BackgroundColor="Transparent"
+                Command="{Binding GoBackCommand}"
+                HeightRequest="24"
+                HorizontalOptions="Start"
+                Source="back_icon_dark.png"
+                WidthRequest="24" />
+            <Label
+                Grid.Column="1"
+                Margin="-24,0,0,0"
+                FontAttributes="Bold"
+                FontSize="20"
+                HorizontalOptions="Center"
+                Text="Мои счета"
+                TextColor="{StaticResource TextDark}"
+                VerticalOptions="Center" />
+        </Grid>
+
+        <RefreshView
+            Grid.Row="1"
+            Command="{Binding RefreshCommand}"
+            IsRefreshing="{Binding IsRefreshing}">
+            <Grid>
+                <ScrollView>
+                    <VerticalStackLayout Padding="16,0,16,24" Spacing="16">
+                        <Border
+                            Padding="18,14"
+                            BackgroundColor="{StaticResource Surface}"
+                            Stroke="{StaticResource BorderLight}"
+                            StrokeShape="RoundRectangle 16"
+                            StrokeThickness="1">
+                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="22"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding UnpaidCountText}"
+                                        TextColor="{StaticResource TextDark}" />
+                                    <Label
+                                        FontSize="12"
+                                        HorizontalTextAlignment="Center"
+                                        Text="Не оплачено"
+                                        TextColor="{StaticResource TextGray}" />
+                                </VerticalStackLayout>
+
+                                <BoxView
+                                    Grid.Column="0"
+                                    HorizontalOptions="End"
+                                    WidthRequest="1"
+                                    Color="{StaticResource BorderLight}" />
+
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="22"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding PaidCountText}"
+                                        TextColor="{StaticResource TextDark}" />
+                                    <Label
+                                        FontSize="12"
+                                        HorizontalTextAlignment="Center"
+                                        Text="Оплачено"
+                                        TextColor="{StaticResource TextGray}" />
+                                </VerticalStackLayout>
+
+                                <BoxView
+                                    Grid.Column="1"
+                                    HorizontalOptions="End"
+                                    WidthRequest="1"
+                                    Color="{StaticResource BorderLight}" />
+
+                                <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="22"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding TotalOutstandingText}"
+                                        TextColor="{StaticResource TextDark}" />
+                                    <Label
+                                        FontSize="12"
+                                        HorizontalTextAlignment="Center"
+                                        Text="К оплате"
+                                        TextColor="{StaticResource TextGray}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <Border
+                            Padding="14"
+                            BackgroundColor="#FFF3F3"
+                            IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                            Stroke="#F1C6C6"
+                            StrokeShape="RoundRectangle 12"
+                            StrokeThickness="1">
+                            <Label
+                                FontSize="14"
+                                Text="{Binding ErrorMessage}"
+                                TextColor="#A33A3A" />
+                        </Border>
+
+                        <CollectionView
+                            ItemsSource="{Binding Bills}"
+                            RemainingItemsThreshold="2"
+                            RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
+                            SelectionMode="None">
+                            <CollectionView.EmptyView>
+                                <VerticalStackLayout
+                                    Padding="20,40"
+                                    IsVisible="{Binding IsEmptyStateVisible}"
+                                    Spacing="8">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="18"
+                                        HorizontalTextAlignment="Center"
+                                        Text="Счетов пока нет"
+                                        TextColor="{StaticResource TextDark}" />
+                                    <Label
+                                        FontSize="14"
+                                        HorizontalTextAlignment="Center"
+                                        Text="После завершения поездок счета появятся здесь."
+                                        TextColor="{StaticResource TextGray}" />
+                                </VerticalStackLayout>
+                            </CollectionView.EmptyView>
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="vm:BillListItem">
+                                    <Border
+                                        Margin="0,0,0,12"
+                                        Padding="16"
+                                        BackgroundColor="{StaticResource Surface}"
+                                        Stroke="{StaticResource BorderLight}"
+                                        StrokeShape="RoundRectangle 16"
+                                        StrokeThickness="1">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding OpenCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+
+                                        <VerticalStackLayout Spacing="12">
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                                <VerticalStackLayout Spacing="4">
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="16"
+                                                        Text="{Binding TariffText}"
+                                                        TextColor="{StaticResource TextDark}" />
+                                                    <Label
+                                                        FontSize="12"
+                                                        Text="{Binding IssueDateText, StringFormat='Выставлен: {0}'}"
+                                                        TextColor="{StaticResource TextGray}" />
+                                                </VerticalStackLayout>
+
+                                                <Border
+                                                    Padding="10,4"
+                                                    BackgroundColor="{Binding AccentColor}"
+                                                    HorizontalOptions="End"
+                                                    StrokeShape="RoundRectangle 12"
+                                                    StrokeThickness="0"
+                                                    VerticalOptions="Start">
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="12"
+                                                        Text="{Binding StatusText}"
+                                                        TextColor="{Binding StatusColor}" />
+                                                </Border>
+                                            </Grid>
+
+                                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                                <Border
+                                                    Padding="12"
+                                                    BackgroundColor="#F7F9FC"
+                                                    StrokeShape="RoundRectangle 14"
+                                                    StrokeThickness="0">
+                                                    <VerticalStackLayout Spacing="4">
+                                                        <Label
+                                                            FontSize="12"
+                                                            Text="Сумма счета"
+                                                            TextColor="{StaticResource TextGray}" />
+                                                        <Label
+                                                            FontAttributes="Bold"
+                                                            FontSize="15"
+                                                            Text="{Binding AmountText}" />
+                                                    </VerticalStackLayout>
+                                                </Border>
+
+                                                <Border
+                                                    Padding="12"
+                                                    BackgroundColor="#F7F9FC"
+                                                    StrokeShape="RoundRectangle 14"
+                                                    StrokeThickness="0">
+                                                    <VerticalStackLayout Spacing="4">
+                                                        <Label
+                                                            FontSize="12"
+                                                            Text="Остаток"
+                                                            TextColor="{StaticResource TextGray}" />
+                                                        <Label
+                                                            FontAttributes="Bold"
+                                                            FontSize="15"
+                                                            Text="{Binding RemainingText}"
+                                                            TextColor="{Binding StatusColor}" />
+                                                    </VerticalStackLayout>
+                                                </Border>
+                                            </Grid>
+
+                                            <Button
+                                                Command="{Binding OpenCommand}"
+                                                CommandParameter="{Binding .}"
+                                                Text="{Binding ActionText}" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <ActivityIndicator
+                            HorizontalOptions="Center"
+                            IsRunning="{Binding IsLoadingMore}"
+                            IsVisible="{Binding IsLoadingMore}"
+                            Color="{StaticResource Primary}" />
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <ActivityIndicator
+                    HorizontalOptions="Center"
+                    IsRunning="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}"
+                    VerticalOptions="Center"
+                    Color="{StaticResource Primary}" />
+            </Grid>
+        </RefreshView>
+    </Grid>
+</ContentPage>

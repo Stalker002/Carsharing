@@ -30,7 +30,8 @@ public class TariffController : ControllerBase
 
     [HttpGet("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<List<StatusResponse>>> GetTariffById(int id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<List<StatusResponse>>> GetTariffById(int id,
+        CancellationToken cancellationToken = default)
     {
         var statuses = await _tariffsService.GetTariffById(id, cancellationToken);
         var response = statuses.Select(t =>

@@ -15,9 +15,11 @@ public class ClientTests
         Assert.Equal("test@test.com", client.Email);
     }
 
-    [Theory][InlineData("invalid-email")]
+    [Theory]
+    [InlineData("invalid-email")]
     [InlineData("test@.com")]
-    [InlineData("test.com")][InlineData("")]
+    [InlineData("test.com")]
+    [InlineData("")]
     public void Create_InvalidEmail_ReturnsError(string invalidEmail)
     {
         var (client, error) = Client.Create(1, 100, "Ivan", "Ivanov", "+375291234567", invalidEmail);
@@ -26,9 +28,10 @@ public class ClientTests
         Assert.NotEmpty(error);
     }
 
-    [Theory][InlineData("+375991234567")]
-    [InlineData("8029123456")]   
-    [InlineData("123456789")]   
+    [Theory]
+    [InlineData("+375991234567")]
+    [InlineData("8029123456")]
+    [InlineData("123456789")]
     public void Create_InvalidPhone_ReturnsError(string invalidPhone)
     {
         var (client, error) = Client.Create(1, 100, "Ivan", "Ivanov", invalidPhone, "test@test.com");

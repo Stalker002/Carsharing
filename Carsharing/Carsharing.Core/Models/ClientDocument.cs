@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 
 namespace Carsharing.Core.Models;
 
@@ -25,27 +25,33 @@ public class ClientDocument
 
     public int Id { get; }
     public int ClientId { get; }
-    public string? Type { get; } = string.Empty;
-    public string? LicenseCategory { get; } = string.Empty;
-    public string? Number { get; } = string.Empty;
+    public string? Type { get; }
+    public string? LicenseCategory { get; }
+    public string? Number { get; }
     public DateOnly IssueDate { get; }
     public DateOnly ExpiryDate { get; }
-    public string? FilePath { get; } = string.Empty;
+    public string? FilePath { get; }
 
     public static (ClientDocument clientDocument, string error) Create(int id, int clientId, string? type,
         string? licenseCategory, string? number, DateOnly issueDate, DateOnly expiryDate, string? filePath)
     {
         var error = string.Empty;
+        var normalizedType = type switch
+        {
+            "Водительское удостоверение" => "Водительские права",
+            _ => type
+        };
+
         var allowedTypes = new[] { "Водительские права", "Паспорт" };
 
         if (clientId < 0)
             error = "Client Id must be positive";
 
-        if (string.IsNullOrWhiteSpace(type))
+        if (string.IsNullOrWhiteSpace(normalizedType))
             error = "Type can't be empty";
-        if (type is { Length: > MaxTypeLength })
+        if (normalizedType is { Length: > MaxTypeLength })
             error = $"Type can't be longer than {MaxTypeLength} symbols";
-        if (!allowedTypes.Contains(type))
+        if (!allowedTypes.Contains(normalizedType))
             error = $"Invalid insurance type. Allowed: {string.Join(", ", allowedTypes)}";
 
         if (string.IsNullOrEmpty(licenseCategory))
@@ -53,7 +59,7 @@ public class ClientDocument
         if (licenseCategory is { Length: > MaxLicenseCategoryLength })
             error = $"Category can't be longer than {MaxLicenseCategoryLength} symbols";
 
-        if (type == "Водительские права")
+        if (normalizedType == "Водительские права")
         {
             var cleanNumber = number?.Replace(" ", "").ToUpper();
             if (cleanNumber != null && !Regex.IsMatch(cleanNumber, @"^[A-ZА-Я]{2}\d{7}$"))
@@ -78,14 +84,12 @@ public class ClientDocument
             error = "File path can't be empty";
         if (filePath is { Length: > MaxFilePathLength })
             error = $"Type can't be longer than {MaxFilePathLength} symbols";
-        
-        if(error.Length != 0)
-        {
-            return (null, error)!;
-        }
+
+        if (error.Length != 0) return (null, error)!;
 
         var clientDocument =
-            new ClientDocument(id, clientId, type, licenseCategory, number?.ToUpper(), issueDate, expiryDate, filePath);
+            new ClientDocument(id, clientId, normalizedType, licenseCategory, number?.ToUpper(), issueDate, expiryDate,
+                filePath);
 
         return (clientDocument, error);
     }

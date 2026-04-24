@@ -1,20 +1,29 @@
 using CarsharingMobile.Services;
+using CarsharingMobile.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using Shared.Contracts.Bookings;
 using Shared.Contracts.Cars;
+using Shared.Contracts.Trip;
+using Shared.Enums;
 using System.Collections.ObjectModel;
 
 namespace CarsharingMobile.ViewModels;
 
-public partial class MainViewModel : ObservableObject
+public partial class MainViewModel : ObservableObject, IRecipient<BookingCreatedMessage>
 {
-    private readonly CarService _carService;
+    private const int PageSize = 50;
+    private static readonly TimeSpan CarsPollingInterval = TimeSpan.FromSeconds(30);
+    private const string DefaultTariffType = "per_minute";
 
-    public MainViewModel(CarService carService)
-    {
-        _carService = carService;
-    }
-
+    private readonly CarService carService;
+    private readonly BookingService bookingService;
+    private readonly TripService tripService;
+    private readonly BookingStateService bookingStateService;
+    private int _currentPage = 1;
+    private int _totalItems;
+    private CancellationTokenSource? _carsPollingCts;
     public ObservableCollection<CarWithMinInfoDto> Cars { get; } = [];
 
     [ObservableProperty] public partial bool IsBusy { get; set; }
@@ -24,9 +33,48 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] public partial CarWithMinInfoDto? SelectedCar { get; set; }
     [ObservableProperty] public partial bool IsCardVisible { get; set; }
 
-    private int _currentPage = 1;
-    private int _totalItems;
-    private const int PageSize = 50;
+    [ObservableProperty] public partial bool IsBookingCardVisible { get; set; }
+    [ObservableProperty] public partial BookingsResponse? ActiveBooking { get; set; }
+    [ObservableProperty] public partial CarWithInfoDto? BookedCarDetails { get; set; }
+    [ObservableProperty] public partial string SelectedTariffType { get; set; } = DefaultTariffType;
+
+    public string SelectedTariffTitle => SelectedTariffType switch
+    {
+        "per_km" => "Покилометровый",
+        "per_day" => "Посуточный",
+        _ => "Поминутный"
+    };
+
+    public string SelectedTariffPriceText => BookedCarDetails == null
+        ? "-"
+        : SelectedTariffType switch
+        {
+            "per_km" => $"{BookedCarDetails.PricePerKm:0.00} BYN / км",
+            "per_day" => $"{BookedCarDetails.PricePerDay:0.00} BYN / сутки",
+            _ => $"{BookedCarDetails.PricePerMinute:0.00} BYN / мин"
+        };
+
+    partial void OnSelectedTariffTypeChanged(string value)
+    {
+        OnPropertyChanged(nameof(SelectedTariffTitle));
+        OnPropertyChanged(nameof(SelectedTariffPriceText));
+    }
+
+    partial void OnBookedCarDetailsChanged(CarWithInfoDto? value)
+    {
+        OnPropertyChanged(nameof(SelectedTariffPriceText));
+    }
+
+    public MainViewModel(CarService carService, BookingService bookingService, TripService tripService,
+        BookingStateService bookingStateService)
+    {
+        this.carService = carService;
+        this.bookingService = bookingService;
+        this.tripService = tripService;
+        this.bookingStateService = bookingStateService;
+
+        WeakReferenceMessenger.Default.Register(this);
+    }
 
     [RelayCommand]
     private async Task LoadInitialAsync()
@@ -41,6 +89,7 @@ public partial class MainViewModel : ObservableObject
             _totalItems = 0;
 
             await LoadDataInternalAsync();
+            await RefreshBookingStateAsync();
         }
         catch (Exception ex)
         {
@@ -52,6 +101,172 @@ public partial class MainViewModel : ObservableObject
             IsRefreshing = false;
         }
     }
+
+    public void StartCarsPolling()
+    {
+        if (_carsPollingCts != null)
+            return;
+
+        _carsPollingCts = new CancellationTokenSource();
+        _ = RunCarsPollingAsync(_carsPollingCts.Token);
+    }
+
+    public void StopCarsPolling()
+    {
+        _carsPollingCts?.Cancel();
+        _carsPollingCts?.Dispose();
+        _carsPollingCts = null;
+    }
+
+    private async Task RunCarsPollingAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var timer = new PeriodicTimer(CarsPollingInterval);
+            while (await timer.WaitForNextTickAsync(cancellationToken))
+            {
+                await RefreshCarsAsync(cancellationToken);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    private async Task RefreshCarsAsync(CancellationToken cancellationToken)
+    {
+        if (IsBusy || IsLoadingMore)
+            return;
+
+        try
+        {
+            var (items, total) = await carService.GetAvailableCarsAsync(1, PageSize);
+            _totalItems = total;
+
+            if (items == null)
+                return;
+
+            var processedCars = await ProcessCarsAsync(items, cancellationToken);
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                SyncCarsCollection(processedCars);
+            });
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    private async Task LoadBookingStateAsync()
+    {
+        if (bookingStateService.TryGet(out var cachedBooking, out var cachedCarDetails, out var cachedTariffType) &&
+            cachedBooking != null && cachedCarDetails != null)
+        {
+            ActiveBooking = cachedBooking;
+            BookedCarDetails = cachedCarDetails;
+            SelectedTariffType = cachedTariffType;
+            IsBookingCardVisible = true;
+            return;
+        }
+
+        ActiveBooking = await bookingService.GetMyActiveBookingAsync();
+
+        if (ActiveBooking == null)
+        {
+            bookingStateService.Clear();
+            BookedCarDetails = null;
+            SelectedTariffType = DefaultTariffType;
+            IsBookingCardVisible = false;
+            return;
+        }
+
+        BookedCarDetails = await carService.GetCarDetailsAsync(ActiveBooking.CarId);
+        SelectedTariffType = DefaultTariffType;
+        IsBookingCardVisible = BookedCarDetails != null;
+
+        if (BookedCarDetails != null)
+            bookingStateService.Set(ActiveBooking, BookedCarDetails, SelectedTariffType);
+    }
+
+    public async Task RefreshBookingStateAsync()
+    {
+        await LoadBookingStateAsync();
+    }
+
+    public void Receive(BookingCreatedMessage message)
+    {
+        ActiveBooking = message.ActiveBooking;
+        BookedCarDetails = message.BookedCarDetails;
+        SelectedTariffType = message.SelectedTariffType;
+        IsBookingCardVisible = true;
+    }
+
+    [RelayCommand]
+    private async Task StartTripAsync()
+    {
+        if (ActiveBooking == null || BookedCarDetails == null) return;
+
+        IsBusy = true;
+
+        string startAddress = BookedCarDetails.Location ?? "";
+        if (string.IsNullOrWhiteSpace(startAddress) || startAddress == "Неизвестно")
+        {
+            try
+            {
+                var placemarks = await Geocoding.Default.GetPlacemarksAsync(BookedCarDetails.Latitude, BookedCarDetails.Longitude);
+                var placemark = placemarks?.FirstOrDefault();
+                if (placemark != null)
+                {
+                    // Собираем адрес (например: "ул. Козлова, 4")
+                    startAddress = $"{placemark.Thoroughfare}, {placemark.SubThoroughfare}".Trim(',', ' ');
+                }
+            }
+            catch { /* Игнорируем, если гугл-сервисы недоступны */ }
+        }
+
+        if (string.IsNullOrWhiteSpace(startAddress))
+            startAddress = $"{BookedCarDetails.Latitude:0.000}, {BookedCarDetails.Longitude:0.000}";
+
+        var request = new TripCreateRequest(
+            BookingId: ActiveBooking.Id,
+            StatusId: (int)TripStatusEnum.WaitingStart,
+            CarId: ActiveBooking.CarId,
+            StartLocation: startAddress,
+            EndLocation: "",
+            InsuranceActive: true, // Включаем базовую страховку
+            FuelUsed: 0,
+            Refueled: 0,
+            TariffType: SelectedTariffType,
+            StartTime: DateTime.UtcNow.AddMinutes(-1), // Отнимаем минуту, чтобы сервер не ругался на "будущее"
+            EndTime: null,
+            Duration: 0,
+            Distance: 0
+        );
+
+        var (tripId, error) = await tripService.StartTripAsync(request);
+
+        IsBusy = false;
+
+        if (error == null)
+        {
+            // Успех! Закрываем карточку брони
+            bookingStateService.Clear();
+            IsBookingCardVisible = false;
+            ActiveBooking = null;
+            BookedCarDetails = null;
+            SelectedTariffType = DefaultTariffType;
+
+            await Shell.Current.DisplayAlert("Поехали!", "Двери открыты. Хорошей поездки!", "ОК");
+
+            await Shell.Current.GoToAsync(nameof(CurrentTripPage));
+        }
+        else
+        {
+            await Shell.Current.DisplayAlert("Ошибка", error, "ОК");
+        }
+    }
+
     [RelayCommand]
     private async Task LoadNextPageAsync()
     {
@@ -71,26 +286,79 @@ public partial class MainViewModel : ObservableObject
 
     private async Task LoadDataInternalAsync()
     {
-        var (items, total) = await _carService.GetAvailableCarsAsync(_currentPage, PageSize);
+        var (items, total) = await carService.GetAvailableCarsAsync(_currentPage, PageSize);
         _totalItems = total;
 
-        if (items != null)
+        if (items == null)
+            return;
+
+        var processedCars = await ProcessCarsAsync(items, CancellationToken.None);
+
+        MainThread.BeginInvokeOnMainThread(() =>
         {
-            var tasks = items.Select(async car =>
-            {
-                var localPath = await _carService.DownloadAndCacheImageAsync(car.ImagePath, car.Id);
-                return car with { ImagePath = localPath };
-            }).ToList();
-
-            var processedCars = await Task.WhenAll(tasks);
-
             foreach (var car in processedCars)
             {
                 Cars.Add(car);
             }
-        }
+        });
 
         _currentPage++;
+    }
+
+    private async Task<IReadOnlyList<CarWithMinInfoDto>> ProcessCarsAsync(IEnumerable<CarWithMinInfoDto> items,
+        CancellationToken cancellationToken)
+    {
+        var tasks = items.Select(async car =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var localPath = await carService.DownloadAndCacheImageAsync(car.ImagePath, car.Id);
+            return car with { ImagePath = localPath };
+        }).ToList();
+
+        return await Task.WhenAll(tasks);
+    }
+
+    private void SyncCarsCollection(IReadOnlyList<CarWithMinInfoDto> updatedCars)
+    {
+        var selectedCarId = SelectedCar?.Id;
+        var updatedById = updatedCars.ToDictionary(static car => car.Id);
+
+        for (var index = Cars.Count - 1; index >= 0; index--)
+        {
+            if (!updatedById.ContainsKey(Cars[index].Id))
+                Cars.RemoveAt(index);
+        }
+
+        for (var index = 0; index < updatedCars.Count; index++)
+        {
+            var updatedCar = updatedCars[index];
+            var existingIndex = Cars.ToList().FindIndex(car => car.Id == updatedCar.Id);
+
+            if (existingIndex < 0)
+            {
+                if (index <= Cars.Count)
+                    Cars.Insert(index, updatedCar);
+                else
+                    Cars.Add(updatedCar);
+                continue;
+            }
+
+            if (existingIndex != index)
+                Cars.Move(existingIndex, index);
+
+            Cars[index] = updatedCar;
+        }
+
+        if (selectedCarId.HasValue && updatedById.TryGetValue(selectedCarId.Value, out var selectedCar))
+        {
+            SelectedCar = selectedCar;
+            IsCardVisible = true;
+        }
+        else if (selectedCarId.HasValue)
+        {
+            SelectedCar = null;
+            IsCardVisible = false;
+        }
     }
 
     [RelayCommand]

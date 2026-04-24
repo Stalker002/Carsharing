@@ -57,7 +57,8 @@ public class PaymentsController : ControllerBase
 
     [HttpGet("byBill/{billId:int}")]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<List<PaymentsResponse>>> GetPaymentByBillId(int billId, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<PaymentsResponse>>> GetPaymentByBillId(int billId,
+        CancellationToken cancellationToken)
     {
         var payments = User.IsAdmin()
             ? await _paymentService.GetPaymentByBillId(billId, cancellationToken)
@@ -69,7 +70,8 @@ public class PaymentsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminClientPolicy")]
-    public async Task<ActionResult<int>> CreatePayment([FromBody] PaymentsRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> CreatePayment([FromBody] PaymentsRequest request,
+        CancellationToken cancellationToken)
     {
         var (payment, error) = Payment.Create(
             0,
@@ -89,10 +91,12 @@ public class PaymentsController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Policy = "AdminPolicy")]
-    public async Task<ActionResult<int>> UpdatePayment(int id, [FromBody] PaymentsRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<int>> UpdatePayment(int id, [FromBody] PaymentsRequest request,
+        CancellationToken cancellationToken)
     {
         var paymentId =
-            await _paymentService.UpdatePayment(id, request.BillId, request.Sum, request.Method, request.Date, cancellationToken);
+            await _paymentService.UpdatePayment(id, request.BillId, request.Sum, request.Method, request.Date,
+                cancellationToken);
         return Ok(paymentId);
     }
 

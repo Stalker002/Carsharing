@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+
 <Shell
     x:Class="CarsharingMobile.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -34,7 +35,6 @@
 
             <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
                 <VerticalStackLayout Spacing="20">
-
                     <HorizontalStackLayout Spacing="15">
                         <HorizontalStackLayout.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnTipsClicked" />
@@ -68,6 +68,25 @@
                     </HorizontalStackLayout>
 
                     <HorizontalStackLayout Spacing="15">
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnDocumentsClicked" />
+                        </HorizontalStackLayout.GestureRecognizers>
+                        <Image
+                            HeightRequest="24"
+                            Source="info_icon.png"
+                            VerticalOptions="Center"
+                            WidthRequest="24" />
+                        <Label
+                            FontSize="16"
+                            Text="ДОКУМЕНТЫ"
+                            TextColor="White"
+                            VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="15">
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnBillsClicked" />
+                        </HorizontalStackLayout.GestureRecognizers>
                         <Image
                             HeightRequest="24"
                             Source="gift_icon.png"
@@ -75,20 +94,7 @@
                             WidthRequest="24" />
                         <Label
                             FontSize="16"
-                            Text="ПРОМОКОДЫ"
-                            TextColor="White"
-                            VerticalOptions="Center" />
-                    </HorizontalStackLayout>
-
-                    <HorizontalStackLayout Spacing="15">
-                        <Image
-                            HeightRequest="24"
-                            Source="chat_icon.png"
-                            VerticalOptions="Center"
-                            WidthRequest="24" />
-                        <Label
-                            FontSize="16"
-                            Text="ПОДДЕРЖКА"
+                            Text="МОИ СЧЕТА"
                             TextColor="White"
                             VerticalOptions="Center" />
                     </HorizontalStackLayout>
@@ -131,7 +137,7 @@
                     FontAttributes="Bold"
                     FontSize="14"
                     HorizontalOptions="Center"
-                    Text="+375 29 000-00-00"
+                    Text="+375 29 366-87-08"
                     TextColor="White" />
                 <Label
                     Margin="0,10,0,0"
@@ -142,6 +148,8 @@
             </VerticalStackLayout>
         </Grid>
     </Shell.FlyoutContent>
+
+    <ShellContent ContentTemplate="{DataTemplate views:LoadingPage}" Route="LoadingPage" />
 
     <ShellContent
         ContentTemplate="{DataTemplate views:LoginPage}"

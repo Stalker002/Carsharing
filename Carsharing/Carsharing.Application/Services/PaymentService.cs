@@ -8,6 +8,7 @@ namespace Carsharing.Application.Services;
 public class PaymentService : IPaymentService
 {
     private readonly IBillRepository _billRepository;
+    private readonly IBillingLifecycleService _billingLifecycleService;
     private readonly IBookingRepository _bookingRepository;
     private readonly IClientRepository _clientRepository;
     private readonly IPaymentRepository _paymentRepository;
@@ -18,8 +19,10 @@ public class PaymentService : IPaymentService
         IBillRepository billRepository,
         ITripRepository tripRepository,
         IBookingRepository bookingRepository,
-        IClientRepository clientRepository)
+        IClientRepository clientRepository,
+        IBillingLifecycleService billingLifecycleService)
     {
+        _billingLifecycleService = billingLifecycleService;
         _billRepository = billRepository;
         _tripRepository = tripRepository;
         _bookingRepository = bookingRepository;
@@ -60,38 +63,65 @@ public class PaymentService : IPaymentService
 
     public async Task<int> CreatePayment(Payment payment, CancellationToken cancellationToken)
     {
-        return await _paymentRepository.Create(payment, cancellationToken);
+        await _billingLifecycleService.EnsureNoOverpaymentOnCreateAsync(payment, cancellationToken);
+
+        var paymentId = await _paymentRepository.Create(payment, cancellationToken);
+        await _billingLifecycleService.RecalculateBillAsync(payment.BillId, cancellationToken);
+
+        return paymentId;
     }
 
     public async Task<int> CreatePayment(int userId, Payment payment, CancellationToken cancellationToken)
     {
         await EnsureBillBelongsToUser(userId, payment.BillId, cancellationToken);
-        return await _paymentRepository.Create(payment, cancellationToken);
+        return await CreatePayment(payment, cancellationToken);
     }
 
-    public async Task<int> UpdatePayment(int id, int? billId, decimal? sum, string? method, DateTime? date, CancellationToken cancellationToken)
+    public async Task<int> UpdatePayment(int id, int? billId, decimal? sum, string? method, DateTime? date,
+        CancellationToken cancellationToken)
     {
-        return await _paymentRepository.Update(id, billId, sum, method, date, cancellationToken);
+        var existingPayment = (await _paymentRepository.GetById(id, cancellationToken)).FirstOrDefault()
+                              ?? throw new NotFoundException("Payment not found");
+
+        var targetBillId = billId ?? existingPayment.BillId;
+        var targetSum = sum ?? existingPayment.Sum;
+
+        await _billingLifecycleService.EnsureNoOverpaymentOnUpdateAsync(id, targetBillId, targetSum,
+            cancellationToken);
+
+        var paymentId = await _paymentRepository.Update(id, billId, sum, method, date, cancellationToken);
+        await _billingLifecycleService.RecalculateBillAsync(targetBillId, cancellationToken);
+
+        if (existingPayment.BillId != targetBillId)
+            await _billingLifecycleService.RecalculateBillAsync(existingPayment.BillId, cancellationToken);
+
+        return paymentId;
     }
 
     public async Task<int> DeletePayment(int id, CancellationToken cancellationToken)
     {
-        return await _paymentRepository.Delete(id, cancellationToken);
+        var existingPayment = (await _paymentRepository.GetById(id, cancellationToken)).FirstOrDefault()
+                              ?? throw new NotFoundException("Payment not found");
+
+        var deletedId = await _paymentRepository.Delete(id, cancellationToken);
+        await _billingLifecycleService.RecalculateBillAsync(existingPayment.BillId, cancellationToken);
+
+        return deletedId;
     }
 
     private async Task EnsureBillBelongsToUser(int userId, int billId, CancellationToken cancellationToken)
     {
         var client = (await _clientRepository.GetClientByUserId(userId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Client not found");
+                     ?? throw new NotFoundException("Client not found");
 
         var bill = await _billRepository.GetById(billId, cancellationToken)
-            ?? throw new NotFoundException("Bill not found");
+                   ?? throw new NotFoundException("Bill not found");
 
         var trip = (await _tripRepository.GetById(bill.TripId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Trip not found");
+                   ?? throw new NotFoundException("Trip not found");
 
         var booking = (await _bookingRepository.GetById(trip.BookingId, cancellationToken)).FirstOrDefault()
-            ?? throw new NotFoundException("Booking not found");
+                      ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != client.Id)
             throw new UnauthorizedAccessException("Bill does not belong to current user");

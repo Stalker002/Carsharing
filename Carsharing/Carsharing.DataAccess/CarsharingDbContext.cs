@@ -46,9 +46,7 @@ public class CarsharingDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         if (Database.ProviderName is not "Microsoft.EntityFrameworkCore.InMemory")
-        {
             modelBuilder.UseIdentityByDefaultColumns();
-        }
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CarsharingDbContext).Assembly);
     }

@@ -88,7 +88,7 @@ public class BillRepository : IBillRepository
     public async Task<List<Bill>> GetByTripId(List<int> tripIds, CancellationToken cancellationToken)
     {
         var billEntities = await _context.Bill
-            .Where(b => tripIds.Contains(b.Id))
+            .Where(b => tripIds.Contains(b.TripId))
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
@@ -126,7 +126,8 @@ public class BillRepository : IBillRepository
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<BillWithMinInfoDto>> GetPagedMinInfoByUserId(int userId, int page, int limit, CancellationToken cancellationToken)
+    public async Task<List<BillWithMinInfoDto>> GetPagedMinInfoByUserId(int userId, int page, int limit,
+        CancellationToken cancellationToken)
     {
         return await _context.Bill
             .AsNoTracking()
@@ -187,7 +188,7 @@ public class BillRepository : IBillRepository
     public async Task<int> Update(int id, int? tripId, int? promocodeId, int? statusId, DateTime? issueDate,
         decimal? amount, decimal? remainingAmount, CancellationToken cancellationToken)
     {
-        var bill = await _context.Bill.FirstOrDefaultAsync(b => b.Id == id, cancellationToken: cancellationToken)
+        var bill = await _context.Bill.FirstOrDefaultAsync(b => b.Id == id, cancellationToken)
                    ?? throw new Exception("Bill not found");
 
         if (tripId.HasValue)

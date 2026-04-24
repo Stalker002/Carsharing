@@ -8,11 +8,16 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<AuthHttpMessageHandler>();
         services.AddSingleton<IdentityService>();
+        services.AddSingleton<BookingStateService>();
 
         services.AddApiClient<AuthService>();
         services.AddApiClient<CarService>();
         services.AddApiClient<TripService>();
+        services.AddApiClient<BookingService>();
         services.AddApiClient<ClientService>();
+        services.AddApiClient<ClientDocumentsService>();
+        services.AddApiClient<BillService>();
+        services.AddApiClient<PaymentService>();
 
         return services;
     }
@@ -20,10 +25,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddApiClient<TService>(this IServiceCollection services)
         where TService : class
     {
-        services.AddHttpClient<TService>(client => 
-            { 
-                client.BaseAddress = new Uri(ApiConfig.BaseUrl); 
-            })
+        services.AddHttpClient<TService>(client => { client.BaseAddress = new Uri(ApiConfig.BaseUrl); })
             .AddHttpMessageHandler<AuthHttpMessageHandler>();
 
         return services;

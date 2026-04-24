@@ -8,9 +8,18 @@ public static class ViewModelsCollectionExtensions
     {
         services.AddSingleton<AppShellViewModel>();
 
+        services.AddTransient<LoadingViewModel>();
         services.AddTransient<LoginViewModel>();
         services.AddTransient<RegistrationViewModel>();
         services.AddTransient<MainViewModel>();
+        services.AddTransient<CarDetailsViewModel>();
+        services.AddTransient<CurrentTripViewModel>();
+        services.AddTransient<TripHistoryViewModel>();
+        services.AddTransient<ProfileViewModel>();
+        services.AddTransient<DocumentsViewModel>();
+        services.AddTransient<BillsViewModel>();
+        services.AddTransient<BillPaymentViewModel>();
+        services.AddTransient<TripDetailsViewModel>();
 
         return services;
     }

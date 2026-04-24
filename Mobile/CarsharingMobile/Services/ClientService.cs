@@ -1,6 +1,6 @@
-﻿using Shared.Contracts.Clients;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Net.Http.Json;
+using Shared.Contracts.Clients;
 
 namespace CarsharingMobile.Services;
 

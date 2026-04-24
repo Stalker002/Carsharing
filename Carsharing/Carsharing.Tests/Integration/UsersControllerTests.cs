@@ -16,18 +16,18 @@ public class UsersControllerTests(CustomWebApplicationFactory factory) : IClassF
     {
         const string testLogin = "integration_user";
         const string testPassword = "StrongPassword123!";
-        
+
         var hashedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(testPassword);
 
         using (var scope = factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<CarsharingDbContext>();
-            
-            db.Users.Add(new UserEntity 
-            { 
-                RoleId = 1, 
-                Login = testLogin, 
-                Password = hashedPassword 
+
+            db.Users.Add(new UserEntity
+            {
+                RoleId = 1,
+                Login = testLogin,
+                Password = hashedPassword
             });
             await db.SaveChangesAsync();
         }
@@ -35,7 +35,7 @@ public class UsersControllerTests(CustomWebApplicationFactory factory) : IClassF
         var request = new LoginRequest(testLogin, testPassword);
 
         var response = await _client.PostAsJsonAsync("/Users/login", request);
-        
+
         if (response.StatusCode != HttpStatusCode.OK)
         {
             var errorText = await response.Content.ReadAsStringAsync();
@@ -43,9 +43,9 @@ public class UsersControllerTests(CustomWebApplicationFactory factory) : IClassF
         }
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+
         var responseString = await response.Content.ReadAsStringAsync();
-        
+
         Assert.Contains("token", responseString);
     }
 
@@ -57,8 +57,8 @@ public class UsersControllerTests(CustomWebApplicationFactory factory) : IClassF
         var response = await _client.PostAsJsonAsync("/Users/login", request);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        
+
         var responseString = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Неверный логин или пароль", responseString); 
+        Assert.Contains("Неверный логин или пароль", responseString);
     }
 }

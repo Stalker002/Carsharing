@@ -23,4 +23,4 @@ public record CarWithInfoAdminDto(
     decimal PricePerKm,
     decimal PricePerDay,
     string? Image
-   );
+);

@@ -1,5 +1,5 @@
-using CarsharingMobile.ViewModels;
 using System.ComponentModel;
+using CarsharingMobile.ViewModels;
 
 namespace CarsharingMobile.Views;
 
@@ -20,13 +20,9 @@ public partial class RegistrationPage : ContentPage
             var vm = (RegistrationViewModel)sender!;
 
             if (vm.CurrentStep == 2)
-            {
                 Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(100), () => SmsCodeEntry.Focus());
-            }
             else if (vm.CurrentStep == 3)
-            {
                 Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(100), () => NameEntry.Focus());
-            }
         }
     }
 

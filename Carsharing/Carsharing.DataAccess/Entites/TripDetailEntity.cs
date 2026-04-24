@@ -10,7 +10,7 @@ public class TripDetailEntity
 
     public string? EndLocation { get; set; }
 
-    public bool InsuranceActive { get; set; } = false;
+    public bool InsuranceActive { get; set; }
 
     public decimal? FuelUsed { get; set; }
 

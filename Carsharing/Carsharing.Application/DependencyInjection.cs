@@ -13,6 +13,7 @@ public static class DependencyInjection
         // 2. Сюда же можно перенести регистрацию Валидаторов (FluentValidation)
         // services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
+        services.AddScoped<IBillingLifecycleService, BillingLifecycleService>();
         services.AddScoped<IBillsService, BillsService>();
         services.AddScoped<IBillStatusesService, BillStatusesService>();
         services.AddScoped<IBookingsService, BookingsService>();
