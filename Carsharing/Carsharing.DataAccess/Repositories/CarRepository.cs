@@ -441,13 +441,13 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
         return id;
     }
 
-    private static double? GetLatitude(Point? point)
+    private static double GetLatitude(Point? point)
     {
-        return point?.Y;
+        return (double)point?.Y!;
     }
 
-    private static double? GetLongitude(Point? point)
+    private static double GetLongitude(Point? point)
     {
-        return point?.X;
+        return (double)point?.X!;
     }
 }
