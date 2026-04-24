@@ -4,6 +4,7 @@ using Carsharing.Core.Abstractions;
 using Carsharing.Core.Exceptions;
 using Carsharing.Core.Models;
 using Moq;
+using Shared.Enums;
 
 namespace Carsharing.Tests.Application;
 
@@ -48,9 +49,12 @@ public class BillsServiceTests
     {
         const int billId = 99;
         const string code = "VALID";
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var activeStart = today.AddDays(-1);
+        var activeEnd = today.AddDays(2);
 
-        var validPromo = Promocode.Create(1, 20, code, 10, today, today.AddDays(2)).promocode;
+        var validPromo = Promocode.Create(1, (int)PromocodeStatusEnum.Active, code, 10, activeStart, activeEnd).promocode;
+        Assert.NotNull(validPromo);
 
         _promoRepoMock.Setup(x => x.GetByCode(code, It.IsAny<CancellationToken>())).ReturnsAsync([validPromo]);
 
@@ -66,14 +70,20 @@ public class BillsServiceTests
     {
         const int billId = 1;
         const string code = "VALID";
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var activeStart = today.AddDays(-1);
+        var activeEnd = today.AddDays(2);
 
-        var validPromo = Promocode.Create(10, 20, code, 10, today, today.AddDays(2)).promocode;
+        var validPromo = Promocode.Create(10, (int)PromocodeStatusEnum.Active, code, 10, activeStart, activeEnd).promocode;
+        Assert.NotNull(validPromo);
 
-        var validBill = Bill.Create(billId, 1, null, 13, DateTime.UtcNow, 100, 100).bill;
+        var validBill = Bill.Create(billId, 1, null, (int)BillStatusEnum.Unpaid, DateTime.UtcNow, 100, 100).bill;
+        Assert.NotNull(validBill);
 
         _promoRepoMock.Setup(x => x.GetByCode(code, It.IsAny<CancellationToken>())).ReturnsAsync([validPromo]);
-        _billRepoMock.Setup(x => x.GetById(billId, It.IsAny<CancellationToken>())).ReturnsAsync(validBill);
+        _billRepoMock
+            .Setup(x => x.GetById(It.Is<int>(id => id == billId), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(validBill!);
 
         using var cts = new CancellationTokenSource();
         var specificToken = cts.Token;
