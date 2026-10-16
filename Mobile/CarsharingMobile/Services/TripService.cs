@@ -97,17 +97,11 @@ public class TripService(HttpClient httpClient)
                 var details = await response.Content.ReadFromJsonAsync<TripDetailsDto>();
                 if (details == null) return null;
 
-                string? safeImageUrl = string.IsNullOrWhiteSpace(details.Header.CarImage)
-                    ? null
-                    : details.Header.CarImage
-                        .Replace("http://localhost:9000", $"http://{ApiConfig.HostIp}:9000")
-                        .Replace("http://minio:9000", $"http://{ApiConfig.HostIp}:9000");
-
                 return details with
                 {
                     Header = details.Header with
                     {
-                        CarImage = safeImageUrl
+                        CarImage = ApiConfig.NormalizeMediaUrl(details.Header.CarImage)
                     }
                 };
             }
@@ -215,8 +209,6 @@ public class TripService(HttpClient httpClient)
 
     private static string? NormalizeImageUrl(string? imageUrl)
     {
-        return imageUrl?
-            .Replace("http://localhost:9000", $"http://{ApiConfig.HostIp}:9000")
-            .Replace("http://minio:9000", $"http://{ApiConfig.HostIp}:9000");
+        return ApiConfig.NormalizeMediaUrl(imageUrl);
     }
 }

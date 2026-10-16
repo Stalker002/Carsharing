@@ -58,7 +58,7 @@ public partial class MainPage : ContentPage
         await _viewModel.RefreshBookingStateAsync();
 
         _viewModel.StartCarsPolling();
-        _ = Task.Run(MoveMapToUserLocationAsync);
+        _ = MoveMapToUserLocationAsync();
     }
 
     protected override void OnDisappearing()

@@ -20,7 +20,7 @@ public class AuthService(HttpClient httpClient)
             var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
 
             if (string.IsNullOrEmpty(result?.Token)) return "Сервер не вернул токен";
-            await SecureStorage.Default.SetAsync("tasty", result.Token);
+            await SecureStorage.Default.SetAsync(CarsharingMobile.Extensions.AuthConstants.TokenKey, result.Token);
             return null;
         }
         catch (Exception ex)
@@ -52,7 +52,7 @@ public class AuthService(HttpClient httpClient)
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync("Users/send-code", new { PhoneNumber = phoneNumber });
+            var response = await httpClient.PostAsJsonAsync("Users/send-code", new SendCodeRequest(phoneNumber));
             return response.IsSuccessStatusCode ? null : "Ошибка отправки SMS";
         }
         catch { return "Нет связи с сервером"; }
@@ -62,7 +62,7 @@ public class AuthService(HttpClient httpClient)
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync("Users/verify-code", new { PhoneNumber = phoneNumber, Code = code });
+            var response = await httpClient.PostAsJsonAsync("Users/verify-code", new VerifyCodeRequest(phoneNumber, code));
 
             if (response.IsSuccessStatusCode) return null;
 

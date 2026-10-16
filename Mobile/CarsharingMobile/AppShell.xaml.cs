@@ -76,7 +76,7 @@ public partial class AppShell : Shell
         if (answer)
         {
             Current.FlyoutIsPresented = false;
-            SecureStorage.Default.Remove("tasty");
+            SecureStorage.Default.Remove(CarsharingMobile.Extensions.AuthConstants.TokenKey);
             await Current.GoToAsync("//LoginPage");
         }
     }

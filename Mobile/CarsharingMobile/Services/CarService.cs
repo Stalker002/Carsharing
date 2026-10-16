@@ -21,14 +21,7 @@ public class CarService(HttpClient httpClient)
         if (items != null)
             items =
             [
-                .. items.Select(car =>
-                {
-                    var safeUrl = car.ImagePath?
-                        .Replace("http://localhost:9000", $"http://{ApiConfig.HostIp}:9000")
-                        .Replace("http://minio:9000", $"http://{ApiConfig.HostIp}:9000");
-
-                    return car with { ImagePath = safeUrl };
-                })
+                .. items.Select(car => car with { ImagePath = ApiConfig.NormalizeMediaUrl(car.ImagePath) })
             ];
 
         return (items, count);
@@ -44,9 +37,7 @@ public class CarService(HttpClient httpClient)
             if (car != null)
                 return car with
                 {
-                    ImagePath = car.ImagePath?
-                        .Replace("http://localhost:9000", $"http://{ApiConfig.HostIp}:9000")
-                        .Replace("http://minio:9000", $"http://{ApiConfig.HostIp}:9000")
+                    ImagePath = ApiConfig.NormalizeMediaUrl(car.ImagePath)
                 };
 
             return null;

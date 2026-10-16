@@ -294,7 +294,7 @@ public partial class MainViewModel : ObservableObject, IRecipient<BookingCreated
 
         var processedCars = await ProcessCarsAsync(items, CancellationToken.None);
 
-        MainThread.BeginInvokeOnMainThread(() =>
+        await MainThread.InvokeOnMainThreadAsync(() =>
         {
             foreach (var car in processedCars)
             {
@@ -332,7 +332,15 @@ public partial class MainViewModel : ObservableObject, IRecipient<BookingCreated
         for (var index = 0; index < updatedCars.Count; index++)
         {
             var updatedCar = updatedCars[index];
-            var existingIndex = Cars.ToList().FindIndex(car => car.Id == updatedCar.Id);
+            var existingIndex = -1;
+            for (var i = 0; i < Cars.Count; i++)
+            {
+                if (Cars[i].Id == updatedCar.Id)
+                {
+                    existingIndex = i;
+                    break;
+                }
+            }
 
             if (existingIndex < 0)
             {
@@ -340,13 +348,15 @@ public partial class MainViewModel : ObservableObject, IRecipient<BookingCreated
                     Cars.Insert(index, updatedCar);
                 else
                     Cars.Add(updatedCar);
-                continue;
             }
+            else
+            {
+                if (existingIndex != index && index < Cars.Count)
+                    Cars.Move(existingIndex, index);
 
-            if (existingIndex != index)
-                Cars.Move(existingIndex, index);
-
-            Cars[index] = updatedCar;
+                if (index < Cars.Count)
+                    Cars[index] = updatedCar;
+            }
         }
 
         if (selectedCarId.HasValue && updatedById.TryGetValue(selectedCarId.Value, out var selectedCar))
