@@ -22,10 +22,16 @@ public class UsersService : IUsersService
         CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByLogin(login, cancellationToken);
-        if (user == null) return (null, "Пользователь с таким логином не найден");
+        if (user == null)
+        {
+            return (null, "Пользователь с таким логином не найден");
+        }
 
         var result = _passwordHasher.Verify(password, user.Password);
-        if (!result) return (null, "Неверный пароль");
+        if (!result)
+        {
+            return (null, "Неверный пароль");
+        }
 
         var token = _jwtProvider.GenerateToken(user);
 
@@ -62,7 +68,9 @@ public class UsersService : IUsersService
         var (validatedUser, error) = User.Create(0, user.RoleId, user.Login, user.Password);
 
         if (!string.IsNullOrEmpty(error))
+        {
             throw new ArgumentException($"Create exception User: {error}");
+        }
 
         var hashedPassword = _passwordHasher.Generate(validatedUser.Password);
         var userToCreate = User.Restore(0, validatedUser.RoleId, validatedUser.Login, hashedPassword);
@@ -88,7 +96,9 @@ public class UsersService : IUsersService
         var (validatedUser, error) = User.Create(id, nextRoleId, nextLogin, password);
 
         if (!string.IsNullOrEmpty(error))
+        {
             throw new ArgumentException($"Create exception User: {error}");
+        }
 
         var passwordHash = _passwordHasher.Generate(validatedUser.Password);
 

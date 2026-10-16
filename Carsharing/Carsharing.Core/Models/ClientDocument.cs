@@ -45,47 +45,83 @@ public class ClientDocument
         var allowedTypes = new[] { "Водительские права", "Паспорт" };
 
         if (clientId < 0)
+        {
             error = "Client Id must be positive";
+        }
 
         if (string.IsNullOrWhiteSpace(normalizedType))
+        {
             error = "Type can't be empty";
+        }
+
         if (normalizedType is { Length: > MaxTypeLength })
+        {
             error = $"Type can't be longer than {MaxTypeLength} symbols";
+        }
+
         if (!allowedTypes.Contains(normalizedType))
+        {
             error = $"Invalid insurance type. Allowed: {string.Join(", ", allowedTypes)}";
+        }
 
         if (string.IsNullOrEmpty(licenseCategory))
+        {
             error = "Category can't be empty";
+        }
+
         if (licenseCategory is { Length: > MaxLicenseCategoryLength })
+        {
             error = $"Category can't be longer than {MaxLicenseCategoryLength} symbols";
+        }
 
         if (normalizedType == "Водительские права")
         {
             var cleanNumber = number?.Replace(" ", "").ToUpper();
             if (cleanNumber != null && !Regex.IsMatch(cleanNumber, @"^[A-ZА-Я]{2}\d{7}$"))
+            {
                 error = "Неверный формат прав. Ожидается: AA 0000000 (2 буквы, 7 цифр)";
+            }
         }
 
         if (string.IsNullOrWhiteSpace(number))
+        {
             error = "Number can't be empty";
+        }
+
         if (number is { Length: > MaxNumberLength })
+        {
             error = $"Number can't be longer than {MaxNumberLength} symbols";
+        }
 
         if (issueDate > DateOnly.FromDateTime(DateTime.Now))
+        {
             error = "The date of adding the document cannot be in the future";
+        }
 
         if (expiryDate < DateOnly.FromDateTime(DateTime.Now))
+        {
             error = "The expiration date of the document cannot be in the past";
+        }
 
         if (issueDate > expiryDate)
+        {
             error = "Start time can not exceed end time ";
+        }
 
         if (string.IsNullOrWhiteSpace(filePath))
+        {
             error = "File path can't be empty";
-        if (filePath is { Length: > MaxFilePathLength })
-            error = $"Type can't be longer than {MaxFilePathLength} symbols";
+        }
 
-        if (error.Length != 0) return (null, error)!;
+        if (filePath is { Length: > MaxFilePathLength })
+        {
+            error = $"Type can't be longer than {MaxFilePathLength} symbols";
+        }
+
+        if (error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var clientDocument =
             new ClientDocument(id, clientId, normalizedType, licenseCategory, number?.ToUpper(), issueDate, expiryDate,

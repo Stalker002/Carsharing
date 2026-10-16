@@ -78,7 +78,9 @@ public class BillsService : IBillsService
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
         if (clientId == 0)
+        {
             throw new NotFoundException("Client not found");
+        }
 
         var trip = (await _tripRepository.GetById(bill.TripId, cancellationToken)).FirstOrDefault()
                    ?? throw new NotFoundException("Trip not found");
@@ -87,7 +89,9 @@ public class BillsService : IBillsService
                       ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != clientId)
+        {
             throw new UnauthorizedAccessException("Trip does not belong to current user");
+        }
 
         var billId = await _billRepository.Create(bill, cancellationToken);
         await _billingLifecycleService.RecalculateBillAsync(billId, cancellationToken);
@@ -128,10 +132,16 @@ public class BillsService : IBillsService
             p.StartDate <= DateOnly.FromDateTime(DateTime.UtcNow) &&
             p.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow));
 
-        if (promo == null) throw new NotFoundException("Промокод не найден или истек");
+        if (promo == null)
+        {
+            throw new NotFoundException("Промокод не найден или истек");
+        }
 
         var bill = await _billRepository.GetById(billId, cancellationToken);
-        if (bill == null) throw new NotFoundException("Счет не найден");
+        if (bill == null)
+        {
+            throw new NotFoundException("Счет не найден");
+        }
 
         await _billRepository.Update(
             bill.Id,
@@ -162,6 +172,8 @@ public class BillsService : IBillsService
                       ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != client.Id)
+        {
             throw new UnauthorizedAccessException("Bill does not belong to current user");
+        }
     }
 }

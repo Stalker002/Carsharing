@@ -161,7 +161,9 @@ public class PromocodeRepository : IPromocodeRepository
             promocode.EndDate);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new Exception($"Promocode create exception: {error}");
+        }
 
         var promocodeEntity = new PromocodeEntity
         {
@@ -186,19 +188,29 @@ public class PromocodeRepository : IPromocodeRepository
                         ?? throw new Exception("Promocode not found");
 
         if (statusId.HasValue)
+        {
             promocode.StatusId = statusId.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(code))
+        {
             promocode.Code = code;
+        }
 
         if (discount.HasValue)
+        {
             promocode.Discount = discount.Value;
+        }
 
         if (startDate.HasValue)
+        {
             promocode.StartDate = startDate.Value;
+        }
 
         if (endDate.HasValue)
+        {
             promocode.EndDate = endDate.Value;
+        }
 
         var (_, error) = Promocode.Create(
             promocode.Id,
@@ -209,7 +221,9 @@ public class PromocodeRepository : IPromocodeRepository
             promocode.EndDate);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new Exception($"Promocode create exception: {error}");
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

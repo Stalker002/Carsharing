@@ -115,7 +115,9 @@ public class ClientRepository : IClientRepository
             client.Email);
 
         if (!string.IsNullOrEmpty(error))
+        {
             throw new ArgumentException($"Create exception Client: {error}");
+        }
 
         var clientEntities = new ClientEntity
         {
@@ -139,19 +141,29 @@ public class ClientRepository : IClientRepository
                      ?? throw new Exception("Client not found");
 
         if (userId.HasValue)
+        {
             client.UserId = userId.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(name))
+        {
             client.Name = name;
+        }
 
         if (!string.IsNullOrWhiteSpace(surname))
+        {
             client.Surname = surname;
+        }
 
         if (!string.IsNullOrWhiteSpace(phoneNumber))
+        {
             client.PhoneNumber = phoneNumber;
+        }
 
         if (!string.IsNullOrWhiteSpace(email))
+        {
             client.Email = email;
+        }
 
         var (_, error) = Client.Create(
             0,
@@ -162,7 +174,9 @@ public class ClientRepository : IClientRepository
             client.Email);
 
         if (!string.IsNullOrEmpty(error))
+        {
             throw new ArgumentException($"Create exception Client: {error}");
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

@@ -50,31 +50,50 @@ public class Car
         var error = string.Empty;
 
         if (!Enum.IsDefined(typeof(CarStatusEnum), carStatusId))
+        {
             error =
                 "Invalid insurance type. Allowed: \"1.Доступен\", \"2. Недоступен\", \"3. На обслуживании\", \"4. В ремонте\"";
+        }
 
         if (tariffId < 0)
+        {
             error = "Tariff Id must be positive";
+        }
 
         if (categoryId < 0)
+        {
             error = "Category Id must be positive";
+        }
 
         if (specificationId < 0)
+        {
             error = "Specification Id must be positive";
+        }
 
         if (string.IsNullOrWhiteSpace(location))
+        {
             error = "Car location can't be empty";
+        }
+
         if (location is { Length: > MaxLocationLength })
+        {
             error = $"Car location can't be longer than {MaxLocationLength} symbols";
+        }
 
         if (latitude.HasValue != longitude.HasValue)
+        {
             error = "Latitude and longitude must be provided together";
+        }
 
         if (latitude is < -90 or > 90)
+        {
             error = "Latitude must be between -90 and 90";
+        }
 
         if (longitude is < -180 or > 180)
+        {
             error = "Longitude must be between -180 and 180";
+        }
 
         error = fuelLevel switch
         {
@@ -83,7 +102,10 @@ public class Car
             _ => error
         };
 
-        if (error.Length != 0) return (null, error)!;
+        if (error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var car = new Car(id, carStatusId, tariffId, categoryId, specificationId, location, latitude, longitude,
             fuelLevel, imagePath);

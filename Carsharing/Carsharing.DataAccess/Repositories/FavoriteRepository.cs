@@ -73,7 +73,10 @@ public class FavoriteRepository : IFavoriteRepository
         var exists = await _context.Favorites
             .AnyAsync(f => f.ClientId == clientId && f.CarId == carId, cancellationToken);
 
-        if (exists) return;
+        if (exists)
+        {
+            return;
+        }
 
         var entity = new FavoritesEntity
         {

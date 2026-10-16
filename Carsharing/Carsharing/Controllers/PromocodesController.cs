@@ -116,7 +116,10 @@ public class PromocodesController : ControllerBase
             request.StartDate,
             request.EndDate);
 
-        if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            return BadRequest(error);
+        }
 
         var promocodeId = await _promocodesService.CreatePromocode(promocode, cancellationToken);
 

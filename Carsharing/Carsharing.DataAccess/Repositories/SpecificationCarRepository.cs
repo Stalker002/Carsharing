@@ -80,7 +80,9 @@ public class SpecificationCarRepository : ISpecificationCarRepository
             specificationCar.FuelPerKm);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException($"Specification car create error: {error}");
+        }
 
         var specificationEntity = new SpecificationCarEntity
         {
@@ -113,31 +115,49 @@ public class SpecificationCarRepository : ISpecificationCarRepository
         specification.FuelType = fuelType;
 
         if (!string.IsNullOrWhiteSpace(brand))
+        {
             specification.Brand = brand;
+        }
 
         if (!string.IsNullOrWhiteSpace(model))
+        {
             specification.Model = model;
+        }
 
         if (!string.IsNullOrWhiteSpace(transmission))
+        {
             specification.Transmission = transmission;
+        }
 
         if (year.HasValue)
+        {
             specification.Year = year.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(vinNumber))
+        {
             specification.VinNumber = vinNumber;
+        }
 
         if (!string.IsNullOrWhiteSpace(stateNumber))
+        {
             specification.StateNumber = stateNumber;
+        }
 
         if (mileage.HasValue)
+        {
             specification.Mileage = mileage.Value;
+        }
 
         if (maxFuel.HasValue)
+        {
             specification.MaxFuel = maxFuel.Value;
+        }
 
         if (fuelPerKm.HasValue)
+        {
             specification.FuelPerKm = fuelPerKm.Value;
+        }
 
         var (_, error) = SpecificationCar.Create(
             specification.Id,
@@ -153,7 +173,9 @@ public class SpecificationCarRepository : ISpecificationCarRepository
             specification.FuelPerKm);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException($"Specification car create error: {error}");
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

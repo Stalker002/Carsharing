@@ -50,7 +50,9 @@ public class ImageService(
     public async Task DeleteFile(string fileUrl, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(fileUrl))
+        {
             return;
+        }
 
         try
         {
@@ -79,14 +81,20 @@ public class ImageService(
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
         if (!AllowedExtensions.Contains(extension))
+        {
             throw new ArgumentException(
                 $"Неподдерживаемый формат файла. Разрешены: {string.Join(", ", AllowedExtensions)}");
+        }
 
         if (file.Length <= 0)
+        {
             throw new ArgumentException("Файл пустой.");
+        }
 
         if (file.Length > maxBytes)
+        {
             throw new ArgumentException($"Размер файла превышает допустимый лимит {maxBytes / (1024 * 1024)} MB.");
+        }
 
         ValidateMimeType(file.ContentType, extension);
 
@@ -115,11 +123,13 @@ public class ImageService(
     {
         var bucketExists = await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName);
         if (!bucketExists)
+        {
             await s3Client.PutBucketAsync(new PutBucketRequest
             {
                 BucketName = bucketName,
                 UseClientRegion = true
             }, cancellationToken);
+        }
 
         await ApplyPublicReadPolicyAsync(bucketName, cancellationToken);
     }
@@ -151,11 +161,15 @@ public class ImageService(
     private static void ValidateMimeType(string? contentType, string extension)
     {
         if (string.IsNullOrWhiteSpace(contentType))
+        {
             throw new ArgumentException("Не удалось определить MIME-тип файла.");
+        }
 
         if (!AllowedMimeTypes.TryGetValue(extension, out var allowedMimeTypes) ||
             !allowedMimeTypes.Contains(contentType, StringComparer.OrdinalIgnoreCase))
+        {
             throw new ArgumentException("Неподдерживаемый MIME-тип файла.");
+        }
     }
 
     private static (string BucketName, string Key) ParseStoredFileReference(string fileUrl)
@@ -165,7 +179,9 @@ public class ImageService(
             var reference = fileUrl["s3://".Length..];
             var separatorIndex = reference.IndexOf('/');
             if (separatorIndex <= 0 || separatorIndex >= reference.Length - 1)
+            {
                 throw new ArgumentException("Некорректная ссылка на файл.");
+            }
 
             return (reference[..separatorIndex], reference[(separatorIndex + 1)..]);
         }
@@ -173,7 +189,9 @@ public class ImageService(
         var uri = new Uri(fileUrl, UriKind.Absolute);
         var segments = uri.AbsolutePath.Trim('/').Split('/', 2, StringSplitOptions.RemoveEmptyEntries);
         if (segments.Length != 2)
+        {
             throw new ArgumentException("Некорректная ссылка на файл.");
+        }
 
         return (segments[0], segments[1]);
     }

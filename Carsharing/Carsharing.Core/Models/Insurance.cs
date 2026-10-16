@@ -46,39 +46,69 @@ public class Insurance
         var allowedTypes = new[] { "ОСАГО", "КАСКО" };
 
         if (carId < 0)
+        {
             error = "Car Id must be positive";
+        }
 
         if (!Enum.IsDefined(typeof(InsuranceStatusEnum), statusId))
+        {
             error = "Invalid insurance type. Allowed: \"23. Активна\", \"24. Истекла\", \"25. Аннулирована\" ";
+        }
 
         if (string.IsNullOrWhiteSpace(type))
+        {
             error = "Type can't be empty";
+        }
+
         if (!allowedTypes.Contains(type))
+        {
             error = $"Invalid insurance type. Allowed: {string.Join(", ", allowedTypes)}";
+        }
 
         if (string.IsNullOrWhiteSpace(company))
+        {
             error = "Company name can't be empty";
+        }
+
         if (company is { Length: > MaxCompanyLength })
+        {
             error = $"Company name can't be longer than {MaxCompanyLength} symbols";
+        }
 
         if (string.IsNullOrWhiteSpace(policyNumber))
+        {
             error = "Policy number can't be empty";
+        }
+
         if (policyNumber is { Length: > MaxPolicyNumberLength })
+        {
             error = $"Policy number can't be longer than {MaxPolicyNumberLength} symbols";
+        }
 
         if (startDate > DateOnly.FromDateTime(DateTime.Now))
+        {
             error = "Start insurance date can not be in the future";
+        }
 
         if (endDate < DateOnly.FromDateTime(DateTime.Now))
+        {
             error = "End insurance date can not be in the past";
+        }
 
         if (startDate > endDate)
+        {
             error = "Start time can not exceed end time ";
+        }
 
         if (cost < 0)
+        {
             error = "Cost must be positive";
+        }
 
-        if (error.Length != 0) return (null, error)!;
+        if (error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var insurance = new Insurance(id, carId, statusId, type, company, policyNumber, startDate, endDate, cost);
         return (insurance, error);

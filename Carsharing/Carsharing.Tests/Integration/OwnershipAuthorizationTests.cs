@@ -249,6 +249,7 @@ public class OwnershipAuthorizationTests(CustomWebApplicationFactory factory)
         });
 
         if (withFine)
+        {
             db.Fine.Add(new FineEntity
             {
                 Id = resolvedForeignBillId + 1000,
@@ -258,6 +259,7 @@ public class OwnershipAuthorizationTests(CustomWebApplicationFactory factory)
                 Amount = 25,
                 Date = DateTime.UtcNow
             });
+        }
 
         db.SaveChanges();
 
@@ -267,31 +269,39 @@ public class OwnershipAuthorizationTests(CustomWebApplicationFactory factory)
     private static void SeedReferenceData(CarsharingDbContext db)
     {
         if (!db.CarStatus.Any(s => s.Id == (int)CarStatusEnum.Reserved))
+        {
             db.CarStatus.Add(new CarStatusEntity
             {
                 Id = (int)CarStatusEnum.Reserved,
                 Name = nameof(CarStatusEnum.Reserved)
             });
+        }
 
         if (!db.BookingStatus.Any(s => s.Id == (int)BookingStatusEnum.Active))
+        {
             db.BookingStatus.Add(new BookingStatusEntity
             {
                 Id = (int)BookingStatusEnum.Active,
                 Name = nameof(BookingStatusEnum.Active)
             });
+        }
 
         if (!db.TripStatus.Any(s => s.Id == (int)TripStatusEnum.EnRoute))
+        {
             db.TripStatus.Add(new TripStatusEntity
             {
                 Id = (int)TripStatusEnum.EnRoute,
                 Name = nameof(TripStatusEnum.EnRoute)
             });
+        }
 
         if (!db.BillStatus.Any(s => s.Id == (int)BillStatusEnum.Unpaid))
+        {
             db.BillStatus.Add(new BillStatusEntity
             {
                 Id = (int)BillStatusEnum.Unpaid,
                 Name = nameof(BillStatusEnum.Unpaid)
             });
+        }
     }
 }

@@ -122,7 +122,9 @@ public class ClientsController(IClientsService clientsService) : ControllerBase
             request.Email);
 
         if (clientError is { Length: > 0 })
+        {
             return BadRequest(clientError);
+        }
 
         var clientId = await clientsService.CreateClient(client, cancellationToken);
 
@@ -140,7 +142,9 @@ public class ClientsController(IClientsService clientsService) : ControllerBase
             request.Password);
 
         if (userError is { Length: > 0 })
+        {
             return BadRequest(userError);
+        }
 
         var (client, clientError) = Client.Create(
             0,
@@ -151,7 +155,9 @@ public class ClientsController(IClientsService clientsService) : ControllerBase
             request.Email);
 
         if (clientError is { Length: > 0 })
+        {
             return BadRequest(clientError);
+        }
 
         var clientId = await clientsService.CreateClientWithUser(client, user, cancellationToken);
 
@@ -182,10 +188,14 @@ public class ClientsController(IClientsService clientsService) : ControllerBase
             var myClient = (await clientsService.GetClientByUserId(currentUserId, cancellationToken)).SingleOrDefault();
 
             if (myClient == null)
+            {
                 return NotFound(new { message = "Клиент не найден" });
+            }
 
             if (myClient.Id != id)
+            {
                 return Forbid();
+            }
 
             clientId = await clientsService.UpdateOwnClient(
                 currentUserId,

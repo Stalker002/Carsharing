@@ -108,7 +108,10 @@ public class CarsController : ControllerBase
     {
         var (carId, error) = await _carsService.CreateCarFullAsync(request, cancellationToken);
 
-        if (string.IsNullOrEmpty(error)) return Ok(carId);
+        if (string.IsNullOrEmpty(error))
+        {
+            return Ok(carId);
+        }
 
         return error.Contains("Internal error") ? StatusCode(500, error) : BadRequest(error);
     }
@@ -120,17 +123,26 @@ public class CarsController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
+        }
 
         var (isSuccess, error) = await _carsService.UpdateCarFullAsync(id, request, cancellationToken);
 
-        if (isSuccess) return Ok(id);
+        if (isSuccess)
+        {
+            return Ok(id);
+        }
 
         if (error == "Car not found")
+        {
             return NotFound(error);
+        }
 
         if (error.StartsWith("Internal error", StringComparison.Ordinal))
+        {
             return StatusCode(500, new { error });
+        }
 
         return BadRequest(new { error });
     }

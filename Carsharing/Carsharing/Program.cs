@@ -82,10 +82,12 @@ public class Program
         builder.Services.Configure<FileUploadOptions>(builder.Configuration.GetSection("FileUpload"));
 
         if (!builder.Environment.IsEnvironment("Testing"))
+        {
             builder.Services.AddDbContext<CarsharingDbContext>(options =>
                 options.UseNpgsql(
                     builder.Configuration.GetConnectionString(ConnectionStringName),
                     npgsqlOptions => npgsqlOptions.UseNetTopologySuite()));
+        }
 
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
         builder.Services.AddScoped<IJwtProvider, JwtProvider>();
@@ -110,7 +112,10 @@ public class Program
         using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<CarsharingDbContext>();
-            if (dbContext.Database.IsRelational()) dbContext.Database.Migrate();
+            if (dbContext.Database.IsRelational())
+            {
+                dbContext.Database.Migrate();
+            }
         }
 
         if (!app.Environment.IsEnvironment("Testing"))

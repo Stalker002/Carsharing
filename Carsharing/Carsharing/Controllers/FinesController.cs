@@ -96,7 +96,10 @@ public class FinesController : ControllerBase
             request.Amount,
             request.Date);
 
-        if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            return BadRequest(error);
+        }
 
         var fineId = await _finesService.CreateFine(fines, cancellationToken);
 

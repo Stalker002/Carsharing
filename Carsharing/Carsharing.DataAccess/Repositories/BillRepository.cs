@@ -166,7 +166,9 @@ public class BillRepository : IBillRepository
             bill.RemainingAmount);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new Exception($"Bill create exception: {error}");
+        }
 
         var billEntity = new BillEntity
         {
@@ -192,22 +194,34 @@ public class BillRepository : IBillRepository
                    ?? throw new Exception("Bill not found");
 
         if (tripId.HasValue)
+        {
             bill.TripId = tripId.Value;
+        }
 
         if (promocodeId.HasValue)
+        {
             bill.PromocodeId = promocodeId.Value;
+        }
 
         if (statusId.HasValue)
+        {
             bill.StatusId = statusId.Value;
+        }
 
         if (issueDate.HasValue)
+        {
             bill.IssueDate = issueDate.Value;
+        }
 
         if (amount.HasValue)
+        {
             bill.Amount = amount.Value;
+        }
 
         if (remainingAmount.HasValue)
+        {
             bill.RemainingAmount = remainingAmount.Value;
+        }
 
         var (_, error) = Bill.Create(
             bill.Id,
@@ -219,7 +233,9 @@ public class BillRepository : IBillRepository
             bill.RemainingAmount);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException($"Create exception bill: {error}");
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

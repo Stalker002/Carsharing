@@ -41,7 +41,9 @@ public class BillingLifecycleService(
             0m);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException($"Bill create exception: {error}");
+        }
 
         var billId = await billRepository.Create(bill, cancellationToken);
         await RecalculateBillAsync(billId, cancellationToken);
@@ -86,8 +88,10 @@ public class BillingLifecycleService(
                    ?? throw new NotFoundException("Bill not found");
 
         if (payment.Sum > bill.RemainingAmount.GetValueOrDefault())
+        {
             throw new ConflictException(
                 $"Сумма платежа ({payment.Sum:0.00}) превышает остаток по счёту ({bill.RemainingAmount.GetValueOrDefault():0.00})");
+        }
     }
 
     public async Task EnsureNoOverpaymentOnUpdateAsync(int paymentId, int targetBillId, decimal targetSum,
@@ -108,11 +112,15 @@ public class BillingLifecycleService(
 
         var newTotalPaid = currentPaidWithoutEditedPayment + targetSum;
         if (newTotalPaid > bill.Amount.GetValueOrDefault())
+        {
             throw new ConflictException(
                 $"Сумма платежей ({newTotalPaid:0.00}) превышает сумму счёта ({bill.Amount.GetValueOrDefault():0.00})");
+        }
 
         if (existingPayment.BillId != targetBillId)
+        {
             await RecalculateBillAsync(existingPayment.BillId, cancellationToken);
+        }
     }
 
     public async Task<TripDetail> NormalizeTripDetailAsync(TripDetail tripDetail, CancellationToken cancellationToken)
@@ -144,7 +152,9 @@ public class BillingLifecycleService(
             tripDetail.Refueled);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException($"Trip detail create exception: {error}");
+        }
 
         return normalizedTripDetail;
     }
@@ -203,7 +213,9 @@ public class BillingLifecycleService(
                                   ?? decimal.Round((decimal)((trip.EndTime ?? DateTime.UtcNow) - trip.StartTime)
                                       .TotalMinutes, 2, MidpointRounding.AwayFromZero);
         if (tripDurationMinutes < 0)
+        {
             tripDurationMinutes = 0;
+        }
 
         var tripDistance = trip.Distance.GetValueOrDefault();
         var tripCost = trip.TariffType switch

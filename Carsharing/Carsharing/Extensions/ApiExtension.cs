@@ -14,7 +14,9 @@ public static class ApiExtension
         var jwtOptions = jwtSection.Get<JwtOptions>();
 
         if (jwtOptions == null || string.IsNullOrEmpty(jwtOptions.SecretKey))
+        {
             throw new Exception("JWT configuration missing or invalid");
+        }
 
         service.Configure<JwtOptions>(jwtSection);
         service.AddAuthentication(options =>
@@ -41,9 +43,14 @@ public static class ApiExtension
                         var token = context.Request.Cookies["tasty"];
 
                         if (!string.IsNullOrEmpty(token))
+                        {
                             context.Token = token;
+                        }
+
                         if (context.Request.Cookies.ContainsKey("tasty"))
+                        {
                             context.Token = context.Request.Cookies["tasty"];
+                        }
 
                         return Task.CompletedTask;
                     }

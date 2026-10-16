@@ -65,7 +65,9 @@ public class BillsController : ControllerBase
     {
         var bill = await _billsService.GetBillById(id, cancellationToken);
         if (bill == null)
+        {
             return NotFound("Счёт не найден");
+        }
 
         var response = new BillsResponse(
             bill.Id,
@@ -114,7 +116,9 @@ public class BillsController : ControllerBase
             : await _billsService.GetBillWithInfoByUserId(User.GetRequiredUserId(), id, cancellationToken);
 
         if (bill.Count == 0)
+        {
             return NotFound("Счёт не найден");
+        }
 
         return Ok(bill);
     }
@@ -134,7 +138,10 @@ public class BillsController : ControllerBase
             request.Amount,
             request.RemainingAmount);
 
-        if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            return BadRequest(error);
+        }
 
         var billId = await _billsService.CreateBill(userId, bill, cancellationToken);
 
@@ -166,9 +173,14 @@ public class BillsController : ControllerBase
         try
         {
             if (User.IsAdmin())
+            {
                 await _billsService.ApplyPromocode(id, request.Code, cancellationToken);
+            }
             else
+            {
                 await _billsService.ApplyPromocode(User.GetRequiredUserId(), id, request.Code, cancellationToken);
+            }
+
             return Ok(new { message = "Промокод применен" });
         }
         catch (Exception ex)

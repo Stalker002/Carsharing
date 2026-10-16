@@ -42,7 +42,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                             || d.ServiceType == typeof(CarsharingDbContext))
                 .ToList();
 
-            foreach (var descriptor in descriptors) services.Remove(descriptor);
+            foreach (var descriptor in descriptors)
+            {
+                services.Remove(descriptor);
+            }
 
             services.AddDbContext<CarsharingDbContext>(options =>
             {
