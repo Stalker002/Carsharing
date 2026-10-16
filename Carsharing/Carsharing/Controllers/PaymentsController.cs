@@ -80,7 +80,10 @@ public class PaymentsController : ControllerBase
             request.Method,
             request.Date);
 
-        if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            return BadRequest(error);
+        }
 
         var paymentId = User.IsAdmin()
             ? await _paymentService.CreatePayment(payment, cancellationToken)

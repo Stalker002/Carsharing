@@ -38,7 +38,10 @@ public class TripService(
     {
         var clients = await clientRepository.GetClientByUserId(userId, cancellationToken);
         var client = clients.FirstOrDefault();
-        if (client == null) return ([], 0);
+        if (client == null)
+        {
+            return ([], 0);
+        }
 
         return await tripRepository.GetHistoryByClientId(client.Id, page, limit, cancellationToken);
     }
@@ -60,7 +63,9 @@ public class TripService(
                       ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != client.Id)
+        {
             throw new UnauthorizedAccessException("Trip does not belong to current user");
+        }
 
         return await tripRepository.GetTripWithDetailsById(id, cancellationToken);
     }
@@ -82,7 +87,9 @@ public class TripService(
                       ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != client.Id)
+        {
             throw new UnauthorizedAccessException("Trip does not belong to current user");
+        }
 
         return await tripRepository.GetFullDetailsById(id, cancellationToken);
     }
@@ -141,11 +148,15 @@ public class TripService(
                       ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != client.Id)
+        {
             throw new UnauthorizedAccessException("Trip does not belong to current user");
+        }
 
         if (trip.EndTime != null ||
             (trip.StatusId != (int)TripStatusEnum.WaitingStart && trip.StatusId != (int)TripStatusEnum.EnRoute))
+        {
             throw new ArgumentException("Only active trips in waiting start or en route status can update car location");
+        }
 
         await tripRepository.UpdateTripLocationAsync(
             tripId,
@@ -177,14 +188,20 @@ public class TripService(
                       ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != clientId)
+        {
             throw new UnauthorizedAccessException("Booking does not belong to current user");
+        }
 
         if (booking.StatusId != (int)BookingStatusEnum.Active)
+        {
             throw new ConflictException("Бронирование недоступно для старта поездки");
+        }
 
         var existingTrips = await tripRepository.GetByBookingId([request.BookingId], cancellationToken);
         if (existingTrips.Any(t => t.EndTime == null && t.StatusId != (int)TripStatusEnum.Cancelled))
+        {
             throw new ConflictException("Для этого бронирования уже есть активная поездка");
+        }
 
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
@@ -201,7 +218,10 @@ public class TripService(
                 request.Duration,
                 request.Distance);
 
-            if (!string.IsNullOrWhiteSpace(error)) throw new ArgumentException(error);
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                throw new ArgumentException(error);
+            }
 
             var tripId = await tripRepository.Create(trip, cancellationToken);
 
@@ -213,7 +233,10 @@ public class TripService(
                 request.FuelUsed,
                 request.Refueled);
 
-            if (!string.IsNullOrWhiteSpace(errorTripDetail)) throw new ArgumentException(errorTripDetail);
+            if (!string.IsNullOrWhiteSpace(errorTripDetail))
+            {
+                throw new ArgumentException(errorTripDetail);
+            }
 
             await tripDetailRepository.Create(tripDetail, cancellationToken);
             await carsService.MarkCarAsUnavailableAsync(booking.CarId, cancellationToken);
@@ -245,7 +268,9 @@ public class TripService(
         var isCancelled = request.StatusId == (int)TripStatusEnum.Cancelled;
 
         if (request.EndTime == null && !isFinished && !isCancelled)
+        {
             return tripId;
+        }
 
         var bookings = await bookingRepository.GetById(request.BookingId, cancellationToken);
         var booking = bookings.FirstOrDefault()
@@ -254,7 +279,9 @@ public class TripService(
         await carsService.MarkCarAsAvailableAsync(booking.CarId, cancellationToken);
 
         if (request.EndTime != null)
+        {
             await billingLifecycleService.EnsureBillForTripAsync(id, cancellationToken);
+        }
 
         return tripId;
     }
@@ -282,6 +309,8 @@ public class TripService(
                       ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != clientId)
+        {
             throw new UnauthorizedAccessException("Trip does not belong to current user");
+        }
     }
 }

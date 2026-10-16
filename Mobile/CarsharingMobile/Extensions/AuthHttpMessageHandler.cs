@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Http.Headers;
 
 namespace CarsharingMobile.Extensions;
@@ -8,19 +8,27 @@ public class AuthHttpMessageHandler : DelegatingHandler
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        var token = await SecureStorage.Default.GetAsync("tasty");
+        var isApiRequest = request.RequestUri == null ||
+                           !request.RequestUri.IsAbsoluteUri ||
+                           request.RequestUri.Port.ToString() == ApiConfig.Port;
 
-        if (!string.IsNullOrEmpty(token))
-            request.Headers.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
+        if (isApiRequest)
+        {
+            var token = await SecureStorage.Default.GetAsync(AuthConstants.TokenKey);
+
+            if (!string.IsNullOrEmpty(token))
+                request.Headers.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+        }
 
         var response = await base.SendAsync(request, cancellationToken);
 
-        if (response.StatusCode != HttpStatusCode.Unauthorized) return response;
+        if (isApiRequest && response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            SecureStorage.Default.Remove(AuthConstants.TokenKey);
 
-        SecureStorage.Default.Remove("tasty");
-
-        MainThread.BeginInvokeOnMainThread(() => { Shell.Current?.GoToAsync("//LoginPage"); });
+            MainThread.BeginInvokeOnMainThread(() => { Shell.Current?.GoToAsync("//LoginPage"); });
+        }
 
         return response;
     }

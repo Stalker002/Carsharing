@@ -1,3 +1,5 @@
+using CarsharingMobile.Extensions;
+using Shared.Contracts.ClientDocuments;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
@@ -6,7 +8,7 @@ using System.Text.Json;
 
 namespace CarsharingMobile.Services;
 
-public class ClientDocumentsService(HttpClient httpClient)
+public class ClientDocumentsService(HttpClient httpClient, IdentityService identityService)
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -21,7 +23,7 @@ public class ClientDocumentsService(HttpClient httpClient)
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                SecureStorage.Default.Remove("tasty");
+                SecureStorage.Default.Remove(AuthConstants.TokenKey);
                 MainThread.BeginInvokeOnMainThread(async () => { await Shell.Current.GoToAsync("//LoginPage"); });
                 return null;
             }
@@ -57,7 +59,8 @@ public class ClientDocumentsService(HttpClient httpClient)
 
             streamContent.Headers.ContentType = new MediaTypeHeaderValue(GetContentType(file.FileName));
 
-            content.Add(new StringContent("0"), "ClientId");
+            var (profileId, _) = await identityService.GetProfileIdAsync();
+            content.Add(new StringContent(profileId.ToString()), "ClientId");
             content.Add(new StringContent("Водительское удостоверение"), "Type");
             content.Add(new StringContent(category), "LicenseCategory");
             content.Add(new StringContent(number), "Number");
@@ -69,7 +72,7 @@ public class ClientDocumentsService(HttpClient httpClient)
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                SecureStorage.Default.Remove("tasty");
+                SecureStorage.Default.Remove(AuthConstants.TokenKey);
                 MainThread.BeginInvokeOnMainThread(async () => { await Shell.Current.GoToAsync("//LoginPage"); });
                 return "Сессия истекла. Войдите снова.";
             }
@@ -99,14 +102,4 @@ public class ClientDocumentsService(HttpClient httpClient)
             _ => "application/octet-stream"
         };
     }
-}
-
-public class ClientDocumentSummaryResponse
-{
-    public int Id { get; init; }
-    public int ClientId { get; init; }
-    public string? Type { get; init; }
-    public string? LicenseCategory { get; init; }
-    public DateOnly IssueDate { get; init; }
-    public DateOnly ExpiryDate { get; init; }
 }

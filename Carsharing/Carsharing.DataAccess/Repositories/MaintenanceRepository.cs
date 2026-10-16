@@ -107,7 +107,9 @@ public class MaintenanceRepository : IMaintenanceRepository
             maintenance.Date);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException($"Maintenance create error: {error}");
+        }
 
         var maintenanceEntity = new MaintenanceEntity
         {
@@ -132,19 +134,29 @@ public class MaintenanceRepository : IMaintenanceRepository
                           ?? throw new Exception("Maintenance not found");
 
         if (carId.HasValue)
+        {
             maintenance.CarId = carId.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(workType))
+        {
             maintenance.WorkType = workType;
+        }
 
         if (!string.IsNullOrWhiteSpace(description))
+        {
             maintenance.Description = description;
+        }
 
         if (cost.HasValue)
+        {
             maintenance.Cost = cost.Value;
+        }
 
         if (date.HasValue)
+        {
             maintenance.Date = date.Value;
+        }
 
         var (_, error) = Maintenance.Create(
             maintenance.Id,
@@ -155,7 +167,9 @@ public class MaintenanceRepository : IMaintenanceRepository
             maintenance.Date);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException($"Maintenance create error: {error}");
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

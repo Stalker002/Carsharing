@@ -61,12 +61,16 @@ public class ReviewsService : IReviewsService
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
         if (clientId == 0)
+        {
             throw new NotFoundException("Client not found");
+        }
 
         var (review, error) = Review.Create(0, clientId, carId, rating, comment, date);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException(error);
+        }
 
         return await _reviewRepository.Create(review, cancellationToken);
     }
@@ -78,13 +82,17 @@ public class ReviewsService : IReviewsService
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
         if (clientId == 0)
+        {
             throw new NotFoundException("Client not found");
+        }
 
         var review = (await _reviewRepository.GetById(id, cancellationToken)).FirstOrDefault()
                      ?? throw new NotFoundException("Review not found");
 
         if (review.ClientId != clientId)
+        {
             throw new UnauthorizedAccessException("Review does not belong to current user");
+        }
 
         return await _reviewRepository.Update(id, clientId, carId, rating, comment, date, cancellationToken);
     }

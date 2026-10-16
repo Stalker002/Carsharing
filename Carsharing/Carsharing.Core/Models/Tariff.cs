@@ -30,20 +30,34 @@ public class Tariff
         var error = string.Empty;
 
         if (string.IsNullOrWhiteSpace(name))
+        {
             error = "Name can't be empty";
+        }
+
         if (name is { Length: > MaxNameLength })
+        {
             error = $"Type can't be longer than {MaxNameLength} symbols";
+        }
 
         if (pricePerMinute <= 0)
+        {
             error = "Price per minute must be positive";
+        }
 
         if (pricePerKm <= 0)
+        {
             error = "Price per km must be positive";
+        }
 
         if (pricePerDay <= 0)
+        {
             error = "Price per day must be positive";
+        }
 
-        if (error.Length != 0) return (null, error)!;
+        if (error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var tariff = new Tariff(id, name, pricePerMinute, pricePerKm, pricePerDay);
         return (tariff, error);

@@ -244,12 +244,7 @@ internal static class TripDetailsUiModelFactory
 
     private static string? NormalizeImageUrl(string? imageUrl)
     {
-        if (string.IsNullOrWhiteSpace(imageUrl))
-            return null;
-
-        return imageUrl
-            .Replace("http://localhost:9000", $"http://{ApiConfig.HostIp}:9000")
-            .Replace("http://minio:9000", $"http://{ApiConfig.HostIp}:9000");
+        return ApiConfig.NormalizeMediaUrl(imageUrl);
     }
 
     private static string TranslateTariff(string? tariffType) => tariffType switch

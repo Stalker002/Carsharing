@@ -62,7 +62,9 @@ public class TariffRepository : ITariffRepository
             tariff.PricePerDay);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException($"Tariff create exception error: {error}");
+        }
 
         var tariffEntity = new TariffEntity
         {
@@ -86,16 +88,24 @@ public class TariffRepository : ITariffRepository
                      ?? throw new Exception("Tariff not found");
 
         if (!string.IsNullOrWhiteSpace(name))
+        {
             tariff.Name = name;
+        }
 
         if (pricePerMinute.HasValue)
+        {
             tariff.PricePerMinute = pricePerMinute.Value;
+        }
 
         if (pricePerKm.HasValue)
+        {
             tariff.PricePerMinute = pricePerKm.Value;
+        }
 
         if (pricePerDay.HasValue)
+        {
             tariff.PricePerDay = pricePerDay.Value;
+        }
 
         var (_, error) = Tariff.Create(
             tariff.Id,
@@ -105,7 +115,9 @@ public class TariffRepository : ITariffRepository
             tariff.PricePerDay);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException($"Tariff create exception error: {error}");
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

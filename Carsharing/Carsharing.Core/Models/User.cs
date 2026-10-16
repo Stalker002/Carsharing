@@ -27,12 +27,19 @@ public class User
         var error = string.Empty;
 
         if (roleId < 0)
+        {
             error = "Role Id must be positive";
+        }
 
         if (string.IsNullOrWhiteSpace(login))
+        {
             error = "Login can't be empty";
+        }
+
         if (login.Length > MaxLoginLength)
+        {
             error = $"Login can't be longer than {MaxLoginLength} symbols";
+        }
 
         error = password.Length switch
         {
@@ -42,9 +49,14 @@ public class User
         };
 
         if (string.IsNullOrWhiteSpace(password))
+        {
             error = "Password can't be empty";
+        }
 
-        if (error.Length != 0) return (null, error)!;
+        if (error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var user = new User(id, roleId, login, password);
 

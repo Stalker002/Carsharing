@@ -27,17 +27,29 @@ public class Payment
         var allowedMethod = new[] { "Картой", "Наличными", "ЕРИП", "Другое" };
 
         if (billId < 0)
+        {
             error = "Bill Id must be positive";
+        }
 
         if (sum < 0)
+        {
             error = "Sum must be positive";
+        }
 
         if (string.IsNullOrWhiteSpace(method))
+        {
             error = "Method can't be empty";
-        if (!allowedMethod.Contains(method))
-            error = $"Invalid method. Allowed: {string.Join(", ", allowedMethod)}";
+        }
 
-        if (error.Length != 0) return (null, error)!;
+        if (!allowedMethod.Contains(method))
+        {
+            error = $"Invalid method. Allowed: {string.Join(", ", allowedMethod)}";
+        }
+
+        if (error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var payment = new Payment(id, billId, sum, method, date);
         return (payment, error);

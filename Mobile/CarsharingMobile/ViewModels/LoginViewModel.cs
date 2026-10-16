@@ -35,37 +35,47 @@ public partial class LoginViewModel(AuthService authService, IdentityService ide
             return;
         }
 
-        IsBusy = true;
-
-        var request = new LoginRequest(UserLogin, UserPassword);
-
-        var errorMessage = await authService.LoginAsync(request);
-
-        IsBusy = false;
-
-        if (errorMessage == null)
+        try
         {
-            var (_, roleId) = await identityService.GetProfileIdAsync();
+            IsBusy = true;
 
-            switch (roleId)
+            var cleanLogin = UserLogin.Trim();
+            var request = new LoginRequest(cleanLogin, UserPassword);
+
+            var errorMessage = await authService.LoginAsync(request);
+
+            if (errorMessage == null)
             {
-                case 2:
-                    WeakReferenceMessenger.Default.Send(new UserLoggedInMessage());
-                    await Shell.Current.GoToAsync("//MainPage");
-                    break;
-                case 1:
-                    WeakReferenceMessenger.Default.Send(new UserLoggedInMessage());
-                    await Shell.Current.DisplayAlert("Привет, Админ!", "Добро пожаловать в систему управления", "ОК");
-                    await Shell.Current.GoToAsync("//MainPage");
-                    break;
-                default:
-                    await Shell.Current.DisplayAlert("Ошибка", "Неизвестная роль пользователя", "ОК");
-                    break;
+                var (_, roleId) = await identityService.GetProfileIdAsync();
+
+                switch (roleId)
+                {
+                    case 2:
+                        WeakReferenceMessenger.Default.Send(new UserLoggedInMessage());
+                        await Shell.Current.GoToAsync("//MainPage");
+                        break;
+                    case 1:
+                        WeakReferenceMessenger.Default.Send(new UserLoggedInMessage());
+                        await Shell.Current.DisplayAlert("Привет, Админ!", "Добро пожаловать в систему управления", "ОК");
+                        await Shell.Current.GoToAsync("//MainPage");
+                        break;
+                    default:
+                        await Shell.Current.DisplayAlert("Ошибка", "Неизвестная роль пользователя", "ОК");
+                        break;
+                }
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Ошибка входа", errorMessage, "ОК");
             }
         }
-        else
+        catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Ошибка входа", errorMessage, "ОК");
+            await Shell.Current.DisplayAlert("Ошибка входа", $"Не удалось войти: {ex.Message}", "ОК");
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 

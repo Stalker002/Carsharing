@@ -66,6 +66,11 @@ public partial class ProfileViewModel(ClientService clientService, ClientDocumen
                 _ => "Все документы выглядят актуальными"
             };
         }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Ошибка загрузки профиля: {ex}");
+            ErrorMessage = "Не удалось загрузить данные профиля.";
+        }
         finally
         {
             IsBusy = false;

@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CarsharingMobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Shared.Contracts.ClientDocuments;
 
 namespace CarsharingMobile.ViewModels;
 
@@ -46,6 +47,11 @@ public partial class DocumentsViewModel(ClientDocumentsService clientDocumentsSe
                 Documents.Add(new DocumentListItem(document));
 
             OnPropertyChanged(nameof(IsEmptyStateVisible));
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Ошибка загрузки документов: {ex}");
+            ErrorMessage = "Не удалось загрузить документы.";
         }
         finally
         {

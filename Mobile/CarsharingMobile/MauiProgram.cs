@@ -61,7 +61,7 @@ public static class MauiProgram
             {
                 Bitmap? bitmap = null;
 
-                if (carPin.ImageUrl.StartsWith("/") && File.Exists(carPin.ImageUrl))
+                if (File.Exists(carPin.ImageUrl))
                     bitmap = BitmapFactory.DecodeFile(carPin.ImageUrl);
 
                 if (bitmap != null)

@@ -23,7 +23,10 @@ public class UsersController : ControllerBase
     {
         var (token, error) = await _usersService.Login(request.Login, request.Password, cancellationToken);
 
-        if (!string.IsNullOrEmpty(error)) return BadRequest(new { message = "Неверный логин или пароль" });
+        if (!string.IsNullOrEmpty(error))
+        {
+            return BadRequest(new { message = "Неверный логин или пароль" });
+        }
 
         Response.Cookies.Append("tasty", token ?? throw new InvalidOperationException());
         return Ok(new { token });
@@ -51,11 +54,16 @@ public class UsersController : ControllerBase
     [HttpPost("verify-code")]
     public IActionResult VerifyCode([FromBody] VerifyCodeRequest request, [FromServices] IMemoryCache cache)
     {
-        if (request.Code == "0000") return Ok();
+        if (request.Code == "0000")
+        {
+            return Ok();
+        }
 
         if (!cache.TryGetValue(request.PhoneNumber, out string? savedCode) || savedCode != request.Code)
+        {
             return BadRequest(new { message = "Неверный код или срок его действия истек" });
-        
+        }
+
         cache.Remove(request.PhoneNumber);
         return Ok();
 
@@ -118,7 +126,10 @@ public class UsersController : ControllerBase
             request.Login,
             request.Password);
 
-        if (!string.IsNullOrEmpty(error)) return BadRequest(error);
+        if (!string.IsNullOrEmpty(error))
+        {
+            return BadRequest(error);
+        }
 
         var userId = await _usersService.CreateUser(user, cancellationToken);
 

@@ -70,7 +70,9 @@ public class ClientsService : IClientsService
     {
         var userExists = await _usersRepository.GetByLogin(user.Login, cancellationToken);
         if (userExists != null)
+        {
             throw new ConflictException("Пользователь с таким логином уже существует");
+        }
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
 

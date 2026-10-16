@@ -94,7 +94,9 @@ public class BookingsService : IBookingsService
                       ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != clientId)
+        {
             throw new UnauthorizedAccessException("Booking does not belong to current user");
+        }
 
         return await _bookingRepository.GetBookingWithInfo(id, cancellationToken);
     }
@@ -107,7 +109,9 @@ public class BookingsService : IBookingsService
         var (booking, error) = Booking.Create(0, (int)BookingStatusEnum.Active, carId, clientId, startTime, endTime);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException(error);
+        }
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
@@ -125,7 +129,9 @@ public class BookingsService : IBookingsService
                 var car = cars.FirstOrDefault();
 
                 if (car == null)
+                {
                     throw new NotFoundException("Автомобиль не найден");
+                }
 
                 throw new ConflictException("Автомобиль недоступен на выбранное время");
             }
@@ -160,7 +166,9 @@ public class BookingsService : IBookingsService
         var clientId = client.Select(c => c.Id).FirstOrDefault();
 
         if (clientId == 0)
+        {
             throw new NotFoundException("Клиент не найден");
+        }
 
         return clientId;
     }

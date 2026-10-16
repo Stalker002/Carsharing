@@ -1,0 +1,77 @@
+#pragma once
+
+// Copy this file to include/config.h and change values for your environment.
+
+#define DEVICE_ID "esp32-car-001"
+#define CAR_ID "car-001"
+#define FIRMWARE_VERSION "0.1.0"
+
+#define WIFI_SSID "your-wifi-ssid"
+#define WIFI_PASSWORD "your-wifi-password"
+
+#define MQTT_HOST "192.168.1.10"
+#define MQTT_PORT 1883
+#define MQTT_USERNAME ""
+#define MQTT_PASSWORD ""
+#define MQTT_USE_TLS 0
+#define MQTT_ROOT_CA ""
+#define MQTT_BUFFER_SIZE 1536
+
+// Current TelematicsService MVP uses HTTP. Set to 0 to use the MQTT contract.
+#define TELEMATICS_TRANSPORT_HTTP 1
+#define ENABLE_SIM800_TRANSPORT 0
+#define TELEMATICS_API_BASE_URL "http://192.168.1.10:5007"
+#define TELEMATICS_API_USE_WIFI_GATEWAY 0
+#define TELEMATICS_API_GATEWAY_PORT 5007
+#define TELEMATICS_DEVICE_KEY "esp32-test-001"
+#define HTTP_TIMEOUT_MS 5000
+#define COMMAND_POLL_INTERVAL_MS 5000UL
+
+#define TELEMETRY_INTERVAL_MS 10000UL
+#define HEARTBEAT_INTERVAL_MS 30000UL
+#define DIAGNOSTICS_INTERVAL_MS 60000UL
+#define NETWORK_RETRY_INTERVAL_MS 5000UL
+#define MIN_TELEMETRY_INTERVAL_MS 1000UL
+#define MAX_TELEMETRY_INTERVAL_MS 300000UL
+#define COMMAND_DEDUP_CACHE_SIZE 8
+
+#define GPS_RX_PIN 17
+#define GPS_TX_PIN 16
+#define GPS_BAUD_RATE 9600
+#define ENABLE_GPS 1
+
+#define LOCK_RELAY_PIN 18
+#define UNLOCK_RELAY_PIN LOCK_RELAY_PIN
+#define ENGINE_RELAY_PIN -1
+#define HAZARD_RELAY_PIN 19
+#define STATUS_LED_PIN 2
+#define RELAY_PULSE_MS 700UL
+
+#define BATTERY_ADC_PIN 34
+#define BATTERY_ADC_MULTIPLIER 11.0f
+#define ADC_REFERENCE_VOLTAGE 3.3f
+#define ADC_MAX_VALUE 4095.0f
+
+// Enable when SN65HVD230 is wired and CAN frames are available.
+#define ENABLE_CAN 1
+#define CAN_TX_PIN 4
+#define CAN_RX_PIN 5
+#define CAN_SPEED_KBPS 500
+#define CAN_SELF_TEST_ENABLED 0
+#define CAN_SELF_TEST_INTERVAL_MS 2000UL
+#define CAN_SELF_TEST_FRAME_ID 0x100
+#define CAN_OBD_POLL_ENABLED 1
+#define CAN_OBD_POLL_INTERVAL_MS 1000UL
+#define CAN_OBD_REQUEST_ID 0x7DF
+#define CAN_OBD_RESPONSE_ID_MIN 0x7E8
+#define CAN_OBD_RESPONSE_ID_MAX 0x7EF
+
+#define SIM800_RX_PIN 27
+#define SIM800_TX_PIN 26
+#define SIM800_BAUD_RATE 9600
+#define SIM800_APN "internet.life.com.by"
+#define SIM800_GPRS_USER ""
+#define SIM800_GPRS_PASSWORD ""
+
+// Reserved for a later production pass.
+#define ENABLE_OFFLINE_BUFFER 0

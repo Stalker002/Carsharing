@@ -55,7 +55,9 @@ public class MaintenanceController : ControllerBase
         [FromQuery] DateOnly to, CancellationToken cancellationToken)
     {
         if (from > to)
+        {
             return BadRequest("Дата 'from' не может быть больше 'to'.");
+        }
 
         var maintenances = await _maintenancesService.GetByDateRange(from, to, cancellationToken);
 
@@ -77,7 +79,10 @@ public class MaintenanceController : ControllerBase
             request.Cost,
             request.Date);
 
-        if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            return BadRequest(error);
+        }
 
         var maintenanceId = await _maintenancesService.CreateMaintenance(maintenance, cancellationToken);
 

@@ -76,7 +76,9 @@ public class TripDetailRepository : ITripDetailRepository
             tripDetail.Refueled);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new Exception($"Trip detail create exception: {error}");
+        }
 
         var tripDetailEntity = new TripDetailEntity
         {
@@ -102,22 +104,34 @@ public class TripDetailRepository : ITripDetailRepository
                          ?? throw new Exception("Trip detail not found");
 
         if (tripId.HasValue)
+        {
             tripDetail.TripId = tripId.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(startLocation))
+        {
             tripDetail.StartLocation = startLocation;
+        }
 
         if (!string.IsNullOrWhiteSpace(endLocation))
+        {
             tripDetail.EndLocation = endLocation;
+        }
 
         if (insuranceActive.HasValue)
+        {
             tripDetail.InsuranceActive = insuranceActive.Value;
+        }
 
         if (fuelUsed.HasValue)
+        {
             tripDetail.FuelUsed = fuelUsed.Value;
+        }
 
         if (refueled.HasValue)
+        {
             tripDetail.Refueled = refueled.Value;
+        }
 
         var (_, error) = TripDetail.Create(
             tripDetail.Id,
@@ -129,7 +143,9 @@ public class TripDetailRepository : ITripDetailRepository
             tripDetail.Refueled);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new Exception($"Trip detail create exception: {error}");
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

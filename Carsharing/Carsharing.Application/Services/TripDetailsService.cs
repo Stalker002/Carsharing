@@ -29,7 +29,9 @@ public class TripDetailsService : ITripDetailsService
         var carId = await _tripDetailRepository.GetCarIdByTripId(tripDetail.TripId, cancellationToken);
 
         if (carId == 0)
+        {
             throw new NotFoundException($"Поездка с ID {tripDetail.TripId} или связанный автомобиль не найдены");
+        }
 
         var normalizedTripDetail =
             await _billingLifecycleService.NormalizeTripDetailAsync(tripDetail, cancellationToken);
@@ -44,7 +46,9 @@ public class TripDetailsService : ITripDetailsService
         var insurances = await _insuranceRepository.GetActiveByCarId(carId, cancellationToken);
 
         if (insurances.Count == 0)
+        {
             throw new ConflictException("Нельзя начать поездку с опцией страховки: у автомобиля нет активного полиса");
+        }
 
         var resultId = await _tripDetailRepository.Create(normalizedTripDetail, cancellationToken);
         await _billingLifecycleService.SyncCarFuelLevelAsync(normalizedTripDetail.TripId, cancellationToken);
@@ -67,7 +71,9 @@ public class TripDetailsService : ITripDetailsService
             refueled ?? existingTripDetail.Refueled);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException($"Trip detail create exception: {error}");
+        }
 
         var normalizedTripDetail =
             await _billingLifecycleService.NormalizeTripDetailAsync(tripDetail, cancellationToken);
@@ -78,8 +84,10 @@ public class TripDetailsService : ITripDetailsService
             var insurances = await _insuranceRepository.GetActiveByCarId(carId, cancellationToken);
 
             if (insurances.Count == 0)
+            {
                 throw new ConflictException(
                     "Нельзя начать поездку с опцией страховки: у автомобиля нет активного полиса");
+            }
         }
 
         var updatedId = await _tripDetailRepository.Update(

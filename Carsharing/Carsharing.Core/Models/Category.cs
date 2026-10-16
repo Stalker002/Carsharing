@@ -19,12 +19,19 @@ public class Category
         var error = string.Empty;
 
         if (string.IsNullOrWhiteSpace(name))
+        {
             error = "Name can't be empty";
+        }
 
         if (name is { Length: > MaxNameLength })
+        {
             error = $"Name can't be longer than {MaxNameLength} symbols";
+        }
 
-        if (error.Length != 0) return (null, error)!;
+        if (error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var category = new Category(id, name);
         return (category, error);

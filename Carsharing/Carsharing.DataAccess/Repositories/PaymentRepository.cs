@@ -106,7 +106,9 @@ public class PaymentRepository : IPaymentRepository
             payment.Date);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new Exception($"Payment create error: {error}");
+        }
 
         var paymentEntity = new PaymentEntity
         {
@@ -130,16 +132,24 @@ public class PaymentRepository : IPaymentRepository
                       ?? throw new Exception("Payment not found");
 
         if (billId.HasValue)
+        {
             payment.BillId = billId.Value;
+        }
 
         if (sum.HasValue)
+        {
             payment.Sum = sum.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(method))
+        {
             payment.Method = method;
+        }
 
         if (date.HasValue)
+        {
             payment.Date = date.Value;
+        }
 
         var (_, error) = Payment.Create(
             payment.Id,
@@ -149,7 +159,9 @@ public class PaymentRepository : IPaymentRepository
             payment.Date);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new Exception($"Payment create error: {error}");
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

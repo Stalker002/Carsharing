@@ -170,8 +170,10 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
                 b.StatusId == (int)BookingStatusEnum.Active, cancellationToken);
 
         if (hasActiveBooking)
+        {
             throw new ArgumentException(
                 "У вас уже есть активная аренда или бронь. Завершите текущую поездку, прежде чем брать новую машину.");
+        }
 
         var (_, error) = Booking.Create(
             0,
@@ -182,7 +184,9 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
             booking.EndTime);
 
         if (!string.IsNullOrEmpty(error))
+        {
             throw new ArgumentException($"Create exception booking: {error}");
+        }
 
         var bookingEntities = new BookingEntity
         {
@@ -206,19 +210,29 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
                       ?? throw new Exception("Booking not found");
 
         if (statusId.HasValue)
+        {
             booking.StatusId = statusId.Value;
+        }
 
         if (carId.HasValue)
+        {
             booking.CarId = carId.Value;
+        }
 
         if (clientId.HasValue)
+        {
             booking.ClientId = clientId.Value;
+        }
 
         if (startTime.HasValue)
+        {
             booking.StartTime = startTime.Value;
+        }
 
         if (endTime.HasValue)
+        {
             booking.EndTime = endTime.Value;
+        }
 
         var (_, error) = Booking.Create(
             0,
@@ -229,7 +243,9 @@ public class BookingRepository(CarsharingDbContext context) : IBookingRepository
             booking.EndTime);
 
         if (!string.IsNullOrEmpty(error))
+        {
             throw new ArgumentException($"Create exception booking: {error}");
+        }
 
         await context.SaveChangesAsync(cancellationToken);
 

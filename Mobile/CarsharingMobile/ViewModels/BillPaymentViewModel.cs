@@ -177,6 +177,11 @@ public partial class BillPaymentViewModel(BillService billService, PaymentServic
             OnPropertyChanged(nameof(CanEditPayment));
             OnPropertyChanged(nameof(PaymentHintText));
         }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Ошибка загрузки счета: {ex}");
+            ErrorMessage = "Не удалось загрузить счет.";
+        }
         finally
         {
             IsBusy = false;

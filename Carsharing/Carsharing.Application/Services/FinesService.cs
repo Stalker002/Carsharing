@@ -61,7 +61,9 @@ public class FinesService : IFinesService
                       ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != client.Id)
+        {
             throw new UnauthorizedAccessException("Trip does not belong to current user");
+        }
 
         return await _fineRepository.GetByTripId(tripId, cancellationToken);
     }

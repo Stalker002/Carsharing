@@ -36,7 +36,10 @@ public class ClientDocumentsController(IClientDocumentsService clientDocumentsSe
         var userId = User.GetRequiredUserId();
         var (id, error) = await clientDocumentsService.CreateClientDocumentAsync(userId, request, cancellationToken);
 
-        if (!string.IsNullOrEmpty(error)) return BadRequest(new { message = error });
+        if (!string.IsNullOrEmpty(error))
+        {
+            return BadRequest(new { message = error });
+        }
 
         return Ok(id);
     }
@@ -50,8 +53,15 @@ public class ClientDocumentsController(IClientDocumentsService clientDocumentsSe
         var (isSuccess, error) =
             await clientDocumentsService.UpdateClientDocumentAsync(userId, id, request, cancellationToken);
 
-        if (isSuccess) return Ok(new { message = "Документ успешно обновлен" });
-        if (error == "Document not found") return NotFound(new { message = "Документ не найден" });
+        if (isSuccess)
+        {
+            return Ok(new { message = "Документ успешно обновлен" });
+        }
+
+        if (error == "Document not found")
+        {
+            return NotFound(new { message = "Документ не найден" });
+        }
 
         return BadRequest(new { message = error });
     }
@@ -63,8 +73,16 @@ public class ClientDocumentsController(IClientDocumentsService clientDocumentsSe
         var userId = User.GetRequiredUserId();
         var (isSuccess, error) = await clientDocumentsService.DeleteClientDocumentAsync(userId, id, cancellationToken);
 
-        if (isSuccess) return Ok(new { message = "Документ удален" });
-        if (error == "Document not found") return NotFound(new { message = "Документ не найден" });
+        if (isSuccess)
+        {
+            return Ok(new { message = "Документ удален" });
+        }
+
+        if (error == "Document not found")
+        {
+            return NotFound(new { message = "Документ не найден" });
+        }
+
         return BadRequest(new { message = error });
     }
 }

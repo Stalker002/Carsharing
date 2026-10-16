@@ -85,7 +85,9 @@ public class TripsController : ControllerBase
             : await _tripService.GetTripFullDetails(User.GetRequiredUserId(), id, cancellationToken);
 
         if (tripDetails == null)
+        {
             return NotFound("Поездка не найдена");
+        }
 
         return Ok(tripDetails);
     }
@@ -98,7 +100,9 @@ public class TripsController : ControllerBase
 
         var trip = await _tripService.GetActiveTripByClientId(userId, cancellationToken);
         if (trip == null)
+        {
             return NotFound(new { message = "Активных поездок нет" });
+        }
 
         return Ok(trip);
     }

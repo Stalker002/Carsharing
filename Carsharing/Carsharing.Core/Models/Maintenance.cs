@@ -33,15 +33,24 @@ public class Maintenance
             { "Замена масла", "Замена шин", "Обслуживание тормозов", "Осмотр", "Ремонт", "Чистка" };
 
         if (carId < 0)
+        {
             error = "Car Id must be positive";
+        }
 
         if (!allowedWorkTypes.Contains(workType))
+        {
             error = $"Invalid work type. Allowed: {string.Join(", ", allowedWorkTypes)}";
+        }
 
         if (cost < 0)
+        {
             error = "Cost must be positive";
+        }
 
-        if (error.Length != 0) return (null, error)!;
+        if (error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var maintenance = new Maintenance(id, carId, workType, description, cost, date);
 

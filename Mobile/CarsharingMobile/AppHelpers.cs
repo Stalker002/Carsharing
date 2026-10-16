@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using CarsharingMobile.Extensions;
 
 namespace CarsharingMobile;
 
@@ -8,7 +9,7 @@ public class AppHelpers
     {
         try
         {
-            var token = await SecureStorage.Default.GetAsync("jwt_token");
+            var token = await SecureStorage.Default.GetAsync(AuthConstants.TokenKey);
 
             if (!string.IsNullOrEmpty(token)) await Shell.Current.GoToAsync("//MainPage");
         }

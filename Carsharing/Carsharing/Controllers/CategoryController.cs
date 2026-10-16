@@ -36,7 +36,10 @@ public class CategoryController : ControllerBase
             0,
             request.Name);
 
-        if (!string.IsNullOrEmpty(error)) return BadRequest(error);
+        if (!string.IsNullOrEmpty(error))
+        {
+            return BadRequest(error);
+        }
 
         var categoryId = await _categoriesService.CreateCategory(category, cancellationToken);
 

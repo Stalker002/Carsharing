@@ -134,7 +134,9 @@ public class FineRepository : IFineRepository
             fine.Date);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new Exception($"Fine create exception: {error}");
+        }
 
         var fineEntity = new FineEntity
         {
@@ -159,19 +161,29 @@ public class FineRepository : IFineRepository
                    ?? throw new Exception("Fine not found");
 
         if (tripId.HasValue)
+        {
             fine.TripId = tripId.Value;
+        }
 
         if (statusId.HasValue)
+        {
             fine.StatusId = statusId.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(type))
+        {
             fine.Type = type;
+        }
 
         if (amount.HasValue)
+        {
             fine.Amount = amount.Value;
+        }
 
         if (date.HasValue)
+        {
             fine.Date = date.Value;
+        }
 
         var (_, error) = Fine.Create(
             fine.Id,
@@ -182,7 +194,9 @@ public class FineRepository : IFineRepository
             fine.Date);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new Exception($"Fine create exception: {error}");
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

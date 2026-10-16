@@ -33,27 +33,45 @@ public class Trip
         var allowedTariffTypes = new[] { "per_minute", "per_km", "per_day" };
 
         if (bookingId < 0)
+        {
             error = "Booking Id must be positive";
+        }
 
         if (!Enum.IsDefined(typeof(TripStatusEnum), statusId))
+        {
             error =
                 "Invalid insurance type. Allowed: \"8. Ожидание начала\", \"9. В пути\", \"10. Завершена\", \"11. Отменена\", \"12. Требуется оплата\" ";
+        }
 
         if (string.IsNullOrWhiteSpace(tariffType))
+        {
             error = "Tariff type can't be empty";
+        }
+
         if (!allowedTariffTypes.Contains(tariffType))
+        {
             error = $"Invalid tariff type. Allowed: {string.Join(", ", allowedTariffTypes)}";
+        }
 
         if (startTime > endTime)
+        {
             error = "Start time can not exceed end time ";
+        }
 
         if (duration < 0)
+        {
             error = "Duration must be positive";
+        }
 
         if (distance < 0)
+        {
             error = "Distance must be positive";
+        }
 
-        if (error.Length != 0) return (null, error)!;
+        if (error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var trip = new Trip(id, bookingId, statusId, tariffType, startTime, endTime, duration, distance);
         return (trip, error);
