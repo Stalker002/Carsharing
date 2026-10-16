@@ -38,7 +38,7 @@ function PopularCar() {
   // };
   const renderCard = (cars) => {
     const imageUrl = cars.imagePath
-      ? `http://localhost:5078${cars.imagePath}`
+      ? cars.imagePath
       : "https://via.placeholder.com/300x200?text=No+Image";
 
     const seatsCount = getCapacity(cars);
