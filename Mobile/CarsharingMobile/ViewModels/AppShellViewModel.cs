@@ -1,4 +1,4 @@
-﻿using CarsharingMobile.Services;
+using CarsharingMobile.Services;
 using CarsharingMobile.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -34,14 +34,31 @@ public partial class AppShellViewModel : ObservableObject, IRecipient<UserLogged
     [RelayCommand]
     public async Task LoadProfileAsync()
     {
-        var profile = await _clientService.GetMyProfileAsync();
-
-        if (profile != null)
-            MainThread.BeginInvokeOnMainThread(() =>
+        try
+        {
+            var token = await SecureStorage.Default.GetAsync(CarsharingMobile.Extensions.AuthConstants.TokenKey);
+            if (string.IsNullOrEmpty(token))
             {
-                Name = string.IsNullOrWhiteSpace(profile.Name) ? "Без имени" : profile.Name;
-                Surname = profile.Surname ?? "";
-            });
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    Name = "Гость";
+                    Surname = "";
+                });
+                return;
+            }
+
+            var profile = await _clientService.GetMyProfileAsync();
+
+            if (profile != null)
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    Name = string.IsNullOrWhiteSpace(profile.Name) ? "Без имени" : profile.Name;
+                    Surname = profile.Surname ?? "";
+                });
+        }
+        catch
+        {
+        }
     }
 
     [RelayCommand]

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace CarsharingMobile.Extensions;
@@ -7,7 +7,7 @@ public class IdentityService
 {
     public async Task<(long ProfileId, int RoleId)> GetProfileIdAsync()
     {
-        var token = await SecureStorage.Default.GetAsync("tasty");
+        var token = await SecureStorage.Default.GetAsync(AuthConstants.TokenKey);
         if (string.IsNullOrEmpty(token)) return (0, 0);
 
         try

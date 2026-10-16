@@ -130,6 +130,11 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
 
             await Shell.Current.GoToAsync("//MainPage");
         }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Ошибка при завершении поездки: {ex}");
+            ErrorMessage = "Произошла ошибка при завершении поездки. Попробуйте еще раз.";
+        }
         finally
         {
             IsFinishing = false;
@@ -297,9 +302,16 @@ public partial class CurrentTripViewModel(TripService tripService) : ObservableO
         if (status != PermissionStatus.Granted)
             return null;
 
-        return await Geolocation.Default.GetLastKnownLocationAsync()
-               ?? await Geolocation.Default.GetLocationAsync(
-                   new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(10)));
+        try
+        {
+            return await Geolocation.Default.GetLocationAsync(
+                new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(8)))
+                ?? await Geolocation.Default.GetLastKnownLocationAsync();
+        }
+        catch
+        {
+            return await Geolocation.Default.GetLastKnownLocationAsync();
+        }
     }
 
     private void UpdateDashboard()

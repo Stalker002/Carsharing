@@ -59,6 +59,9 @@ public partial class RegistrationViewModel(AuthService authService, ClientDocume
     [GeneratedRegex(@"^(\+375|80)(29|44|33|25)\d{7}$")]
     private static partial Regex MyRegex { get; }
 
+    private static string CleanPhone(string? phone) =>
+        phone?.Replace(" ", "").Replace("-", "").Replace("(", "").Replace(")", "").Trim() ?? string.Empty;
+
     partial void OnPhoneNumberChanged(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -67,8 +70,9 @@ public partial class RegistrationViewModel(AuthService authService, ClientDocume
             return;
         }
 
+        var clean = CleanPhone(value);
         var phoneRegex = MyRegex;
-        if (!phoneRegex.IsMatch(value.Trim()))
+        if (!phoneRegex.IsMatch(clean))
             PhoneNumberError = "Неверный формат телефона. Пример: (+375/80)(29/44/33/25)XXX-XX-XX";
         else
             PhoneNumberError = null;
@@ -170,21 +174,28 @@ public partial class RegistrationViewModel(AuthService authService, ClientDocume
         OnPhoneNumberChanged(PhoneNumber);
         if (PhoneNumberError != null) return;
 
-        IsBusy = true;
-
-        var cleanPhone = PhoneNumber!.Replace(" ", "").Replace("-", "");
-
-        var error = await authService.SendSmsAsync(cleanPhone);
-
-        IsBusy = false;
-
-        if (error == null)
+        try
         {
-            CurrentStep = 2;
+            IsBusy = true;
+            var cleanPhone = CleanPhone(PhoneNumber);
+            var error = await authService.SendSmsAsync(cleanPhone);
+
+            if (error == null)
+            {
+                CurrentStep = 2;
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Ошибка", error, "ОК");
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Ошибка", error, "ОК");
+            await Shell.Current.DisplayAlert("Ошибка", $"Не удалось отправить SMS: {ex.Message}", "ОК");
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -194,21 +205,28 @@ public partial class RegistrationViewModel(AuthService authService, ClientDocume
         OnSmsCodeChanged(SmsCode);
         if (SmsCodeError != null) return;
 
-        IsBusy = true;
-
-        var cleanPhone = PhoneNumber!.Replace(" ", "").Replace("-", "");
-
-        var error = await authService.VerifySmsAsync(cleanPhone, SmsCode!);
-
-        IsBusy = false;
-
-        if (error == null)
+        try
         {
-            CurrentStep = 3;
+            IsBusy = true;
+            var cleanPhone = CleanPhone(PhoneNumber);
+            var error = await authService.VerifySmsAsync(cleanPhone, SmsCode!);
+
+            if (error == null)
+            {
+                CurrentStep = 3;
+            }
+            else
+            {
+                SmsCodeError = "Неверный код подтверждения";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            SmsCodeError = "Неверный код подтверждения";
+            SmsCodeError = $"Ошибка проверки: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -276,54 +294,62 @@ public partial class RegistrationViewModel(AuthService authService, ClientDocume
             DriverLicenseExpiryDateError != null || DriverLicenseFileError != null)
             return;
 
-        IsBusy = true;
-
-        var login = PhoneNumber!.Trim();
-
-        var request = new ClientRegistrationRequest(
-            Name!.Trim(),
-            Surname?.Trim() ?? "",
-            PhoneNumber.Trim(),
-            Email!.Trim(),
-            login,
-            UserPassword!);
-
-        var errorMessage = await authService.RegisterAsync(request);
-
-        if (errorMessage == null)
+        try
         {
-            var loginError = await authService.LoginAsync(new LoginRequest(login, UserPassword!));
+            IsBusy = true;
 
-            if (loginError == null)
+            var cleanPhone = CleanPhone(PhoneNumber);
+            var login = cleanPhone;
+
+            var request = new ClientRegistrationRequest(
+                Name!.Trim(),
+                Surname?.Trim() ?? "",
+                cleanPhone,
+                Email!.Trim(),
+                login,
+                UserPassword!);
+
+            var errorMessage = await authService.RegisterAsync(request);
+
+            if (errorMessage == null)
             {
-                var licenseError = await clientDocumentsService.CreateDriverLicenseAsync(
-                    _driverLicenseFile!,
-                    DriverLicenseNumber!.Trim(),
-                    DriverLicenseCategory!.Trim().ToUpperInvariant(),
-                    DateOnly.FromDateTime(DriverLicenseIssueDate),
-                    DateOnly.FromDateTime(DriverLicenseExpiryDate));
+                var loginError = await authService.LoginAsync(new LoginRequest(login, UserPassword!));
 
-                IsBusy = false;
-
-                if (licenseError != null)
+                if (loginError == null)
                 {
-                    await Shell.Current.DisplayAlert("Не удалось добавить права", licenseError, "ОК");
-                    return;
-                }
+                    var licenseError = await clientDocumentsService.CreateDriverLicenseAsync(
+                        _driverLicenseFile!,
+                        DriverLicenseNumber!.Trim(),
+                        DriverLicenseCategory!.Trim().ToUpperInvariant(),
+                        DateOnly.FromDateTime(DriverLicenseIssueDate),
+                        DateOnly.FromDateTime(DriverLicenseExpiryDate));
 
-                WeakReferenceMessenger.Default.Send(new UserLoggedInMessage());
-                await Shell.Current.GoToAsync("//MainPage");
+                    if (licenseError != null)
+                    {
+                        await Shell.Current.DisplayAlert("Не удалось добавить права", licenseError, "ОК");
+                        return;
+                    }
+
+                    WeakReferenceMessenger.Default.Send(new UserLoggedInMessage());
+                    await Shell.Current.GoToAsync("//MainPage");
+                }
+                else
+                {
+                    await Shell.Current.DisplayAlert("Ошибка входа", loginError, "ОК");
+                }
             }
             else
             {
-                IsBusy = false;
-                await Shell.Current.DisplayAlert("Ошибка входа", loginError, "ОК");
+                await Shell.Current.DisplayAlert("Ошибка регистрации", errorMessage, "ОК");
             }
         }
-        else
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Ошибка регистрации", $"Не удалось завершить регистрацию: {ex.Message}", "ОК");
+        }
+        finally
         {
             IsBusy = false;
-            await Shell.Current.DisplayAlert("Ошибка регистрации", errorMessage, "ОК");
         }
     }
 

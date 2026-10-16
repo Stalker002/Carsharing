@@ -1,0 +1,16 @@
+# Visual Studio / Rider / IDEs
+.vs/
+.idea/
+*.user
+*.userprefs
+*.suo
+
+# Build results
+[Bb]in/
+[Oo]bj/
+*.binlog
+*.log
+
+# Local secrets & configs
+LocalSecrets.props
+!LocalSecrets.props.example

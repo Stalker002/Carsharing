@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
 using Shared.Contracts.Bookings;
+using Shared.Enums;
 
 namespace CarsharingMobile.Services;
 
@@ -34,7 +35,7 @@ public class BookingService(HttpClient httpClient)
         {
             var response = await httpClient.GetFromJsonAsync<List<BookingsResponse>>("Bookings/byClient");
 
-            return response?.FirstOrDefault(b => b.StatusId == 5);
+            return response?.FirstOrDefault(b => b.StatusId == (int)BookingStatusEnum.Active);
         }
         catch
         {

@@ -14,22 +14,30 @@ public partial class LoadingViewModel : ObservableObject
 
     public async Task CheckAuthAsync()
     {
-        var token = await SecureStorage.Default.GetAsync("tasty");
-
-        await Task.Delay(500); 
-
-        if (!string.IsNullOrEmpty(token) && _identityService.IsTokenValid(token))
+        try
         {
-            var (_, roleId) = await _identityService.GetProfileIdAsync();
+            var token = await SecureStorage.Default.GetAsync(AuthConstants.TokenKey);
 
-            if (roleId == 1 || roleId == 2)
+            await Task.Delay(500);
+
+            if (!string.IsNullOrEmpty(token) && _identityService.IsTokenValid(token))
             {
-                await Shell.Current.GoToAsync("//MainPage");
-                return;
-            }
-        }
+                var (_, roleId) = await _identityService.GetProfileIdAsync();
 
-        SecureStorage.Default.Remove("tasty");
-        await Shell.Current.GoToAsync("//LoginPage");
+                if (roleId == 1 || roleId == 2)
+                {
+                    await Shell.Current.GoToAsync("//MainPage");
+                    return;
+                }
+            }
+
+            SecureStorage.Default.Remove(AuthConstants.TokenKey);
+            await Shell.Current.GoToAsync("//LoginPage");
+        }
+        catch
+        {
+            SecureStorage.Default.Remove(AuthConstants.TokenKey);
+            await Shell.Current.GoToAsync("//LoginPage");
+        }
     }
 }

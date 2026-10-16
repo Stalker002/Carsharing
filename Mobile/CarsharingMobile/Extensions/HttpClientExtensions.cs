@@ -21,7 +21,7 @@ public static class HttpClientExtensions
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                SecureStorage.Default.Remove("tasty");
+                SecureStorage.Default.Remove(AuthConstants.TokenKey);
                 MainThread.BeginInvokeOnMainThread(async () => { await Shell.Current.GoToAsync("//LoginPage"); });
                 return (null, 0);
             }

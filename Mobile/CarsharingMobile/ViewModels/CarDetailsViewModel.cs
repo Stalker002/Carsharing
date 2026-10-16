@@ -4,13 +4,15 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Shared.Contracts.Bookings;
 using Shared.Contracts.Cars;
+using Shared.Enums;
 
 namespace CarsharingMobile.ViewModels;
 
 [QueryProperty(nameof(Car), "Car")]
 public partial class CarDetailsViewModel(
     BookingService bookingService,
-    BookingStateService bookingStateService) : ObservableObject, IQueryAttributable
+    BookingStateService bookingStateService,
+    CarsharingMobile.Extensions.IdentityService identityService) : ObservableObject, IQueryAttributable
 {
     private const string PerMinuteTariffType = "per_minute";
     private const string PerKmTariffType = "per_km";
@@ -72,10 +74,13 @@ public partial class CarDetailsViewModel(
         {
             IsBusy = true;
 
+            var (profileId, _) = await identityService.GetProfileIdAsync();
+            var clientId = (int)profileId;
+
             var request = new BookingsRequest(
-                StatusId: 5,
+                StatusId: (int)BookingStatusEnum.Active,
                 CarId: Car.Id,
-                ClientId: 0,
+                ClientId: clientId,
                 StartTime: DateTime.UtcNow.AddMinutes(-1),
                 EndTime: DateTime.UtcNow.AddMinutes(20)
             );
@@ -86,9 +91,9 @@ public partial class CarDetailsViewModel(
             {
                 var booking = new BookingsResponse(
                     bookingId.Value,
-                    5,
+                    (int)BookingStatusEnum.Active,
                     Car.Id,
-                    0,
+                    clientId,
                     request.StartTime,
                     request.EndTime);
 
@@ -127,6 +132,10 @@ public partial class CarDetailsViewModel(
             {
                 await Shell.Current.DisplayAlert("Ошибка бронирования", error, "ОК");
             }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Ошибка", $"Не удалось забронировать: {ex.Message}", "ОК");
         }
         finally
         {
