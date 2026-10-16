@@ -34,26 +34,44 @@ public class Promocode
         var error = string.Empty;
 
         if (!Enum.IsDefined(typeof(PromocodeStatusEnum), statusId))
+        {
             error = "Invalid insurance type. Allowed: \"20. Активен\", \"21. Истек\", \"22. Использован\" ";
+        }
 
         if (string.IsNullOrWhiteSpace(code))
+        {
             error = "Code can't be empty";
+        }
+
         if (code is { Length: > MaxCodeLength })
+        {
             error = $"Code can't be longer than {MaxCodeLength} symbols";
+        }
 
         if (discount < 0)
+        {
             error = "Discount must be positive";
+        }
 
         if (startDate > DateOnly.FromDateTime(DateTime.Now))
+        {
             error = "Start promo code date can not be in the future";
+        }
 
         if (endDate < DateOnly.FromDateTime(DateTime.Now))
+        {
             error = "End promo code date can not be in the past";
+        }
 
         if (startDate > endDate)
+        {
             error = "Start date can not exceed end date ";
+        }
 
-        if (error.Length != 0) return (null, error)!;
+        if (error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var promocode = new Promocode(id, statusId, code, discount, startDate, endDate);
         return (promocode, error);

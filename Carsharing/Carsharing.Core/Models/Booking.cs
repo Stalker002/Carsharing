@@ -33,21 +33,34 @@ public class Booking
         var error = string.Empty;
 
         if (!Enum.IsDefined(typeof(BookingStatusEnum), statusId))
+        {
             error = "Invalid booking status type. Allowed: \"5.Активно\", \"6. Завершено\", \"7. Отменено\" ";
+        }
 
         if (carId < 0)
+        {
             error = "Car Id must be positive";
+        }
 
         if (clientId < 0)
+        {
             error = "Client Id must be positive";
+        }
 
         if (startTime > DateTime.Now)
+        {
             error = "Start booking time can not be in the future";
+        }
 
         if (startTime > endTime)
+        {
             error = "Start time can not exceed end time";
+        }
 
-        if (error.Length != 0) return (null, error)!;
+        if (error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var booking = new Booking(id, statusId, carId, clientId, startTime, endTime);
         return (booking, error);

@@ -116,7 +116,9 @@ public class InsuranceRepository(CarsharingDbContext context) : IInsuranceReposi
             insurance.Cost);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new Exception($"Insurance create exception: {error}");
+        }
 
         var insuranceEntity = new InsuranceEntity
         {
@@ -144,28 +146,44 @@ public class InsuranceRepository(CarsharingDbContext context) : IInsuranceReposi
                         ?? throw new Exception("Insurance not found");
 
         if (carId.HasValue)
+        {
             insurance.CarId = carId.Value;
+        }
 
         if (statusId.HasValue)
+        {
             insurance.StatusId = statusId.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(type))
+        {
             insurance.Type = type;
+        }
 
         if (!string.IsNullOrWhiteSpace(company))
+        {
             insurance.Company = company;
+        }
 
         if (!string.IsNullOrWhiteSpace(policyNumber))
+        {
             insurance.PolicyNumber = policyNumber;
+        }
 
         if (startDate.HasValue)
+        {
             insurance.StartDate = startDate.Value;
+        }
 
         if (endDate.HasValue)
+        {
             insurance.EndDate = endDate.Value;
+        }
 
         if (cost.HasValue)
+        {
             insurance.Cost = cost.Value;
+        }
 
         var (_, error) = Insurance.Create(
             insurance.Id,
@@ -179,7 +197,9 @@ public class InsuranceRepository(CarsharingDbContext context) : IInsuranceReposi
             insurance.Cost);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new Exception($"Insurance create exception: {error}");
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

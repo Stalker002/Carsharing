@@ -101,7 +101,10 @@ public class CarsService : ICarsService
                 request.PricePerMinute,
                 request.PricePerKm,
                 request.PricePerDay);
-            if (!string.IsNullOrEmpty(errorTariff)) return (null, errorTariff);
+            if (!string.IsNullOrEmpty(errorTariff))
+            {
+                return (null, errorTariff);
+            }
 
             var tariffId = await _tariffRepository.Create(tariff, cancellationToken);
 
@@ -117,12 +120,17 @@ public class CarsService : ICarsService
                 request.Mileage,
                 request.MaxFuel,
                 request.FuelPerKm);
-            if (!string.IsNullOrEmpty(errorSpec)) return (null, errorSpec);
+            if (!string.IsNullOrEmpty(errorSpec))
+            {
+                return (null, errorSpec);
+            }
 
             var specificationId = await _specificationCarRepository.Create(spec, cancellationToken);
 
             if (request.Image is { Length: > 0 })
+            {
                 savedImagePath = await _imageService.SaveCarImageAsync(request.Image, cancellationToken);
+            }
 
             var (car, errorCar) = Car.Create(
                 0,
@@ -138,7 +146,11 @@ public class CarsService : ICarsService
 
             if (!string.IsNullOrEmpty(errorCar))
             {
-                if (savedImagePath != null) await _imageService.DeleteFile(savedImagePath, cancellationToken);
+                if (savedImagePath != null)
+                {
+                    await _imageService.DeleteFile(savedImagePath, cancellationToken);
+                }
+
                 return (null, errorCar);
             }
 
@@ -151,10 +163,15 @@ public class CarsService : ICarsService
         {
             await _unitOfWork.RollbackTransactionAsync(cancellationToken);
 
-            if (savedImagePath != null) await _imageService.DeleteFile(savedImagePath, cancellationToken);
+            if (savedImagePath != null)
+            {
+                await _imageService.DeleteFile(savedImagePath, cancellationToken);
+            }
 
             if (ex.InnerException?.Message.Contains("23505") == true)
+            {
                 return (null, "Машина с таким номером или VIN уже существует.");
+            }
 
             return (null, $"Internal error: {ex.Message}");
         }
@@ -171,7 +188,10 @@ public class CarsService : ICarsService
             var carsCollection = await _carRepository.GetById(id, cancellationToken);
             var car = carsCollection.FirstOrDefault();
 
-            if (car == null) return (false, "Car not found");
+            if (car == null)
+            {
+                return (false, "Car not found");
+            }
 
             await _tariffRepository.Update(
                 car.TariffId,
@@ -226,10 +246,15 @@ public class CarsService : ICarsService
         {
             await _unitOfWork.RollbackTransactionAsync(cancellationToken);
 
-            if (newImagePathSystem != null) await _imageService.DeleteFile(newImagePathSystem, cancellationToken);
+            if (newImagePathSystem != null)
+            {
+                await _imageService.DeleteFile(newImagePathSystem, cancellationToken);
+            }
 
             if (ex.InnerException?.Message.Contains("23505") == true)
+            {
                 return (false, "Дубликат данных: VIN или Гос. номер уже занят.");
+            }
 
             return ex is ArgumentException ? (false, ex.Message) : (false, $"Internal error: {ex.Message}");
         }

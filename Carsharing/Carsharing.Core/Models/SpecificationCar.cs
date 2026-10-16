@@ -55,7 +55,10 @@ public partial class SpecificationCar
         var allowedTransmissionType = new[] { "Автомат", "Механика", "Робот" };
 
         if (string.IsNullOrWhiteSpace(fuelType))
+        {
             error = "Fuel type can't be empty";
+        }
+
         if (!Enum.TryParse<Shared.Enums.FuelType>(fuelType, true, out _))
         {
             var allowedFuelTypes = Enum.GetNames(typeof(Shared.Enums.FuelType));
@@ -64,19 +67,34 @@ public partial class SpecificationCar
         }
 
         if (string.IsNullOrWhiteSpace(brand))
+        {
             error = "Brand can't be empty";
+        }
+
         if (brand is { Length: > MaxBrandLength })
+        {
             error = $"Brand name can't be longer than {MaxBrandLength} symbols";
+        }
 
         if (string.IsNullOrWhiteSpace(model))
+        {
             error = "Model can't be empty";
+        }
+
         if (model is { Length: > MaxModelLength })
+        {
             error = $"Model name can't be longer than {MaxModelLength} symbols";
+        }
 
         if (string.IsNullOrWhiteSpace(transmission))
+        {
             error = "Transmission can't be empty";
+        }
+
         if (!allowedTransmissionType.Contains(transmission))
+        {
             error = $"Invalid transmission. Allowed: {string.Join(", ", allowedTransmissionType)}";
+        }
 
         error = year switch
         {
@@ -86,30 +104,55 @@ public partial class SpecificationCar
         };
 
         if (string.IsNullOrWhiteSpace(vinNumber))
+        {
             error = "Vin Number can't be empty";
+        }
+
         if (vinNumber is { Length: > MaxVinNumberLength })
+        {
             error = $"Vin number name can't be longer than {MaxVinNumberLength} symbols";
+        }
+
         if (vinNumber != null && !MyRegex().IsMatch(vinNumber))
+        {
             error = "VIN number in invalid";
+        }
 
         if (string.IsNullOrWhiteSpace(stateNumber))
+        {
             error = "State Number can't be empty";
+        }
+
         if (stateNumber is { Length: > MaxStateNumberLength })
+        {
             error = $"State number name can't be longer than {MaxStateNumberLength} symbols";
+        }
+
         if (!Regex.IsMatch(stateNumber ?? throw new ArgumentNullException(nameof(stateNumber)),
                 @"^(\d{4}\s?[ABEIKMHOPCTX]{2}-[1-8]|[ABEIKMHOPCTX]{2}\s?\d{4}-[1-8]|(TA|TT|TY)\d{4}|E\d{3}[ABEIKMHOPCTX]{2}[1-8])$"))
+        {
             error = "State number in invalid format";
+        }
 
         if (mileage < 0)
+        {
             error = "Mileage must be positive";
+        }
 
         if (maxFuel < 0)
+        {
             error = "Max fuel must be positive";
+        }
 
         if (fuelPerKm < 0)
+        {
             error = "Fuel per km must be positive";
+        }
 
-        if (error.Length != 0) return (null, error)!;
+        if (error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var specificationCar = new SpecificationCar(id, fuelType, brand, model, transmission, year, vinNumber,
             stateNumber, mileage, maxFuel, fuelPerKm);

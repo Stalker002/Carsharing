@@ -80,7 +80,10 @@ public class InsurancesController : ControllerBase
             request.EndDate,
             request.Cost);
 
-        if (!string.IsNullOrWhiteSpace(error)) return BadRequest(error);
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            return BadRequest(error);
+        }
 
         var insuranceId = await _insurancesService.CreateInsurance(insurance, cancellationToken);
 

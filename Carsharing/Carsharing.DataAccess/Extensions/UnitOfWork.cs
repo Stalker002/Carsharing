@@ -15,7 +15,10 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken)
     {
-        if (_currentTransaction != null) return;
+        if (_currentTransaction != null)
+        {
+            return;
+        }
 
         _currentTransaction = await _context.Database.BeginTransactionAsync(cancellationToken);
     }
@@ -26,7 +29,10 @@ public class UnitOfWork : IUnitOfWork
         {
             await _context.SaveChangesAsync(cancellationToken);
 
-            if (_currentTransaction != null) await _currentTransaction.CommitAsync(cancellationToken);
+            if (_currentTransaction != null)
+            {
+                await _currentTransaction.CommitAsync(cancellationToken);
+            }
         }
         catch
         {

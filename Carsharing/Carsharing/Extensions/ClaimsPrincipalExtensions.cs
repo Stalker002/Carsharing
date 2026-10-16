@@ -9,7 +9,9 @@ public static class ClaimsPrincipalExtensions
         var roleIdValue = user.FindFirst("userRoleId")?.Value;
 
         if (!int.TryParse(roleIdValue, out var roleId))
+        {
             throw new UnauthorizedAccessException("User role claim is missing or invalid.");
+        }
 
         return roleId;
     }
@@ -24,7 +26,9 @@ public static class ClaimsPrincipalExtensions
         var userIdValue = user.FindFirst("userId")?.Value;
 
         if (!int.TryParse(userIdValue, out var userId))
+        {
             throw new UnauthorizedAccessException("User ID claim is missing or invalid.");
+        }
 
         return userId;
     }

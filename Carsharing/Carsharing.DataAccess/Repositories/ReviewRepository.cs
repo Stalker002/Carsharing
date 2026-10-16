@@ -156,7 +156,9 @@ public class ReviewRepository : IReviewRepository
             review.Date);
 
         if (!string.IsNullOrEmpty(error))
+        {
             throw new ArgumentException($"Create exception review: {error}");
+        }
 
         var reviewEntity = new ReviewEntity
         {
@@ -180,17 +182,27 @@ public class ReviewRepository : IReviewRepository
                      ?? throw new Exception("Review not found");
 
         if (clientId.HasValue)
+        {
             if (carId != null)
+            {
                 review.CarId = carId.Value;
+            }
+        }
 
         if (rating.HasValue)
+        {
             review.Rating = rating.Value;
+        }
 
         if (string.IsNullOrWhiteSpace(comment))
+        {
             review.Comment = comment;
+        }
 
         if (date.HasValue)
+        {
             review.Date = date.Value;
+        }
 
         var (_, error) = Review.Create(
             0,
@@ -201,7 +213,9 @@ public class ReviewRepository : IReviewRepository
             review.Date);
 
         if (!string.IsNullOrEmpty(error))
+        {
             throw new ArgumentException($"Create exception review: {error}");
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

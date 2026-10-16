@@ -94,7 +94,9 @@ public class ClientDocumentRepository : IClientDocumentRepository
             document.FilePath);
 
         if (!string.IsNullOrEmpty(error))
+        {
             throw new ArgumentException($"Create exception document Client: {error}");
+        }
 
         var clientDocumentEntities = new ClientDocumentEntity
         {
@@ -120,25 +122,39 @@ public class ClientDocumentRepository : IClientDocumentRepository
                        ?? throw new Exception("Client document not found");
 
         if (clientId.HasValue)
+        {
             document.ClientId = clientId.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(type))
+        {
             document.Type = type;
+        }
 
         if (!string.IsNullOrWhiteSpace(licenseCategory))
+        {
             document.LicenseCategory = licenseCategory;
+        }
 
         if (!string.IsNullOrWhiteSpace(number))
+        {
             document.Number = number;
+        }
 
         if (issueDate.HasValue)
+        {
             document.IssueDate = issueDate.Value;
+        }
 
         if (expiryDate.HasValue)
+        {
             document.ExpiryDate = expiryDate.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(filePath))
+        {
             document.FilePath = filePath;
+        }
 
         var (_, error) = ClientDocument.Create(
             0,
@@ -151,7 +167,9 @@ public class ClientDocumentRepository : IClientDocumentRepository
             document.FilePath);
 
         if (!string.IsNullOrEmpty(error))
+        {
             throw new ArgumentException($"Create exception document Client: {error}");
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

@@ -20,7 +20,10 @@ public class UsersRepository : IUsersRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Login == login, cancellationToken);
 
-        if (userEntity == null) return null;
+        if (userEntity == null)
+        {
+            return null;
+        }
 
         return User.Restore(
             userEntity.Id,
@@ -101,13 +104,19 @@ public class UsersRepository : IUsersRepository
                    ?? throw new Exception("User not found");
 
         if (roleId.HasValue)
+        {
             user.RoleId = roleId.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(login))
+        {
             user.Login = login;
+        }
 
         if (!string.IsNullOrWhiteSpace(passwordHash))
+        {
             user.Password = passwordHash;
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

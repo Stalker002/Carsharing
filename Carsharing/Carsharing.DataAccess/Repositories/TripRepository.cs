@@ -249,7 +249,10 @@ public class TripRepository : ITripRepository
                         (t.StatusId == (int)TripStatusEnum.WaitingStart || t.StatusId == (int)TripStatusEnum.EnRoute))
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (tripEntity == null) return null;
+        if (tripEntity == null)
+        {
+            return null;
+        }
 
         var car = tripEntity.Booking?.Car;
 
@@ -282,7 +285,9 @@ public class TripRepository : ITripRepository
             .FirstOrDefaultAsync(t => t.Id == tripId, cancellationToken);
 
         if (trip is not { EndTime: null })
+        {
             throw new Exception("Поездка не найдена или уже завершена");
+        }
 
         var car = trip.Booking?.Car ?? throw new Exception("Автомобиль для поездки не найден");
 
@@ -290,7 +295,9 @@ public class TripRepository : ITripRepository
         car.Coordinates = new Point(longitude, latitude) { SRID = 4326 };
 
         if (trip.StatusId == (int)TripStatusEnum.WaitingStart)
+        {
             trip.StatusId = (int)TripStatusEnum.EnRoute;
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
     }
@@ -304,7 +311,9 @@ public class TripRepository : ITripRepository
             .FirstOrDefaultAsync(t => t.Id == tripId, cancellationToken);
 
         if (trip is not { EndTime: null })
+        {
             throw new Exception("Поездка не найдена или уже завершена");
+        }
 
         var now = DateTime.UtcNow;
         var car = trip.Booking?.Car;
@@ -314,7 +323,10 @@ public class TripRepository : ITripRepository
         trip.Distance = distance;
         trip.StatusId = (int)TripStatusEnum.Finished;
 
-        if (trip.Booking != null) trip.Booking.StatusId = (int)BookingStatusEnum.Completed;
+        if (trip.Booking != null)
+        {
+            trip.Booking.StatusId = (int)BookingStatusEnum.Completed;
+        }
 
         var tripDetail = await _context.TripDetail.FirstOrDefaultAsync(td => td.TripId == trip.Id, cancellationToken);
 
@@ -365,7 +377,9 @@ public class TripRepository : ITripRepository
             .FirstOrDefaultAsync(t => t.Id == tripId, cancellationToken);
 
         if (trip == null || trip.EndTime != null)
+        {
             throw new Exception("Поездка не найдена или уже завершена.");
+        }
 
         trip.StatusId = (int)TripStatusEnum.Cancelled;
         trip.Duration = 0;
@@ -374,7 +388,10 @@ public class TripRepository : ITripRepository
         if (trip.Booking != null)
         {
             trip.Booking.StatusId = (int)BookingStatusEnum.Cancelled;
-            if (trip.Booking.Car != null) trip.Booking.Car.StatusId = (int)CarStatusEnum.Available;
+            if (trip.Booking.Car != null)
+            {
+                trip.Booking.Car.StatusId = (int)CarStatusEnum.Available;
+            }
         }
 
         await _context.SaveChangesAsync(cancellationToken);
@@ -384,8 +401,10 @@ public class TripRepository : ITripRepository
     {
         var calculatedDuration = trip.Duration;
         if (trip.StartTime != default && trip.EndTime.HasValue)
+        {
             calculatedDuration = decimal.Round((decimal)(trip.EndTime.Value - trip.StartTime).TotalMinutes, 2,
                 MidpointRounding.AwayFromZero);
+        }
 
         var (_, error) = Trip.Create(
             trip.Id,
@@ -398,7 +417,9 @@ public class TripRepository : ITripRepository
             trip.Distance);
 
         if (!string.IsNullOrEmpty(error))
+        {
             throw new ArgumentException($"Create exception trip: {error}");
+        }
 
         var tripEntity = new TripEntity
         {
@@ -425,19 +446,29 @@ public class TripRepository : ITripRepository
                    ?? throw new Exception("Trip not found");
 
         if (bookingId.HasValue)
+        {
             trip.BookingId = bookingId.Value;
+        }
 
         if (statusId.HasValue)
+        {
             trip.StatusId = statusId.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(tariffType))
+        {
             trip.TariffType = tariffType;
+        }
 
         if (startTime.HasValue)
+        {
             trip.StartTime = startTime.Value;
+        }
 
         if (endTime.HasValue)
+        {
             trip.EndTime = endTime.Value;
+        }
 
         if (trip.StartTime != default && trip.EndTime.HasValue)
         {
@@ -450,7 +481,9 @@ public class TripRepository : ITripRepository
         }
 
         if (distance.HasValue)
+        {
             trip.Distance = distance.Value;
+        }
 
         var (_, error) = Trip.Create(
             trip.Id,
@@ -463,7 +496,9 @@ public class TripRepository : ITripRepository
             trip.Distance);
 
         if (!string.IsNullOrEmpty(error))
+        {
             throw new ArgumentException($"Create exception trip: {error}");
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

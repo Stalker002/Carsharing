@@ -29,7 +29,9 @@ public class ClientDocumentsService(
                 savedFilePath = await imageService.SaveDocumentImageAsync(request.File, cancellationToken);
             }
             else
+            {
                 return (null, "Файл документа обязателен");
+            }
 
             var client = await clientRepository.GetClientByUserId(userId, cancellationToken);
             var clientId = client.Select(c => c.Id).FirstOrDefault();
@@ -37,7 +39,9 @@ public class ClientDocumentsService(
             if (clientId == 0)
             {
                 if (savedFilePath != null)
+                {
                     await imageService.DeleteFile(savedFilePath, cancellationToken);
+                }
 
                 await unitOfWork.RollbackTransactionAsync(cancellationToken);
                 return (null, "Клиент не найден");
@@ -69,10 +73,15 @@ public class ClientDocumentsService(
         {
             await unitOfWork.RollbackTransactionAsync(cancellationToken);
 
-            if (savedFilePath != null) await imageService.DeleteFile(savedFilePath, cancellationToken);
+            if (savedFilePath != null)
+            {
+                await imageService.DeleteFile(savedFilePath, cancellationToken);
+            }
 
             if (ex.InnerException?.Message.Contains("23505") == true)
+            {
                 return (null, "Документ с таким номером уже существует.");
+            }
 
             return (null, $"Internal error: {ex.Message}");
         }
@@ -89,13 +98,23 @@ public class ClientDocumentsService(
             var existingDoc = await clientDocumentRepository.GetById(id, cancellationToken);
             var docEntity = existingDoc.FirstOrDefault();
 
-            if (docEntity == null) return (false, "Document not found");
+            if (docEntity == null)
+            {
+                return (false, "Document not found");
+            }
 
             var client = await clientRepository.GetClientByUserId(userId, cancellationToken);
             var clientId = client.Select(c => c.Id).FirstOrDefault();
 
-            if (clientId == 0) return (false, "Клиент не найден");
-            if (docEntity.ClientId != clientId) return (false, "Document not found");
+            if (clientId == 0)
+            {
+                return (false, "Клиент не найден");
+            }
+
+            if (docEntity.ClientId != clientId)
+            {
+                return (false, "Document not found");
+            }
 
             string? filePathToUpdate = null;
 
@@ -120,7 +139,9 @@ public class ClientDocumentsService(
             await unitOfWork.CommitTransactionAsync(cancellationToken);
 
             if (newFilePathSystem != null && !string.IsNullOrEmpty(docEntity.FilePath))
+            {
                 await imageService.DeleteFile(docEntity.FilePath, cancellationToken);
+            }
 
             return (true, string.Empty);
         }
@@ -128,7 +149,10 @@ public class ClientDocumentsService(
         {
             await unitOfWork.RollbackTransactionAsync(cancellationToken);
 
-            if (newFilePathSystem != null) await imageService.DeleteFile(newFilePathSystem, cancellationToken);
+            if (newFilePathSystem != null)
+            {
+                await imageService.DeleteFile(newFilePathSystem, cancellationToken);
+            }
 
             return ex.InnerException?.Message.Contains("23505") == true
                 ? (false, "Дубликат данных: Документ с таким номером уже существует.")
@@ -143,18 +167,27 @@ public class ClientDocumentsService(
         {
             var documents = await clientDocumentRepository.GetById(id, cancellationToken);
             var doc = documents.FirstOrDefault();
-            if (doc == null) return (true, string.Empty);
+            if (doc == null)
+            {
+                return (true, string.Empty);
+            }
 
             var client = await clientRepository.GetClientByUserId(userId, cancellationToken);
             var clientId = client.Select(c => c.Id).FirstOrDefault();
 
-            if (clientId == 0 || doc.ClientId != clientId) return (false, "Document not found");
+            if (clientId == 0 || doc.ClientId != clientId)
+            {
+                return (false, "Document not found");
+            }
 
             var filePath = doc.FilePath;
 
             await clientDocumentRepository.Delete(id, cancellationToken);
 
-            if (!string.IsNullOrEmpty(filePath)) await imageService.DeleteFile(filePath, cancellationToken);
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                await imageService.DeleteFile(filePath, cancellationToken);
+            }
 
             return (true, string.Empty);
         }

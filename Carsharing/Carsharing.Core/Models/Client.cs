@@ -37,33 +37,64 @@ public class Client
         var error = string.Empty;
 
         if (userId < 0)
+        {
             error = "User Id must be positive";
+        }
 
         if (string.IsNullOrWhiteSpace(name))
+        {
             error = "Name can't be empty";
+        }
+
         if (name is { Length: > MaxNameLength })
+        {
             error = $"Name can't be longer than {MaxNameLength} symbols";
+        }
 
         if (string.IsNullOrWhiteSpace(surname))
+        {
             error = "Surname can't be empty";
+        }
+
         if (surname is { Length: > MaxSurnameLength })
+        {
             error = $"Surname can't be longer than {MaxSurnameLength} symbols";
+        }
 
         if (string.IsNullOrWhiteSpace(phoneNumber))
+        {
             error = "Phone number can't be empty";
+        }
+
         if (phoneNumber is { Length: > MaxPhoneLength })
+        {
             error = $"Phone number can't be longer than {MaxPhoneLength} symbols";
+        }
+
         if (phoneNumber != null && !Regex.IsMatch(phoneNumber, @"^(\+375|80)(29|44|33|25)\d{7}$"))
+        {
             error = "Phone number should be in format +375XXXXXXXXX or 80XXXXXXXXX";
+        }
 
         if (string.IsNullOrWhiteSpace(email))
+        {
             error = "Email can't be empty";
-        if (email is { Length: > MaxEmailLength })
-            error = $"Email can't be longer than {MaxEmailLength} symbols";
-        if (email != null && !Regex.IsMatch(email, @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"))
-            error = "Invalid email format";
+        }
 
-        if (error.Length != 0) return (null, error)!;
+        if (email is { Length: > MaxEmailLength })
+        {
+            error = $"Email can't be longer than {MaxEmailLength} symbols";
+        }
+
+        if (email != null && !Regex.IsMatch(email, @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"))
+        {
+            error = "Invalid email format";
+        }
+
+        if (error.Length != 0)
+        {
+            return (null, error)!;
+        }
 
         var client = new Client(id, userId, name?.Trim(), surname?.Trim(), phoneNumber?.Trim(), email?.Trim());
 

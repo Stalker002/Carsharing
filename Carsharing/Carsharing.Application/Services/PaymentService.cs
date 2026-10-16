@@ -93,7 +93,9 @@ public class PaymentService : IPaymentService
         await _billingLifecycleService.RecalculateBillAsync(targetBillId, cancellationToken);
 
         if (existingPayment.BillId != targetBillId)
+        {
             await _billingLifecycleService.RecalculateBillAsync(existingPayment.BillId, cancellationToken);
+        }
 
         return paymentId;
     }
@@ -124,6 +126,8 @@ public class PaymentService : IPaymentService
                       ?? throw new NotFoundException("Booking not found");
 
         if (booking.ClientId != client.Id)
+        {
             throw new UnauthorizedAccessException("Bill does not belong to current user");
+        }
     }
 }

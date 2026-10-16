@@ -320,7 +320,9 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
             car.ImagePath);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException($"Create exception car: {error}");
+        }
 
         var carEntity = new CarEntity
         {
@@ -351,31 +353,49 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
                   ?? throw new Exception("Car not found");
 
         if (statusId.HasValue)
+        {
             car.StatusId = statusId.Value;
+        }
 
         if (tariffId.HasValue)
+        {
             car.TariffId = tariffId.Value;
+        }
 
         if (categoryId.HasValue)
+        {
             car.CategoryId = categoryId.Value;
+        }
 
         if (specificationId.HasValue)
+        {
             car.SpecificationId = specificationId.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(location))
+        {
             car.Location = location;
+        }
 
         if (latitude.HasValue != longitude.HasValue)
+        {
             throw new ArgumentException("Latitude and longitude must be provided together");
+        }
 
         if (latitude.HasValue && longitude.HasValue)
+        {
             car.Coordinates = new Point(longitude.Value, latitude.Value) { SRID = 4326 };
+        }
 
         if (fuelLevel.HasValue)
+        {
             car.FuelLevel = fuelLevel.Value;
+        }
 
         if (!string.IsNullOrWhiteSpace(imagePath))
+        {
             car.ImagePath = imagePath;
+        }
 
         var (_, error) = Car.Create(
             car.Id,
@@ -390,7 +410,9 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
             car.ImagePath);
 
         if (!string.IsNullOrWhiteSpace(error))
+        {
             throw new ArgumentException($"Create exception car: {error}");
+        }
 
         await context.SaveChangesAsync(cancellationToken);
 
@@ -401,7 +423,9 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
     {
         var car = await context.Car.FindAsync([carId], cancellationToken);
         if (car == null)
+        {
             throw new Exception("Автомобиль не найден");
+        }
 
         car.StatusId = statusId;
         context.Car.Update(car);
@@ -416,7 +440,9 @@ public class CarRepository(CarsharingDbContext context) : ICarRepository
             var car = await context.Car.FirstOrDefaultAsync(c => c.Id == carId && c.StatusId == currentStatusId,
                 cancellationToken);
             if (car == null)
+            {
                 return false;
+            }
 
             car.StatusId = newStatusId;
             await context.SaveChangesAsync(cancellationToken);

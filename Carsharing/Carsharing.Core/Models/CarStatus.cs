@@ -20,10 +20,19 @@ public class CarStatus
         var nameError = string.Empty;
 
         if (name is { Length: > MaxStatusName })
+        {
             nameError = $"Status name can't be longer than {MaxStatusName} symbols";
-        if (!string.IsNullOrEmpty(nameError)) errors.Add(nameError);
+        }
 
-        if (errors.Count > 0) return (null, errors)!;
+        if (!string.IsNullOrEmpty(nameError))
+        {
+            errors.Add(nameError);
+        }
+
+        if (errors.Count > 0)
+        {
+            return (null, errors)!;
+        }
 
         var carStatus = new CarStatus(id, name);
 
