@@ -22,7 +22,7 @@ const CarCard = memo(({ car }) => {
   const navigate = useNavigate();
   
   const imageUrl = car.imagePath
-    ? `http://localhost:5078${car.imagePath}`
+    ? car.imagePath
     : "https://via.placeholder.com/300x200?text=No+Image";
 
   const seatsCount = getCapacity(car);
@@ -105,8 +105,8 @@ function CarCatalog({ filters }) {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   useEffect(() => {
-      dispatch(getCarsByCategory());
-  }, [dispatch, cars.length]);
+    dispatch(getCarsByCategory());
+  }, [dispatch]);
 
   const openLogin = () => {
     setIsRegisterOpen(false);
@@ -171,6 +171,9 @@ function CarCatalog({ filters }) {
     filters.capacities.length > 0 ||
     filters.maxPrice < 300;
 
+  const popularCars = cars.slice(0, 4);
+  const recommendedCars = cars.length > 4 ? cars.slice(4, 8) : cars.slice(0, 4);
+
   return (
     <section className="catalog-page">
       {isFiltering ? (
@@ -198,7 +201,7 @@ function CarCatalog({ filters }) {
               <h2>Популярные автомобили</h2>
             </div>
             <div className="catalog-grid">
-              {cars.slice(0, 4).map((car) => (
+              {popularCars.map((car) => (
                 <CarCard key={car.id} car={car} />
               ))}
             </div>
@@ -208,7 +211,7 @@ function CarCatalog({ filters }) {
               <h2>Рекомендуемые автомобили</h2>
             </div>
             <div className="catalog-grid">
-              {cars.slice(4).map((car) => (
+              {recommendedCars.map((car) => (
                 <CarCard key={car.id} car={car} />
               ))}
             </div>

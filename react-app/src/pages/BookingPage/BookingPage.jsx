@@ -189,7 +189,7 @@ const BookingPage = () => {
   };
 
   if (!car) return <div className="booking-loading">Загрузка...</div>;
-  const imageUrl = car.imagePath ? `http://localhost:5078${car.imagePath}` : "";
+  const imageUrl = car.imagePath ? car.imagePath : "";
 
   const selectedTariff = tariffs.find(t => t.id === formData.tariffType) || tariffs[0];
 
